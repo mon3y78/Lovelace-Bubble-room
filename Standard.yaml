@@ -1,0 +1,403 @@
+type: vertical-stack
+cards:
+  - type: custom:bubble-card
+    card_type: button
+    button_type: state
+    name: Salotto
+    icon: mdi:sofa
+    sub_button:
+      - entity: light.luce_ventola
+        show_last_changed: false
+        show_attribute: false
+        show_state: false
+        tap_action:
+          action: toggle
+        show_background: true
+        hold_action:
+          action: call-service
+          service: input_select.select_option
+          data:
+            option: family_room_lights
+          target:
+            entity_id: input_select.minimalist_ui_switch
+        double_tap_action:
+          action: call-service
+          service: input_select.select_option
+          data:
+            option: family_room_lights
+          target:
+            entity_id: input_select.minimalist_ui_switch
+      - entity: fan.family_room_ceiling_fan_fan
+        tap_action:
+          action: toggle
+        double_tap_action:
+          action: more-info
+        hold_action:
+          action: more-info
+      - entity: media_player.family_room_assistant
+        show_last_changed: false
+        show_state: false
+        show_name: false
+        tap_action:
+          action: toggle
+      - entity: vacuum.slider
+        tap_action:
+          action: toggle
+        double_tap_action:
+          action: more-info
+        hold_action:
+          action: more-info
+    card_layout: large-2-rows
+    button_action:
+      tap_action:
+        action: navigate
+        navigation_path: family-room
+    tap_action:
+      action: navigate
+      navigation_path: "#salotto"
+    layout_options:
+      grid_columns: 2
+      grid_rows: 3
+    show_attribute: false
+    show_name: true
+    show_icon: true
+    scrolling_effect: true
+    show_state: false
+    hold_action:
+      action: navigate
+      navigation_path: salotto
+    styles: |
+      .card-content {
+        width: 100%;
+        margin: 0 !important;
+      }
+
+      .large .bubble-button-card-container {
+        height: 190px !important;
+        overflow: hidden !important;
+        #background-color: google-green !important;
+      }
+
+      .bubble-icon-container {
+        grid-area: i;
+        border-radius: 150% !important;
+        width: 150px !important;
+        height: 150px !important;
+        max-width: none !important;
+        max-height: none !important;
+        position: relative !important;
+        left: -20% !important;
+        top: 15% !important;
+        place-self: center !important;
+        margin: 0px 0px 0px 0px !important;
+        padding: 0px, 0px, 0px, 0px !important;
+        background-color: ${hass.states['binary_sensor.aqara_fp1_presence'].state === 'on' ? 'rgba(var(--color-green), 0.4)' : 'rgba(var(--color-green), 0.1)'} !important;
+      }
+
+      .bubble-icon {
+        width: 50%;
+        position: absolute !important;
+        left: 27% !important;
+        top: 13% !important;
+        --mdc-icon-size: 100px !important;
+        opacity: 0.5 !important;
+        color: ${hass.states['binary_sensor.aqara_fp1_presence'].state === 'on' ? 'rgba(var(--color-green), 1)' : 'rgba(var(--color-green), 0.3)'} !important;
+        styles: |
+      }
+
+      .bubble-name-container {
+        grid-area: n;
+        justify-self: start;
+        margin-left: 5px;
+        margin-top: 30px;
+        max-width: calc(100% -(12px + 0px));
+      }
+
+      .bubble-name {
+        font-weight: bold;
+        font-size: 20px;
+        color: ${hass.states['binary_sensor.aqara_fp1_presence'].state === 'on' ? 'rgba(var(--color-green), 1)' : 'rgba(var(--color-green), 0.3)'} !important;
+        opacity: 1;
+      }
+
+      .bubble-state {
+        font-weight: bold;
+        font-size: 14px;
+      }
+
+      .bubble-button-card {
+        display: grid;
+        grid-template-areas:
+          'n n n b'
+          'l l l b'
+          'i i . b'
+          'i i . b';
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1.5fr 0.5fr 1fr 1fr;
+        justify-items: center;
+        align-items: start;
+      }
+
+      .bubble-button-card .bubble-sub-button-container {
+        grid-area: b;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: stretch !important;
+        gap: 0px !important;
+        width: 100% !important;
+        height: auto !important;
+        border: none /* Debug per vedere l'area della colonna */
+        position: relative; /* Imposta la posizione relativa */
+        top: 15px; 
+      }
+
+      .bubble-sub-button {
+        width: 100% !important; /* Assicura che il pulsante riempia tutta la larghezza disponibile */
+        box-sizing: border-box !important; /* Include padding e bordo nella larghezza */
+        #margin: 3px !important; /* Rimuove qualsiasi margine esterno */
+        padding: 10px !important; /* Imposta un padding uniforme */
+        border-radius: 10px; /* Arrotonda leggermente i bordi per migliorare l'estetica */
+        #background-color: #4caf50 !important;
+        text-align: center !important;
+        min-height: 38px !important;
+        background-color: rgba(var(--color-green), 0.4) !important;
+        margin: 5px 0 0px -10px !important; 
+      }
+
+
+
+      .bubble-sub-button-icon {
+        --mdc-icon-size: 30px !important;
+      }
+      .bubble-sub-button-1 > ha-icon {
+        color: ${hass.states['light.luce_ventola'].state === 'on' ? 'rgba(var(--color-green), 1)' : 'gray'} !important;
+      }
+    entity: binary_sensor.aqara_fp1_presence
+    force_icon: true
+    double_tap_action:
+      action: none
+    show_last_changed: false
+  - type: custom:mushroom-template-card
+    icon: mdi:sofa
+    icon_color: |-
+      {% if is_state(entity, 'on') %}
+        orange
+      {% endif %}
+    entity: binary_sensor.aqara_fp1_presence
+    tap_action:
+      action: more-info
+    multiline_secondary: false
+    view_layout:
+      grid-area: i
+    card_mod:
+      style:
+        mushroom-shape-icon$: |
+          .shape {
+            --shape-color: none !important;
+          } 
+        .: |
+          ha-card {
+            position: absolute !important;          
+            top: 55px;
+            left: -10px;
+            background: none;
+            opacity: 0.8 !important;
+          }
+          ha-state-icon {
+            --icon-symbol-size: calc(var(--card-size, 1) * 30px);
+          }
+  - type: custom:mushroom-template-card
+    icon_color: |-
+      {% if is_state(entity, 'on') %}
+        orange
+      {% endif %}
+    icon: mdi:bed
+    entity: switch.tx_salotto_tx_ultimate_salotto_l1
+    tap_action:
+      action: more-info
+    multiline_secondary: false
+    view_layout:
+      grid-area: i
+    card_mod:
+      style:
+        mushroom-shape-icon$: |
+          .shape {
+            --shape-color: none !important;
+          } 
+        .: |
+          ha-card {
+            position: absolute !important;          
+            top: 50px;
+            left: 25px;
+            background: none;
+            opacity: 0.9 !important;
+          }
+          ha-state-icon {
+            --icon-symbol-size: calc(var(--card-size, 1) * 30px);
+          }
+  - type: custom:mushroom-template-card
+    icon_color: |-
+      {% if is_state(entity, 'on') %}
+        orange
+      {%else%}
+        gray
+      {% endif %}
+    icon: "{{ state_attr(entity, 'icon') }}"
+    entity: binary_sensor.cucina_presenza
+    tap_action:
+      action: more-info
+    multiline_secondary: false
+    view_layout:
+      grid-area: i
+    card_mod:
+      style:
+        mushroom-shape-icon$: |
+          .shape {
+            --shape-color: none !important;
+          } 
+        .: |
+          ha-card {
+            position: absolute !important;          
+            top: 60px;
+            left: 55px;
+            background: none;
+            opacity: 0.8 !important;
+          }
+          ha-state-icon {
+            --icon-symbol-size: calc(var(--card-size, 1) * 30px);
+          }
+  - type: custom:mushroom-template-card
+    icon_color: |-
+      {% if is_state(entity, 'on') %}
+        orange
+      {%else%}
+        gray
+      {% endif %}
+    icon: ""
+    tap_action:
+      action: more-info
+    multiline_secondary: false
+    entity: binary_sensor.salotto_presenza
+    view_layout:
+      grid-area: i
+  - type: custom:mushroom-template-card
+    icon_color: |-
+      {% if is_state(entity, 'on') %}
+        orange
+      {% endif %}
+    icon: "{{ state_attr(entity, 'icon') }}"
+    entity: binary_sensor.corridoio_presenza
+    tap_action:
+      action: more-info
+    multiline_secondary: false
+    view_layout:
+      grid-area: i
+    card_mod:
+      style:
+        mushroom-shape-icon$: |
+          .shape {
+            --shape-color: none !important;
+          } 
+        .: |
+          ha-card {
+            position: absolute !important;          
+            top: 120px;
+            left: 80px;
+            background: none;
+            opacity: 0.8 !important;
+          }
+          ha-state-icon {
+            --icon-symbol-size: calc(var(--card-size, 1) * 30px);
+          }
+  - type: custom:mushroom-template-card
+    icon_color: |-
+      {% if is_state(entity, 'on') %}
+        orange
+      {% endif %}
+    icon: "{{ state_attr(entity, 'icon') }}"
+    entity: light.luce_ventola
+    tap_action:
+      action: more-info
+    multiline_secondary: false
+    primary: ""
+    view_layout:
+      grid-area: i
+    card_mod:
+      style:
+        mushroom-shape-icon$: |
+          .shape {
+            --shape-color: none !important;
+          } 
+        .: |
+          ha-card {
+            position: absolute !important;          
+            top: 147px;
+            left: 60px;
+            background: none;
+            opacity: 0.8 !important;
+          }
+          ha-state-icon {
+            --icon-symbol-size: calc(var(--card-size, 1) * 30px);
+          }
+  - type: custom:mushroom-template-card
+    icon_color: |-
+      {% if is_state(entity, 'on') %}
+        orange
+      {% endif %}
+    icon: mdi:thermostat
+    entity: climate.termostato_bagno
+    tap_action:
+      action: more-info
+    multiline_secondary: false
+    view_layout:
+      grid-area: i
+    card_mod:
+      style:
+        mushroom-shape-icon$: |
+          .shape {
+            --shape-color: none !important;
+          } 
+        .: |
+          ha-card {
+            --mush-icon-size: 60px;
+            position: absolute !important;          
+            top: 145px;
+            left: -5px;
+            background: none;
+            opacity: 0.8 !important;
+          }
+    primary: ""
+  - type: custom:mushroom-template-card
+    primary: >-
+      🌡️{{ states("sensor.ecowitt_indoor_temperature") }}°C 💦{{
+      states("sensor.ecowitt_indoor_humidity") }}%
+    secondary: ""
+    icon: ""
+    layout: horizontal
+    tap_action:
+      action: none
+    hold_action:
+      action: none
+    double_tap_action:
+      action: none
+    icon_color: ""
+    card_mod:
+      style:
+        .: |
+          ha-card {
+            position: absolute !important;          
+            top: -5px;
+            left: 5px;
+            background: none;
+            opacity: 0.8 !important;
+          }
+        mushroom-state-info$: |
+          .primary {
+            font-size: 11px !important;
+            font-weight: bold;
+            overflow: visible !important;
+          }
+grid_options:
+  columns: 6
+  rows: 3
