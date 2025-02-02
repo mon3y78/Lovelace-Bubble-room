@@ -1,0 +1,62 @@
+type: custom:bubble-room
+name: Salotto
+icon: mdi:sofa
+entities:
+  presence: binary_sensor.aqara_fp1_presence
+  light: light.luce_ventola
+  fan: fan.sonoff_1000f6e5c7
+  media: media_player.google_nest_1
+  vacuum: vacuum.slider
+  climate: climate.termostato_salotto
+colors:
+  active: rgba(var(--color-green), 1)
+  inactive: rgba(var(--color-green), 0.3)
+  backgroundActive: rgba(var(--color-green), 0.4)
+  backgroundInactive: rgba(var(--color-green), 0.1)
+mushrooms:
+  - icon: mdi:light-switch
+    entity: switch.tx_salotto_tx_ultimate_salotto_l3
+    style: "top: 60px; left: -10px;"
+    tap_action:
+      action: toggle
+    icon_color:
+      on: orange
+      off: "#80808055"
+  - icon: mdi:led-strip-variant
+    entity: light.wled
+    style: "top: 50px; left: 25px;"
+    tap_action:
+      action: navigate
+      navigation_path: "#camera"
+    icon_color:
+      on: orange
+      off: "#80808055"
+  - icon: mdi:lava-lamp
+    entity: light.gyver_lamp
+    style: "top: 70px; left: 60px;"
+    tap_action:
+      action: toggle
+    hold_action:
+      action: more-info
+    icon_color:
+      on: orange
+      off: "#80808055"
+  - icon: mdi:television-classic
+    entity: light.dreamview_p1_2
+    style: "top: 145px; left: 60px;"
+    tap_action:
+      action: more-info
+    icon_color:
+      on: orange
+      off: "#80808055"
+  - icon: mdi:thermostat
+    entity: climate.termostato_salotto
+    style: "top: 145px; left: -5px;"
+    tap_action:
+      action: more-info
+    icon_color:
+      on: orange
+      off: "#80808055"
+  - type: sensor
+    primary: "🌡️{{ states(\"sensor.vindstyrka_salotto_temperature\") }}°C 💦{{ states(\"sensor.vindstyrka_salotto_humidity\") }}%"
+    style: "top: -5px; left: 5px;"
