@@ -1,36 +1,53 @@
-// src/bubble-room.js
-import { LitElement, html, css } from 'lit';
-
-/*
-  Bubble Room
-  -----------
-  Questa custom card mostra:
-   - Un’area “bubble” centrale con un’icona (es. il simbolo del salotto) il cui colore varia in base allo stato di una entità "presence".
-   - Un gruppo di sub-buttons (per luce, ventilatore, media player, aspirapolvere) che eseguono azioni (toggle) al click.
-   - Un container overlay per ulteriori elementi in stile mushroom-template, ognuno posizionato in maniera assoluta con
-     proprie azioni (toggle, more-info, navigate) o visualizzazioni (es. dati sensor).
-  
-  La configurazione permette di impostare:
-    - entities: oggetto con le entità principali (presence, light, fan, media, vacuum, climate)
-    - colors: oggetto con le colorazioni (active, inactive, backgroundActive, backgroundInactive)
-    - mushrooms: array di oggetti con la configurazione di ogni elemento "mushroom" (icona, entità, stili, azioni, ecc.)
-    - Altri parametri come name e icon per la bubble principale.
-*/
+// /config/www/bubble-room/src/bubble-room.js
+import { LitElement, html, css } from 'https://unpkg.com/lit@2.6.1/index.js?module';
 
 class BubbleRoom extends LitElement {
   static get properties() {
     return {
       config: { type: Object },
-      hass: { type: Object }
+      hass: { type: Object },
     };
   }
 
   /**
-   * setConfig() viene chiamato da Lovelace al momento dell’inizializzazione della card.
-   * Qui verifichiamo la configurazione e impostiamo valori di default.
+   * Supporto all'editor visivo.
    */
+  static async getConfigElement() {
+    await import('./bubble-room-editor.js');
+    return document.createElement('bubble-room-editor');
+  }
+
+  /**
+   * Restituisce una configurazione stub di base per la card.
+   */
+  static getStubConfig() {
+    return {
+      entities: {
+        presence: 'binary_sensor.aqara_fp1_presence',
+        light: 'light.luce_ventola',
+        fan: 'fan.sonoff_1000f6e5c7',
+        media: 'media_player.google_nest_1',
+        vacuum: 'vacuum.slider',
+        climate: 'climate.termostato_salotto',
+      },
+      colors: {
+        active: 'rgba(var(--color-green), 1)',
+        inactive: 'rgba(var(--color-green), 0.3)',
+        backgroundActive: 'rgba(var(--color-green), 0.4)',
+        backgroundInactive: 'rgba(var(--color-green), 0.1)',
+      },
+      name: 'Salotto',
+      icon: 'mdi:sofa',
+      mushrooms: []
+    };
+  }
+
   setConfig(config) {
-    if (!config.entities) {
+    console.log("bubble-room.js: setConfig() called with:", config);
+    if (!config || typeof config !== 'object' || Array.isArray(config)) {
+      throw new Error("La configurazione deve essere un oggetto valido.");
+    }
+    if (!config.entities || typeof config.entities !== 'object') {
       throw new Error("Devi definire almeno la proprietà 'entities' nella configurazione.");
     }
     this.config = {
@@ -41,21 +58,21 @@ class BubbleRoom extends LitElement {
         media: 'media_player.google_nest_1',
         vacuum: 'vacuum.slider',
         climate: 'climate.termostato_salotto',
-        ...config.entities
+        ...config.entities,
       },
       colors: {
         active: 'rgba(var(--color-green), 1)',
         inactive: 'rgba(var(--color-green), 0.3)',
         backgroundActive: 'rgba(var(--color-green), 0.4)',
         backgroundInactive: 'rgba(var(--color-green), 0.1)',
-        ...config.colors
+        ...config.colors,
       },
       name: config.name || "Salotto",
       icon: config.icon || "mdi:sofa",
-      // Array di oggetti per configurare gli elementi "mushroom"
       mushrooms: config.mushrooms || [],
-      ...config
+      ...config,
     };
+    console.log("bubble-room.js: Processed configuration:", this.config);
   }
 
   static get styles() {
@@ -64,66 +81,92 @@ class BubbleRoom extends LitElement {
         display: block;
         font-family: sans-serif;
       }
+      /* Card con dimensione fissa 180px x 180px, sfondo nero, bordi arrotondati e ombreggiatura personalizzata */
       .card {
         position: relative;
-        width: 100%;
-        max-width: 400px;
-        background: var(--card-background, white);
+        width: 180px;
+        height: 180px;
+        background: black;
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.8);
         overflow: hidden;
-        padding: 16px;
         margin: auto;
+        padding: 5px;
       }
-      /* Bubble principale */
+      /* Griglia per posizionare il nome, l'icona principale e i sub-button.
+         Qui le colonne sono: 3fr, 3fr, 3fr, 5fr (l'ultima colonna è più larga) e le righe sono definite in base all'altezza della card. */
+      .bubble-button-card {
+        display: grid;
+        width: 100%;
+        height: 100%;
+        grid-template-areas:
+          "n n n b"
+          "l l l b"
+          "i i . b"
+          "i i . b";
+        grid-template-columns: 3fr 3fr 3fr 5fr;
+        grid-template-rows: 1.5fr 0.5fr 1fr 1fr;
+        justify-items: center;
+        align-items: start;
+      }
+      /* Contenitore del nome (area "n") */
+      .bubble-name-container {
+        grid-area: n;
+        align-self: start;
+        justify-self: start;
+        padding-left: 5px;
+        padding-top: 5px;
+      }
+      .bubble-name {
+        font-weight: bold;
+        font-size: 20px;
+        color: inherit;
+      }
+      /* Contenitore dell'icona principale (area "i") */
       .bubble-icon-container {
+        grid-area: i;
         position: relative;
         width: 150px;
         height: 150px;
-        border-radius: 50%;
-        background-color: var(--bubble-bg, rgba(var(--color-green), 0.1));
+        border-radius: 150%;
+        overflow: hidden;
+        left: -20%;
+        top: 15%;
         display: flex;
         justify-content: center;
         align-items: center;
-        margin: 0 auto;
       }
       .bubble-icon {
-        font-size: 64px;
-        opacity: 0.8;
-        color: var(--bubble-icon-color, rgba(var(--color-green), 0.3));
+        width: 50%;
+        position: absolute;
+        left: 27%;
+        top: 13%;
+        --mdc-icon-size: 100px;
+        opacity: 0.5;
       }
-      .card-title {
-        text-align: center;
-        font-size: 24px;
-        margin-top: 8px;
-        color: var(--primary-text-color, #333);
-      }
-      /* Sub-buttons */
-      .sub-buttons {
+      /* Contenitore dei sub-button (area "b") */
+      .bubble-sub-button-container {
+        grid-area: b;
+        position: relative;
         display: flex;
-        justify-content: space-around;
-        margin-top: 16px;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: stretch;
+        padding-right: 5px;
+        height: 100%;
       }
-      .sub-button {
+      .bubble-sub-button {
         flex: 1;
-        margin: 0 4px;
-        padding: 8px;
-        background: rgba(var(--color-green), 0.4);
-        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        border-radius: 10px;
         text-align: center;
-        cursor: pointer;
+        background-color: rgba(var(--color-green), 0.4);
+        margin: 2px 0;
       }
-      .sub-button ha-icon {
-        display: block;
-        margin: 0 auto;
-        font-size: 24px;
-      }
-      .sub-button span {
-        display: block;
-        font-size: 12px;
-        margin-top: 4px;
-      }
-      /* Container per gli elementi mushroom (overlay) */
+      /* Contenitore per gli elementi mushroom (overlay) */
       .mushroom-container {
         position: absolute;
         top: 0;
@@ -131,10 +174,11 @@ class BubbleRoom extends LitElement {
         width: 100%;
         height: 100%;
         pointer-events: none;
+        z-index: 10;
       }
       .mushroom-item {
-        pointer-events: auto;
         position: absolute;
+        pointer-events: auto;
       }
       .sensor-item .primary {
         font-size: 11px;
@@ -144,69 +188,67 @@ class BubbleRoom extends LitElement {
     `;
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    console.log("bubble-room.js: Bubble Room card connected");
+  }
+
   render() {
     if (!this.config || !this.hass) {
+      console.log("bubble-room.js: config or hass not defined yet");
       return html`<div>Loading...</div>`;
     }
-
     const { entities, colors, name, icon, mushrooms } = this.config;
     const hass = this.hass;
-
-    // Stato della presenza per la bubble principale
     const presenceState = hass.states[entities.presence]?.state || 'off';
-    const bubbleBg = presenceState === 'on' ? colors.backgroundActive : colors.backgroundInactive;
-    const bubbleIconColor = presenceState === 'on' ? colors.active : colors.inactive;
-
-    // Definizione dei sub-buttons (icona e label fisse)
+    const bubbleBg = presenceState === 'on'
+      ? colors.backgroundActive
+      : colors.backgroundInactive;
+    const bubbleIconColor = presenceState === 'on'
+      ? colors.active
+      : colors.inactive;
+    const bubbleNameColor = bubbleIconColor;
+    
+    // Definisce i sub-button da visualizzare nell'area "b"
     const subButtons = [
-      {
-        entity: entities.light,
-        icon: 'mdi:lightbulb',
-        label: 'Luce'
-      },
-      {
-        entity: entities.fan,
-        icon: 'mdi:fan',
-        label: 'Ventola'
-      },
-      {
-        entity: entities.media,
-        icon: 'mdi:play-circle',
-        label: 'Media'
-      },
-      {
-        entity: entities.vacuum,
-        icon: 'mdi:robot-vacuum',
-        label: 'Aspirapolvere'
-      }
+      { entity: entities.light, icon: 'mdi:lightbulb', label: 'Luce' },
+      { entity: entities.fan, icon: 'mdi:fan', label: 'Ventola' },
+      { entity: entities.media, icon: 'mdi:play-circle', label: 'Media' },
+      { entity: entities.vacuum, icon: 'mdi:robot-vacuum', label: 'Aspirapolvere' },
     ];
+
+    console.log("bubble-room.js: Rendering with config:", this.config);
 
     return html`
       <div class="card">
-        <!-- Bubble principale -->
-        <div class="bubble-icon-container" style="background-color: ${bubbleBg};">
-          <ha-icon class="bubble-icon" icon="${icon}" style="color: ${bubbleIconColor};"></ha-icon>
+        <div class="bubble-button-card">
+          <!-- Area del nome (grid-area n) -->
+          <div class="bubble-name-container">
+            <div class="bubble-name" style="color: ${bubbleNameColor};">
+              ${name}
+            </div>
+          </div>
+          <!-- (Area "l" lasciata vuota per eventuali ulteriori etichette) -->
+          <!-- Contenitore dell'icona principale (grid-area i) -->
+          <div class="bubble-icon-container" style="background-color: ${bubbleBg};">
+            <ha-icon class="bubble-icon" icon="${icon}" style="color: ${bubbleIconColor};"></ha-icon>
+          </div>
+          <!-- Contenitore dei sub-button (grid-area b) -->
+          <div class="bubble-sub-button-container">
+            ${subButtons.map((btn) => {
+              const state = hass.states[btn.entity]?.state || 'off';
+              const btnColor = state === 'on' ? colors.active : colors.inactive;
+              return html`
+                <div class="bubble-sub-button" @click="${() => this._toggleEntity(btn.entity)}">
+                  <ha-icon icon="${btn.icon}" style="color: ${btnColor};"></ha-icon>
+                </div>
+              `;
+            })}
+          </div>
         </div>
-        <div class="card-title">${name}</div>
-
-        <!-- Sub-buttons -->
-        <div class="sub-buttons">
-          ${subButtons.map((btn) => {
-            const state = hass.states[btn.entity]?.state || 'off';
-            const btnColor = state === 'on' ? colors.active : colors.inactive;
-            return html`
-              <div class="sub-button" @click="${() => this._toggleEntity(btn.entity)}">
-                <ha-icon icon="${btn.icon}" style="color: ${btnColor};"></ha-icon>
-                <span>${btn.label}</span>
-              </div>
-            `;
-          })}
-        </div>
-
-        <!-- Container per gli elementi mushroom (overlay) -->
+        <!-- Contenitore per gli elementi mushroom (overlay) -->
         <div class="mushroom-container">
-          ${mushrooms.map(item => {
-            // Se l'elemento è di tipo "sensor", visualizza il testo (es. temperatura/umidità)
+          ${mushrooms.map((item) => {
             if (item.type === 'sensor') {
               return html`
                 <div class="mushroom-item sensor-item" style="${item.style}">
@@ -214,9 +256,8 @@ class BubbleRoom extends LitElement {
                 </div>
               `;
             }
-            // Altrimenti, visualizza un'icona che reagisce al click
             const state = hass.states[item.entity]?.state || 'off';
-            const iconColor = (state === 'on')
+            const iconColor = state === 'on'
               ? (item.icon_color && item.icon_color.on ? item.icon_color.on : 'orange')
               : (item.icon_color && item.icon_color.off ? item.icon_color.off : '#80808055');
             return html`
@@ -230,52 +271,47 @@ class BubbleRoom extends LitElement {
     `;
   }
 
-  /**
-   * _toggleEntity esegue il toggle di una entità.
-   */
   _toggleEntity(entity) {
     if (!this.hass) return;
+    console.log("bubble-room.js: Toggling entity:", entity);
     this.hass.callService('homeassistant', 'toggle', { entity_id: entity });
   }
 
-  /**
-   * _handleMushroomTap gestisce il tap su un elemento mushroom.
-   * Se il tap_action è definito e diverso da "none", esegue:
-   *   - toggle: cambia lo stato dell'entità
-   *   - more-info: mostra la scheda informativa
-   *   - navigate: dispatcha un evento di navigazione (da gestire a livello Lovelace)
-   */
   _handleMushroomTap(item) {
-    if (!item.tap_action || item.tap_action.action === 'none') return;
+    if (!item.tap_action || item.tap_action.action === 'none') {
+      console.log("bubble-room.js: No tap_action for item:", item);
+      return;
+    }
     const action = item.tap_action.action;
+    console.log("bubble-room.js: Handling mushroom tap, action:", action);
     if (action === 'toggle') {
       this._toggleEntity(item.entity);
     } else if (action === 'more-info') {
       this.hass.moreInfo(item.entity);
     } else if (action === 'navigate') {
       const event = new CustomEvent('ll-custom-navigate', {
-        detail: { navigation_path: item.tap_action.navigation_path }
+        detail: { navigation_path: item.tap_action.navigation_path },
       });
       window.dispatchEvent(event);
     }
   }
 
-  /**
-   * _renderTemplate esegue una sostituzione semplice nei template di tipo:
-   * {{ states("entity_id") }}
-   */
   _renderTemplate(str) {
     if (!str) return "";
-    return str.replace(/\{\{\s*states\(["'](.*?)["']\)\s*\}\}/g, (match, entity) => {
-      return this.hass.states[entity] ? this.hass.states[entity].state : 'unknown';
-    });
+    return str.replace(
+      /\{\{\s*states\(["'](.*?)["']\)\s*\}\}/g,
+      (match, entity) => {
+        return this.hass.states[entity] ? this.hass.states[entity].state : 'unknown';
+      }
+    );
   }
 
-  // Gestione dell'oggetto hass (passato da Lovelace)
   set hass(hass) {
+    console.log("bubble-room.js: Setting hass:", hass);
     this._hass = hass;
     this.requestUpdate();
   }
+
   get hass() {
     return this._hass;
   }
