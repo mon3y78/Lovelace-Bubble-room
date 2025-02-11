@@ -1,0 +1,9 @@
+{
+  "name": "Bubble Room Card",
+  "version": "1.0.0",
+  "title": "Bubble Room Card",
+  "type": "module",
+  "description": "Una Lovelace card per Home Assistant basata su Bubble Card e Mushroom Templates, che offre una visione d'insieme della stanza con controlli personalizzabili.",
+  "render_readme": true,
+  "is_dashboard": false
+}
