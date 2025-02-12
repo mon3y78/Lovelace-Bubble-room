@@ -6,5 +6,5 @@
   ],
   "version": "1.0.0",
   "domains": ["lovelace"],
-  "content_in_root": true
+  "content_in_root": false
 }
