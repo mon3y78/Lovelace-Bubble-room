@@ -5,6 +5,6 @@
     "/local/bubble_room/dist/bubble-room.js"
   ],
   "version": "1.0.0",
-  "domains": ["plancia"],
+  "domains": ["lovelace"],
   "content_in_root": true
 }
