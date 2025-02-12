@@ -1,5 +1,5 @@
 {
-  "name": "Bubble Room",
+  "name": "Lovelace-Bubble-room",
   "render": "module",
   "resources": [
     "/local/bubble_room/dist/bubble-room.js"
