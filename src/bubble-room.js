@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'https://unpkg.com/lit@2.6.1/index.js?module';
+import { html, css, LitElement } from 'lit';
 
 class BubbleRoom extends LitElement {
   static get properties() {
