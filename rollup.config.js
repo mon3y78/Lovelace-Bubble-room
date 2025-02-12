@@ -8,7 +8,7 @@ export default {
     dir: 'dist',          // Genera tutti i file bundle nella cartella "dist"
     format: 'esm',
     // Se preferisci un unico file bundle, scommenta la riga seguente:
-    // inlineDynamicImports: true
+    inlineDynamicImports: true
   },
   plugins: [
     resolve(),
