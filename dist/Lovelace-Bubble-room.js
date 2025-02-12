@@ -108,7 +108,7 @@ class ot extends y{constructor(){super(...arguments),this.renderOptions={host:th
         border-radius: 10px;
         text-align: center;
         min-height: 38px;
-        margin: 5px 10px 0 0;
+        margin: 5px 25px 0 0;
         cursor: pointer;
       }
       .mushroom-container {
