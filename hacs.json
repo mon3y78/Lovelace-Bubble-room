@@ -2,7 +2,6 @@
   "domains": ["lovelace"],
   "render": "module",
   "name": "Lovelace-Bubble-room",
-  "resources": "/local/Lovelace-Bubble-room/dist/lovelace-bubble-room.js",
   "filename": "dist/lovelace-bubble-room.js",
   "content_in_root": false
 }
