@@ -282,7 +282,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
         ${t}:
         <input type="text" .value="${n}" list="entity-list" @input="${this._updateEntity(e,i)}" />
       </label>
-    `}_renderIconInput(t,e,i="icon"){const n=this._config.entities&&this._config.entities[e]&&this._config.entities[e][i]||"";return L`
+    `}_renderIconInput(t,e,i="icon"){let n=this._config.entities&&this._config.entities[e]&&this._config.entities[e][i]||"";if(!n&&this.hass&&this._config.entities&&this._config.entities[e]&&this._config.entities[e].entity){const t=this._config.entities[e].entity;n=this.hass.states[t]?.attributes?.icon||""}return L`
       <label>
         ${t}:
         <input type="text" .value="${n}" list="icon-list" @input="${this._updateEntity(e,i)}" />
