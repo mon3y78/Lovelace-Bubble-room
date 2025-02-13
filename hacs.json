@@ -1,5 +1,6 @@
 {
-  "domains": ["module"],
+  "domains": ["lovelace"],
+  "render": "module",
   "name": "Lovelace-Bubble-room",
   "render": "module",
   "resources": "/local/Lovelace-Bubble-room/dist/lovelace-bubble-room.js",
