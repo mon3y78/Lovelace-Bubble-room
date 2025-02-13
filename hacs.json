@@ -3,5 +3,5 @@
   "content_in_root": false,
   "render_readme": true,
   "domains": ["lovelace"],
-  "filename": "dist/Lovelace-Bubble-room.js"
+  "filename": "dist/lovelace-bubble-room.js"
 }
