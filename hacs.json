@@ -5,5 +5,5 @@
   "render": "module",
   "domains": ["lovelace"],
   "filename": "dist/lovelace-bubble-room.js",
-  "resources": "/local/Lovelace-Bubble-room/dist/Lovelace-Bubble-room.js"
+  "resources": "/local/Lovelace-Bubble-room/dist/lovelace-bubble-room.js"
 }
