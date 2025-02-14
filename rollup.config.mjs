@@ -5,7 +5,7 @@ import { terser } from "rollup-plugin-terser";
 export default {
   input: 'src/bubble-room.js',
   output: {
-    file: 'dist/lovelace-bubble-room.js',        // Genera il file bundle nella cartella "dist"
+    file: 'lovelace-bubble-room.js',        // Genera il file bundle nella cartella "dist"
     format: 'esm',
     inlineDynamicImports: true
   },
