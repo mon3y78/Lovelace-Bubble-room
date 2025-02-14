@@ -49,13 +49,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mon3y78/Bubble_room.git"
+    "url": "git+https://github.com/mon3y78/Lovelace-Bubble-room.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mon3y78/Bubble_room/issues"
+    "url": "https://github.com/mon3y78/Lovelace-Bubble-room/issues"
   },
-  "homepage": "https://github.com/mon3y78/Bubble_room#readme"
+  "homepage": "https://github.com/mon3y78/Lovelace-Bubble-room#readme"
 }
