@@ -153,7 +153,7 @@ class ot extends y{constructor(){super(...arguments),this.renderOptions={host:th
                          @pointerleave="${t=>this._cancelHold(t)}">
                       <div class="mushroom-primary">🌡️${i}°C 💦${n}%</div>
                     </div>
-                  `}{const i="on"===(o.states[t.entity]?.state||"off")?t.icon_color&&t.icon_color.on?t.icon_color.on:"orange":t.icon_color&&t.icon_color.off?t.icon_color.off:"#80808055",n=this._getFallbackIcon(t.entity),s=t.icon?t.icon:n,a=t.style?t.style:this._defaultMushroomStyle(e);return D`
+                  `}{const i="on"===(o.states[t.entity]?.state||"off")?t.icon_color&&t.icon_color.on?t.icon_color.on:"orange":t.icon_color&&t.icon_color.off?t.icon_color.off:"#80808055",n=this._getFallbackIcon(t.entity),s=t.icon&&""!==t.icon.trim()?t.icon:n,a=t.style?t.style:this._defaultMushroomStyle(e);return D`
                     <div class="mushroom-item"
                          style="${a}"
                          @pointerdown="${e=>this._startHold(e,t)}"
