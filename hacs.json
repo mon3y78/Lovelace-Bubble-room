@@ -1,9 +1,8 @@
 {
   "name": "Lovelace Bubble Room",
-  "content_in_root": false,
+  "content_in_root": true,
   "render_readme": true,
   "render": "module",
   "domains": ["lovelace"],
-  "filename": "dist/lovelace-bubble-room.js",
-  "resources": "/local/Lovelace-Bubble-room/dist/lovelace-bubble-room.js"
+  "filename": "lovelace-bubble-room.js"
 }
