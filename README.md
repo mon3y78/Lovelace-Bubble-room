@@ -21,6 +21,6 @@ Grazie all'approccio ibrido, la Bubble Room Card combina il design accattivante 
 2. Clicca su "Explore & Add Repositories" e aggiungi il repository GitHub di **Bubble Room**.
 3. Installa la card e aggiungi la seguente risorsa in Lovelace:
    ```yaml
-   url: /hacsfiles/bubble-room/src/bubble-room.js
+   url: /hacsfiles/Lovela-Bubble-room/bubble-room.js
    type: module
 
