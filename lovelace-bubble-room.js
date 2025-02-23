@@ -24,7 +24,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
       *, *::before, *::after { box-sizing: border-box; }
       :host {
         display: block;
-        --card-height:750px;
+        --card-height:190px;
         --card-background: black;
         --bubble-bg: gray;
         font-family: sans-serif;
@@ -39,7 +39,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
       .card {
         position: relative;
         width: 100%;
-        height: 750px;
+        height: 190px;
         border-radius: 8px;
         overflow: hidden;
       }
