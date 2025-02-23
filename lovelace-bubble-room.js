@@ -77,8 +77,8 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
         position: absolute;
         cursor: pointer;
         border-radius: 100% !important;
-        width: 170px !important;
-        height: 170px !important;
+        width: 600px !important;
+        height: 600px !important;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -90,7 +90,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
         top: 17%;
         left: 25%;
         width: 50% !important;
-        --mdc-icon-size: 85px !important;
+        --mdc-icon-size: 300px !important;
         opacity: 0.5 !important;
       }
       .bubble-sub-button-container {
