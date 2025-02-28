@@ -1,3 +1,4 @@
+![Bubble Room](img/bubble-room.png)
 # Bubble Room Card
 Bubble Room Card è una Lovelace card per Home Assistant basata sui solidi principi della Bubble Card e sulla versatilità dei Mushroom Templates. Progettata per offrire una visione d'insieme della stanza, questa card consente di monitorare e gestire in maniera centralizzata tutti i dispositivi e le entità con un'interfaccia moderna, intuitiva e altamente personalizzabile.
 
@@ -13,7 +14,7 @@ La card consente di personalizzare i colori e le funzionalità dei tasti, permet
 
 # Basata su Bubble Card e Mushroom Templates:
 Grazie all'approccio ibrido, la Bubble Room Card combina il design accattivante della Bubble Card con la flessibilità dei Mushroom Templates, offrendo un'interfaccia utente interattiva e personalizzabile.
-
+![Bubble Room](img/bubble-room2.png)
 ## Installazione
 
 ### Tramite HACS
