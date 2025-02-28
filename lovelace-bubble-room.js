@@ -88,9 +88,9 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
       .bubble-icon {
         position: absolute;
         top: 17%;
-        left: 35%;
+        left: 30%;
         width: 50% !important;
-        --mdc-icon-size: 70px !important;
+        --mdc-icon-size: 75px !important;
         opacity: 0.5 !important;
       }
       .bubble-sub-button-container {
