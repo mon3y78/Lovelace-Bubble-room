@@ -87,7 +87,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
       }
       .bubble-icon {
         position: absolute;
-        top: 15%;
+        top: 20%;
         left: 30%;
         width: 50% !important;
         --mdc-icon-size: 75px !important;
