@@ -9,6 +9,10 @@ export default {
     format: 'esm',
     inlineDynamicImports: true
   },
+  external: [
+    'home-assistant-frontend/src/components/ha-entity-picker.js',
+    'home-assistant-frontend/src/components/ha-expansion-panel.js',
+  ],
   plugins: [
     nodeResolve(),
     commonjs(),
