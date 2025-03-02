@@ -1,5 +1,4 @@
 ![Bubble Room](img/bubble-room.png)
-<img src="img/bubble-room.png" alt="Bubble Room" width="300">
 # Bubble Room Card
 Bubble Room Card is a Lovelace card for Home Assistant based on the solid principles of the Bubble Card and the versatility of Mushroom Templates. Designed to provide an overview of the room, this card allows you to centrally monitor and manage all devices and entities through a modern, intuitive, and highly customizable interface.
 
@@ -16,7 +15,9 @@ The card allows you to fully customize the colors and functionalities of the but
 
 # Installation
 ## Via HACS
-1. Via HACS
-2. Go to HACS > Frontend.
-3. Click on "Explore & Add Repositories" and add the Bubble Room GitHub repository.
-4. Install the card and add the following resource in Lovelace:
+1. Go to HACS > Frontend.
+2. Click on "Explore & Add Repositories" and add the Bubble Room GitHub repository.
+3. Install the card and add the following resource in Lovelace:
+     ```yaml
+   url: /hacsfiles/bubble-room/src/bubble-room.js
+   type: module 
