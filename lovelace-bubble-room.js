@@ -191,11 +191,8 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
         text-align: center;
         margin: 1rem 0;
       }
-      ha-expansion-panel {
-        margin: 8px 0;
-      }
+      /* Stile comune per tutti gli header dei pannelli */
       ha-expansion-panel div[slot="header"] {
-        /* Imposta lo sfondo della riga principale dello slot header */
         background-color: #333;
         color: #fff;
         padding: 8px;
