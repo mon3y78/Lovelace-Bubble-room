@@ -112,30 +112,18 @@ class BubbleRoomEditor extends LitElement {
   }
 
   getConfig() {
-    // Creiamo una copia profonda della configurazione
     const configCopy = JSON.parse(JSON.stringify(this._config));
-  
-    // Creiamo un nuovo oggetto entities includendo solo le voci con entity valorizzata
     const filteredEntities = {};
     Object.keys(configCopy.entities).forEach((key) => {
       const entityConfig = configCopy.entities[key];
       if (entityConfig.entity && entityConfig.entity.trim() !== "") {
         filteredEntities[key] = entityConfig;
-      } else {
-        console.log(`Elimino "${key}" perché il campo "entity" è vuoto o contiene solo spazi`);
       }
     });
-  
-    // Aggiorniamo la configurazione con l'oggetto entities filtrato
     configCopy.entities = filteredEntities;
-  
-    // Se vuoi aggiornare anche lo stato interno, puoi farlo (opzionale)
     this._config = configCopy;
-  
-    console.log('Configurazione finale filtrata:', configCopy);
     return configCopy;
   }
-  
 
   _defaultIconList() {
     return this._iconList;
@@ -154,6 +142,13 @@ class BubbleRoomEditor extends LitElement {
       }
       ha-expansion-panel {
         margin: 8px 0;
+      }
+      ha-expansion-panel div[slot="header"] {
+        /* Imposta lo sfondo della riga principale dello slot header */
+        background-color: #333;
+        color: #fff;
+        padding: 8px;
+        font-weight: bold;
       }
       .section-content {
         padding: 16px;
@@ -178,7 +173,6 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
 
-  // Funzione generica per aprire/chiudere un pannello tramite id
   _togglePanel(panelId) {
     const panel = this.shadowRoot.getElementById(panelId);
     if (panel) {
@@ -186,8 +180,12 @@ class BubbleRoomEditor extends LitElement {
     }
   }
 
-  // Funzione helper per i pannelli dei sub-button (individuali)
   _renderSubButtonPanel(key) {
+    const entityConfig = this._config.entities?.[key];
+    if (!entityConfig?.entity || entityConfig.entity.trim() === "") {
+      return html``;
+    }
+  
     let label;
     switch(key) {
       case "sub-button1": label = "Sub-button1"; break;
@@ -197,9 +195,10 @@ class BubbleRoomEditor extends LitElement {
       default: label = key;
     }
     const panelId = `${key}Panel`;
+  
     return html`
       <ha-expansion-panel id="${panelId}">
-        <div slot="header" @click="${() => this._togglePanel(panelId)}" style="cursor: pointer;">
+        <div slot="header" @click="${() => this._togglePanel(panelId)}">
           ${label}
         </div>
         <div class="section-content">
@@ -211,21 +210,21 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
 
-  // ======= FUNZIONI DI RENDERING PRINCIPALI =======
-
   render() {
     if (!this._config) {
       return html`<div>Caricamento configurazione...</div>`;
     }
-
+    const hasEntity = (key) => {
+      const e = this._config.entities?.[key]?.entity;
+      return e && e.trim() !== "";
+    };
     return html`
       <div class="editor-header">
         <h3>Visual Editor Bubble Room</h3>
       </div>
 
-      <!-- Sezione ROOM -->
       <ha-expansion-panel id="roomPanel">
-        <div slot="header" @click="${() => this._togglePanel('roomPanel')}" style="cursor: pointer;">
+        <div slot="header" @click="${() => this._togglePanel('roomPanel')}">
           Room Settings
         </div>
         <div class="section-content">
@@ -253,22 +252,20 @@ class BubbleRoomEditor extends LitElement {
         </div>
       </ha-expansion-panel>
 
-      <!-- Sezione SUB-BUTTON principale che contiene i pannelli individuali -->
       <ha-expansion-panel id="subButtonMainPanel">
-        <div slot="header" @click="${() => this._togglePanel('subButtonMainPanel')}" style="cursor: pointer;">
+        <div slot="header" @click="${() => this._togglePanel('subButtonMainPanel')}">
           SUB-BUTTON
         </div>
         <div class="section-content">
-          ${this._renderSubButtonPanel("sub-button1")}
-          ${this._renderSubButtonPanel("sub-button2")}
-          ${this._renderSubButtonPanel("sub-button3")}
-          ${this._renderSubButtonPanel("sub-button4")}
+          ${hasEntity("sub-button1") ? this._renderSubButtonPanel("sub-button1") : ""}
+          ${hasEntity("sub-button2") ? this._renderSubButtonPanel("sub-button2") : ""}
+          ${hasEntity("sub-button3") ? this._renderSubButtonPanel("sub-button3") : ""}
+          ${hasEntity("sub-button4") ? this._renderSubButtonPanel("sub-button4") : ""}
         </div>
       </ha-expansion-panel>
 
-      <!-- Sezione Mushroom Entities -->
       <ha-expansion-panel id="mushroomEntitiesPanel">
-        <div slot="header" @click="${() => this._togglePanel('mushroomEntitiesPanel')}" style="cursor: pointer;">
+        <div slot="header" @click="${() => this._togglePanel('mushroomEntitiesPanel')}">
           Mushroom Entities
         </div>
         <div class="section-content">
@@ -280,9 +277,8 @@ class BubbleRoomEditor extends LitElement {
         </div>
       </ha-expansion-panel>
 
-      <!-- Sezione Clima -->
       <ha-expansion-panel id="climatePanel">
-        <div slot="header" @click="${() => this._togglePanel('climatePanel')}" style="cursor: pointer;">
+        <div slot="header" @click="${() => this._togglePanel('climatePanel')}">
           Climate
         </div>
         <div class="section-content">
@@ -310,9 +306,8 @@ class BubbleRoomEditor extends LitElement {
         </div>
       </ha-expansion-panel>
 
-      <!-- Sezione Colori -->
       <ha-expansion-panel id="colorsPanel">
-        <div slot="header" @click="${() => this._togglePanel('colorsPanel')}" style="cursor: pointer;">
+        <div slot="header" @click="${() => this._togglePanel('colorsPanel')}">
           Colors
         </div>
         <div class="section-content">
@@ -351,7 +346,6 @@ class BubbleRoomEditor extends LitElement {
         </div>
       </ha-expansion-panel>
 
-      <!-- Datalists per autocomplete -->
       <datalist id="entity-list">
         ${this.hass
           ? Object.keys(this.hass.entities).map(
@@ -369,12 +363,11 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
 
-  // Funzione helper per creare i pannelli dei Mushroom Entities
   _renderMushroomEntityPanel(key, label) {
     const panelId = `${key}Panel`;
     return html`
       <ha-expansion-panel id="${panelId}">
-        <div slot="header" @click="${() => this._togglePanel(panelId)}" style="cursor: pointer;">
+        <div slot="header" @click="${() => this._togglePanel(panelId)}">
           ${label}
         </div>
         <div class="section-content">
@@ -384,8 +377,6 @@ class BubbleRoomEditor extends LitElement {
       </ha-expansion-panel>
     `;
   }
-
-  // ======= METODI AUSILIARI DI RENDERING PER CAMPI =======
 
   _renderEntityInput(labelText, entityKey, field = 'entity') {
     const value = (this._config.entities &&
@@ -574,8 +565,6 @@ class BubbleRoomEditor extends LitElement {
       </div>
     `;
   }
-
-  // ======= METODI DI GESTIONE DEI CAMPI (invariati) =======
 
   set hass(hass) {
     this._hass = hass;
