@@ -112,7 +112,20 @@ class BubbleRoomEditor extends LitElement {
   }
 
   getConfig() {
-    return this._config;
+    // Clona la configurazione per non modificare lo stato interno
+    const configCopy = {
+      ...this._config,
+      entities: { ...this._config.entities }
+    };
+  
+    // Per ogni entità, se è presente il campo "entity" e il suo valore è vuoto, la rimuove dalla configurazione
+    Object.keys(configCopy.entities).forEach((key) => {
+      const entityConfig = configCopy.entities[key];
+      if ('entity' in entityConfig && (!entityConfig.entity || entityConfig.entity.trim() === "")) {
+        delete configCopy.entities[key];
+      }
+    });
+    return configCopy;
   }
 
   _defaultIconList() {
