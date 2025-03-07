@@ -2,7 +2,7 @@
 node_modules/
 
 # Output di build (se usi un bundler come Rollup e generi la cartella dist)
-src/
+#src/
 
 
 # File di log
