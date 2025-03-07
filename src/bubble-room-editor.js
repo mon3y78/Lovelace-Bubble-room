@@ -112,19 +112,25 @@ class BubbleRoomEditor extends LitElement {
   }
 
   getConfig() {
-    // Eseguiamo una clonazione profonda della configurazione corrente
+    // Creiamo una copia profonda della configurazione
     const configCopy = JSON.parse(JSON.stringify(this._config));
   
-    // Iteriamo su tutte le chiavi di configCopy.entities
+    // Creiamo un nuovo oggetto entities includendo solo le voci con entity valorizzata
+    const filteredEntities = {};
     Object.keys(configCopy.entities).forEach((key) => {
-      const ent = configCopy.entities[key];
-  
-      // Se la proprietà 'entity' esiste e il suo valore è una stringa vuota o solo spazi, eliminiamo l'intera voce
-      if (typeof ent.entity === 'string' && ent.entity.trim() === "") {
-        console.log(`Rimuovo "${key}" perché il campo "entity" è vuoto`);
-        delete configCopy.entities[key];
+      const entityConfig = configCopy.entities[key];
+      if (entityConfig.entity && entityConfig.entity.trim() !== "") {
+        filteredEntities[key] = entityConfig;
+      } else {
+        console.log(`Elimino "${key}" perché il campo "entity" è vuoto o contiene solo spazi`);
       }
     });
+  
+    // Aggiorniamo la configurazione con l'oggetto entities filtrato
+    configCopy.entities = filteredEntities;
+  
+    // Se vuoi aggiornare anche lo stato interno, puoi farlo (opzionale)
+    this._config = configCopy;
   
     console.log('Configurazione finale filtrata:', configCopy);
     return configCopy;
