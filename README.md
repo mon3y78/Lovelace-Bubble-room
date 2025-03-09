@@ -20,4 +20,4 @@ The card allows you to fully customize the colors and functionalities of the but
 3. Install the card and add the following resource in Lovelace:
      ```yaml
    url: https://github.com/mon3y78/Lovelace-Bubble-room
-   type: dasboard
+   type: dashboard
