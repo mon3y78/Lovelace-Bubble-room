@@ -19,5 +19,5 @@ The card allows you to fully customize the colors and functionalities of the but
 2. Click on "Explore & Add Repositories" and add the Bubble Room GitHub repository.
 3. Install the card and add the following resource in Lovelace:
      ```yaml
-   url: /hacsfiles/bubble-room/src/bubble-room.js
-   type: module 
+   url: https://github.com/mon3y78/Lovelace-Bubble-room
+   type: dasboard
