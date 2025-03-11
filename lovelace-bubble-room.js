@@ -169,13 +169,13 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
             </div>
           </div>
           <div class="bubble-sub-button-container">
-            ${p.map((t=>{if(!t)return L``;const i="on"===(o.states[t.entity]?.state||"off")?e.active:e.inactive,n=this._getFallbackIcon(t.entity),s=t.icon?t.icon:n;return L`
+            ${p.map((t=>{if(!t)return L``;const i=o.states[t.entity]?.state||"off",n="on"===i?e.active:e.inactive,s=this._getFallbackIcon(t.entity),a=t.icon?t.icon:s,r="on"===i?t.icon_color&&t.icon_color.on?t.icon_color.on:"orange":t.icon_color&&t.icon_color.off?t.icon_color.off:"#80808055";return L`
                 <div class="bubble-sub-button"
-                     style="background-color: ${i};"
-                     @pointerdown="${e=>this._startHold(e,t)}"
-                     @pointerup="${e=>this._endHold(e,t,(()=>this._handleSubButtonTap(t)))}"
-                     @pointerleave="${t=>this._cancelHold(t)}">
-                  <ha-icon icon="${s}"></ha-icon>
+                    style="background-color: ${n};"
+                    @pointerdown="${e=>this._startHold(e,t)}"
+                    @pointerup="${e=>this._endHold(e,t,(()=>this._handleSubButtonTap(t)))}"
+                    @pointerleave="${t=>this._cancelHold(t)}">
+                  <ha-icon icon="${a}" style="color: ${r};"></ha-icon>
                 </div>
               `}))}
           </div>

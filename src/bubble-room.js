@@ -578,13 +578,17 @@ class BubbleRoom extends LitElement {
               const btnColor = state === 'on' ? colors.active : colors.inactive;
               const fallbackIcon = this._getFallbackIcon(btn.entity);
               const iconToUse = btn.icon ? btn.icon : fallbackIcon;
+              // Calcola l'iconColor come nelle mushroom template:
+              const iconColor = state === 'on'
+                ? (btn.icon_color && btn.icon_color.on ? btn.icon_color.on : 'orange')
+                : (btn.icon_color && btn.icon_color.off ? btn.icon_color.off : '#80808055');
               return html`
                 <div class="bubble-sub-button"
-                     style="background-color: ${btnColor};"
-                     @pointerdown="${(e) => this._startHold(e, btn)}"
-                     @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
-                     @pointerleave="${(e) => this._cancelHold(e)}">
-                  <ha-icon icon="${iconToUse}"></ha-icon>
+                    style="background-color: ${btnColor};"
+                    @pointerdown="${(e) => this._startHold(e, btn)}"
+                    @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
+                    @pointerleave="${(e) => this._cancelHold(e)}">
+                  <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
                 </div>
               `;
             })}
