@@ -193,8 +193,8 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
       }
       /* Stile comune per tutti gli header dei pannelli */
       ha-expansion-panel div[slot="header"] {
-        background-color: #02aef7;
-        color: #02aef7;
+        background-color: var(--slider-bar-color);
+        color: var(--text-primary-color);
         padding: 8px;
         font-weight: bold;
       }
