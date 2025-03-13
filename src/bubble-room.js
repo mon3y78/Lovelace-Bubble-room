@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-
+import fitty from 'fitty';
 
 class BubbleRoom extends LitElement {
   static get properties() {
@@ -8,6 +8,20 @@ class BubbleRoom extends LitElement {
       hass: { type: Object },
     };
   }
+//fitty
+  firstUpdated() {
+    // Applica fitty al nome
+    const nameEl = this.shadowRoot.querySelector('.name-area');
+    if (nameEl) {
+      fitty(nameEl, { maxSize: 30, multiLine: false });
+    }
+    // Applica fitty agli elementi mushroom che contengono il testo
+    const mushroomEls = this.shadowRoot.querySelectorAll('.mushroom-primary');
+    if (mushroomEls.length) {
+      fitty(mushroomEls, { maxSize: 20, multiLine: false });
+    }
+  }
+
 
   // Supporto all'editor visivo
   static async getConfigElement() {
@@ -300,6 +314,10 @@ class BubbleRoom extends LitElement {
         width: 33px;
         height: 33px;
       }
+      .fit-text {
+        white-space: nowrap;
+        overflow: hidden;
+      }  
     `;
   }
 
@@ -524,7 +542,7 @@ class BubbleRoom extends LitElement {
     return html`
       <div class="card">
         <div class="grid-container">
-          <div class="name-area" style="color: ${nameColor};">
+          <div class="name-area fit-text" style="color: ${nameColor};">
             ${name}
           </div>
           <div class="icon-area">
@@ -547,7 +565,7 @@ class BubbleRoom extends LitElement {
                          @pointerdown="${(e) => this._startHold(e, item)}"
                          @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
                          @pointerleave="${(e) => this._cancelHold(e)}">
-                      <div class="mushroom-primary">🌡️${tempState}°C 💦${humState}%</div>
+                      <div class="mushroom-primary fit-text">🌡️${tempState}°C 💦${humState}%</div>
                     </div>
                   `;
                 } else {

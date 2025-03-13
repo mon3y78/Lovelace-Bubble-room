@@ -16,6 +16,7 @@
     "deepmerge": "^4.3.1",
     "estree-walker": "^2.0.2",
     "fdir": "^6.4.3",
+    "fitty": "^2.4.2",
     "fsevents": "^2.3.3",
     "function-bind": "^1.1.2",
     "has-flag": "^4.0.0",
