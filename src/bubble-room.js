@@ -240,9 +240,9 @@ class BubbleRoom extends LitElement {
         display: flex;
         align-items: center;
         padding-left: 2px;
-        margin-top: -67px;
+        #margin-top: -6px;
         margin-left: 0;
-        font-size: 30px;
+        #font-size: 30px;
         font-weight: bold;
         color: inherit;
       }
