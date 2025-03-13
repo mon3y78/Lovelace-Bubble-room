@@ -8,13 +8,9 @@ class BubbleRoom extends LitElement {
       hass: { type: Object },
     };
   }
-//fitty
+
   firstUpdated() {
     // Applica fitty al nome
-    const nameEl = this.shadowRoot.querySelector('.name-area');
-    if (nameEl) {
-      fitty(nameEl, { maxSize: 30, multiLine: false });
-    }
     // Applica fitty agli elementi mushroom che contengono il testo
     const mushroomEls = this.shadowRoot.querySelectorAll('.mushroom-primary');
     if (mushroomEls.length) {
@@ -240,9 +236,9 @@ class BubbleRoom extends LitElement {
         display: flex;
         align-items: center;
         padding-left: 2px;
-        #margin-top: -6px;
+        margin-top: -67px;
         margin-left: 0;
-        #font-size: 30px;
+        font-size: 30px;
         font-weight: bold;
         color: inherit;
       }
@@ -542,7 +538,7 @@ class BubbleRoom extends LitElement {
     return html`
       <div class="card">
         <div class="grid-container">
-          <div class="name-area fit-text" style="color: ${nameColor};">
+          <div class="name-area" style="color: ${nameColor};">
             ${name}
           </div>
           <div class="icon-area">
