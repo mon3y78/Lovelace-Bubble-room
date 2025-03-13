@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-
+import fitty from 'fitty';
 
 class BubbleRoom extends LitElement {
   static get properties() {
@@ -8,6 +8,16 @@ class BubbleRoom extends LitElement {
       hass: { type: Object },
     };
   }
+
+  firstUpdated() {
+    // Applica fitty al nome
+    // Applica fitty agli elementi mushroom che contengono il testo
+    const mushroomEls = this.shadowRoot.querySelectorAll('.mushroom-primary');
+    if (mushroomEls.length) {
+      fitty(mushroomEls, { maxSize: 20, multiLine: false });
+    }
+  }
+
 
   // Supporto all'editor visivo
   static async getConfigElement() {
@@ -300,6 +310,10 @@ class BubbleRoom extends LitElement {
         width: 33px;
         height: 33px;
       }
+      .fit-text {
+        white-space: nowrap;
+        overflow: hidden;
+      }  
     `;
   }
 
@@ -311,7 +325,7 @@ class BubbleRoom extends LitElement {
       case 3: return "bottom: 39px; left: 96px;";
       case 4: return "bottom: -1px; left: 85px;";
       case 5: return "bottom: -2px; left: -2px;";
-      case 6: return "top: -140px; left: 15px;";
+      case 6: return "top: -140px; left: 5px;";
       default: return "";
     }
   }
@@ -547,7 +561,7 @@ class BubbleRoom extends LitElement {
                          @pointerdown="${(e) => this._startHold(e, item)}"
                          @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
                          @pointerleave="${(e) => this._cancelHold(e)}">
-                      <div class="mushroom-primary">🌡️${tempState}°C 💦${humState}%</div>
+                      <div class="mushroom-primary fit-text">🌡️${tempState}°C 💦${humState}%</div>
                     </div>
                   `;
                 } else {
@@ -578,13 +592,17 @@ class BubbleRoom extends LitElement {
               const btnColor = state === 'on' ? colors.active : colors.inactive;
               const fallbackIcon = this._getFallbackIcon(btn.entity);
               const iconToUse = btn.icon ? btn.icon : fallbackIcon;
+              // Calcola l'iconColor come nelle mushroom template:
+              const iconColor = state === 'on'
+                ? (btn.icon_color && btn.icon_color.on ? btn.icon_color.on : 'orange')
+                : (btn.icon_color && btn.icon_color.off ? btn.icon_color.off : '#80808055');
               return html`
                 <div class="bubble-sub-button"
-                     style="background-color: ${btnColor};"
-                     @pointerdown="${(e) => this._startHold(e, btn)}"
-                     @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
-                     @pointerleave="${(e) => this._cancelHold(e)}">
-                  <ha-icon icon="${iconToUse}"></ha-icon>
+                    style="background-color: ${btnColor};"
+                    @pointerdown="${(e) => this._startHold(e, btn)}"
+                    @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
+                    @pointerleave="${(e) => this._cancelHold(e)}">
+                  <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
                 </div>
               `;
             })}
