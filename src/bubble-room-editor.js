@@ -43,7 +43,6 @@ class BubbleRoomEditor extends LitElement {
           tap_action: { action: 'toggle' },
           hold_action: { action: 'more-info' }
         },
-        camera: { entity: 'camera.salotto', icon: 'mdi:cctv', tap_action: { action: 'more-info' } },
         climate: { entity: 'climate.termostato_salotto', icon: 'mdi:thermostat', tap_action: { action: 'more-info' } },
         entities1: { entity: 'sensor.some_sensor1', icon: 'mdi:information-outline' },
         entities2: { entity: 'sensor.some_sensor2', icon: 'mdi:information-outline' },
@@ -272,20 +271,6 @@ class BubbleRoomEditor extends LitElement {
           ${this._renderMushroomEntityPanel("entities3", "Entity 3")}
           ${this._renderMushroomEntityPanel("entities4", "Entity 4")}
           ${this._renderMushroomEntityPanel("entities5", "Entity 5")}
-        </div>
-      </ha-expansion-panel>
-
-      <ha-expansion-panel id="cameraPanel">
-        <div slot="header" @click="${() => this._togglePanel('cameraPanel')}">
-          Camera
-        </div>
-        <div class="section-content">
-          <div class="input-group">
-            ${this._renderEntityInput("Camera (ID)", "camera")}
-          </div>
-          <div class="input-group">
-            ${this._renderIconInput("Camera Icon", "camera")}
-          </div>
         </div>
       </ha-expansion-panel>
 

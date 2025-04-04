@@ -60,11 +60,6 @@ class BubbleRoom extends LitElement {
           icon: '',
           tap_action: { action: 'more-info' }
         },
-        camera: {
-          entity: 'camera.salotto',
-          icon: '',
-          tap_action: { action: 'more-info' }
-        },        
         entities1: { entity: 'sensor.some_sensor1', icon: '' },
         entities2: { entity: 'sensor.some_sensor2', icon: '' },
         entities3: { entity: 'sensor.some_sensor3', icon: '' },
@@ -185,8 +180,7 @@ class BubbleRoom extends LitElement {
       'entities4',
       'entities5',
       'climate',
-      'temperature',
-      'camera'
+      'temperature'
     ];
     const defaultAction = { tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } };
 
@@ -392,7 +386,6 @@ class BubbleRoom extends LitElement {
       case 4: return "bottom: -1px; left: 85px;";
       case 5: return "bottom: -2px; left: -2px;";
       case 6: return "top: -140px; left: 5px;";
-      case 7: return "top: -100px; left: 130px;"; // Posizione suggerita per camera
       default: return "";
     }
   }
@@ -570,7 +563,6 @@ class BubbleRoom extends LitElement {
 
   render() {
     if (!this.config || !this.hass) {
-      
       return html`<div>Loading...</div>`;
     }
 
@@ -581,7 +573,7 @@ class BubbleRoom extends LitElement {
 
     // Main icon fallback
     const mainEntityId = this.config.entity;
-    const mainIcon = this._getFallbackIcon(mainEntityId, this.config.icon);
+    const mainIcon = this.config.icon ? this.config.icon : fallbackMainIcon;
     const bubbleIconColor = this.config.main_icon_color || (presenceState === 'on' ? colors.active : colors.inactive);
     const nameColor = bubbleIconColor;
 
@@ -601,7 +593,6 @@ class BubbleRoom extends LitElement {
     ];
     if (entities.climate) { mushroomTemplates.push(entities.climate); }
     if (entities.temperature) { mushroomTemplates.push(entities.temperature); }
-    if (entities.camera) { mushroomTemplates.push(entities.camera); }
 
     return html`
       <div class="card">
