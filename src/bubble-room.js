@@ -60,6 +60,11 @@ class BubbleRoom extends LitElement {
           icon: '',
           tap_action: { action: 'more-info' }
         },
+        camera: {
+          entity: 'camera.salotto',
+          icon: '',
+          tap_action: { action: 'more-info' }
+        },        
         entities1: { entity: 'sensor.some_sensor1', icon: '' },
         entities2: { entity: 'sensor.some_sensor2', icon: '' },
         entities3: { entity: 'sensor.some_sensor3', icon: '' },
@@ -87,65 +92,76 @@ class BubbleRoom extends LitElement {
   // Controlla prima se esiste una personalizzazione in hass.customize, altrimenti legge l'attributo icon dallo stato.
   
   _getFallbackIcon(entityId, explicitIcon = '') {
-    // 1. Icona definita nell'editor
     if (explicitIcon && explicitIcon.trim() !== '') {
       return explicitIcon;
     }
   
-    // 2. Personalizzazione in hass.entities (es. customize.yaml)
+    const stateObj = this.hass?.states?.[entityId];
+    if (!stateObj) return '';
+  
+    // 1. Icona personalizzata da hass.entities
     if (this.hass?.entities?.[entityId]?.icon) {
       return this.hass.entities[entityId].icon;
     }
   
-    // 3. Icona definita nell'attributo dell'entità
-    const stateObj = this.hass?.states?.[entityId];
-    if (stateObj?.attributes?.icon) {
+    // 2. Icona da attributo icon
+    if (stateObj.attributes.icon) {
       return stateObj.attributes.icon;
     }
   
-    // 4. Default in base al tipo/dominio (light, switch, ecc.)
+    // 3. Icona da device_class
+    if (stateObj.attributes.device_class) {
+      return this._getDeviceClassIcon(stateObj);
+    }
+  
+    // 4. Icona in base al dominio
     const domain = entityId.split('.')[0];
-    return this._getDomainDefaultIcon(domain, stateObj?.state);
+    return this._getDomainDefaultIcon(domain, stateObj.state);
   }
   
-  _getDomainDefaultIcon(domain, state) {
-    switch (domain) {
-      case 'light':
-        return 'mdi:lightbulb';
-      case 'switch':
-        return 'mdi:toggle-switch';
-      case 'fan':
-        return 'mdi:fan';
-      case 'climate':
-        return 'mdi:thermostat';
-      case 'media_player':
-        return 'mdi:speaker';
-      case 'vacuum':
-        return 'mdi:robot-vacuum';
-      case 'binary_sensor':
-        return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off';
-      case 'sensor':
-        return 'mdi:information-outline';
-      case 'input_boolean':
-        return 'mdi:toggle-switch';
-      case 'cover':
-        return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed';
-      case 'lock':
-        return state === 'locked'
-          ? 'mdi:lock'
-          : 'mdi:lock-open';
-      case 'door':
-        return state === 'open'
-          ? 'mdi:door-open'
-          : 'mdi:door-closed';
-      case 'window':
-        return state === 'open'
-          ? 'mdi:window-open'
-          : 'mdi:window-closed';
-      default:
-        return '';
-    }
+  
+  _getDeviceClassIcon(stateObj) {
+    const domain = stateObj.entity_id.split('.')[0];
+    const deviceClass = stateObj.attributes.device_class;
+    const state = stateObj.state;
+  
+    // Mappe ufficiali HA (ridotte per esempio)
+    const deviceClassIcons = {
+      binary_sensor: {
+        door: state === 'on' ? 'mdi:door-open' : 'mdi:door-closed',
+        window: state === 'on' ? 'mdi:window-open' : 'mdi:window-closed',
+        motion: state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off',
+        moisture: state === 'on' ? 'mdi:water-alert' : 'mdi:water-off',
+        smoke: state === 'on' ? 'mdi:smoke' : 'mdi:smoke-detector-off',
+        gas: state === 'on' ? 'mdi:gas-cylinder' : 'mdi:gas-off',
+        problem: 'mdi:alert',
+        connectivity: 'mdi:connection',
+        occupancy: state === 'on' ? 'mdi:account-voice' : 'mdi:account-voice-off',
+        tamper: 'lock-open-alert',
+        vibration: state === 'on' ? 'mdi:vibrate' : 'mdi:vibrate-off',
+        running: state === 'on' ? 'mdi:server-network' : 'mdi:server-network-off',
+      },
+      sensor: {
+        temperature: 'mdi:thermometer',
+        humidity: 'mdi:water-percent',
+        battery: 'mdi:battery',
+        power: 'mdi:flash',
+        energy: 'mdi:lightning-bolt',
+        pressure: 'mdi:gauge',
+      },
+      cover: {
+        garage: state === 'open' ? 'mdi:garage-open' : 'mdi:garage',
+        shutter: state === 'open' ? 'mdi:window-shutter-open' : 'mdi:window-shutter',
+        blind: state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds',
+      },
+      lock: {
+        lock: state === 'locked' ? 'mdi:lock' : 'mdi:lock-open',
+      }
+    };
+  
+    return deviceClassIcons[domain]?.[deviceClass] || '';
   }
+  
    
   
 
@@ -169,7 +185,8 @@ class BubbleRoom extends LitElement {
       'entities4',
       'entities5',
       'climate',
-      'temperature'
+      'temperature',
+      'camera'
     ];
     const defaultAction = { tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } };
 
@@ -370,11 +387,12 @@ class BubbleRoom extends LitElement {
     switch (index) {
       case 0: return "top: -77px; left: 0px;";
       case 1: return "top: -85px; left: 38px;";
-      case 2: return "top: -64px; left: 77px;";
+      case 2: return "top: -63px; left: 76px;";
       case 3: return "bottom: 39px; left: 96px;";
       case 4: return "bottom: -1px; left: 85px;";
       case 5: return "bottom: -2px; left: -2px;";
       case 6: return "top: -140px; left: 5px;";
+      case 7: return "top: -100px; left: 130px;"; // Posizione suggerita per camera
       default: return "";
     }
   }
@@ -582,6 +600,7 @@ class BubbleRoom extends LitElement {
     ];
     if (entities.climate) { mushroomTemplates.push(entities.climate); }
     if (entities.temperature) { mushroomTemplates.push(entities.temperature); }
+    if (entities.camera) { mushroomTemplates.push(entities.camera); }
 
     return html`
       <div class="card">
