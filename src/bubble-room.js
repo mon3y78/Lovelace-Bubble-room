@@ -115,42 +115,44 @@ class BubbleRoom extends LitElement {
   }
   
   
-  _getDeviceClassIcon(stateObj) {
-  const domain = stateObj.entity_id.split('.')[0];
-  const deviceClass = stateObj.attributes.device_class;
-  const state = stateObj.state;
-
-  // Mappe ufficiali HA (ridotte per esempio)
-  const deviceClassIcons = {
-    binary_sensor: {
-      door: state === 'on' ? 'mdi:door-open' : 'mdi:door-closed',
-      window: state === 'on' ? 'mdi:window-open' : 'mdi:window-closed',
-      motion: 'mdi:motion-sensor',
-      moisture: state === 'on' ? 'mdi:water-alert' : 'mdi:water-off',
-      smoke: state === 'on' ? 'mdi:smoke' : 'mdi:smoke-detector-off',
-      gas: state === 'on' ? 'mdi:gas-cylinder' : 'mdi:gas-off',
-    },
-    sensor: {
-      temperature: 'mdi:thermometer',
-      humidity: 'mdi:water-percent',
-      battery: 'mdi:battery',
-      power: 'mdi:flash',
-      energy: 'mdi:lightning-bolt',
-      pressure: 'mdi:gauge',
-    },
-    cover: {
-      garage: state === 'open' ? 'mdi:garage-open' : 'mdi:garage',
-      shutter: state === 'open' ? 'mdi:window-shutter-open' : 'mdi:window-shutter',
-      blind: state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds',
-    },
-    lock: {
-      lock: state === 'locked' ? 'mdi:lock' : 'mdi:lock-open',
+  _getDomainDefaultIcon(domain, state) {
+    switch (domain) {
+      case 'light':
+        return 'mdi:lightbulb';
+      case 'switch':
+        return 'mdi:toggle-switch';
+      case 'fan':
+        return 'mdi:fan';
+      case 'climate':
+        return 'mdi:thermostat';
+      case 'media_player':
+        return 'mdi:speaker';
+      case 'vacuum':
+        return 'mdi:robot-vacuum';
+      case 'binary_sensor':
+        return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off';
+      case 'sensor':
+        return 'mdi:information-outline';
+      case 'input_boolean':
+        return 'mdi:toggle-switch';
+      case 'cover':
+        return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed';
+      case 'lock':
+        return state === 'locked'
+          ? 'mdi:lock'
+          : 'mdi:lock-open';
+      case 'door':
+        return state === 'open'
+          ? 'mdi:door-open'
+          : 'mdi:door-closed';
+      case 'window':
+        return state === 'open'
+          ? 'mdi:window-open'
+          : 'mdi:window-closed';
+      default:
+        return '';
     }
-  };
-
-  return deviceClassIcons[domain]?.[deviceClass] || '';
-}
-
+  }
    
   
 
