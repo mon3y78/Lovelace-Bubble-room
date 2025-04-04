@@ -244,7 +244,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
           ${this._renderSubButtonAction(t)}
         </div>
       </ha-expansion-panel>
-    `}render(){return this._config?F`
+    `}render(){if(!this._config)return F`<div>Caricamento configurazione...</div>`;const t=t=>{const e=this._config.entities?.[t]?.entity;return e&&""!==e.trim()};return F`
       <div class="editor-header">
         <h3>Visual Editor Bubble Room</h3>
       </div>
@@ -283,10 +283,10 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
           SUB-BUTTON
         </div>
         <div class="section-content">
-          ${this._renderSubButtonPanel("sub-button1")}
-          ${this._renderSubButtonPanel("sub-button2")}
-          ${this._renderSubButtonPanel("sub-button3")}
-          ${this._renderSubButtonPanel("sub-button4")}
+          ${t("sub-button1")?this._renderSubButtonPanel("sub-button1"):""}
+          ${t("sub-button2")?this._renderSubButtonPanel("sub-button2"):""}
+          ${t("sub-button3")?this._renderSubButtonPanel("sub-button3"):""}
+          ${t("sub-button4")?this._renderSubButtonPanel("sub-button4"):""}
         </div>
       </ha-expansion-panel>
 
@@ -382,7 +382,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
       <p class="note">
         For advanced configurations, modify the YAML directly.
       </p>
-    `:F`<div>Caricamento configurazione...</div>`}_renderMushroomEntityPanel(t,e){const i=`${t}Panel`;return F`
+    `}_renderMushroomEntityPanel(t,e){const i=`${t}Panel`;return F`
       <ha-expansion-panel id="${i}">
         <div slot="header" @click="${()=>this._togglePanel(i)}">
           ${e}
