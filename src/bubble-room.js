@@ -86,18 +86,22 @@ class BubbleRoom extends LitElement {
   // Funzione helper per ottenere l'icona di fallback.
   // Controlla prima se esiste una personalizzazione in hass.customize, altrimenti legge l'attributo icon dallo stato.
   
-  _getFallbackIcon(entityId) {
-    // Se non esiste lo stato dell'entità, non restituisce icona
-    if (!this.hass || !this.hass.states || !this.hass.states[entityId]) {
-      return "";
+  _getFallbackIcon(entityId, explicitIcon = '') {
+    if (explicitIcon && explicitIcon.trim() !== '') {
+      return explicitIcon;
     }
-    // Se è presente una personalizzazione, la usa
-    if (this.hass.customize && this.hass.customize[entityId] && this.hass.customize[entityId].icon) {
-      return this.hass.customize[entityId].icon;
+    
+    if (this.hass?.entities?.[entityId]?.icon) {
+      return this.hass.entities[entityId].icon;
     }
-    // Altrimenti usa l'icona definita nello stato o il fallback
-    return this.hass.states[entityId].attributes.icon || "mdi:alert-circle-outline";
+    
+    if (this.hass?.states?.[entityId]?.attributes?.icon) {
+      return this.hass.states[entityId].attributes.icon;
+    }
+    
+    return ''; // Nessuna icona se non disponibile
   }
+  
   
 
   setConfig(config) {
