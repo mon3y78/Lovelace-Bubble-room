@@ -517,7 +517,6 @@ class BubbleRoom extends LitElement {
 
     // Main icon fallback
     const mainEntityId = this.config.entity;
-    const fallbackMainIcon = this._getFallbackIcon(mainEntityId);
     const mainIcon = this.config.icon ? this.config.icon : fallbackMainIcon;
     const bubbleIconColor = this.config.main_icon_color || (presenceState === 'on' ? colors.active : colors.inactive);
     const nameColor = bubbleIconColor;
@@ -551,7 +550,14 @@ class BubbleRoom extends LitElement {
                  @pointerdown="${(e) => this._startHold(e, this.config)}"
                  @pointerup="${(e) => this._endHold(e, this.config, () => this._handleMainIconTap())}"
                  @pointerleave="${(e) => this._cancelHold(e)}">
-              <ha-icon key="${mainEntityId}-${fallbackMainIcon}" class="bubble-icon" icon="${mainIcon}" style="color: ${bubbleIconColor};"></ha-icon>
+              ${mainIcon ? html`
+                <ha-icon
+                  key="${mainEntityId}-${mainIcon}"
+                  class="bubble-icon"
+                  icon="${mainIcon}"
+                  style="color: ${bubbleIconColor};">
+                </ha-icon>
+              ` : nothing}
             </div>
             <div class="mushroom-container">
               ${mushroomTemplates.map((item, index) => {
