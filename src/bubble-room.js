@@ -580,7 +580,7 @@ class BubbleRoom extends LitElement {
 
     // Main icon fallback
     const mainEntityId = this.config.entity;
-    const mainIcon = this.config.icon ? this.config.icon : fallbackMainIcon;
+    const mainIcon = this._getFallbackIcon(mainEntityId, this.config.icon);
     const bubbleIconColor = this.config.main_icon_color || (presenceState === 'on' ? colors.active : colors.inactive);
     const nameColor = bubbleIconColor;
 
