@@ -588,7 +588,9 @@ class BubbleRoom extends LitElement {
                          @pointerdown="${(e) => this._startHold(e, item)}"
                          @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
                          @pointerleave="${(e) => this._cancelHold(e)}">
-                      <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
+                      ${iconToUse ? html`
+                        <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
+                      ` : nothing}
                     </div>
                   `;
                 }
@@ -612,7 +614,9 @@ class BubbleRoom extends LitElement {
                     @pointerdown="${(e) => this._startHold(e, btn)}"
                     @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
                     @pointerleave="${(e) => this._cancelHold(e)}">
-                  <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
+                  ${iconToUse ? html`
+                    <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
+                  ` : nothing}
                 </div>
               `;
             })}

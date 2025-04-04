@@ -174,7 +174,9 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
                          @pointerdown="${e=>this._startHold(e,t)}"
                          @pointerup="${e=>this._endHold(e,t,(()=>this._handleMushroomTap(t)))}"
                          @pointerleave="${t=>this._cancelHold(t)}">
-                      <ha-icon icon="${s}" style="color: ${i};"></ha-icon>
+                      ${s?F`
+                        <ha-icon icon="${s}" style="color: ${i};"></ha-icon>
+                      `:D}
                     </div>
                   `}}))}
             </div>
@@ -186,7 +188,9 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
                     @pointerdown="${e=>this._startHold(e,t)}"
                     @pointerup="${e=>this._endHold(e,t,(()=>this._handleSubButtonTap(t)))}"
                     @pointerleave="${t=>this._cancelHold(t)}">
-                  <ha-icon icon="${a}" style="color: ${r};"></ha-icon>
+                  ${a?F`
+                    <ha-icon icon="${a}" style="color: ${r};"></ha-icon>
+                  `:D}
                 </div>
               `}))}
           </div>
