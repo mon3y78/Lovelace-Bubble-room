@@ -98,8 +98,7 @@ class BubbleRoom extends LitElement {
     if (this.hass?.states?.[entityId]?.attributes?.icon) {
       return this.hass.states[entityId].attributes.icon;
     }
-    
-    return ''; // Nessuna icona se non disponibile
+// Nessuna icona se non disponibile
   }
   
   
