@@ -570,6 +570,7 @@ class BubbleRoom extends LitElement {
 
   render() {
     if (!this.config || !this.hass) {
+      
       return html`<div>Loading...</div>`;
     }
 
