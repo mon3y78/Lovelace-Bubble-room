@@ -116,47 +116,41 @@ class BubbleRoom extends LitElement {
   
   
   _getDeviceClassIcon(stateObj) {
-    const domain = stateObj.entity_id.split('.')[0];
-    const deviceClass = stateObj.attributes.device_class;
-    const state = stateObj.state;
-  
-    // Mappe ufficiali HA (ridotte per esempio)
-    const deviceClassIcons = {
-      binary_sensor: {
-        door: state === 'on' ? 'mdi:door-open' : 'mdi:door-closed',
-        window: state === 'on' ? 'mdi:window-open' : 'mdi:window-closed',
-        motion: state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off',
-        moisture: state === 'on' ? 'mdi:water-alert' : 'mdi:water-off',
-        smoke: state === 'on' ? 'mdi:smoke' : 'mdi:smoke-detector-off',
-        gas: state === 'on' ? 'mdi:gas-cylinder' : 'mdi:gas-off',
-        problem: 'mdi:alert',
-        connectivity: 'mdi:connection',
-        occupancy: state === 'on' ? 'mdi:account-voice' : 'mdi:account-voice-off',
-        tamper: 'lock-open-alert',
-        vibration: state === 'on' ? 'mdi:vibrate' : 'mdi:vibrate-off',
-        running: state === 'on' ? 'mdi:server-network' : 'mdi:server-network-off',
-      },
-      sensor: {
-        temperature: 'mdi:thermometer',
-        humidity: 'mdi:water-percent',
-        battery: 'mdi:battery',
-        power: 'mdi:flash',
-        energy: 'mdi:lightning-bolt',
-        pressure: 'mdi:gauge',
-      },
-      cover: {
-        garage: state === 'open' ? 'mdi:garage-open' : 'mdi:garage',
-        shutter: state === 'open' ? 'mdi:window-shutter-open' : 'mdi:window-shutter',
-        blind: state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds',
-      },
-      lock: {
-        lock: state === 'locked' ? 'mdi:lock' : 'mdi:lock-open',
-      }
-    };
-  
-    return deviceClassIcons[domain]?.[deviceClass] || '';
-  }
-  
+  const domain = stateObj.entity_id.split('.')[0];
+  const deviceClass = stateObj.attributes.device_class;
+  const state = stateObj.state;
+
+  // Mappe ufficiali HA (ridotte per esempio)
+  const deviceClassIcons = {
+    binary_sensor: {
+      door: state === 'on' ? 'mdi:door-open' : 'mdi:door-closed',
+      window: state === 'on' ? 'mdi:window-open' : 'mdi:window-closed',
+      motion: 'mdi:motion-sensor',
+      moisture: state === 'on' ? 'mdi:water-alert' : 'mdi:water-off',
+      smoke: state === 'on' ? 'mdi:smoke' : 'mdi:smoke-detector-off',
+      gas: state === 'on' ? 'mdi:gas-cylinder' : 'mdi:gas-off',
+    },
+    sensor: {
+      temperature: 'mdi:thermometer',
+      humidity: 'mdi:water-percent',
+      battery: 'mdi:battery',
+      power: 'mdi:flash',
+      energy: 'mdi:lightning-bolt',
+      pressure: 'mdi:gauge',
+    },
+    cover: {
+      garage: state === 'open' ? 'mdi:garage-open' : 'mdi:garage',
+      shutter: state === 'open' ? 'mdi:window-shutter-open' : 'mdi:window-shutter',
+      blind: state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds',
+    },
+    lock: {
+      lock: state === 'locked' ? 'mdi:lock' : 'mdi:lock-open',
+    }
+  };
+
+  return deviceClassIcons[domain]?.[deviceClass] || '';
+}
+
    
   
 
@@ -381,7 +375,7 @@ class BubbleRoom extends LitElement {
     switch (index) {
       case 0: return "top: -77px; left: 0px;";
       case 1: return "top: -85px; left: 38px;";
-      case 2: return "top: -63px; left: 76px;";
+      case 2: return "top: -64px; left: 77px;";
       case 3: return "bottom: 39px; left: 96px;";
       case 4: return "bottom: -1px; left: 85px;";
       case 5: return "bottom: -2px; left: -2px;";
