@@ -87,33 +87,26 @@ class BubbleRoom extends LitElement {
   // Controlla prima se esiste una personalizzazione in hass.customize, altrimenti legge l'attributo icon dallo stato.
   
   _getFallbackIcon(entityId, explicitIcon = '') {
+    // 1. Icona definita nell'editor
     if (explicitIcon && explicitIcon.trim() !== '') {
       return explicitIcon;
     }
   
-    const stateObj = this.hass?.states?.[entityId];
-    if (!stateObj) return '';
-  
-    // 1. Icona personalizzata da hass.entities
+    // 2. Personalizzazione in hass.entities (es. customize.yaml)
     if (this.hass?.entities?.[entityId]?.icon) {
       return this.hass.entities[entityId].icon;
     }
   
-    // 2. Icona da attributo icon
-    if (stateObj.attributes.icon) {
+    // 3. Icona definita nell'attributo dell'entità
+    const stateObj = this.hass?.states?.[entityId];
+    if (stateObj?.attributes?.icon) {
       return stateObj.attributes.icon;
     }
   
-    // 3. Icona da device_class
-    if (stateObj.attributes.device_class) {
-      return this._getDeviceClassIcon(stateObj);
-    }
-  
-    // 4. Icona in base al dominio
+    // 4. Default in base al tipo/dominio (light, switch, ecc.)
     const domain = entityId.split('.')[0];
-    return this._getDomainDefaultIcon(domain, stateObj.state);
+    return this._getDomainDefaultIcon(domain, stateObj?.state);
   }
-  
   
   _getDomainDefaultIcon(domain, state) {
     switch (domain) {

@@ -254,10 +254,10 @@ class BubbleRoomEditor extends LitElement {
           SUB-BUTTON
         </div>
         <div class="section-content">
-          ${hasEntity("sub-button1") ? this._renderSubButtonPanel("sub-button1") : ""}
-          ${hasEntity("sub-button2") ? this._renderSubButtonPanel("sub-button2") : ""}
-          ${hasEntity("sub-button3") ? this._renderSubButtonPanel("sub-button3") : ""}
-          ${hasEntity("sub-button4") ? this._renderSubButtonPanel("sub-button4") : ""}
+          ${this._renderSubButtonPanel("sub-button1")}
+          ${this._renderSubButtonPanel("sub-button2")}
+          ${this._renderSubButtonPanel("sub-button3")}
+          ${this._renderSubButtonPanel("sub-button4")}
         </div>
       </ha-expansion-panel>
 
