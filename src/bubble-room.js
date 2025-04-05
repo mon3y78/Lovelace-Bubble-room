@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, nothing } from 'lit';
 import fitty from 'fitty';
 
 class BubbleRoom extends LitElement {
@@ -60,6 +60,13 @@ class BubbleRoom extends LitElement {
           icon: '',
           tap_action: { action: 'more-info' }
         },
+        camera: {
+          entity: 'camera.front_door',
+          icon: '',  // Lascia vuoto per usare il fallback
+          tap_action: { action: 'more-info' },
+          // Puoi aggiungere altri parametri specifici, ad esempio un URL per l’anteprima
+          preview_url: ''
+        },
         entities1: { entity: 'sensor.some_sensor1', icon: '' },
         entities2: { entity: 'sensor.some_sensor2', icon: '' },
         entities3: { entity: 'sensor.some_sensor3', icon: '' },
@@ -86,18 +93,95 @@ class BubbleRoom extends LitElement {
   // Funzione helper per ottenere l'icona di fallback.
   // Controlla prima se esiste una personalizzazione in hass.customize, altrimenti legge l'attributo icon dallo stato.
   
-  _getFallbackIcon(entityId) {
-    // Se non esiste lo stato dell'entità, non restituisce icona
-    if (!this.hass || !this.hass.states || !this.hass.states[entityId]) {
-      return "";
+  _getFallbackIcon(entityId, explicitIcon = '') {
+    if (explicitIcon && explicitIcon.trim() !== '') {
+      return explicitIcon;
     }
-    // Se è presente una personalizzazione, la usa
-    if (this.hass.customize && this.hass.customize[entityId] && this.hass.customize[entityId].icon) {
-      return this.hass.customize[entityId].icon;
+  
+    if (this.hass?.entities?.[entityId]?.icon) {
+      return this.hass.entities[entityId].icon;
     }
-    // Altrimenti usa l'icona definita nello stato o il fallback
-    return this.hass.states[entityId].attributes.icon || "mdi:alert-circle-outline";
+  
+    const stateObj = this.hass?.states?.[entityId];
+    if (stateObj?.attributes?.icon) {
+      return stateObj.attributes.icon;
+    }
+    
+    if (stateObj?.attributes?.device_class) {
+      return this._getDeviceClassIcon(stateObj.attributes.device_class, stateObj?.state);
+    }
+  
+    const domain = entityId.split('.')[0];
+    return this._getDomainDefaultIcon(domain, stateObj?.state);
   }
+  
+  _getDeviceClassIcon(deviceClass, state) {
+    switch (deviceClass) {
+      case 'door':
+        return state === 'on' ? 'mdi:door-open' : 'mdi:door-closed';
+      case 'window':
+        return state === 'on' ? 'mdi:window-open' : 'mdi:window-closed';
+      case 'motion':
+        return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off';
+      case 'moisture':
+        return state === 'on' ? 'mdi:water-alert' : 'mdi:water-off';
+      case 'smoke':
+        return state === 'on' ? 'mdi:smoke' : 'mdi:smoke-detector-off';
+      case 'gas':
+        return state === 'on' ? 'mdi:gas-cylinder' : 'mdi:gas-off';
+      case 'problem':
+        return 'mdi:alert';
+      case 'connectivity':
+        return 'mdi:connection';
+      case 'occupancy':
+        return state === 'on' ? 'mdi:account-voice' : 'mdi:account-voice-off';
+      case 'tamper':
+        return 'mdi:lock-open-alert';
+      case 'vibration':
+        return state === 'on' ? 'mdi:vibrate' : 'mdi:vibrate-off';
+      case 'running':
+        return state === 'on' ? 'mdi:server-network' : 'mdi:server-network-off';
+      default:
+        return '';
+    }
+  }
+  
+  _getDomainDefaultIcon(domain, state) {
+    switch (domain) {
+      case 'light':
+        return 'mdi:lightbulb';
+      case 'switch':
+        return 'mdi:toggle-switch';
+      case 'fan':
+        return 'mdi:fan';
+      case 'climate':
+        return 'mdi:thermostat';
+      case 'media_player':
+        return 'mdi:speaker';
+      case 'vacuum':
+        return 'mdi:robot-vacuum';
+      case 'binary_sensor':
+        return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off';
+      case 'sensor':
+        return 'mdi:information-outline';
+      case 'input_boolean':
+        return 'mdi:toggle-switch';
+      case 'cover':
+        return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed';
+      case 'occupancy':
+        return state === 'on' ? 'mdi:account-voice' : 'mdi:account-voice-off';
+        case 'lock':
+        return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open';
+      case 'door':
+        return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed';
+      case 'window':
+        return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed';
+      default:
+        return '';
+    }
+  }
+  
+   
   
 
   setConfig(config) {
@@ -120,6 +204,7 @@ class BubbleRoom extends LitElement {
       'entities4',
       'entities5',
       'climate',
+      'camera',
       'temperature'
     ];
     const defaultAction = { tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } };
@@ -326,6 +411,7 @@ class BubbleRoom extends LitElement {
       case 4: return "bottom: -1px; left: 85px;";
       case 5: return "bottom: -2px; left: -2px;";
       case 6: return "top: -140px; left: 5px;";
+      case 7: return "top: -95px; right: 5px;";
       default: return "";
     }
   }
@@ -513,7 +599,6 @@ class BubbleRoom extends LitElement {
 
     // Main icon fallback
     const mainEntityId = this.config.entity;
-    const fallbackMainIcon = this._getFallbackIcon(mainEntityId);
     const mainIcon = this.config.icon ? this.config.icon : fallbackMainIcon;
     const bubbleIconColor = this.config.main_icon_color || (presenceState === 'on' ? colors.active : colors.inactive);
     const nameColor = bubbleIconColor;
@@ -534,6 +619,7 @@ class BubbleRoom extends LitElement {
     ];
     if (entities.climate) { mushroomTemplates.push(entities.climate); }
     if (entities.temperature) { mushroomTemplates.push(entities.temperature); }
+    if (entities.camera) { mushroomTemplates.push(entities.camera); }
 
     return html`
       <div class="card">
@@ -547,7 +633,14 @@ class BubbleRoom extends LitElement {
                  @pointerdown="${(e) => this._startHold(e, this.config)}"
                  @pointerup="${(e) => this._endHold(e, this.config, () => this._handleMainIconTap())}"
                  @pointerleave="${(e) => this._cancelHold(e)}">
-              <ha-icon key="${mainEntityId}-${fallbackMainIcon}" class="bubble-icon" icon="${mainIcon}" style="color: ${bubbleIconColor};"></ha-icon>
+              ${mainIcon ? html`
+                <ha-icon
+                  key="${mainEntityId}-${mainIcon}"
+                  class="bubble-icon"
+                  icon="${mainIcon}"
+                  style="color: ${bubbleIconColor};">
+                </ha-icon>
+              ` : nothing}
             </div>
             <div class="mushroom-container">
               ${mushroomTemplates.map((item, index) => {
@@ -578,7 +671,9 @@ class BubbleRoom extends LitElement {
                          @pointerdown="${(e) => this._startHold(e, item)}"
                          @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
                          @pointerleave="${(e) => this._cancelHold(e)}">
-                      <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
+                      ${iconToUse ? html`
+                        <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
+                      ` : nothing}
                     </div>
                   `;
                 }
@@ -602,7 +697,9 @@ class BubbleRoom extends LitElement {
                     @pointerdown="${(e) => this._startHold(e, btn)}"
                     @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
                     @pointerleave="${(e) => this._cancelHold(e)}">
-                  <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
+                  ${iconToUse ? html`
+                    <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
+                  ` : nothing}
                 </div>
               `;
             })}

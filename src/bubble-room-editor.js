@@ -254,10 +254,10 @@ class BubbleRoomEditor extends LitElement {
           SUB-BUTTON
         </div>
         <div class="section-content">
-          ${hasEntity("sub-button1") ? this._renderSubButtonPanel("sub-button1") : ""}
-          ${hasEntity("sub-button2") ? this._renderSubButtonPanel("sub-button2") : ""}
-          ${hasEntity("sub-button3") ? this._renderSubButtonPanel("sub-button3") : ""}
-          ${hasEntity("sub-button4") ? this._renderSubButtonPanel("sub-button4") : ""}
+          ${this._renderSubButtonPanel("sub-button1")}
+          ${this._renderSubButtonPanel("sub-button2")}
+          ${this._renderSubButtonPanel("sub-button3")}
+          ${this._renderSubButtonPanel("sub-button4")}
         </div>
       </ha-expansion-panel>
 
@@ -273,6 +273,22 @@ class BubbleRoomEditor extends LitElement {
           ${this._renderMushroomEntityPanel("entities5", "Entity 5")}
         </div>
       </ha-expansion-panel>
+
+      <ha-expansion-panel id="cameraPanel">
+        <div slot="header" @click="${() => this._togglePanel('cameraPanel')}">
+          Camera
+        </div>
+        <div class="section-content">
+          <div class="input-group">
+            ${this._renderEntityInput("Camera (ID)", "camera")}
+          </div>
+          <div class="input-group">
+            ${this._renderIconInput("Camera Icon", "camera")}
+          </div>
+        </div>
+      </ha-expansion-panel>
+
+
 
       <ha-expansion-panel id="climatePanel">
         <div slot="header" @click="${() => this._togglePanel('climatePanel')}">
