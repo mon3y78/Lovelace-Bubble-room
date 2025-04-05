@@ -274,6 +274,26 @@ class BubbleRoomEditor extends LitElement {
         </div>
       </ha-expansion-panel>
 
+      <ha-expansion-panel id="cameraPanel">
+        <div slot="header" @click="${() => this._togglePanel('cameraPanel')}">
+          Camera
+        </div>
+        <div class="section-content">
+          <div class="input-group">
+            ${this._renderEntityInput("Camera (ID)", "camera")}
+          </div>
+          <div class="input-group">
+            <label>Preview URL:</label>
+            <input
+              type="text"
+              .value="${this._config.entities?.camera?.preview_url || ''}"
+              @input="${this._updateCamera('preview_url')}"
+            />
+          </div>
+        </div>
+      </ha-expansion-panel>
+
+
       <ha-expansion-panel id="climatePanel">
         <div slot="header" @click="${() => this._togglePanel('climatePanel')}">
           Climate
