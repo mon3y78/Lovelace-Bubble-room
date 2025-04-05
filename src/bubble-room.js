@@ -65,7 +65,6 @@ class BubbleRoom extends LitElement {
           icon: '',  // Lascia vuoto per usare il fallback
           tap_action: { action: 'more-info' },
           // Puoi aggiungere altri parametri specifici, ad esempio un URL per l’anteprima
-          preview_url: ''
         },
         entities1: { entity: 'sensor.some_sensor1', icon: '' },
         entities2: { entity: 'sensor.some_sensor2', icon: '' },
@@ -411,7 +410,7 @@ class BubbleRoom extends LitElement {
       case 4: return "bottom: -1px; left: 85px;";
       case 5: return "bottom: -2px; left: -2px;";
       case 6: return "top: -140px; left: 5px;";
-      case 7: return "top: -95px; right: 5px;";
+      case 7: return "top: -95px; right: 0px;";
       default: return "";
     }
   }
