@@ -411,7 +411,7 @@ class BubbleRoom extends LitElement {
       case 4: return "bottom: -1px; left: 85px;";
       case 5: return "bottom: -2px; left: -2px;";
       case 6: return "top: -140px; left: 5px;";
-      case 7: return "top: -100px; right: 15px;";
+      case 7: return "top: -95px; right: 5px;";
       default: return "";
     }
   }
