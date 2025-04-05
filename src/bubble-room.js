@@ -102,50 +102,48 @@ class BubbleRoom extends LitElement {
     if (stateObj?.attributes?.icon) {
       return stateObj.attributes.icon;
     }
+    
+    // 4. Se presente, utilizza il device_class per determinare l'icona
+    if (stateObj?.attributes?.device_class) {
+      return this._getDeviceClassIcon(stateObj.attributes.device_class, stateObj?.state);
+    }
   
-    // 4. Default in base al tipo/dominio (light, switch, ecc.)
+    // 5. Default in base al tipo/dominio (light, switch, ecc.)
     const domain = entityId.split('.')[0];
     return this._getDomainDefaultIcon(domain, stateObj?.state);
   }
   
-  _getDomainDefaultIcon(domain, state) {
-    switch (domain) {
-      case 'light':
-        return 'mdi:lightbulb';
-      case 'switch':
-        return 'mdi:toggle-switch';
-      case 'fan':
-        return 'mdi:fan';
-      case 'climate':
-        return 'mdi:thermostat';
-      case 'media_player':
-        return 'mdi:speaker';
-      case 'vacuum':
-        return 'mdi:robot-vacuum';
-      case 'binary_sensor':
-        return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off';
-      case 'sensor':
-        return 'mdi:information-outline';
-      case 'input_boolean':
-        return 'mdi:toggle-switch';
-      case 'cover':
-        return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed';
-      case 'lock':
-        return state === 'locked'
-          ? 'mdi:lock'
-          : 'mdi:lock-open';
+  _getDeviceClassIcon(deviceClass, state) {
+    switch (deviceClass) {
       case 'door':
-        return state === 'open'
-          ? 'mdi:door-open'
-          : 'mdi:door-closed';
+        return state === 'on' ? 'mdi:door-open' : 'mdi:door-closed';
       case 'window':
-        return state === 'open'
-          ? 'mdi:window-open'
-          : 'mdi:window-closed';
+        return state === 'on' ? 'mdi:window-open' : 'mdi:window-closed';
+      case 'motion':
+        return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off';
+      case 'moisture':
+        return state === 'on' ? 'mdi:water-alert' : 'mdi:water-off';
+      case 'smoke':
+        return state === 'on' ? 'mdi:smoke' : 'mdi:smoke-detector-off';
+      case 'gas':
+        return state === 'on' ? 'mdi:gas-cylinder' : 'mdi:gas-off';
+      case 'problem':
+        return 'mdi:alert';
+      case 'connectivity':
+        return 'mdi:connection';
+      case 'occupancy':
+        return state === 'on' ? 'mdi:account-voice' : 'mdi:account-voice-off';
+      case 'tamper':
+        return 'mdi:lock-open-alert';
+      case 'vibration':
+        return state === 'on' ? 'mdi:vibrate' : 'mdi:vibrate-off';
+      case 'running':
+        return state === 'on' ? 'mdi:server-network' : 'mdi:server-network-off';
       default:
         return '';
     }
   }
+  
    
   
 
