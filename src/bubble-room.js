@@ -87,28 +87,23 @@ class BubbleRoom extends LitElement {
   // Controlla prima se esiste una personalizzazione in hass.customize, altrimenti legge l'attributo icon dallo stato.
   
   _getFallbackIcon(entityId, explicitIcon = '') {
-    // 1. Icona definita nell'editor
     if (explicitIcon && explicitIcon.trim() !== '') {
       return explicitIcon;
     }
   
-    // 2. Personalizzazione in hass.entities (es. customize.yaml)
     if (this.hass?.entities?.[entityId]?.icon) {
       return this.hass.entities[entityId].icon;
     }
   
-    // 3. Icona definita nell'attributo dell'entità
     const stateObj = this.hass?.states?.[entityId];
     if (stateObj?.attributes?.icon) {
       return stateObj.attributes.icon;
     }
     
-    // 4. Se presente, utilizza il device_class per determinare l'icona
     if (stateObj?.attributes?.device_class) {
       return this._getDeviceClassIcon(stateObj.attributes.device_class, stateObj?.state);
     }
   
-    // 5. Default in base al tipo/dominio (light, switch, ecc.)
     const domain = entityId.split('.')[0];
     return this._getDomainDefaultIcon(domain, stateObj?.state);
   }
@@ -139,6 +134,39 @@ class BubbleRoom extends LitElement {
         return state === 'on' ? 'mdi:vibrate' : 'mdi:vibrate-off';
       case 'running':
         return state === 'on' ? 'mdi:server-network' : 'mdi:server-network-off';
+      default:
+        return '';
+    }
+  }
+  
+  _getDomainDefaultIcon(domain, state) {
+    switch (domain) {
+      case 'light':
+        return 'mdi:lightbulb';
+      case 'switch':
+        return 'mdi:toggle-switch';
+      case 'fan':
+        return 'mdi:fan';
+      case 'climate':
+        return 'mdi:thermostat';
+      case 'media_player':
+        return 'mdi:speaker';
+      case 'vacuum':
+        return 'mdi:robot-vacuum';
+      case 'binary_sensor':
+        return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off';
+      case 'sensor':
+        return 'mdi:information-outline';
+      case 'input_boolean':
+        return 'mdi:toggle-switch';
+      case 'cover':
+        return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed';
+      case 'lock':
+        return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open';
+      case 'door':
+        return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed';
+      case 'window':
+        return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed';
       default:
         return '';
     }
