@@ -10,14 +10,12 @@ class BubbleRoom extends LitElement {
   }
 
   firstUpdated() {
-    // Applica fitty al nome
-    // Applica fitty agli elementi mushroom che contengono il testo
+    // Applica fitty al nome e agli elementi mushroom che contengono il testo
     const mushroomEls = this.shadowRoot.querySelectorAll('.mushroom-primary');
     if (mushroomEls.length) {
       fitty(mushroomEls, { maxSize: 20, multiLine: false });
     }
   }
-
 
   // Supporto all'editor visivo
   static async getConfigElement() {
@@ -28,12 +26,10 @@ class BubbleRoom extends LitElement {
   static getStubConfig() {
     return {
       entities: {
-        presence: {
-          entity: 'binary_sensor.aqara_fp1_presence'
-        },
+        presence: { entity: 'binary_sensor.aqara_fp1_presence' },
         "sub-button1": {
           entity: 'light.luce_ventola',
-          icon: '',  // Lascia vuoto per forzare il fallback
+          icon: '',  // Vuoto per forzare il fallback
           tap_action: { action: 'toggle' },
           hold_action: { action: 'more-info' }
         },
@@ -62,9 +58,9 @@ class BubbleRoom extends LitElement {
         },
         camera: {
           entity: 'camera.front_door',
-          icon: '',  // Lascia vuoto per usare il fallback
+          icon: '',  // Vuoto per usare il fallback
           tap_action: { action: 'more-info' },
-          // Puoi aggiungere altri parametri specifici, ad esempio un URL per l’anteprima
+          preview_url: ''
         },
         entities1: { entity: 'sensor.some_sensor1', icon: '' },
         entities2: { entity: 'sensor.some_sensor2', icon: '' },
@@ -83,15 +79,13 @@ class BubbleRoom extends LitElement {
         backgroundActive: 'rgba(var(--color-green), 0.4)',
         backgroundInactive: 'rgba(var(--color-green), 0.1)',
       },
-      icon: '',  // Lascia vuoto per utilizzare il fallback
+      icon: '',  // Vuoto per utilizzare il fallback
       name: 'Salotto',
       tap_action: { action: 'navigate', navigation_path: '/lovelace/sala' }
     };
   }
 
-  // Funzione helper per ottenere l'icona di fallback.
-  // Controlla prima se esiste una personalizzazione in hass.customize, altrimenti legge l'attributo icon dallo stato.
-  
+  // Funzione helper per ottenere l'icona di fallback
   _getFallbackIcon(entityId, explicitIcon = '') {
     if (explicitIcon && explicitIcon.trim() !== '') {
       return explicitIcon;
@@ -150,7 +144,6 @@ class BubbleRoom extends LitElement {
         return '';
     }
   }
-  
   _getDomainDefaultIcon(domain, state) {
     switch (domain) {
       case 'light':
@@ -175,7 +168,7 @@ class BubbleRoom extends LitElement {
         return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed';
       case 'occupancy':
         return state === 'on' ? 'mdi:account-voice' : 'mdi:account-voice-off';
-        case 'lock':
+      case 'lock':
         return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open';
       case 'door':
         return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed';
@@ -185,29 +178,24 @@ class BubbleRoom extends LitElement {
         return '';
     }
   }
-  
+
+  // Funzione helper per costruire il testo per temperatura e umidità
   _buildTemperatureText(item) {
     const hass = this.hass;
-    // Verifica se esistono i sensori e ottieni i loro stati (oppure 'N/A' se non trovati)
-    const tempState = item.temperature_sensor 
-      ? hass.states[item.temperature_sensor]?.state || 'N/A' 
-      : null;
-    const humState = item.humidity_sensor 
-      ? hass.states[item.humidity_sensor]?.state || 'N/A' 
-      : null;
-  
-    // Costruisci il testo in base a cosa è presente
-    if (tempState && humState) {
-      return `🌡️${tempState}°C 💦${humState}%`;
-    } else if (tempState) {
-      return `🌡️${tempState}°C`;
-    } else if (humState) {
-      return `💦${humState}%`;
+    // Recupera lo stato dei sensori se esistono, altrimenti null
+    const temp = item.temperature_sensor ? hass.states[item.temperature_sensor]?.state : null;
+    const hum = item.humidity_sensor ? hass.states[item.humidity_sensor]?.state : null;
+    
+    let text = "";
+    if (temp !== null && temp !== undefined && temp !== '') {
+      text += `🌡️${temp}°C`;
     }
-    return "";
+    if (hum !== null && hum !== undefined && hum !== '') {
+      if (text) text += " ";  // Se già c'è temperatura, aggiungo uno spazio
+      text += `💦${hum}%`;
+    }
+    return text.trim();
   }
-   
-  
 
   setConfig(config) {
     config = JSON.parse(JSON.stringify(config));
@@ -218,19 +206,9 @@ class BubbleRoom extends LitElement {
       throw new Error("Devi definire almeno la proprietà 'entities' nella configurazione.");
     }
     const keysWithIcon = [
-      'presence',
-      'sub-button1',
-      'sub-button2',
-      'sub-button3',
-      'sub-button4',
-      'entities1',
-      'entities2',
-      'entities3',
-      'entities4',
-      'entities5',
-      'climate',
-      'camera',
-      'temperature'
+      'presence', 'sub-button1', 'sub-button2', 'sub-button3',
+      'sub-button4', 'entities1', 'entities2', 'entities3',
+      'entities4', 'entities5', 'climate', 'camera', 'temperature'
     ];
     const defaultAction = { tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } };
 
@@ -400,7 +378,6 @@ class BubbleRoom extends LitElement {
         margin: 3px;
         cursor: pointer;
       }
-
       .mushroom-container {
         position: absolute;
         bottom: 0;
@@ -436,7 +413,7 @@ class BubbleRoom extends LitElement {
       case 4: return "bottom: -1px; left: 85px;";
       case 5: return "bottom: -2px; left: -2px;";
       case 6: return "top: -140px; left: 5px;";
-      case 7: return "top: -95px; right: 0px;";
+      case 7: return "top: -95px; right: 5px;";
       default: return "";
     }
   }
@@ -620,13 +597,19 @@ class BubbleRoom extends LitElement {
     const { entities, colors, name, icon } = this.config;
     const hass = this.hass;
     const presenceState = hass.states[entities.presence.entity]?.state || 'off';
-    const bubbleBg = presenceState === 'on' ? colors.backgroundActive : colors.backgroundInactive;
+    const bubbleBg = presenceState === 'on'
+      ? colors.backgroundActive
+      : colors.backgroundInactive;
 
     // Main icon fallback
     const mainEntityId = this.config.entity;
-    const fallbackMainIcon = this._getFallbackIcon(this.config.entity);
-    const mainIcon = this.config.icon && this.config.icon.trim() !== "" ? this.config.icon : fallbackMainIcon;
-    const bubbleIconColor = this.config.main_icon_color || (presenceState === 'on' ? colors.active : colors.inactive);
+    const fallbackMainIcon = this._getFallbackIcon(mainEntityId);
+    const mainIcon = this.config.icon && this.config.icon.trim() !== ""
+      ? this.config.icon
+      : fallbackMainIcon;
+    const bubbleIconColor = this.config.main_icon_color || (presenceState === 'on'
+      ? colors.active
+      : colors.inactive);
     const nameColor = bubbleIconColor;
 
     const subButtons = [
@@ -643,16 +626,15 @@ class BubbleRoom extends LitElement {
       entities.entities4,
       entities.entities5
     ];
-    if (entities.climate) { mushroomTemplates.push(entities.climate); }
-    if (
-      entities.temperature &&
-      entities.temperature.temperature_sensor &&
-      entities.temperature.humidity_sensor
-    ) {
+    if (entities.climate) {
+      mushroomTemplates.push(entities.climate);
+    }
+    if (entities.temperature) {
       mushroomTemplates.push(entities.temperature);
     }
-    
-    if (entities.camera) { mushroomTemplates.push(entities.camera); }
+    if (entities.camera) {
+      mushroomTemplates.push(entities.camera);
+    }
 
     return html`
       <div class="card">
@@ -678,43 +660,46 @@ class BubbleRoom extends LitElement {
             <div class="mushroom-container">
               ${mushroomTemplates.map((item, index) => {
                 if (!item) return html``;
-                // Se l'item ha uno dei sensori di temperatura/umidità, usa il testo costruito
+                // Se l'item ha almeno uno dei sensori per temperatura o umidità
                 if (item.temperature_sensor || item.humidity_sensor) {
+                  const temperatureText = this._buildTemperatureText(item);
+                  // Se il testo risultante è vuoto, non renderizzare nulla
+                  if (!temperatureText) return html``;
                   return html`
                     <div class="mushroom-item"
-                        style="${item.style ? item.style : this._defaultMushroomStyle(index)}"
-                        @pointerdown="${(e) => this._startHold(e, item)}"
-                        @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
-                        @pointerleave="${(e) => this._cancelHold(e)}">
+                         style="${item.style ? item.style : this._defaultMushroomStyle(index)}"
+                         @pointerdown="${(e) => this._startHold(e, item)}"
+                         @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
+                         @pointerleave="${(e) => this._cancelHold(e)}">
                       <div class="mushroom-primary fit-text">
-                        ${this._buildTemperatureText(item)}
+                        ${temperatureText}
                       </div>
                     </div>
                   `;
-                }
-                // Altrimenti, gestisci altri casi (ad es. se l'item ha solo una entity e non sensori)
-                else if (item.entity) {
+                } else {
+                  // Per altri tipi di item che hanno una entity e forse un'icona definita
                   const state = hass.states[item.entity]?.state || 'off';
-                  const fallbackIcon = this._getFallbackIcon(item.entity);
                   const iconColor = state === 'on'
                     ? (item.icon_color && item.icon_color.on ? item.icon_color.on : 'orange')
                     : (item.icon_color && item.icon_color.off ? item.icon_color.off : '#80808055');
+                  const fallbackIcon = this._getFallbackIcon(item.entity);
+                  const iconToUse = item.icon && item.icon.trim() !== ""
+                    ? item.icon
+                    : fallbackIcon;
                   const style = item.style ? item.style : this._defaultMushroomStyle(index);
                   return html`
                     <div class="mushroom-item"
-                        style="${style}"
-                        @pointerdown="${(e) => this._startHold(e, item)}"
-                        @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
-                        @pointerleave="${(e) => this._cancelHold(e)}">
-                      ${fallbackIcon ? html`
-                        <ha-icon icon="${fallbackIcon}" style="color: ${iconColor};"></ha-icon>
+                         style="${style}"
+                         @pointerdown="${(e) => this._startHold(e, item)}"
+                         @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
+                         @pointerleave="${(e) => this._cancelHold(e)}">
+                      ${iconToUse ? html`
+                        <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
                       ` : nothing}
                     </div>
                   `;
                 }
-                return html``;
               })}
-            
             </div>
           </div>
           <div class="bubble-sub-button-container">
@@ -723,17 +708,17 @@ class BubbleRoom extends LitElement {
               const state = hass.states[btn.entity]?.state || 'off';
               const btnColor = state === 'on' ? colors.active : colors.inactive;
               const fallbackIcon = this._getFallbackIcon(btn.entity);
-              const iconToUse = btn.icon ? btn.icon : fallbackIcon;
-              // Calcola l'iconColor come nelle mushroom template:
+              const iconToUse = btn.icon && btn.icon.trim() !== "" ? btn.icon : fallbackIcon;
+              // Calcola l'iconColor come negli altri casi
               const iconColor = state === 'on'
                 ? (btn.icon_color && btn.icon_color.on ? btn.icon_color.on : 'orange')
                 : (btn.icon_color && btn.icon_color.off ? btn.icon_color.off : '#80808055');
               return html`
                 <div class="bubble-sub-button"
-                    style="background-color: ${btnColor};"
-                    @pointerdown="${(e) => this._startHold(e, btn)}"
-                    @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
-                    @pointerleave="${(e) => this._cancelHold(e)}">
+                     style="background-color: ${btnColor};"
+                     @pointerdown="${(e) => this._startHold(e, btn)}"
+                     @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
+                     @pointerleave="${(e) => this._cancelHold(e)}">
                   ${iconToUse ? html`
                     <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
                   ` : nothing}
@@ -757,12 +742,11 @@ class BubbleRoom extends LitElement {
 }
 
 customElements.define('bubble-room', BubbleRoom);
-// AGGIUNGI QUESTO BLOCCO ALLA FINE DEL FILE
 window.customCards = window.customCards || [];
 window.customCards.push({
-  type: 'bubble-room',     // Deve corrispondere a `type: custom:bubble-room`
-  name: 'Bubble Room',            // Nome che vuoi compaia nel picker
-  description: 'Bubble Room',  
-  preview: true,            // Abilita l'anteprima (se supportata)
+  type: 'bubble-room',
+  name: 'Bubble Room',
+  description: 'Bubble Room',
+  preview: true,
   documentationURL: 'https://github.com/mon3y78/Lovelace-Bubble-room'
 });
