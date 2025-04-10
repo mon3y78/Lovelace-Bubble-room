@@ -146,7 +146,7 @@ class BubbleRoom extends LitElement {
         return state === 'on' ? 'mdi:window-shutter-open' : 'mdi:window-shutter';        
       case 'blind':
         return state === 'on' ? 'mdi:blinds-horizontal' : 'mdi:blinds-horizontal-closed';
-        default:
+      default:
         return '';
     }
   }
