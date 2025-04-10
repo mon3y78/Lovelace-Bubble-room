@@ -134,13 +134,19 @@ class BubbleRoom extends LitElement {
         return 'mdi:connection';
       case 'occupancy':
         return state === 'on' ? 'mdi:account-voice' : 'mdi:account-voice-off';
+      case 'presence':
+        return state === 'on' ? 'mdi:account-voice' : 'mdi:account-voice-off';
       case 'tamper':
         return 'mdi:lock-open-alert';
       case 'vibration':
         return state === 'on' ? 'mdi:vibrate' : 'mdi:vibrate-off';
       case 'running':
         return state === 'on' ? 'mdi:server-network' : 'mdi:server-network-off';
-      default:
+      case 'shutter':
+        return state === 'on' ? 'mdi:window-shutter-open' : 'mdi:window-shutter';        
+      case 'blind':
+        return state === 'on' ? 'mdi:blinds-horizontal' : 'mdi:blinds-horizontal-closed';
+        default:
         return '';
     }
   }
@@ -180,6 +186,26 @@ class BubbleRoom extends LitElement {
     }
   }
   
+  _buildTemperatureText(item) {
+    const hass = this.hass;
+    // Verifica se esistono i sensori e ottieni i loro stati (oppure 'N/A' se non trovati)
+    const tempState = item.temperature_sensor 
+      ? hass.states[item.temperature_sensor]?.state || 'N/A' 
+      : null;
+    const humState = item.humidity_sensor 
+      ? hass.states[item.humidity_sensor]?.state || 'N/A' 
+      : null;
+  
+    // Costruisci il testo in base a cosa è presente
+    if (tempState && humState) {
+      return `🌡️${tempState}°C 💦${humState}%`;
+    } else if (tempState) {
+      return `🌡️${tempState}°C`;
+    } else if (humState) {
+      return `💦${humState}%`;
+    }
+    return "";
+  }
    
   
 
@@ -617,7 +643,14 @@ class BubbleRoom extends LitElement {
       entities.entities5
     ];
     if (entities.climate) { mushroomTemplates.push(entities.climate); }
-    if (entities.temperature) { mushroomTemplates.push(entities.temperature); }
+    if (
+      entities.temperature &&
+      entities.temperature.temperature_sensor &&
+      entities.temperature.humidity_sensor
+    ) {
+      mushroomTemplates.push(entities.temperature);
+    }
+    
     if (entities.camera) { mushroomTemplates.push(entities.camera); }
 
     return html`
@@ -644,39 +677,43 @@ class BubbleRoom extends LitElement {
             <div class="mushroom-container">
               ${mushroomTemplates.map((item, index) => {
                 if (!item) return html``;
-                if (item.temperature_sensor && item.humidity_sensor) {
-                  const tempState = hass.states[item.temperature_sensor]?.state || 'N/A';
-                  const humState = hass.states[item.humidity_sensor]?.state || 'N/A';
+                // Se l'item ha uno dei sensori di temperatura/umidità, usa il testo costruito
+                if (item.temperature_sensor || item.humidity_sensor) {
                   return html`
                     <div class="mushroom-item"
-                         style="${item.style ? item.style : this._defaultMushroomStyle(index)}"
-                         @pointerdown="${(e) => this._startHold(e, item)}"
-                         @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
-                         @pointerleave="${(e) => this._cancelHold(e)}">
-                      <div class="mushroom-primary fit-text">🌡️${tempState}°C 💦${humState}%</div>
+                        style="${item.style ? item.style : this._defaultMushroomStyle(index)}"
+                        @pointerdown="${(e) => this._startHold(e, item)}"
+                        @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
+                        @pointerleave="${(e) => this._cancelHold(e)}">
+                      <div class="mushroom-primary fit-text">
+                        ${this._buildTemperatureText(item)}
+                      </div>
                     </div>
                   `;
-                } else {
+                }
+                // Altrimenti, gestisci altri casi (ad es. se l'item ha solo una entity e non sensori)
+                else if (item.entity) {
                   const state = hass.states[item.entity]?.state || 'off';
+                  const fallbackIcon = this._getFallbackIcon(item.entity);
                   const iconColor = state === 'on'
                     ? (item.icon_color && item.icon_color.on ? item.icon_color.on : 'orange')
                     : (item.icon_color && item.icon_color.off ? item.icon_color.off : '#80808055');
-                  const fallbackIcon = this._getFallbackIcon(item.entity);
-                  const iconToUse = (item.icon && item.icon.trim() !== "") ? item.icon : fallbackIcon;
                   const style = item.style ? item.style : this._defaultMushroomStyle(index);
                   return html`
                     <div class="mushroom-item"
-                         style="${style}"
-                         @pointerdown="${(e) => this._startHold(e, item)}"
-                         @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
-                         @pointerleave="${(e) => this._cancelHold(e)}">
-                      ${iconToUse ? html`
-                        <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
+                        style="${style}"
+                        @pointerdown="${(e) => this._startHold(e, item)}"
+                        @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
+                        @pointerleave="${(e) => this._cancelHold(e)}">
+                      ${fallbackIcon ? html`
+                        <ha-icon icon="${fallbackIcon}" style="color: ${iconColor};"></ha-icon>
                       ` : nothing}
                     </div>
                   `;
                 }
+                return html``;
               })}
+            
             </div>
           </div>
           <div class="bubble-sub-button-container">
