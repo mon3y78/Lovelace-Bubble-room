@@ -234,10 +234,10 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
         font-size: 0.9rem;
         color: var(--secondary-text-color);
       }
-    `}_togglePanel(t){const e=this.shadowRoot.getElementById(t);e&&(e.open=!e.open)}_renderSubButtonPanel(t){const e=this._config.entities?.[t];if(!e?.entity||""===e.entity.trim())return D``;let i;switch(t){case"sub-button1":i="Sub-button1";break;case"sub-button2":i="Sub-button2";break;case"sub-button3":i="Sub-button3";break;case"sub-button4":i="Sub-button4";break;default:i=t}const n=`${t}Panel`;return D`
-      <ha-expansion-panel id="${n}">
-        <div slot="header" @click="${()=>this._togglePanel(n)}">
-          ${i}
+    `}_togglePanel(t){const e=this.shadowRoot.getElementById(t);e&&(e.open=!e.open)}_renderSubButtonPanel(t){let e;switch(this._config.entities,t){case"sub-button1":e="Sub-button1";break;case"sub-button2":e="Sub-button2";break;case"sub-button3":e="Sub-button3";break;case"sub-button4":e="Sub-button4";break;default:e=t}const i=`${t}Panel`;return D`
+      <ha-expansion-panel id="${i}">
+        <div slot="header" @click="${()=>this._togglePanel(i)}">
+          ${e}
         </div>
         <div class="section-content">
           ${this._renderEntityInput("Entities (ID)",t)}

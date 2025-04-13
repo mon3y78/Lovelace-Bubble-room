@@ -178,10 +178,13 @@ class BubbleRoomEditor extends LitElement {
   }
 
   _renderSubButtonPanel(key) {
-    const entityConfig = this._config.entities?.[key];
-    if (!entityConfig?.entity || entityConfig.entity.trim() === "") {
-      return html``;
-    }
+    // Se non c'è ancora una configurazione, assegno un oggetto di default
+    const entityConfig = this._config.entities?.[key] || {
+      entity: "",
+      icon: "",
+      tap_action: { action: "toggle", navigation_path: "" },
+      hold_action: { action: "more-info", navigation_path: "" }
+    };
   
     let label;
     switch(key) {
@@ -192,7 +195,7 @@ class BubbleRoomEditor extends LitElement {
       default: label = key;
     }
     const panelId = `${key}Panel`;
-  
+    
     return html`
       <ha-expansion-panel id="${panelId}">
         <div slot="header" @click="${() => this._togglePanel(panelId)}">
@@ -206,6 +209,7 @@ class BubbleRoomEditor extends LitElement {
       </ha-expansion-panel>
     `;
   }
+  
 
   render() {
     if (!this._config) {
