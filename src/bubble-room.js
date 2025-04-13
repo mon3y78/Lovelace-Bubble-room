@@ -280,8 +280,20 @@ class BubbleRoom extends LitElement {
   }
 
   getConfig() {
-    return JSON.parse(JSON.stringify(this.config));
+    const configCopy = JSON.parse(JSON.stringify(this._config));
+    const filteredEntities = {};
+    Object.keys(configCopy.entities).forEach((key) => {
+      const entityConfig = configCopy.entities[key];
+      // Per i subbutton, non rimuovere la configurazione anche se l’entity è vuota.
+      if (key.startsWith("sub-button") || (entityConfig.entity && entityConfig.entity.trim() !== "")) {
+        filteredEntities[key] = entityConfig;
+      }
+    });
+    configCopy.entities = filteredEntities;
+    this._config = configCopy;
+    return configCopy;
   }
+  
 
   static get styles() {
     return css`
@@ -704,21 +716,21 @@ class BubbleRoom extends LitElement {
           </div>
           <div class="bubble-sub-button-container">
             ${subButtons.map(btn => {
-              if (!btn) return html``;
+              // Aggiungi un controllo per verificare che btn.entity non sia vuota
+              if (!btn || !btn.entity || btn.entity.trim() === "") return html``;
               const state = hass.states[btn.entity]?.state || 'off';
               const btnColor = state === 'on' ? colors.active : colors.inactive;
               const fallbackIcon = this._getFallbackIcon(btn.entity);
               const iconToUse = btn.icon && btn.icon.trim() !== "" ? btn.icon : fallbackIcon;
-              // Calcola l'iconColor come negli altri casi
               const iconColor = state === 'on'
                 ? (btn.icon_color && btn.icon_color.on ? btn.icon_color.on : 'orange')
                 : (btn.icon_color && btn.icon_color.off ? btn.icon_color.off : '#80808055');
               return html`
                 <div class="bubble-sub-button"
-                     style="background-color: ${btnColor};"
-                     @pointerdown="${(e) => this._startHold(e, btn)}"
-                     @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
-                     @pointerleave="${(e) => this._cancelHold(e)}">
+                    style="background-color: ${btnColor};"
+                    @pointerdown="${(e) => this._startHold(e, btn)}"
+                    @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
+                    @pointerleave="${(e) => this._cancelHold(e)}">
                   ${iconToUse ? html`
                     <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
                   ` : nothing}
