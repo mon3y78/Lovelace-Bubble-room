@@ -171,7 +171,7 @@ const at=1;class rt{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,i)
                 ${i||this._getFallbackIcon(this.config.entity)?D`
                   <ha-icon
                     class="bubble-icon"
-                    icon="${i||this._getFallbackIcon(this.config.entity)}"
+                    icon=${i||this._getFallbackIcon(this.config.entity)}
                     style="color: ${_};">
                   </ha-icon>
                 `:L}
@@ -195,7 +195,7 @@ const at=1;class rt{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,i)
                           @pointerup=${e=>this._endHold(e,t,(()=>this._handleMushroomTap(t)))}
                           @pointerleave=${t=>this._cancelHold(t)}>
                         ${o?D`
-                          <ha-icon icon="${o}" style="color: ${i};"></ha-icon>
+                          <ha-icon icon=${o}" style="color: ${i};></ha-icon>
                         `:L}
                       </div>
                     `}}))}
@@ -209,7 +209,7 @@ const at=1;class rt{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,i)
                          @pointerup=${e=>this._endHold(e,t,(()=>this._handleSubButtonTap(t)))}
                          @pointerleave=${t=>this._cancelHold(t)}>
                       ${o?D`
-                        <ha-icon icon="${o}" style="color: ${n};"></ha-icon>
+                        <ha-icon icon=${o}" style="color: ${n};></ha-icon>
                       `:L}
                     </div>
                   `}))}

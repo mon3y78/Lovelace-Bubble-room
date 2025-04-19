@@ -700,7 +700,7 @@ class BubbleRoom extends LitElement {
                 ${ (icon || this._getFallbackIcon(this.config.entity)) ? html`
                   <ha-icon
                     class="bubble-icon"
-                    icon="${icon || this._getFallbackIcon(this.config.entity)}"
+                    icon=${icon || this._getFallbackIcon(this.config.entity)}
                     style="color: ${bubbleIconColor};">
                   </ha-icon>
                 ` : nothing }
@@ -743,7 +743,7 @@ class BubbleRoom extends LitElement {
                           @pointerup=${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}
                           @pointerleave=${(e) => this._cancelHold(e)}>
                         ${iconToUse ? html`
-                          <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
+                          <ha-icon icon=${iconToUse}" style="color: ${iconColor};></ha-icon>
                         ` : nothing}
                       </div>
                     `;
@@ -767,7 +767,7 @@ class BubbleRoom extends LitElement {
                          @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
                          @pointerleave=${e => this._cancelHold(e)}>
                       ${ btnIcon ? html`
-                        <ha-icon icon="${btnIcon}" style="color: ${btnColor};"></ha-icon>
+                        <ha-icon icon=${btnIcon}" style="color: ${btnColor};></ha-icon>
                       ` : nothing }
                     </div>
                   `;
