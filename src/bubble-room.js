@@ -11,7 +11,7 @@ class BubbleRoom extends LitElement {
   }
 
   firstUpdated() {
-    // Applica fitty al nome e agli elementi mushroom che contengono il testo
+    // Applica fitty al nome e agli elementi mushroom che contengono il testo di prova
     const mushroomEls = this.shadowRoot.querySelectorAll('.mushroom-primary');
     if (mushroomEls.length) {
       fitty(mushroomEls, { maxSize: 20, multiLine: false });
@@ -75,10 +75,10 @@ class BubbleRoom extends LitElement {
         }
       },
       colors: {
-        active: 'rgba(var(--color-green), 1)',
-        inactive: 'rgba(var(--color-green), 0.3)',
-        backgroundActive: 'rgba(var(--color-green), 0.4)',
-        backgroundInactive: 'rgba(var(--color-green), 0.1)',
+        active: 'default',
+        inactive: 'default',
+        backgroundActive: 'default',
+        backgroundInactive: 'default',
       },
       icon: '',  // Vuoto per utilizzare il fallback
       name: 'Salotto',
@@ -334,7 +334,7 @@ class BubbleRoom extends LitElement {
       }
       .grid-container {
         display: grid;
-        width: 100%;
+        width: 00%;
         height: 100%;
         grid-template-areas:
           ". . . b"
