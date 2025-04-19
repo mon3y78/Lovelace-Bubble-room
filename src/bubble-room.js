@@ -301,17 +301,14 @@ class BubbleRoom extends LitElement {
       :host {
         display: block;
         --card-height: 190px;
-        --card-background: black;
-        --bubble-bg: gray;
         font-family: sans-serif;
       }
       ha-card {
         display: block;
         margin: 0;
         padding: 0 !important;
-        /* qui usiamo le variabili di default di HA */
-        background: var(--ha-card-background, white) !important;
         border-radius: var(--ha-card-border-radius, 8px) !important;
+        background: var(--ha-card-background, white) !important;
         height: var(--card-height);
       }
       .card {
@@ -626,7 +623,7 @@ class BubbleRoom extends LitElement {
       ? colors.active
       : colors.inactive);
     const nameColor = bubbleIconColor;
-
+    const haCardStyle = {};
     const subButtons = [
       entities["sub-button1"],
       entities["sub-button2"],
@@ -652,7 +649,7 @@ class BubbleRoom extends LitElement {
     }
 
     return html`
-      <ha-card>
+      <ha-card style=${styleMap(haCardStyle)}>
         <div class="card">
           <div class="grid-container">
             <div class="name-area" style="color: ${nameColor};">
