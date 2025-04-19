@@ -756,14 +756,6 @@ class BubbleRoom extends LitElement {
     `;
   }
 
-  set hass(hass) {
-    this._hass = hass;
-    this.requestUpdate();
-  }
-
-  get hass() {
-    return this._hass;
-  }
 }
 
 customElements.define('bubble-room', BubbleRoom);
