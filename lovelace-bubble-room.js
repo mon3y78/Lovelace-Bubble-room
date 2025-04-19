@@ -181,16 +181,16 @@ const at=1;class rt{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,i)
                 ${m.map(((t,e)=>{if(!t)return D``;if(t.temperature_sensor||t.humidity_sensor){const i=this._buildTemperatureText(t);return i?D`
                       <div class="mushroom-item"
                           style=${t.style?t.style:this._defaultMushroomStyle(e)}
-                          @pointerdown="${e=>this._startHold(e,t)}"
-                          @pointerup="${e=>this._endHold(e,t,(()=>this._handleMushroomTap(t)))}"
-                          @pointerleave="${t=>this._cancelHold(t)}">
+                          @pointerdown=${e=>this._startHold(e,t)}
+                          @pointerup=${e=>this._endHold(e,t,(()=>this._handleMushroomTap(t)))}
+                          @pointerleave=${t=>this._cancelHold(t)}>
                         <div class="mushroom-primary fit-text">
                           ${i}
                         </div>
                       </div>
                     `:D``}{const i="on"===(a.states[t.entity]?.state||"off")?t.icon_color&&t.icon_color.on?t.icon_color.on:"orange":t.icon_color&&t.icon_color.off?t.icon_color.off:"#80808055",n=this._getFallbackIcon(t.entity),o=t.icon&&""!==t.icon.trim()?t.icon:n,s=t.style?t.style:this._defaultMushroomStyle(e);return D`
                       <div class="mushroom-item"
-                          style="${s}"
+                          style=${s}
                           @pointerdown=${e=>this._startHold(e,t)}
                           @pointerup=${e=>this._endHold(e,t,(()=>this._handleMushroomTap(t)))}
                           @pointerleave=${t=>this._cancelHold(t)}>

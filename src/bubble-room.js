@@ -717,9 +717,9 @@ class BubbleRoom extends LitElement {
                     return html`
                       <div class="mushroom-item"
                           style=${item.style ? item.style : this._defaultMushroomStyle(index)}
-                          @pointerdown="${(e) => this._startHold(e, item)}"
-                          @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
-                          @pointerleave="${(e) => this._cancelHold(e)}">
+                          @pointerdown=${(e) => this._startHold(e, item)}
+                          @pointerup=${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}
+                          @pointerleave=${(e) => this._cancelHold(e)}>
                         <div class="mushroom-primary fit-text">
                           ${temperatureText}
                         </div>
@@ -738,7 +738,7 @@ class BubbleRoom extends LitElement {
                     const style = item.style ? item.style : this._defaultMushroomStyle(index);
                     return html`
                       <div class="mushroom-item"
-                          style="${style}"
+                          style=${style}
                           @pointerdown=${(e) => this._startHold(e, item)}
                           @pointerup=${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}
                           @pointerleave=${(e) => this._cancelHold(e)}>
