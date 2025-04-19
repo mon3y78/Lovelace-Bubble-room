@@ -616,9 +616,19 @@ class BubbleRoom extends LitElement {
     const hass = this.hass;
     const presenceOn = hass.states[entities.presence.entity]?.state === 'on';
 
-    const bubbleBg = presenceState === 'on'
-      ? colors.backgroundActive
-      : colors.backgroundInactive;
+    const PRIMARY    = 'var(--primary-color)';
+    const ACCENT     = 'var(--accent-color)';
+    const RGBA10     = 'rgba(var(--rgb-primary-color),0.1)';
+    const RGBA30     = 'rgba(var(--rgb-primary-color),0.3)';
+
+    const iconOffColor   = colors.inactive !== 'default' ? colors.inactive : PRIMARY;
+    const iconOnColor    = colors.active   !== 'default' ? colors.active   : ACCENT;
+    const bgOffColor     = colors.backgroundInactive !== 'default' ? colors.backgroundInactive : RGBA10;
+    const bgOnColor      = colors.backgroundActive   !== 'default' ? colors.backgroundActive   : RGBA30;
+  
+    const bubbleBg        = presenceOn ? bgOnColor  : bgOffColor;
+    const bubbleIconColor = presenceOn ? iconOnColor : iconOffColor;
+
 
     // Main icon fallback
     const mainEntityId = this.config.entity;
@@ -626,9 +636,7 @@ class BubbleRoom extends LitElement {
     const mainIcon = this.config.icon && this.config.icon.trim() !== ""
       ? this.config.icon
       : fallbackMainIcon;
-    const bubbleIconColor = this.config.main_icon_color || (presenceState === 'on'
-      ? colors.active
-      : colors.inactive);
+
     const nameColor = bubbleIconColor;
 
     // 1. Ricava inline‑style solo se background !== 'default'
@@ -646,7 +654,12 @@ class BubbleRoom extends LitElement {
       .map(([k,v]) => `${k}: ${v};`)
       .join(' ');
 
-
+    const styleMap = {};
+    if (background && background !== 'default')    styleMap['--bubble-room-background']    = background;
+    if (border_radius && border_radius !== 'default') styleMap['--bubble-room-border-radius'] = border_radius;
+    const styleString = Object.entries(styleMap)
+      .map(([k,v]) => `${k}: ${v};`)
+      .join(' ');      
 
 
     const subButtons = [
@@ -678,24 +691,25 @@ class BubbleRoom extends LitElement {
       <ha-card style="${haCardStyleString}">
         <div class="card">
           <div class="grid-container">
-            <div class="name-area" style="color: ${nameColor};">
+            <div class="name-area" style="color: ${bubbleIconColor};">
               ${name}
             </div>
             <div class="icon-area">
-              <div class="bubble-icon-container"
-                  style="background-color: ${bubbleBg};"
-                  @pointerdown="${(e) => this._startHold(e, this.config)}"
-                  @pointerup="${(e) => this._endHold(e, this.config, () => this._handleMainIconTap())}"
-                  @pointerleave="${(e) => this._cancelHold(e)}">
-                ${mainIcon ? html`
-                  <ha-icon
-                    key="${mainEntityId}-${mainIcon}"
-                    class="bubble-icon"
-                    icon="${mainIcon}"
-                    style="color: ${bubbleIconColor};">
-                  </ha-icon>
-                ` : nothing}
-              </div>
+              <div
+              class="bubble-icon-container"
+              style="background-color: ${bubbleBg};"
+              @pointerdown=${e => this._startHold(e, this.config)}
+              @pointerup=${e => this._endHold(e, this.config, () => this._handleMainIconTap())}
+              @pointerleave=${e => this._cancelHold(e)}
+            >
+              ${ icon || this._getFallbackIcon(this.config.entity)
+                ? html`<ha-icon
+                          class="bubble-icon"
+                          icon=${icon || this._getFallbackIcon(this.config.entity)}
+                          style="color: ${bubbleIconColor};"
+                        ></ha-icon>`
+                : nothing }
+            </div>
               <div class="mushroom-container">
                 ${mushroomTemplates.map((item, index) => {
                   if (!item) return html``;
