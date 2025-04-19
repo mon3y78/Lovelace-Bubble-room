@@ -307,9 +307,17 @@ class BubbleRoom extends LitElement {
         display: block;
         margin: 0;
         padding: 0 !important;
-        border-radius: var(--ha-card-border-radius, 8px) !important;
-        background: var(--ha-card-background, white) !important;
+        /* se non viene passato --bubble-room-background,
+          usa il theme var --ha-card-background */
+        background: var(
+          --bubble-room-background,
+          var(--ha-card-background)
+        ) !important;
         height: var(--card-height);
+        border-radius: var(
+          --bubble-room-border-radius,
+          var(--ha-card-border-radius, 8px)
+        ) !important;
       }
       .card {
         position: relative;
@@ -623,7 +631,24 @@ class BubbleRoom extends LitElement {
       ? colors.active
       : colors.inactive);
     const nameColor = bubbleIconColor;
+
+    // 1. Ricava inline‑style solo se background !== 'default'
     const haCardStyle = {};
+    if (background && background !== 'default') {
+      haCardStyle['--bubble-room-background'] = background;
+    }
+    if (border_radius && border_radius !== 'default') {
+      haCardStyle['--bubble-room-border-radius'] = border_radius;
+    }
+
+    // 2. Trasforma l’oggetto in stringa CSS
+    const haCardStyleString = Object.entries(haCardStyle)
+      .map(([prop, val]) => `${prop}: ${val};`)
+      .join(' ');
+
+
+
+
     const subButtons = [
       entities["sub-button1"],
       entities["sub-button2"],
@@ -647,9 +672,7 @@ class BubbleRoom extends LitElement {
     if (entities.camera) {
       mushroomTemplates.push(entities.camera);
     }
-    const haCardStyleString = Object.entries(haCardStyle)
-    .map(([prop, val]) => `${prop}: ${val};`)
-    .join(' ');
+
 
     return html`
       <ha-card style="${haCardStyleString}">
