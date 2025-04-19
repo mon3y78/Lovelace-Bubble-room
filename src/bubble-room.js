@@ -2,12 +2,12 @@ import { LitElement, html, css, nothing } from 'lit';
 import fitty from 'fitty';
 
 class BubbleRoom extends LitElement {
-  static properties = {
-    config: { type: Object, state: true },
-    hass: { type: Object, state: true }
-  };
-
-  
+  static get properties() {
+    return {
+      config: { type: Object },
+      hass: { type: Object },
+    };
+  }
 
   firstUpdated() {
     // Applica fitty al nome e agli elementi mushroom che contengono il testo
@@ -18,10 +18,10 @@ class BubbleRoom extends LitElement {
   }
 
   // Supporto all'editor visivo
-// static async getConfigElement() {
-//   await import('./bubble-room-editor.js');
-//   return document.createElement('bubble-room-editor');
-// }
+  static async getConfigElement() {
+    await import('./bubble-room-editor.js');
+    return document.createElement('bubble-room-editor');
+  }
 
   static getStubConfig() {
     return {
@@ -87,28 +87,26 @@ class BubbleRoom extends LitElement {
 
   // Funzione helper per ottenere l'icona di fallback
   _getFallbackIcon(entityId, explicitIcon = '') {
-    if (!this.hass || !entityId || !this.hass.states) return '';
-  
     if (explicitIcon && explicitIcon.trim() !== '') {
       return explicitIcon;
     }
   
-    const stateObj = this.hass.states[entityId];
-    if (!stateObj) return '';
-  
-    if (stateObj.attributes?.icon) {
-      return stateObj.attributes.icon;
+    if (this.hass?.entities?.[entityId]?.icon) {
+      return this.hass.entities[entityId].icon;
     }
   
-    if (stateObj.attributes?.device_class) {
-      return this._getDeviceClassIcon(stateObj.attributes.device_class, stateObj.state);
+    const stateObj = this.hass?.states?.[entityId];
+    if (stateObj?.attributes?.icon) {
+      return stateObj.attributes.icon;
+    }
+    
+    if (stateObj?.attributes?.device_class) {
+      return this._getDeviceClassIcon(stateObj.attributes.device_class, stateObj?.state);
     }
   
     const domain = entityId.split('.')[0];
-    return this._getDomainDefaultIcon(domain, stateObj.state);
+    return this._getDomainDefaultIcon(domain, stateObj?.state);
   }
-  
-  
   
   _getDeviceClassIcon(deviceClass, state) {
     switch (deviceClass) {
@@ -183,9 +181,8 @@ class BubbleRoom extends LitElement {
 
   // Funzione helper per costruire il testo per temperatura e umidità
   _buildTemperatureText(item) {
-    if (!this.hass || !item) return '';
-  
     const hass = this.hass;
+    // Recupera lo stato dei sensori se esistono, altrimenti null
     const temp = item.temperature_sensor ? hass.states[item.temperature_sensor]?.state : null;
     const hum = item.humidity_sensor ? hass.states[item.humidity_sensor]?.state : null;
     
@@ -194,7 +191,7 @@ class BubbleRoom extends LitElement {
       text += `🌡️${temp}°C`;
     }
     if (hum !== null && hum !== undefined && hum !== '') {
-      if (text) text += " ";
+      if (text) text += " ";  // Se già c'è temperatura, aggiungo uno spazio
       text += `💦${hum}%`;
     }
     return text.trim();
@@ -310,23 +307,17 @@ class BubbleRoom extends LitElement {
       }
       ha-card {
         display: block;
-        height: var(--card-height, 190px);
-        padding: 0;
         margin: 0;
-        background: var(--ha-card-background, var(--card-background-color, white));
-        border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color));
-        box-shadow: var(--ha-card-box-shadow, var(--card-box-shadow));
-        border-radius: var(--ha-card-border-radius, 8px);
+        padding: 0 !important;
+        background: transparent !important;
+        height: var(--card-height);
       }
       .card {
         position: relative;
         width: 100%;
         height: 190px;
+        border-radius: 8px;
         overflow: hidden;
-        background: transparent;
-        border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color));
-        box-shadow: var(--ha-card-box-shadow, var(--card-box-shadow));
-        border-radius: var(--ha-card-border-radius, 8px);
       }
       .grid-container {
         display: grid;
@@ -611,19 +602,16 @@ class BubbleRoom extends LitElement {
   }
 
   render() {
-    if (!this.config || !this.hass || !this.config.entities) {
+    if (!this.config || !this.hass) {
       return html`<div>Loading...</div>`;
     }
-  
-    const { entities } = this.config;
-    if (!entities.presence || !entities.presence.entity) {
-      return html`<div>Configurazione incompleta</div>`;
-    }
 
+    const { entities, colors, name, icon } = this.config;
     const hass = this.hass;
-    const presenceState = this.hass && entities.presence?.entity
-      ? this.hass.states[entities.presence.entity]?.state || 'off'
-      : 'off';
+    const presenceState = hass.states[entities.presence.entity]?.state || 'off';
+    const bubbleBg = presenceState === 'on'
+      ? colors.backgroundActive
+      : colors.backgroundInactive;
 
     // Main icon fallback
     const mainEntityId = this.config.entity;
@@ -631,20 +619,10 @@ class BubbleRoom extends LitElement {
     const mainIcon = this.config.icon && this.config.icon.trim() !== ""
       ? this.config.icon
       : fallbackMainIcon;
-    const nameColor = bubbleIconColor;
-
-
-    const colors = this.config.colors || {};
-    const bubbleBg = presenceState === 'on'
-      ? (colors.backgroundActive || 'rgba(var(--rgb-primary-color), 0.2)')
-      : (colors.backgroundInactive || 'rgba(var(--rgb-disabled-text-color), 0.1)');
-    
     const bubbleIconColor = this.config.main_icon_color || (presenceState === 'on'
-      ? (colors.active || 'var(--primary-color)')
-      : (colors.inactive || 'var(--disabled-text-color)'));
-
-
-
+      ? colors.active
+      : colors.inactive);
+    const nameColor = bubbleIconColor;
 
     const subButtons = [
       entities["sub-button1"],
@@ -765,6 +743,14 @@ class BubbleRoom extends LitElement {
     `;
   }
 
+  set hass(hass) {
+    this._hass = hass;
+    this.requestUpdate();
+  }
+
+  get hass() {
+    return this._hass;
+  }
 }
 
 customElements.define('bubble-room', BubbleRoom);
