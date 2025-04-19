@@ -307,18 +307,20 @@ class BubbleRoom extends LitElement {
       }
       ha-card {
         display: block;
+        height: var(--card-height, 190px);
+        padding: 0;
         margin: 0;
-        padding: 0 !important;
-        background: transparent !important;
-        height: var(--card-height);
+        background: var(--ha-card-background, var(--card-background-color, white));
+        border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color));
+        box-shadow: var(--ha-card-box-shadow, var(--card-box-shadow));
+        border-radius: var(--ha-card-border-radius, 8px);
       }
       .card {
         position: relative;
         width: 100%;
         height: 190px;
         overflow: hidden;
-        overflow: hidden;
-        background: var(--ha-card-background, var(--card-background-color, white));
+        background: transparent;
         border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color));
         box-shadow: var(--ha-card-box-shadow, var(--card-box-shadow));
         border-radius: var(--ha-card-border-radius, 8px);
@@ -610,12 +612,9 @@ class BubbleRoom extends LitElement {
       return html`<div>Loading...</div>`;
     }
 
-    const { entities, colors, name, icon } = this.config;
+    const { entities, name, icon } = this.config;
     const hass = this.hass;
     const presenceState = hass.states[entities.presence.entity]?.state || 'off';
-    const bubbleBg = presenceState === 'on'
-      ? colors.backgroundActive
-      : colors.backgroundInactive;
 
     // Main icon fallback
     const mainEntityId = this.config.entity;
@@ -623,10 +622,20 @@ class BubbleRoom extends LitElement {
     const mainIcon = this.config.icon && this.config.icon.trim() !== ""
       ? this.config.icon
       : fallbackMainIcon;
-    const bubbleIconColor = this.config.main_icon_color || (presenceState === 'on'
-      ? colors.active
-      : colors.inactive);
     const nameColor = bubbleIconColor;
+
+
+    const colors = this.config.colors || {};
+    const bubbleBg = presenceState === 'on'
+      ? (colors.backgroundActive || 'rgba(var(--rgb-primary-color), 0.2)')
+      : (colors.backgroundInactive || 'rgba(var(--rgb-disabled-text-color), 0.1)');
+    
+    const bubbleIconColor = this.config.main_icon_color || (presenceState === 'on'
+      ? (colors.active || 'var(--primary-color)')
+      : (colors.inactive || 'var(--disabled-text-color)'));
+
+
+
 
     const subButtons = [
       entities["sub-button1"],
