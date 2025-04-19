@@ -2,12 +2,12 @@ import { LitElement, html, css, nothing } from 'lit';
 import fitty from 'fitty';
 
 class BubbleRoom extends LitElement {
-  static get properties() {
-    return {
-      config: { type: Object },
-      hass: { type: Object },
-    };
-  }
+  static properties = {
+    config: { type: Object, state: true },
+    hass: { type: Object, state: true }
+  };
+  
+  
 
   firstUpdated() {
     // Applica fitty al nome e agli elementi mushroom che contengono il testo
@@ -87,13 +87,13 @@ class BubbleRoom extends LitElement {
 
   // Funzione helper per ottenere l'icona di fallback
   _getFallbackIcon(entityId, explicitIcon = '') {
-    if (!this.hass || !entityId) return '';
+    if (!this.hass || !entityId || !this.hass.states) return '';
   
     if (explicitIcon && explicitIcon.trim() !== '') {
       return explicitIcon;
     }
   
-    const stateObj = this.hass.states?.[entityId];
+    const stateObj = this.hass.states[entityId];
     if (!stateObj) return '';
   
     if (stateObj.attributes?.icon) {
@@ -107,6 +107,7 @@ class BubbleRoom extends LitElement {
     const domain = entityId.split('.')[0];
     return this._getDomainDefaultIcon(domain, stateObj.state);
   }
+  
   
   
   _getDeviceClassIcon(deviceClass, state) {
@@ -182,8 +183,9 @@ class BubbleRoom extends LitElement {
 
   // Funzione helper per costruire il testo per temperatura e umidità
   _buildTemperatureText(item) {
+    if (!this.hass || !item) return '';
+  
     const hass = this.hass;
-    // Recupera lo stato dei sensori se esistono, altrimenti null
     const temp = item.temperature_sensor ? hass.states[item.temperature_sensor]?.state : null;
     const hum = item.humidity_sensor ? hass.states[item.humidity_sensor]?.state : null;
     
@@ -192,7 +194,7 @@ class BubbleRoom extends LitElement {
       text += `🌡️${temp}°C`;
     }
     if (hum !== null && hum !== undefined && hum !== '') {
-      if (text) text += " ";  // Se già c'è temperatura, aggiungo uno spazio
+      if (text) text += " ";
       text += `💦${hum}%`;
     }
     return text.trim();
