@@ -1,4 +1,5 @@
 import { LitElement, html, css, nothing } from 'lit';
+import { styleMap } from 'lit/directives/style-map.js';
 import fitty from 'fitty';
 
 class BubbleRoom extends LitElement {
