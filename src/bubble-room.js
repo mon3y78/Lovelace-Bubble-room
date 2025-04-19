@@ -2,12 +2,6 @@ import { LitElement, html, css, nothing } from 'lit';
 import fitty from 'fitty';
 
 class BubbleRoom extends LitElement {
-  constructor() {
-    super();
-    this.config = {};
-    this.hass = undefined;
-  }
-
   static get properties() {
     return {
       config: { type: Object },
@@ -615,11 +609,15 @@ class BubbleRoom extends LitElement {
   }
 
   render() {
-    if (!this.config || !this.hass) {
+    if (!this.config || !this.hass || !this.config.entities) {
       return html`<div>Loading...</div>`;
     }
+  
+    const { entities } = this.config;
+    if (!entities.presence || !entities.presence.entity) {
+      return html`<div>Configurazione incompleta</div>`;
+    }
 
-    const { entities, name, icon } = this.config;
     const hass = this.hass;
     const presenceState = this.hass && entities.presence?.entity
       ? this.hass.states[entities.presence.entity]?.state || 'off'
