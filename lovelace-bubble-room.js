@@ -35,7 +35,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
           usa il theme var --ha-card-background */
         background: var(
           --bubble-room-background,
-          var(--ha-card-background)
+          var(--ha-card-background, white)
         ) !important;
         height: var(--card-height);
         border-radius: var(
