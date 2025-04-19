@@ -316,8 +316,12 @@ class BubbleRoom extends LitElement {
         position: relative;
         width: 100%;
         height: 190px;
-        border-radius: 8px;
         overflow: hidden;
+        overflow: hidden;
+        background: var(--ha-card-background, var(--card-background-color, white));
+        border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color));
+        box-shadow: var(--ha-card-box-shadow, var(--card-box-shadow));
+        border-radius: var(--ha-card-border-radius, 8px);
       }
       .grid-container {
         display: grid;
