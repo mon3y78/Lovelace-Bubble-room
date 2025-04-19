@@ -2,10 +2,10 @@ import { LitElement, html, css, nothing } from 'lit';
 import fitty from 'fitty';
 
 class BubbleRoom extends LitElement {
-static properties = {
-  config: { type: Object, state: true },
-  hass: { type: Object, state: true }
-};
+  static properties = {
+    config: { type: Object, state: true },
+    hass: { type: Object, state: true }
+  };
 
   
 
