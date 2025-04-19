@@ -313,13 +313,13 @@ class BubbleRoom extends LitElement {
         /* background: transparent !important; */
         background: var(
           --bubble-room-background,
-          var(--ha-card-background, white)
+          var(--card-background-color, white)
         ) !important;
-        height: var(--card-height);
         border-radius: var(
           --bubble-room-border-radius,
-          var(--ha-card-border-radius, 8px)
+          var(--card-border-radius, 8px)
         ) !important;
+        height: var(--card-height);
       }
       .card {
         position: relative;
@@ -632,7 +632,7 @@ class BubbleRoom extends LitElement {
     //    - altrimenti (“default” o mancante) → CSS‑VAR del tema
     //
     const iconOffColor   = colors.active         !== 'default' ? colors.active         : PRIMARY;
-    const iconOnColor    = colors.inactive       !== 'default' ? colors.inactive       : ACCENT;
+    const iconOnColor    = colors.inactive       !== 'default' ? colors.inactive       : 'var(--disabled-text-color)';
     const bgOffColor     = colors.backgroundInactive !== 'default' ? colors.backgroundInactive : RGBA_PRIMARY_10;
     const bgOnColor      = colors.backgroundActive   !== 'default' ? colors.backgroundActive   : RGBA_PRIMARY_30;
 
@@ -657,7 +657,9 @@ class BubbleRoom extends LitElement {
     const mainIcon = this.config.icon && this.config.icon.trim() !== ""
       ? this.config.icon
       : fallbackMainIcon;
-    const nameColor = bubbleIconColor;
+    const nameColor = colors.active !== 'default'
+      ? colors.active
+      : 'var(--primary-text-color)';
 
     const subButtons = [
       entities["sub-button1"],
@@ -687,8 +689,7 @@ class BubbleRoom extends LitElement {
       <ha-card style=${styleMap(haCardStyle)}>
         <div class="card">
           <div class="grid-container">
-            <div class="name-area"
-                 style="color: ${bubbleIconColor};">
+            <div class="name-area" style="color: ${nameColor};">
               ${name}
             </div>
             <div class="icon-area">
