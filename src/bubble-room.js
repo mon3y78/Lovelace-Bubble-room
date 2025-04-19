@@ -618,30 +618,40 @@ class BubbleRoom extends LitElement {
 
     const { entities, name, icon, background, border_radius, colors } = this.config;
     const hass = this.hass;
-    const on = hass.states[entities.presence.entity]?.state === 'on';
+    const isOn = hass.states[entities.presence.entity]?.state === 'on';
 
-    // --- 1) per ogni colore: se è "default" o mancante → CSS var di HA, altrimenti → valore custom
-    const activeColor = colors.active && colors.active !== 'default'
-      ? colors.active
-      : 'var(--accent-color)';
-    const inactiveColor = colors.inactive && colors.inactive !== 'default'
-      ? colors.inactive
-      : 'var(--secondary-text-color)';
-    const bgActive = colors.backgroundActive && colors.backgroundActive !== 'default'
-      ? colors.backgroundActive
-      : 'var(--primary-background-color)';
-    const bgInactive = colors.backgroundInactive && colors.backgroundInactive !== 'default'
-      ? colors.backgroundInactive
-      : 'var(--secondary-background-color)';
+    // 1) I CSS‑VAR del tema HA
+    //
+    const PRIMARY    = 'var(--primary-color)';     // “Colore principale” (azzurro)
+    const ACCENT     = 'var(--accent-color)';      // “Colore secondario” (arancione)
+    const SECONDARY  = 'var(--secondary-text-color)'; // testo secondario
+    const DISABLED   = 'var(--disabled-text-color)';  // icone disabilitate
+    // Per il background “tinto” del bubble usiamo la versione RGBA del primary:
+    const RGBA_PRIMARY_10 = 'rgba(var(--rgb-primary-color),0.1)';
+    const RGBA_PRIMARY_30 = 'rgba(var(--rgb-primary-color),0.3)';
 
-    // --- 2) override inline per ha-card background / border-radius
+    //
+    // 2) Risolvo ogni colore con questo schema:
+    //    - se in config ho CUSTOM (es. "#f00"), lo uso
+    //    - altrimenti (“default” o mancante) → CSS‑VAR del tema
+    //
+    const iconOffColor   = colors.active         !== 'default' ? colors.active         : PRIMARY;
+    const iconOnColor    = colors.inactive       !== 'default' ? colors.inactive       : ACCENT;
+    const bgOffColor     = colors.backgroundInactive !== 'default' ? colors.backgroundInactive : RGBA_PRIMARY_10;
+    const bgOnColor      = colors.backgroundActive   !== 'default' ? colors.backgroundActive   : RGBA_PRIMARY_30;
+
+    //
+    // 3) Preparazione override inline per <ha-card>
+    //
     const haCardStyle = {};
-    if (background && background !== 'default')       haCardStyle['--bubble-room-background']    = background;
+    if (background    && background    !== 'default') haCardStyle['--bubble-room-background']    = background;
     if (border_radius && border_radius !== 'default') haCardStyle['--bubble-room-border-radius'] = border_radius;
 
-    // --- 3) choice dinamiche
-    const bubbleBg        = on ? bgActive : bgInactive;
-    const bubbleIconColor = on ? activeColor : inactiveColor;
+    //
+    // 4) Decido i colori dinamici
+    //
+    const bubbleBg        = isOn ? bgOnColor  : bgOffColor;
+    const bubbleIconColor = isOn ? iconOnColor : iconOffColor;
 
 
 
@@ -751,8 +761,8 @@ class BubbleRoom extends LitElement {
                 .map(btn => {
                   if (!btn?.entity) return html``;
                   const btnOn    = hass.states[btn.entity]?.state === 'on';
-                  const btnBg    = btnOn ? bgActive : bgInactive;
-                  const btnColor = btnOn ? activeColor : inactiveColor;
+                  const btnBg    = btnOn ? bgOnColor  : bgOffColor;
+                  const btnColor = btnOn ? iconOnColor : iconOffColor;
                   const btnIcon  = btn.icon?.trim() || this._getFallbackIcon(btn.entity);
                   return html`
                     <div class="bubble-sub-button"
@@ -761,7 +771,7 @@ class BubbleRoom extends LitElement {
                          @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
                          @pointerleave=${e => this._cancelHold(e)}>
                       ${ btnIcon ? html`
-                        <ha-icon icon=${btnIcon} style="color: ${btnColor};"></ha-icon>
+                        <ha-icon icon="${btnIcon}" style="color: ${btnColor};"></ha-icon>
                       ` : nothing }
                     </div>
                   `;
