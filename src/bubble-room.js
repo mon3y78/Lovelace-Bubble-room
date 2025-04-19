@@ -2,6 +2,12 @@ import { LitElement, html, css, nothing } from 'lit';
 import fitty from 'fitty';
 
 class BubbleRoom extends LitElement {
+  constructor() {
+    super();
+    this.config = {};
+    this.hass = undefined;
+  }
+
   static get properties() {
     return {
       config: { type: Object },
@@ -87,26 +93,27 @@ class BubbleRoom extends LitElement {
 
   // Funzione helper per ottenere l'icona di fallback
   _getFallbackIcon(entityId, explicitIcon = '') {
+    if (!this.hass || !entityId) return '';
+  
     if (explicitIcon && explicitIcon.trim() !== '') {
       return explicitIcon;
     }
   
-    if (this.hass?.entities?.[entityId]?.icon) {
-      return this.hass.entities[entityId].icon;
-    }
+    const stateObj = this.hass.states?.[entityId];
+    if (!stateObj) return '';
   
-    const stateObj = this.hass?.states?.[entityId];
-    if (stateObj?.attributes?.icon) {
+    if (stateObj.attributes?.icon) {
       return stateObj.attributes.icon;
     }
-    
-    if (stateObj?.attributes?.device_class) {
-      return this._getDeviceClassIcon(stateObj.attributes.device_class, stateObj?.state);
+  
+    if (stateObj.attributes?.device_class) {
+      return this._getDeviceClassIcon(stateObj.attributes.device_class, stateObj.state);
     }
   
     const domain = entityId.split('.')[0];
-    return this._getDomainDefaultIcon(domain, stateObj?.state);
+    return this._getDomainDefaultIcon(domain, stateObj.state);
   }
+  
   
   _getDeviceClassIcon(deviceClass, state) {
     switch (deviceClass) {
@@ -614,7 +621,9 @@ class BubbleRoom extends LitElement {
 
     const { entities, name, icon } = this.config;
     const hass = this.hass;
-    const presenceState = hass.states[entities.presence.entity]?.state || 'off';
+    const presenceState = this.hass && entities.presence?.entity
+      ? this.hass.states[entities.presence.entity]?.state || 'off'
+      : 'off';
 
     // Main icon fallback
     const mainEntityId = this.config.entity;
