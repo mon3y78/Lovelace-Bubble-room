@@ -610,13 +610,12 @@ class BubbleRoom extends LitElement {
   }
 
   render() {
-    if (!this.config || !this.hass) {
-      return html`<div>Loading...</div>`;
-    }
+    if (!this.config || !this.hass) return html`<div>Loading…</div>`;
 
-    const { entities, colors, name, icon } = this.config;
+    const { entities, name, icon, background, border_radius, colors } = this.config;
     const hass = this.hass;
-    const presenceState = hass.states[entities.presence.entity]?.state || 'off';
+    const presenceOn = hass.states[entities.presence.entity]?.state === 'on';
+
     const bubbleBg = presenceState === 'on'
       ? colors.backgroundActive
       : colors.backgroundInactive;
@@ -642,8 +641,9 @@ class BubbleRoom extends LitElement {
     }
 
     // 2. Trasforma l’oggetto in stringa CSS
-    const haCardStyleString = Object.entries(haCardStyle)
-      .map(([prop, val]) => `${prop}: ${val};`)
+    const haCardStyleString = Object
+      .entries(haCardStyle)
+      .map(([k,v]) => `${k}: ${v};`)
       .join(' ');
 
 
