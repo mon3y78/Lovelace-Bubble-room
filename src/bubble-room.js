@@ -310,16 +310,14 @@ class BubbleRoom extends LitElement {
         display: block;
         margin: 0;
         padding: 0 !important;
-        /* background: transparent !important; */
         background: var(
           --bubble-room-background,
-          var(--card-background-color, white)
-        ) !important;
+          var(--ha-card-background, white)
+        );
         border-radius: var(
           --bubble-room-border-radius,
-          var(--card-border-radius, 8px)
-        ) !important;
-        height: var(--card-height);
+          var(--ha-card-border-radius, 8px)
+        );
       }
       .card {
         position: relative;
@@ -329,7 +327,7 @@ class BubbleRoom extends LitElement {
       }
       .grid-container {
         display: grid;
-        width: 00%;
+        width: 100%;
         height: 100%;
         grid-template-areas:
           ". . . b"
@@ -686,7 +684,10 @@ class BubbleRoom extends LitElement {
     }
 
     return html`
-      <ha-card style=${styleMap(haCardStyle)}>
+      <ha-card
+        style=${Object.keys(haCardStyle).length
+          ? styleMap(haCardStyle)
+          : nothing}>
         <div class="card">
           <div class="grid-container">
             <div class="name-area" style="color: ${nameColor};">
