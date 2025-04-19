@@ -716,7 +716,7 @@ class BubbleRoom extends LitElement {
                     if (!temperatureText) return html``;
                     return html`
                       <div class="mushroom-item"
-                          style="${item.style ? item.style : this._defaultMushroomStyle(index)}"
+                          style=${item.style ? item.style : this._defaultMushroomStyle(index)}
                           @pointerdown="${(e) => this._startHold(e, item)}"
                           @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
                           @pointerleave="${(e) => this._cancelHold(e)}">
@@ -739,9 +739,9 @@ class BubbleRoom extends LitElement {
                     return html`
                       <div class="mushroom-item"
                           style="${style}"
-                          @pointerdown="${(e) => this._startHold(e, item)}"
-                          @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
-                          @pointerleave="${(e) => this._cancelHold(e)}">
+                          @pointerdown=${(e) => this._startHold(e, item)}
+                          @pointerup=${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}
+                          @pointerleave=${(e) => this._cancelHold(e)}>
                         ${iconToUse ? html`
                           <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
                         ` : nothing}
