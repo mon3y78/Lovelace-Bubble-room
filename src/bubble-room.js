@@ -647,9 +647,12 @@ class BubbleRoom extends LitElement {
     if (entities.camera) {
       mushroomTemplates.push(entities.camera);
     }
+    const haCardStyleString = Object.entries(haCardStyle)
+    .map(([prop, val]) => `${prop}: ${val};`)
+    .join(' ');
 
     return html`
-      <ha-card style=${styleMap(haCardStyle)}>
+      <ha-card style="${haCardStyleString}">
         <div class="card">
           <div class="grid-container">
             <div class="name-area" style="color: ${nameColor};">
