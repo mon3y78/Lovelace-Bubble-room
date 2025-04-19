@@ -81,7 +81,11 @@ class BubbleRoom extends LitElement {
       },
       icon: '',  // Vuoto per utilizzare il fallback
       name: 'Salotto',
-      tap_action: { action: 'navigate', navigation_path: '/lovelace/sala' }
+      tap_action: { action: 'navigate', navigation_path: '/lovelace/sala' },
+
+      background: 'default',       // ← nuova proprietà
+      border_radius: 'default'    // ← nuova proprietà
+
     };
   }
 
@@ -270,6 +274,8 @@ class BubbleRoom extends LitElement {
         backgroundInactive: 'rgba(var(--color-green), 0.1)',
         ...config.colors
       },
+      background: config.background || 'default',
+      border_radius: config.border_radius || 'default',
       icon: config.icon || '',
       name: config.name || "Salotto",
       tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
@@ -301,22 +307,28 @@ class BubbleRoom extends LitElement {
       :host {
         display: block;
         --card-height: 190px;
-        --card-background: black;
-        --bubble-bg: gray;
+        /* non serve più --card-background qui */
         font-family: sans-serif;
       }
       ha-card {
         display: block;
         margin: 0;
         padding: 0 !important;
-        background: transparent !important;
+        /* background: transparent !important; */
+        background: var(
+          --bubble-room-background,
+          var(--ha-card-background, white)
+        ) !important;
         height: var(--card-height);
+        border-radius: var(
+          --bubble-room-border-radius,
+          var(--ha-card-border-radius, 8px)
+        ) !important;
       }
       .card {
         position: relative;
         width: 100%;
-        height: 190px;
-        border-radius: 8px;
+        height: 100%;
         overflow: hidden;
       }
       .grid-container {
@@ -612,7 +624,14 @@ class BubbleRoom extends LitElement {
     const bubbleBg = presenceState === 'on'
       ? colors.backgroundActive
       : colors.backgroundInactive;
-
+    const { background, border_radius } = this.config;
+    const haCardStyle = {};
+    if (background !== 'default') {
+      haCardStyle['--bubble-room-background'] = background;
+    }
+    if (border_radius !== 'default') {
+      haCardStyle['--bubble-room-border-radius'] = border_radius;
+    }
     // Main icon fallback
     const mainEntityId = this.config.entity;
     const fallbackMainIcon = this._getFallbackIcon(mainEntityId);
@@ -649,97 +668,99 @@ class BubbleRoom extends LitElement {
     }
 
     return html`
-      <div class="card">
-        <div class="grid-container">
-          <div class="name-area" style="color: ${nameColor};">
-            ${name}
-          </div>
-          <div class="icon-area">
-            <div class="bubble-icon-container"
-                 style="background-color: ${bubbleBg};"
-                 @pointerdown="${(e) => this._startHold(e, this.config)}"
-                 @pointerup="${(e) => this._endHold(e, this.config, () => this._handleMainIconTap())}"
-                 @pointerleave="${(e) => this._cancelHold(e)}">
-              ${mainIcon ? html`
-                <ha-icon
-                  key="${mainEntityId}-${mainIcon}"
-                  class="bubble-icon"
-                  icon="${mainIcon}"
-                  style="color: ${bubbleIconColor};">
-                </ha-icon>
-              ` : nothing}
+      <ha-card style=${styleMap(haCardStyle)}>
+        <div class="card">
+          <div class="grid-container">
+            <div class="name-area" style="color: ${nameColor};">
+              ${name}
             </div>
-            <div class="mushroom-container">
-              ${mushroomTemplates.map((item, index) => {
-                if (!item) return html``;
-                // Se l'item ha almeno uno dei sensori per temperatura o umidità
-                if (item.temperature_sensor || item.humidity_sensor) {
-                  const temperatureText = this._buildTemperatureText(item);
-                  // Se il testo risultante è vuoto, non renderizzare nulla
-                  if (!temperatureText) return html``;
-                  return html`
-                    <div class="mushroom-item"
-                         style="${item.style ? item.style : this._defaultMushroomStyle(index)}"
-                         @pointerdown="${(e) => this._startHold(e, item)}"
-                         @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
-                         @pointerleave="${(e) => this._cancelHold(e)}">
-                      <div class="mushroom-primary fit-text">
-                        ${temperatureText}
+            <div class="icon-area">
+              <div class="bubble-icon-container"
+                  style="background-color: ${bubbleBg};"
+                  @pointerdown="${(e) => this._startHold(e, this.config)}"
+                  @pointerup="${(e) => this._endHold(e, this.config, () => this._handleMainIconTap())}"
+                  @pointerleave="${(e) => this._cancelHold(e)}">
+                ${mainIcon ? html`
+                  <ha-icon
+                    key="${mainEntityId}-${mainIcon}"
+                    class="bubble-icon"
+                    icon="${mainIcon}"
+                    style="color: ${bubbleIconColor};">
+                  </ha-icon>
+                ` : nothing}
+              </div>
+              <div class="mushroom-container">
+                ${mushroomTemplates.map((item, index) => {
+                  if (!item) return html``;
+                  // Se l'item ha almeno uno dei sensori per temperatura o umidità
+                  if (item.temperature_sensor || item.humidity_sensor) {
+                    const temperatureText = this._buildTemperatureText(item);
+                    // Se il testo risultante è vuoto, non renderizzare nulla
+                    if (!temperatureText) return html``;
+                    return html`
+                      <div class="mushroom-item"
+                          style="${item.style ? item.style : this._defaultMushroomStyle(index)}"
+                          @pointerdown="${(e) => this._startHold(e, item)}"
+                          @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
+                          @pointerleave="${(e) => this._cancelHold(e)}">
+                        <div class="mushroom-primary fit-text">
+                          ${temperatureText}
+                        </div>
                       </div>
-                    </div>
-                  `;
-                } else {
-                  // Per altri tipi di item che hanno una entity e forse un'icona definita
-                  const state = hass.states[item.entity]?.state || 'off';
-                  const iconColor = state === 'on'
-                    ? (item.icon_color && item.icon_color.on ? item.icon_color.on : 'orange')
-                    : (item.icon_color && item.icon_color.off ? item.icon_color.off : '#80808055');
-                  const fallbackIcon = this._getFallbackIcon(item.entity);
-                  const iconToUse = item.icon && item.icon.trim() !== ""
-                    ? item.icon
-                    : fallbackIcon;
-                  const style = item.style ? item.style : this._defaultMushroomStyle(index);
-                  return html`
-                    <div class="mushroom-item"
-                         style="${style}"
-                         @pointerdown="${(e) => this._startHold(e, item)}"
-                         @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
-                         @pointerleave="${(e) => this._cancelHold(e)}">
-                      ${iconToUse ? html`
-                        <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
-                      ` : nothing}
-                    </div>
-                  `;
-                }
+                    `;
+                  } else {
+                    // Per altri tipi di item che hanno una entity e forse un'icona definita
+                    const state = hass.states[item.entity]?.state || 'off';
+                    const iconColor = state === 'on'
+                      ? (item.icon_color && item.icon_color.on ? item.icon_color.on : 'orange')
+                      : (item.icon_color && item.icon_color.off ? item.icon_color.off : '#80808055');
+                    const fallbackIcon = this._getFallbackIcon(item.entity);
+                    const iconToUse = item.icon && item.icon.trim() !== ""
+                      ? item.icon
+                      : fallbackIcon;
+                    const style = item.style ? item.style : this._defaultMushroomStyle(index);
+                    return html`
+                      <div class="mushroom-item"
+                          style="${style}"
+                          @pointerdown="${(e) => this._startHold(e, item)}"
+                          @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
+                          @pointerleave="${(e) => this._cancelHold(e)}">
+                        ${iconToUse ? html`
+                          <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
+                        ` : nothing}
+                      </div>
+                    `;
+                  }
+                })}
+              </div>
+            </div>
+            <div class="bubble-sub-button-container">
+              ${subButtons.map(btn => {
+                // Aggiungi un controllo per verificare che btn.entity non sia vuota
+                if (!btn || !btn.entity || btn.entity.trim() === "") return html``;
+                const state = hass.states[btn.entity]?.state || 'off';
+                const btnColor = state === 'on' ? colors.active : colors.inactive;
+                const fallbackIcon = this._getFallbackIcon(btn.entity);
+                const iconToUse = btn.icon && btn.icon.trim() !== "" ? btn.icon : fallbackIcon;
+                const iconColor = state === 'on'
+                  ? (btn.icon_color && btn.icon_color.on ? btn.icon_color.on : 'orange')
+                  : (btn.icon_color && btn.icon_color.off ? btn.icon_color.off : '#80808055');
+                return html`
+                  <div class="bubble-sub-button"
+                      style="background-color: ${btnColor};"
+                      @pointerdown="${(e) => this._startHold(e, btn)}"
+                      @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
+                      @pointerleave="${(e) => this._cancelHold(e)}">
+                    ${iconToUse ? html`
+                      <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
+                    ` : nothing}
+                  </div>
+                `;
               })}
             </div>
           </div>
-          <div class="bubble-sub-button-container">
-            ${subButtons.map(btn => {
-              // Aggiungi un controllo per verificare che btn.entity non sia vuota
-              if (!btn || !btn.entity || btn.entity.trim() === "") return html``;
-              const state = hass.states[btn.entity]?.state || 'off';
-              const btnColor = state === 'on' ? colors.active : colors.inactive;
-              const fallbackIcon = this._getFallbackIcon(btn.entity);
-              const iconToUse = btn.icon && btn.icon.trim() !== "" ? btn.icon : fallbackIcon;
-              const iconColor = state === 'on'
-                ? (btn.icon_color && btn.icon_color.on ? btn.icon_color.on : 'orange')
-                : (btn.icon_color && btn.icon_color.off ? btn.icon_color.off : '#80808055');
-              return html`
-                <div class="bubble-sub-button"
-                    style="background-color: ${btnColor};"
-                    @pointerdown="${(e) => this._startHold(e, btn)}"
-                    @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
-                    @pointerleave="${(e) => this._cancelHold(e)}">
-                  ${iconToUse ? html`
-                    <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
-                  ` : nothing}
-                </div>
-              `;
-            })}
-          </div>
         </div>
-      </div>
+      </ha-card>
     `;
   }
 
