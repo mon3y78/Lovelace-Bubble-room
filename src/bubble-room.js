@@ -268,22 +268,17 @@ class BubbleRoom extends LitElement {
     }
     this.config = {
       entities,
-      colors: {
-        active: 'rgba(var(--color-green), 1)',
-        inactive: 'rgba(var(--color-green), 0.3)',
-        backgroundActive: 'rgba(var(--color-green), 0.4)',
-        backgroundInactive: 'rgba(var(--color-green), 0.1)',
-        ...config.colors
-      },
+      colors: { /* … */ },
       background: config.background || 'default',
       border_radius: config.border_radius || 'default',
-      icon: config.icon || '',
-      name: config.name || "Salotto",
+      icon:     config.icon || '',
+      name:     config.name || 'Salotto',
       tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
     };
     if (!this.config.entity && this.config.entities && this.config.entities.presence) {
       this.config.entity = this.config.entities.presence.entity;
     }
+    this._config = this.config;
   }
 
   getConfig() {
