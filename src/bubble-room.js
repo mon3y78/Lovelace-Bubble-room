@@ -2,11 +2,11 @@ import { LitElement, html, css, nothing } from 'lit';
 import fitty from 'fitty';
 
 class BubbleRoom extends LitElement {
-  static properties = {
-    config: { type: Object, state: true },
-    hass: { type: Object, state: true }
-  };
-  
+static properties = {
+  config: { type: Object, state: true },
+  hass: { type: Object, state: true }
+};
+
   
 
   firstUpdated() {
@@ -18,10 +18,10 @@ class BubbleRoom extends LitElement {
   }
 
   // Supporto all'editor visivo
-  static async getConfigElement() {
-    await import('./bubble-room-editor.js');
-    return document.createElement('bubble-room-editor');
-  }
+// static async getConfigElement() {
+//   await import('./bubble-room-editor.js');
+//   return document.createElement('bubble-room-editor');
+// }
 
   static getStubConfig() {
     return {
