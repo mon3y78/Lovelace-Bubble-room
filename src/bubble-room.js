@@ -10,13 +10,17 @@ class BubbleRoom extends LitElement {
   }
 
   firstUpdated() {
-    // Applica fitty al nome e agli elementi mushroom che contengono il testo
-    const mushroomEls = this.shadowRoot.querySelectorAll('.mushroom-primary');
-    if (mushroomEls.length) {
-      fitty(mushroomEls, { maxSize: 20, multiLine: false });
+    const els = this.shadowRoot.querySelectorAll('.mushroom-primary');
+    if (els.length) {
+      fitty(els, {
+        maxSize: 20,
+        multiLine: false,
+        /** disabilita i listener di resize e MutationObserver */
+        observeWindow: false,
+        observeMutations: false,
+      });
     }
   }
-
   // Supporto all'editor visivo
   static async getConfigElement() {
     await import('./bubble-room-editor.js');
@@ -761,7 +765,7 @@ class BubbleRoom extends LitElement {
             </div>
           </div>
         </div>
-      <ha-card>
+      </ha-card>
     `;
   }
 
