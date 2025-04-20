@@ -89,6 +89,10 @@ class BubbleRoom extends LitElement {
 
   // Funzione helper per ottenere l'icona di fallback
   _getFallbackIcon(entityId, explicitIcon = '') {
+    if (!entityId) return '';  // ← qui
+    if (explicitIcon.trim()) {
+      return explicitIcon;
+    }
     if (explicitIcon && explicitIcon.trim() !== '') {
       return explicitIcon;
     }
@@ -187,8 +191,8 @@ class BubbleRoom extends LitElement {
    */
   _renderMushroom(item, idx, iconColor) {
     const posStyle = item.style || this._defaultMushroomStyle(idx);
-
-    // 1) temperatura/umidità
+  
+    // 1) temperatura / umidità
     if (item.temperature_sensor || item.humidity_sensor) {
       const txt = this._buildTemperatureText(item);
       return html`
@@ -197,16 +201,16 @@ class BubbleRoom extends LitElement {
         </div>
       `;
     }
-
+  
     // 2) icona normale
-    const entityId     = item.entity;
-    const explicitIcon = item.icon || '';
-    const iconName     = this._getFallbackIcon(entityId, explicitIcon);
-
+    const entityId = item.entity;
+    const explicit = item.icon || '';
+    const iconName = this._getFallbackIcon(entityId, explicit);
+  
     // 3) colore on/off
-    const isOn = this.hass.states[entityId]?.state === 'on';
+    const isOn = entityId && this.hass.states[entityId]?.state === 'on';
     const color = isOn ? iconColor : 'var(--secondary-text-color)';
-
+  
     return html`
       <div
         class="mushroom-item"
@@ -215,13 +219,13 @@ class BubbleRoom extends LitElement {
         @pointerup=${e => this._endHold(e, item, () => this._handleMushroomTap(item))}
         @pointerleave=${e => this._cancelHold(e)}
       >
-        <ha-icon
-          icon="${iconName}"
-          style="color: ${color};"
-        ></ha-icon>
+        ${iconName
+          ? html`<ha-icon icon="${iconName}" style="color: ${color};"></ha-icon>`
+          : nothing}
       </div>
     `;
   }
+  
 
   // Funzione helper per costruire il testo per temperatura e umidità
   _buildTemperatureText(item) {
