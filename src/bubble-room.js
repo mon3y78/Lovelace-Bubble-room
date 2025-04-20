@@ -449,11 +449,10 @@ class BubbleRoom extends LitElement {
         margin: 3px;
         cursor: pointer; 
         color: var(--bubble-room-sub-icon-color, var(--primary-text-color));
-        background-color: var(--bubble-room-sub-bg) !important;
+        background-color: var(--bubble-room-sub-bg, var(--divider-color)) !important;
       }
       .bubble-sub-button ha-icon {
-        color: var(--bubble-room-sub-icon-color) !important;
-
+        color: var(--bubble-room-sub-icon-color, var(--secondary-text-color)) !important;
       }  
       .mushroom-container {
         position: absolute;
@@ -735,8 +734,11 @@ class BubbleRoom extends LitElement {
   
     // inline card vars
     const cardVars = [
-      background   ? `--bubble-room-background: ${background}`   : '',
-      border_radius? `--bubble-room-border-radius: ${border_radius}` : ''
+      background    ? `--bubble-room-background: ${background}` : '',
+      border_radius ? `--bubble-room-border-radius: ${border_radius}` : '',
+      `--bubble-room-icon-bg: ${bubbleBg}`,
+      `--bubble-room-icon-color: ${bubbleIconColor}`,
+      `--bubble-room-name-color: ${bubbleIconColor}`
     ].filter(Boolean).join(';');
   
     return html`
@@ -779,20 +781,16 @@ class BubbleRoom extends LitElement {
             <!-- sub‑button -->
             <div class="bubble-sub-button-container">
               ${ subButtons.map(btn => {
-                  const isOn   = this.hass.states[btn.entity]?.state === 'on';
-                  // **USO bgOn/bgOff** per il contenitore
-                  const btnBg  = isOn ? bgOnColor   : bgOffColor;
-                  const iconCol= isOn ? iconOnColor : iconOffColor;
-                  const ic     = this._getFallbackIcon(btn.entity, btn.icon || '');
-  
+                  const isOn    = this.hass.states[btn.entity]?.state === 'on';
+                  const btnBg   = isOn ? bubbleBg : bubbleBg;        // o usa bgOn/bgOff se vuoi
+                  const iconCol = isOn ? iconOnColor : iconOffColor; // resta com’era
                   return html`
                     <div class="bubble-sub-button"
-                         style="background-color: ${btnBg};"
-                         @pointerdown=${e => this._startHold(e, btn)}
-                         @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
-                         @pointerleave=${e => this._cancelHold(e)}>
-                      <ha-icon icon="${ic}"
-                               style="color: ${iconCol};"></ha-icon>
+                        style="background-color: ${btnBg};">
+                      <ha-icon
+                        icon="${this._getFallbackIcon(btn.entity)}"
+                        style="color: ${iconCol};"
+                      ></ha-icon>
                     </div>
                   `;
                 })
