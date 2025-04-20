@@ -122,6 +122,14 @@ class BubbleRoomEditor extends LitElement {
     });
     configCopy.entities = filteredEntities;
     this._config = configCopy;
+    if (config.colors) {
+      Object.keys(config.colors).forEach(k => {
+        if (config.colors[k].trim() === '') {
+          delete config.colors[k];
+        }
+      });
+    }
+
     return configCopy;
   }
 
