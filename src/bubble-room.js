@@ -27,28 +27,30 @@ class BubbleRoom extends LitElement {
       entities: {
         presence: { entity: 'binary_sensor.aqara_fp1_presence' },
         'sub-button1': { entity: 'light.luce_ventola', icon: '', tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } },
-        'sub-button2': { entity: 'fan.sonoff_1000f6e5c7',   icon: '', tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } },
+        'sub-button2': { entity: 'fan.sonoff_1000f6e5c7', icon: '', tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } },
         'sub-button3': { entity: 'media_player.google_nest_1', icon: '', tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } },
-        'sub-button4': { entity: 'vacuum.slider',            icon: '', tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } },
+        'sub-button4': { entity: 'vacuum.slider', icon: '', tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } },
         climate:       { entity: 'climate.termostato_salotto', icon: '', tap_action: { action: 'more-info' } },
-        camera:        { entity: 'camera.front_door',        icon: '', tap_action: { action: 'more-info' }, preview_url: '' },
-        entities1:     { entity: 'sensor.some_sensor1',      icon: '' },
-        entities2:     { entity: 'sensor.some_sensor2',      icon: '' },
-        entities3:     { entity: 'sensor.some_sensor3',      icon: '' },
-        entities4:     { entity: 'sensor.some_sensor4',      icon: '' },
-        entities5:     { entity: 'sensor.some_sensor5',      icon: '' },
-        temperature:   { temperature_sensor: 'sensor.vindstyrka_salotto_temperature',
-                        humidity_sensor:    'sensor.vindstyrka_salotto_humidity',
-                        tap_action: { action: 'more-info' } },
+        camera:        { entity: 'camera.front_door', icon: '', tap_action: { action: 'more-info' }, preview_url: '' },
+        entities1:     { entity: 'sensor.some_sensor1', icon: '' },
+        entities2:     { entity: 'sensor.some_sensor2', icon: '' },
+        entities3:     { entity: 'sensor.some_sensor3', icon: '' },
+        entities4:     { entity: 'sensor.some_sensor4', icon: '' },
+        entities5:     { entity: 'sensor.some_sensor5', icon: '' },
+        temperature:   {
+          temperature_sensor: 'sensor.vindstyrka_salotto_temperature',
+          humidity_sensor:    'sensor.vindstyrka_salotto_humidity',
+          tap_action: { action: 'more-info' }
+        },
       },
       colors: {
-        active: userColors.active ?? 'rgba(var(--rgb-primary-color), 1)',
-        inactive: userColors.inactive ?? 'rgba(var(--rgb-primary-color), 0.4)',
-        backgroundActive: userColors.backgroundActive ?? 'rgba(var(--rgb-primary-color), 0.2)',
-        backgroundInactive: userColors.backgroundInactive ?? 'rgba(var(--rgb-primary-color), 0.08)',
+        active: 'var(--primary-color)',
+        inactive: 'color-mix(in srgb, var(--primary-color) 40%, transparent)',
+        backgroundActive: 'color-mix(in srgb, var(--primary-color) 20%, transparent)',
+        backgroundInactive: 'color-mix(in srgb, var(--primary-color) 10%, transparent)'
       },
-      icon:       '',
-      name:       'Salotto',
+      icon: '',
+      name: 'Salotto',
       tap_action: { action: 'navigate', navigation_path: '/lovelace/sala' }
     };
   }
@@ -485,11 +487,6 @@ class BubbleRoom extends LitElement {
     if (!this.config || !this.hass) {
       return html`<div>Loading…</div>`;
     }
-    console.log('>>> CONFIG COLORS');
-    console.log('active:', this.config.colors.active);
-    console.log('inactive:', this.config.colors.inactive);
-    console.log('backgroundActive:', this.config.colors.backgroundActive);
-    console.log('backgroundInactive:', this.config.colors.backgroundInactive);
 
 
     const { entities, name, icon, background, border_radius } = this.config;
@@ -518,7 +515,7 @@ class BubbleRoom extends LitElement {
       `--bubble-room-icon-color: ${bubbleIconColor}`,
       `--bubble-room-name-color: ${bubbleIconColor}`
     ].filter(v => v).join(';');
-    console.log('>>> CSS cardVars', cardVars);
+
     const mainIcon = icon?.trim() ? icon : this._getFallbackIcon(entities.presence.entity);
 
     const subButtons = [
@@ -599,6 +596,7 @@ class BubbleRoom extends LitElement {
 }
 
 customElements.define('bubble-room', BubbleRoom);
+
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: 'bubble-room',
@@ -607,3 +605,4 @@ window.customCards.push({
   preview: true,
   documentationURL: 'https://github.com/mon3y78/Lovelace-Bubble-room'
 });
+console.log('[Bubble Room] Custom card script loaded');
