@@ -682,7 +682,7 @@ class BubbleRoom extends LitElement {
       return html`<div>Loading…</div>`;
     }
   
-    // ==== aggiungi background e border_radius qui ====
+    // 1) destruttura le proprietà
     const {
       entities,
       name,
@@ -692,91 +692,85 @@ class BubbleRoom extends LitElement {
       border_radius
     } = this.config;
   
-
-
+    // 2) calcola i colori di fallback / tema HA
+    const ACCENT_ICON   = 'var(--primary-color)';
+    const INACTIVE_ICON = 'var(--secondary-text-color)';
+    const ACCENT_BG     = 'rgba(var(--rgb-primary-color),0.1)';
+    const INACTIVE_BG   = 'var(--divider-color, rgba(0,0,0,0.12))';
+  
+    const presenceOn   = this.hass.states[entities.presence.entity]?.state === 'on';
+    const iconOnColor  = userColors.active           ?? ACCENT_ICON;
+    const iconOffColor = userColors.inactive         ?? INACTIVE_ICON;
+    const bgOnColor    = userColors.backgroundActive ?? ACCENT_BG;
+    const bgOffColor   = userColors.backgroundInactive ?? INACTIVE_BG;
+  
+    const bubbleIconColor = presenceOn ? iconOnColor : iconOffColor;
+    const bubbleBg        = presenceOn ? bgOnColor   : bgOffColor;
+  
+    // 3) Calcola mainIcon
     const mainIcon = icon?.trim()
       ? icon
-      : this._getFallbackIcon(this.config.entity, '');
-    // ora puoi usarli senza ReferenceError
-    // (segue il resto del tuo codice, inclusa la lettura dei CSS-vars)
+      : this._getFallbackIcon(entities.presence.entity, '');
   
-    // 1) leggo le variabili di tema e le converto in rgb/rgba
-    const styles = getComputedStyle(this);
-    let primaryRaw   = styles.getPropertyValue('--primary-color').trim();
-    let secondaryRaw = styles.getPropertyValue('--secondary-text-color').trim();
+    // 4) build subButtons
+    const subButtons = [
+      entities['sub-button1'],
+      entities['sub-button2'],
+      entities['sub-button3'],
+      entities['sub-button4'],
+    ].filter(b => b && b.entity);
   
-    // helper per esadecimali → rgb
-    function hexToRgb(hex) {
-      hex = hex.replace(/^#/, '');
-      if (hex.length === 3)
-        hex = hex.split('').map(c => c + c).join('');
-      const num = parseInt(hex, 16);
-      return { r: num >> 16, g: (num >> 8) & 0xff, b: num & 0xff };
-    }
-    if (primaryRaw.startsWith('#')) {
-      const { r, g, b } = hexToRgb(primaryRaw);
-      primaryRaw = `rgb(${r}, ${g}, ${b})`;
-    }
-    if (secondaryRaw.startsWith('#')) {
-      const { r, g, b } = hexToRgb(secondaryRaw);
-      secondaryRaw = `rgb(${r}, ${g}, ${b})`;
-    }
+    // ────────────────────────────────────────
+    // 5) **QUI** devi definire mushrooms PRIMA del template
+    const mushroomKeys = [
+      'entities1','entities2','entities3','entities4','entities5',
+      'climate','temperature','camera'
+    ];
+    const mushrooms = mushroomKeys.map((key, idx) => {
+      const item = this.config.entities[key];
+      // se non esiste o non ha né .entity né temperatura/umidità, metto placeholder
+      if (!item) return { item: null, idx, color: null };
   
-    // 2) definisci i fallback “accent” e “inactive”
-    const ACCENT_ICON   = primaryRaw;
-    const INACTIVE_ICON = secondaryRaw;
-    const ACCENT_BG     = primaryRaw.replace('rgb(', 'rgba(').replace(')', ', 0.1)');
-    const INACTIVE_BG   = secondaryRaw.replace('rgb(', 'rgba(').replace(')', ', 0.1)');
+      // se è temperatura/umidità non c'è stato “on/off”
+      if (item.temperature_sensor || item.humidity_sensor) {
+        return { item, idx, color: bubbleIconColor };
+      }
   
-    // 3) stato presenza
-    const presenceOn = this.hass.states[entities.presence.entity]?.state === 'on';
+      // altrimenti calcolo lo stato on/off
+      const stateOn = this.hass.states[item.entity]?.state === 'on';
+      const color   = stateOn ? iconOnColor : iconOffColor;
+      return { item, idx, color };
+    });
+    // ────────────────────────────────────────
   
-    // 4) applica eventuali colori da config o fai fallback
-    const iconOnColor  = userColors.active            ?? ACCENT_ICON;
-    const iconOffColor = userColors.inactive          ?? INACTIVE_ICON;
-    const bgOnColor    = userColors.backgroundActive  ?? ACCENT_BG;
-    const bgOffColor   = userColors.backgroundInactive?? INACTIVE_BG;
-  
-    const bubbleIconColor = presenceOn ? iconOnColor  : iconOffColor;
-    const bubbleBg        = presenceOn ? bgOnColor    : bgOffColor;
-  
-    // 5) costruisci lo stile inline del card (includi anche background/border_radius)
-    const cardVars = [];
-    if (background)    cardVars.push(`--bubble-room-background: ${background}`);
-    if (border_radius) cardVars.push(`--bubble-room-border-radius: ${border_radius}`);
-    cardVars.push(`--bubble-room-name-color: ${bubbleIconColor}`);
-    cardVars.push(`--bubble-room-icon-bg: ${bubbleBg}`);
-    cardVars.push(`--bubble-room-icon-color: ${bubbleIconColor}`);
-    cardVars.push(`--bubble-room-sub-bg: ${iconOffColor}`);
-    cardVars.push(`--bubble-room-sub-icon-color: ${iconOnColor}`);
-    const cardStyle = cardVars.join(';');
-  
+    // 6) restituisci il template
     return html`
-      <ha-card style="${cardStyle}">
-
+      <ha-card style="${ background ? `--bubble-room-background: ${background};` : '' }">
         <div class="card">
           <div class="grid-container">
             <div class="name-area" style="color: ${bubbleIconColor};">
               ${name}
             </div>
-  
-            <!-- Bubble centrale -->
-            <div class="bubble-icon-container"
-                 style="background-color: ${bubbleBg};">
-              ${ mainIcon
-                ? html`
-                    <ha-icon
-                      class="bubble-icon"
-                      icon="${mainIcon}"
-                      style="color: ${bubbleIconColor};"
-                    ></ha-icon>`
-                : nothing }
-            </div>
-  
-              <!-- Mushrooms -->
+            <div class="icon-area">
+              <div
+                class="bubble-icon-container"
+                style="background-color: ${bubbleBg};"
+                @pointerdown=${e => this._startHold(e, this.config)}
+                @pointerup=${e => this._endHold(e, this.config, () => this._handleMainIconTap())}
+                @pointerleave=${e => this._cancelHold(e)}
+              >
+                ${ mainIcon
+                  ? html`<ha-icon
+                            class="bubble-icon"
+                            icon="${mainIcon}"
+                            style="color: ${bubbleIconColor};"
+                          ></ha-icon>`
+                  : nothing }
+              </div>
               <div class="mushroom-container">
                 ${ mushrooms.map(({ item, idx, color }) => {
                     if (!item) {
+                      // placeholder invisibile
                       return html`
                         <div class="mushroom-item"
                              style="${this._defaultMushroomStyle(idx)}"></div>
@@ -787,35 +781,32 @@ class BubbleRoom extends LitElement {
                 }
               </div>
             </div>
-  
-            <!-- Colonna Sub‑button -->
-            <div class="bubble-sub-button-container"
-                 style="background-color: transparent;">
+            <div class="bubble-sub-button-container">
               ${ subButtons.map(btn => {
-                  const isOn   = hass.states[btn.entity]?.state === 'on';
-                  const btnBg  = isOn ? iconOnColor  : iconOffColor;
-                  const iconCol= isOn ? iconOnColor  : iconOffColor;
+                  const isOn   = this.hass.states[btn.entity]?.state === 'on';
+                  const btnBg  = isOn ? iconOnColor : iconOffColor;
+                  const iconCol= isOn ? iconOnColor : iconOffColor;
                   const ic     = this._getFallbackIcon(btn.entity, btn.icon || '');
   
                   return html`
                     <div class="bubble-sub-button"
                          style="background-color: ${btnBg};"
                          @pointerdown=${e => this._startHold(e, btn)}
-                         @pointerup  =${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
-                         @pointerleave=${e => this._cancelHold(e)}>
-                      <ha-icon icon="${ic}"
-                               style="color: ${iconCol};"></ha-icon>
+                         @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
+                         @pointerleave=${e => this._cancelHold(e)}
+                    >
+                      <ha-icon icon="${ic}" style="color: ${iconCol};"></ha-icon>
                     </div>
                   `;
                 })
               }
             </div>
-  
           </div>
         </div>
       </ha-card>
     `;
   }
+  
   
   
   
