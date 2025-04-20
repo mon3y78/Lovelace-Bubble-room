@@ -191,8 +191,8 @@ class BubbleRoom extends LitElement {
    */
   _renderMushroom(item, idx, iconColor) {
     const posStyle = item.style || this._defaultMushroomStyle(idx);
-  
-    // 1) temperatura / umidità
+
+    // se è temperatura / umidità
     if (item.temperature_sensor || item.humidity_sensor) {
       const txt = this._buildTemperatureText(item);
       return html`
@@ -201,16 +201,19 @@ class BubbleRoom extends LitElement {
         </div>
       `;
     }
-  
-    // 2) icona normale
+
+    // altrimenti icona normale
     const entityId = item.entity;
-    const explicit = item.icon || '';
-    const iconName = this._getFallbackIcon(entityId, explicit);
-  
-    // 3) colore on/off
-    const isOn = entityId && this.hass.states[entityId]?.state === 'on';
-    const color = isOn ? iconColor : 'var(--secondary-text-color)';
-  
+    if (!entityId) {
+      // niente entity, ritorno vuoto per non rompere il layout
+      return html``;
+    }
+
+    const explicitIcon = item.icon || '';
+    const iconName = this._getFallbackIcon(entityId, explicitIcon);
+    const stateOn = this.hass.states[entityId]?.state === 'on';
+    const color = stateOn ? iconColor : 'var(--secondary-text-color)';
+
     return html`
       <div
         class="mushroom-item"
@@ -674,7 +677,9 @@ class BubbleRoom extends LitElement {
   
     const { entities, name, icon, tap_action, colors: userColors = {}, background, border_radius } = this.config;
     const hass = this.hass;
-  
+
+
+
     // 1) variabili di tema HA (fallback)
     const ACCENT_ICON   = 'var(--primary-color)';               // icona on
     const INACTIVE_ICON = 'var(--secondary-text-color)';        // icona off
@@ -711,16 +716,22 @@ class BubbleRoom extends LitElement {
       entities['sub-button3'], entities['sub-button4']
     ].filter(b => b && b.entity);
     // 1) definisci l’ordine “canonico” delle 8 slots
+    // 2) mappale in un array di oggetti { key, item }
+
+// 1) prendi le chiavi
     const mushroomKeys = [
       'entities1','entities2','entities3','entities4','entities5',
       'climate','temperature','camera'
     ];
-    // 2) mappale in un array di oggetti { key, item }
+    // 2) mappale in array di oggetti { key, item }
     const mushrooms = mushroomKeys.map(key => ({
       key,
-      item: entities[key] // potrebbe essere undefined
-    }));
-
+      item: this.config.entities[key]  // può venirti undefined
+    })).filter(({ item }) => {
+      // se vuoi includere anche gli “slot vuoti” per mantenere la posizione
+      // commenta via la filter e ricadi nel fallback HTML vuoto
+      return item;
+    });
 
 
     
@@ -751,20 +762,11 @@ class BubbleRoom extends LitElement {
               </div>
               <!-- Mushrooms -->
               <div class="mushroom-container">
-                ${mushrooms.map((item, idx) =>
-                  item
-                    // se esiste, renderizza col suo stile (fallback a default)
-                    ? this._renderMushroom(item, idx, bubbleIconColor)
-                    // altrimenti butta dentro un div trasparente con lo style di default,
-                    // così gli altri non si spostano
-                    : html`
-                      <div
-                        class="mushroom-item"
-                        style="${this._defaultMushroomStyle(idx)}"
-                      ></div>
-                    `
+                ${mushrooms.map(({ item }, idx) =>
+                  this._renderMushroom(item, idx, bubbleIconColor)
                 )}
               </div>
+
             </div>
             <!-- Sub‑button -->
             <div class="bubble-sub-button-container">
