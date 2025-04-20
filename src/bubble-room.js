@@ -433,7 +433,7 @@ class BubbleRoom extends LitElement {
    * item.style, item.entity e item.icon,
    * e ritorna un template Lit con posizione e azioni.
    */
-  _renderMushroom(item, idx) {
+  _renderMushroom(item, idx, iconColor) {
     // qui decidi lo style: o quello esplicito oppure il fallback
     const style = item.style || '';
     // ottieni l’icona (puoi passare anche item.icon se ne hai messa una in config)
@@ -442,17 +442,19 @@ class BubbleRoom extends LitElement {
     return html`
       <div
         class="mushroom-item"
-        style="${style}"
+        style="${item.style || this._defaultMushroomStyle(idx)}"
         @pointerdown=${e => this._startHold(e, item)}
         @pointerup=${e => this._endHold(e, item, () => this._handleMushroomTap(item))}
         @pointerleave=${e => this._cancelHold(e)}
       >
         <ha-icon
-          icon="${icon}"
-          style="color: ${/* qui metti il colore: es. item.color o userColors.active */ ''};"
+          icon="${this._getFallbackIcon(item.entity, item.icon)}"
+    -     style="color: ${''};"
+    +     style="color: ${iconColor};"
         ></ha-icon>
       </div>
     `;
+
   }
 
   _defaultMushroomStyle(index) {
@@ -683,13 +685,20 @@ class BubbleRoom extends LitElement {
       entities['sub-button1'], entities['sub-button2'],
       entities['sub-button3'], entities['sub-button4']
     ].filter(b => b && b.entity);
-    const mushrooms = [
-      entities.entities1, entities.entities2, entities.entities3,
-      entities.entities4, entities.entities5,
-      entities.climate, entities.temperature, entities.camera
-    ]
-    .filter(item => item && item.entity && item.entity.trim() !== '');
-  
+    // 1) definisci l’ordine “canonico” delle 8 slots
+    const mushroomKeys = [
+      'entities1','entities2','entities3','entities4','entities5',
+      'climate','temperature','camera'
+    ];
+    // 2) mappale in un array di oggetti { key, item }
+    const mushrooms = mushroomKeys.map(key => ({
+      key,
+      item: entities[key] // potrebbe essere undefined
+    }));
+
+
+
+    
     return html`
       <ha-card style="${cardStyle}">
         <div class="card">
@@ -716,9 +725,21 @@ class BubbleRoom extends LitElement {
                   : nothing }
               </div>
               <!-- Mushrooms -->
-              <div class="mushroom-container">
-                  ${mushrooms.map((item, idx) => this._renderMushroom(item, idx))}
-              </div>
+                  <div class="mushroom-container">
+                    ${mushrooms.map(({ key, item }, idx) =>
+                      item
+                        // se esiste, renderizza col suo stile (fallback a default)
+                        ? this._renderMushroom(item, idx, bubbleIconColor)
+                        // altrimenti butta dentro un div trasparente con lo style di default,
+                        // così gli altri non si spostano
+                        : html`
+                          <div
+                            class="mushroom-item"
+                            style="${this._defaultMushroomStyle(idx)}"
+                          ></div>
+                        `
+                    )}
+                  </div>
             </div>
             <!-- Sub‑button -->
             <div class="bubble-sub-button-container">
