@@ -204,8 +204,8 @@ class BubbleRoom extends LitElement {
       colors: {
         active:             userColors.active             ?? 'var(--primary-color)',
         inactive:           userColors.inactive           ?? 'var(--secondary-text-color)',
-        backgroundActive:   userColors.backgroundActive   ?? 'rgba(var(--rgb-primary-color), 0.1)',
-        backgroundInactive: userColors.backgroundInactive ?? 'var(--divider-color, rgba(0,0,0,0.12))',
+        backgroundActive:   userColors.backgroundActive   ?? 'var(--primary-color, #03a9f4)',
+        backgroundInactive: userColors.backgroundInactive ?? 'var(--card-background-color, rgba(0,0,0,0.12))',
       },
       icon:       config.icon       || '',
       name:       config.name       || 'Salotto',
@@ -314,11 +314,11 @@ class BubbleRoom extends LitElement {
         border-radius: 10px;
         margin: 3px;
         cursor: pointer;
-        background-color: var(--bubble-room-sub-bg, var(--divider-color)) !important;
-        color: var(--bubble-room-sub-icon-color, var(--primary-text-color)) !important;
+        background-color: var(--bubble-room-sub-bg, var(--divider-color));
+        color: var(--bubble-room-sub-icon-color, var(--primary-text-color));
       }
       .bubble-sub-button ha-icon {
-        color: var(--bubble-room-sub-icon-color, var(--secondary-text-color)) !important;
+        color: var(--bubble-room-sub-icon-color, var(--secondary-text-color));
       }
       .mushroom-container {
         position: absolute;
