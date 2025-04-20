@@ -678,28 +678,42 @@ class BubbleRoom extends LitElement {
   }
   
   render() {
-    if (!this.config || !this.hass) {
-      return html`<div>Loading…</div>`;
+    // recupero i valori raw dal tema
+    const styles = getComputedStyle(this);
+    let primaryRaw   = styles.getPropertyValue('--primary-color').trim();         // es. "#2196F3" o "rgb(33,150,243)"
+    let secondaryRaw = styles.getPropertyValue('--secondary-text-color').trim(); // es. "#B6B6B6" o "rgb(182,182,182)"
+  
+    // helper: se arriva in hex, lo converto in rgb(r,g,b)
+    function hexToRgb(hex) {
+      hex = hex.replace(/^#/, '');
+      if (hex.length === 3) hex = hex.split('').map(c => c+c).join('');
+      const num = parseInt(hex, 16);
+      return { r: num >> 16, g: (num >> 8)&0xff, b: num & 0xff };
+    }
+    if (primaryRaw.startsWith('#')) {
+      const {r,g,b} = hexToRgb(primaryRaw);
+      primaryRaw = `rgb(${r}, ${g}, ${b})`;
+    }
+    if (secondaryRaw.startsWith('#')) {
+      const {r,g,b} = hexToRgb(secondaryRaw);
+      secondaryRaw = `rgb(${r}, ${g}, ${b})`;
     }
   
-    const { entities, name, icon, colors: userColors = {}, background, border_radius } = this.config;
-    const hass = this.hass;
+    // ora posso definire i miei fallback “accent” e “inactive”
+    const ACCENT_ICON   = primaryRaw;
+    const INACTIVE_ICON = secondaryRaw;
+    const ACCENT_BG     = primaryRaw.replace('rgb(', 'rgba(').replace(')', ', 0.1)');  
+    const INACTIVE_BG   = secondaryRaw.replace('rgb(', 'rgba(').replace(')', ', 0.1)');
   
-    // fallback tema HA
-    const ACCENT_ICON   = 'var(--primary-color)';
-    const INACTIVE_ICON = 'var(--secondary-text-color)';
-    const ACCENT_BG     = 'rgba(var(--rgb-primary-color),0.1)';
-    const INACTIVE_BG   = 'var(--divider-color, rgba(0,0,0,0.12))';
+    // stato di presenza
+    const presenceOn = this.hass.states[this.config.entities.presence.entity]?.state === 'on';
   
-    // presenza on/off
-    const presenceOn = hass.states[entities.presence.entity]?.state === 'on';
-  
-    // i colori effettivi
-    const iconOnColor  = userColors.active            ?? ACCENT_ICON;
-    const iconOffColor = userColors.inactive          ?? INACTIVE_ICON;
-    const bgOnColor    = userColors.backgroundActive  ?? ACCENT_BG;
-    const bgOffColor   = userColors.backgroundInactive?? INACTIVE_BG;
-  
+    // colori finali
+    const iconOnColor  = this.config.colors?.active            ?? ACCENT_ICON;
+    const iconOffColor = this.config.colors?.inactive          ?? INACTIVE_ICON;
+    const bgOnColor    = this.config.colors?.backgroundActive  ?? ACCENT_BG;
+    const bgOffColor   = this.config.colors?.backgroundInactive?? INACTIVE_BG;
+    
     const bubbleIconColor = presenceOn ? iconOnColor  : iconOffColor;
     const bubbleBg        = presenceOn ? bgOnColor    : bgOffColor;
   
