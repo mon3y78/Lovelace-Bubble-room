@@ -202,10 +202,10 @@ class BubbleRoom extends LitElement {
     this.config = {
       entities,
       colors: {
-        ...(userColors.active            !== undefined ? { active:            userColors.active }            : {}),
-        ...(userColors.inactive          !== undefined ? { inactive:          userColors.inactive }          : {}),
-        ...(userColors.backgroundActive  !== undefined ? { backgroundActive:  userColors.backgroundActive }  : {}),
-        ...(userColors.backgroundInactive!== undefined ? { backgroundInactive:userColors.backgroundInactive}: {}),
+        active:             userColors.active             ?? 'var(--primary-color)',
+        inactive:           userColors.inactive           ?? 'var(--secondary-text-color)',
+        backgroundActive:   userColors.backgroundActive   ?? 'rgba(var(--rgb-primary-color), 0.1)',
+        backgroundInactive: userColors.backgroundInactive ?? 'var(--divider-color, rgba(0,0,0,0.12))',
       },
       icon:       config.icon       || '',
       name:       config.name       || 'Salotto',
@@ -314,11 +314,11 @@ class BubbleRoom extends LitElement {
         border-radius: 10px;
         margin: 3px;
         cursor: pointer;
-        background-color: var(--bubble-room-sub-bg, var(--divider-color));
-        color: var(--bubble-room-sub-icon-color, var(--primary-text-color));
+        background-color: var(--bubble-room-sub-bg, var(--divider-color)) !important;
+        color: var(--bubble-room-sub-icon-color, var(--primary-text-color)) !important;
       }
       .bubble-sub-button ha-icon {
-        color: var(--bubble-room-sub-icon-color, var(--secondary-text-color));
+        color: var(--bubble-room-sub-icon-color, var(--secondary-text-color)) !important;
       }
       .mushroom-container {
         position: absolute;
@@ -560,8 +560,9 @@ class BubbleRoom extends LitElement {
             <div class="bubble-sub-button-container">
               ${ subButtons.map(btn => {
                   const isOn    = hass.states[btn.entity]?.state === 'on';
-                  const btnBg   = isOn ? iconOnColor : iconOffColor;
-                  const iconCol = isOn ? iconOnColor : iconOffColor;
+                  const btnBg   = isOn ? this.config.colors.backgroundActive   ?? ACCENT_BG : this.config.colors.backgroundInactive ?? INACTIVE_BG;
+                  const iconCol = isOn ? this.config.colors.active             ?? ACCENT_ICON : this.config.colors.inactive ?? INACTIVE_ICON;
+
                   const ic      = this._getFallbackIcon(btn.entity);
                   return html`
                     <div class="bubble-sub-button ${isOn ? 'active' : 'inactive'}"
