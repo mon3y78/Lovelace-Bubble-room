@@ -90,7 +90,8 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
         margin-left: 0;
         font-size: 30px;
         font-weight: bold;
-        color: inherit;
+        color: var(--bubble-room-name-color, var(--primary-text-color));
+
       }
       .icon-area {
         grid-area: i;
@@ -110,6 +111,10 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
         align-items: center;
         top: -39px;
         left: -40px;
+        background-color: var(
+          --bubble-room-icon-bg,
+          var(--rgb-primary-color, rgba(0, 128, 0, 0.4))
+        ) !important;
       }
       .bubble-icon {
         position: absolute;
@@ -118,6 +123,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
         width: 50% !important;
         --mdc-icon-size: 75px !important;
         opacity: 0.5 !important;
+        color: var(--bubble-room-icon-color, var(--primary-color)) !important;
       }
       .bubble-sub-button-container {
         grid-area: b;
@@ -127,6 +133,10 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
         align-items: center;
         justify-self: stretch;
         align-self: stretch;
+        background-color: var(
+          --bubble-room-sub-bg,
+          var(--secondary-background-color, rgba(0,0,0,0.12))
+        );
       }
       .bubble-sub-button {
         display: flex;
@@ -138,7 +148,8 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
         text-align: center;
         min-height: 38px;
         margin: 3px;
-        cursor: pointer;
+        cursor: pointer; 
+        color: var(--bubble-room-sub-icon-color, var(--primary-text-color));
       }
       .mushroom-container {
         position: absolute;
@@ -179,7 +190,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
             <div class="icon-area">
               <div
                 class="bubble-icon-container"
-                style="background-color: ${g};"
+                ${void 0!==o.backgroundActive?`style="background-color: ${g};"`:""}
                 @pointerdown=${t=>this._startHold(t,this.config)}
                 @pointerup=${t=>this._endHold(t,this.config,(()=>this._handleMainIconTap()))}
                 @pointerleave=${t=>this._cancelHold(t)}
@@ -187,7 +198,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
                 ${v?D`<ha-icon
                             class="bubble-icon"
                             icon=${v}
-                            style="color: ${p};"
+                            ${void 0!==o.active?`style="color: ${p};"`:""}
                           ></ha-icon>`:L}
               </div>
               <!-- Mushrooms -->
@@ -198,15 +209,20 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
             </div>
             <!-- Sub‑button -->
             <div class="bubble-sub-button-container">
-              ${f.map((t=>{const e="on"===r.states[t.entity]?.state,i=e?l:d,n=e?l:d,o=this._getFallbackIcon(t.entity);return D`
+              ${f.map((t=>{const e="on"===r.states[t.entity]?.state,i=e?l:d,n=e?l:d,s=this._getFallbackIcon(t.entity);return D`
                   <div
                     class="bubble-sub-button"
+                    ${void 0!==o.active?`style="background-color: ${i};"`:""}
                     style="background-color: ${i};"
+
                     @pointerdown=${e=>this._startHold(e,t)}
                     @pointerup=${e=>this._endHold(e,t,(()=>this._handleSubButtonTap(t)))}
                     @pointerleave=${t=>this._cancelHold(t)}
                   >
-                    <ha-icon icon="${o}" style="color: ${n};"></ha-icon>
+                    <ha-icon
+                      icon="${s}"
+                      ${void 0!==o.active?`style="color: ${n};"`:""}
+                    ></ha-icon>
                   </div>
                 `}))}
             </div>

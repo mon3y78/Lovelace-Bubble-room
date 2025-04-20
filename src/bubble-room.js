@@ -396,7 +396,8 @@ class BubbleRoom extends LitElement {
         margin-left: 0;
         font-size: 30px;
         font-weight: bold;
-        color: inherit;
+        color: var(--bubble-room-name-color, var(--primary-text-color));
+
       }
       .icon-area {
         grid-area: i;
@@ -416,6 +417,10 @@ class BubbleRoom extends LitElement {
         align-items: center;
         top: -39px;
         left: -40px;
+        background-color: var(
+          --bubble-room-icon-bg,
+          var(--rgb-primary-color, rgba(0, 128, 0, 0.4))
+        ) !important;
       }
       .bubble-icon {
         position: absolute;
@@ -424,6 +429,7 @@ class BubbleRoom extends LitElement {
         width: 50% !important;
         --mdc-icon-size: 75px !important;
         opacity: 0.5 !important;
+        color: var(--bubble-room-icon-color, var(--primary-color)) !important;
       }
       .bubble-sub-button-container {
         grid-area: b;
@@ -433,6 +439,10 @@ class BubbleRoom extends LitElement {
         align-items: center;
         justify-self: stretch;
         align-self: stretch;
+        background-color: var(
+          --bubble-room-sub-bg,
+          var(--secondary-background-color, rgba(0,0,0,0.12))
+        );
       }
       .bubble-sub-button {
         display: flex;
@@ -444,7 +454,8 @@ class BubbleRoom extends LitElement {
         text-align: center;
         min-height: 38px;
         margin: 3px;
-        cursor: pointer;
+        cursor: pointer; 
+        color: var(--bubble-room-sub-icon-color, var(--primary-text-color));
       }
       .mushroom-container {
         position: absolute;
@@ -752,7 +763,9 @@ class BubbleRoom extends LitElement {
             <div class="icon-area">
               <div
                 class="bubble-icon-container"
-                style="background-color: ${bubbleBg};"
+                ${userColors.backgroundActive !== undefined
+                  ? `style="background-color: ${bubbleBg};"`
+                  : ''}
                 @pointerdown=${e => this._startHold(e, this.config)}
                 @pointerup=${e => this._endHold(e, this.config, () => this._handleMainIconTap())}
                 @pointerleave=${e => this._cancelHold(e)}
@@ -761,7 +774,9 @@ class BubbleRoom extends LitElement {
                   ? html`<ha-icon
                             class="bubble-icon"
                             icon=${mainIcon}
-                            style="color: ${bubbleIconColor};"
+                            ${userColors.active !== undefined
+                              ? `style="color: ${bubbleIconColor};"`
+                              : ''}
                           ></ha-icon>`
                   : nothing }
               </div>
@@ -785,14 +800,24 @@ class BubbleRoom extends LitElement {
                 return html`
                   <div
                     class="bubble-sub-button"
+                    ${userColors.active !== undefined
+                      ? `style="background-color: ${btnBg};"`
+                      : ''}
                     style="background-color: ${btnBg};"
+
                     @pointerdown=${e => this._startHold(e, btn)}
                     @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
                     @pointerleave=${e => this._cancelHold(e)}
                   >
-                    <ha-icon icon="${ic}" style="color: ${iconCol};"></ha-icon>
+                    <ha-icon
+                      icon="${ic}"
+                      ${userColors.active !== undefined
+                        ? `style="color: ${iconCol};"`
+                        : ''}
+                    ></ha-icon>
                   </div>
                 `;
+                  
               })}
             </div>
           </div>
