@@ -705,21 +705,29 @@ class BubbleRoom extends LitElement {
   
     // 7) sub‑button e mushrooms
     const subButtons = [
-      entities['sub-button1'], entities['sub-button2'],
-      entities['sub-button3'], entities['sub-button4']
+      entities['sub-button1'],
+      entities['sub-button2'],
+      entities['sub-button3'],
+      entities['sub-button4']
     ].filter(b => b && b.entity);
-    // 1) definisci l’ordine “canonico” delle 8 slots
-    // 2) mappale in un array di oggetti { key, item }
-
-// 1) prendi le chiavi
+    
+    // definisci l’ordine “canonico” delle 8 slots
     const mushroomKeys = [
       'entities1','entities2','entities3','entities4','entities5',
       'climate','temperature','camera'
     ];
+    
+    // mappale in un array di oggetti { item, idx, color }
     const mushrooms = mushroomKeys.map((key, idx) => {
       const item = this.config.entities[key];
-      const stateOn = item && this.hass.states[item.entity]?.state === 'on';
-      return { item, idx, color: stateOn ? iconOnColor : iconOffColor };
+      // se non esiste o non ha entity, lo lasciamo undefined
+      if (!item || !item.entity) {
+        return { item: null, idx, color: null };
+      }
+      // calcola lo stato “on/off” per scegliere il colore
+      const stateOn = this.hass.states[item.entity]?.state === 'on';
+      const color = stateOn ? iconOnColor : iconOffColor;
+      return { item, idx, color };
     });
 
 
@@ -751,16 +759,19 @@ class BubbleRoom extends LitElement {
               </div>
               <!-- Mushrooms -->
               <div class="mushroom-container">
-                ${mushrooms.map(({ item, idx, color }) =>
-                  item
-                    ? this._renderMushroom(item, idx, color)
-                    : html`
+                ${mushrooms.map(({ item, idx, color }) => {
+                  if (!item) {
+                    // placeholder trasparente così non sposta le altre
+                    return html`
                       <div
                         class="mushroom-item"
                         style="${this._defaultMushroomStyle(idx)}"
                       ></div>
-                    `
-                )}
+                    `;
+                  }
+                  // altrimenti chiama il tuo helper passandogli l’item, l’indice e il colore
+                  return this._renderMushroom(item, idx, color);
+                })}
               </div>
 
             </div>
