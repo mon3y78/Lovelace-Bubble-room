@@ -11,15 +11,13 @@ class BubbleRoom extends LitElement {
 
   firstUpdated() {
     const els = this.shadowRoot.querySelectorAll('.mushroom-primary');
-    if (els.length) {
-      fitty(els, {
-        maxSize: 20,
-        multiLine: false,
-        /** disabilita i listener di resize e MutationObserver */
-        observeWindow: false,
-        observeMutations: false,
-      });
-    }
+    if (!els.length) return;
+    // installa fitty e poi disattiva i listener interni
+    const controllers = fitty(els, {
+      maxSize: 20,
+      multiLine: false
+    });
+    controllers.forEach(c => c.unsubscribe());
   }
   // Supporto all'editor visivo
   static async getConfigElement() {
@@ -315,9 +313,8 @@ class BubbleRoom extends LitElement {
           usa il theme var --ha-card-background */
         background: var(
           --bubble-room-background,
-          var(--ha-card-background, white)
+          var(--card-background-color, var(--ha-card-background, white))
         ) !important;
-        height: var(--card-height);
         border-radius: var(
           --bubble-room-border-radius,
           var(--ha-card-border-radius, 8px)
@@ -681,7 +678,6 @@ class BubbleRoom extends LitElement {
             <div class="icon-area">
               <div
                 class="bubble-icon-container"
-                style="background-color: ${bubbleBg};"
                 @pointerdown=${e => this._startHold(e, this.config)}
                 @pointerup=${e => this._endHold(e, this.config, () => this._handleMainIconTap())}
                 @pointerleave=${e => this._cancelHold(e)}
