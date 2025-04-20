@@ -89,14 +89,12 @@ class BubbleRoom extends LitElement {
 
   // Funzione helper per ottenere l'icona di fallback
   _getFallbackIcon(entityId, explicitIcon = '') {
-    if (!entityId) return '';  // ← qui
-    if (explicitIcon.trim()) {
-      return explicitIcon;
-    }
-    if (explicitIcon && explicitIcon.trim() !== '') {
+    // se explicitIcon è stringa non vuota, la uso
+    if (typeof explicitIcon === 'string' && explicitIcon.trim() !== '') {
       return explicitIcon;
     }
   
+    // se l’utente ha specificato un’icona nell’entity state
     if (this.hass?.entities?.[entityId]?.icon) {
       return this.hass.entities[entityId].icon;
     }
@@ -105,12 +103,12 @@ class BubbleRoom extends LitElement {
     if (stateObj?.attributes?.icon) {
       return stateObj.attributes.icon;
     }
-    
+  
     if (stateObj?.attributes?.device_class) {
-      return this._getDeviceClassIcon(stateObj.attributes.device_class, stateObj?.state);
+      return this._getDeviceClassIcon(stateObj.attributes.device_class, stateObj.state);
     }
   
-    const domain = entityId.split('.')[0];
+    const domain = entityId?.split?.('.')?.[0] || '';
     return this._getDomainDefaultIcon(domain, stateObj?.state);
   }
   
@@ -190,11 +188,27 @@ class BubbleRoom extends LitElement {
    * @param {string} iconColor
    */
   _renderMushroom(item, idx, iconColor) {
-    const icon = this._getFallbackIcon(item.entity, item.icon);
+    const style = this._defaultMushroomStyle(idx);
+  
+    // se è un blocco temperatura/umidità, mostro testo
+    if (item.temperature_sensor || item.humidity_sensor) {
+      const text = this._buildTemperatureText(item);
+      return html`
+        <div class="mushroom-item" style="${style}">
+          <span class="fit-text" style="color: ${iconColor};">
+            ${text}
+          </span>
+        </div>
+      `;
+    }
+  
+    // altrimenti prendo l’icona e la coloro
+    const icon = this._getFallbackIcon(item.entity, item.icon ?? '');
+  
     return html`
       <div
         class="mushroom-item"
-        style="${this._defaultMushroomStyle(idx)}"
+        style="${style}"
         @pointerdown=${e => this._startHold(e, item)}
         @pointerup=${e => this._endHold(e, item, () => this._handleMushroomTap(item))}
         @pointerleave=${e => this._cancelHold(e)}
