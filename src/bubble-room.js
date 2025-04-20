@@ -354,8 +354,8 @@ class BubbleRoom extends LitElement {
         /* background e border-radius ereditati dalle variabili inline */
       }
       .name-area {
-        /* Colore del testo via CSS‑var */
-        color: var(--bubble-room-name-color, var(--primary-text-color)) !important;
+        /* fallback: verrà comunque sovrascritto dall’inline style */
+        color: var(--bubble-room-name-color, var(--primary-text-color));
       }
       .bubble-icon-container {
         /* Sfondo bubble via CSS‑var */
@@ -369,11 +369,11 @@ class BubbleRoom extends LitElement {
       .bubble-sub-button {
         /* Fallback di ogni sub‑button se vuoi */
         /* I colori “on/off” li passi inline, qui serve solo il fallback */
-        background-color: var(--bubble-room-sub-bg, var(--divider-color)) !important;
+        background-color: var(--bubble-room-sub-bg, var(--divider-color));
       }
       .bubble-sub-button ha-icon {
         /* Fallback colore icona sub‑button */
-        color: var(--bubble-room-sub-icon-color, var(--secondary-text-color)) !important;
+        color: var(--bubble-room-sub-icon-color, var(--secondary-text-color));
       }
 
     `;
@@ -625,7 +625,10 @@ class BubbleRoom extends LitElement {
           <div class="grid-container">
   
             <!-- NOME -->
-            <div class="name-area">
+            <div
+              class="name-area"
+              style="color: ${bubbleIconColor};"
+            >
               ${name}
             </div>
   
@@ -649,12 +652,17 @@ class BubbleRoom extends LitElement {
                   const iconCol = isOn ? iconOn : iconOff;
                   const ic      = this._getFallbackIcon(btn.entity);
                   return html`
-                    <div class="bubble-sub-button"
-                         style="background-color: ${btnBg};"
-                         @pointerdown =${e => this._startHold(e, btn)}
-                         @pointerup    =${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
-                         @pointerleave =${e => this._cancelHold(e)}>
-                      <ha-icon icon="${ic}" style="color: ${iconCol};"></ha-icon>
+                    <div
+                      class="bubble-sub-button"
+                      style="background-color: ${btnBg};"
+                      @pointerdown=${e => this._startHold(e, btn)}
+                      @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
+                      @pointerleave=${e => this._cancelHold(e)}
+                    >
+                      <ha-icon
+                        icon="${ic}"
+                        style="color: ${iconCol};"
+                      ></ha-icon>
                     </div>
                   `;
                 })
