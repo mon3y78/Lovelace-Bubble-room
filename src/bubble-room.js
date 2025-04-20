@@ -419,7 +419,7 @@ class BubbleRoom extends LitElement {
         left: -40px;
         background-color: var(
           --bubble-room-icon-bg,
-          var(--rgb-primary-color, rgba(0, 128, 0, 0.4))
+          rgba(var(--rgb-primary-color), 0.1)
         ) !important;
       }
       .bubble-icon {
@@ -439,10 +439,6 @@ class BubbleRoom extends LitElement {
         align-items: center;
         justify-self: stretch;
         align-self: stretch;
-        background-color: var(
-          --bubble-room-sub-bg,
-          var(--secondary-background-color, rgba(0,0,0,0.12))
-        );
       }
       .bubble-sub-button {
         display: flex;
@@ -456,7 +452,14 @@ class BubbleRoom extends LitElement {
         margin: 3px;
         cursor: pointer; 
         color: var(--bubble-room-sub-icon-color, var(--primary-text-color));
+        background-color: var(
+          --bubble-room-sub-bg,
+          var(--divider-color, rgba(0,0,0,0.12))
+        );
       }
+      .bubble-sub-button ha-icon {
+        color: var(--bubble-room-sub-icon-color, var(--secondary-text-color));
+      }  
       .mushroom-container {
         position: absolute;
         bottom: 0;
@@ -756,28 +759,40 @@ class BubbleRoom extends LitElement {
         <div class="card">
           <div class="grid-container">
             <!-- Titolo -->
-            <div class="name-area" style="color: ${bubbleIconColor};">
+            <div
+              class="name-area"
+              ${
+                userColors.active !== undefined
+                  ? `style="color: ${bubbleIconColor};"`
+                  : ''
+              }
+            >
               ${name}
             </div>
             <!-- Bubble principale -->
             <div class="icon-area">
               <div
                 class="bubble-icon-container"
-                ${userColors.backgroundActive !== undefined
-                  ? `style="background-color: ${bubbleBg};"`
-                  : ''}
+                ${
+                  userColors.backgroundActive !== undefined
+                    ? `style="background-color: ${bubbleBg};"`
+                    : ''
+                }
                 @pointerdown=${e => this._startHold(e, this.config)}
                 @pointerup=${e => this._endHold(e, this.config, () => this._handleMainIconTap())}
                 @pointerleave=${e => this._cancelHold(e)}
               >
                 ${ mainIcon
-                  ? html`<ha-icon
-                            class="bubble-icon"
-                            icon=${mainIcon}
-                            ${userColors.active !== undefined
-                              ? `style="color: ${bubbleIconColor};"`
-                              : ''}
-                          ></ha-icon>`
+                  ? html`
+                    <ha-icon
+                      class="bubble-icon"
+                      icon=${mainIcon}
+                      ${
+                        userColors.active !== undefined
+                          ? `style="color: ${bubbleIconColor};"`
+                          : ''
+                      }
+                    ></ha-icon>`
                   : nothing }
               </div>
               <!-- Mushrooms -->
@@ -800,22 +815,25 @@ class BubbleRoom extends LitElement {
                 return html`
                   <div
                     class="bubble-sub-button"
-                    ${userColors.active !== undefined
-                      ? `style="background-color: ${btnBg};"`
-                      : ''}
-                    style="background-color: ${btnBg};"
-
+                    ${
+                      userColors.active !== undefined
+                        ? `style="background-color: ${btnBg};"`
+                        : ''
+                    }
                     @pointerdown=${e => this._startHold(e, btn)}
                     @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
                     @pointerleave=${e => this._cancelHold(e)}
                   >
                     <ha-icon
                       icon="${ic}"
-                      ${userColors.active !== undefined
-                        ? `style="color: ${iconCol};"`
-                        : ''}
+                      ${
+                        userColors.active !== undefined
+                          ? `style="color: ${iconCol};"`
+                          : ''
+                      }
                     ></ha-icon>
                   </div>
+
                 `;
                   
               })}
