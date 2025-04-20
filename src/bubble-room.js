@@ -8,7 +8,7 @@ class BubbleRoom extends LitElement {
       hass: { type: Object },
     };
   }
-
+  
   firstUpdated() {
     const els = this.shadowRoot.querySelectorAll('.mushroom-primary');
     if (!els.length) return;
@@ -614,7 +614,8 @@ class BubbleRoom extends LitElement {
     if (!this.config || !this.hass) {
       return html`<div>Loading…</div>`;
     }
-  
+    
+
     const { entities, name, icon, tap_action, colors: userColors = {}, background, border_radius } = this.config;
     const hass = this.hass;
   
@@ -719,6 +720,42 @@ class BubbleRoom extends LitElement {
     `;
   }
   
+
+  /**
+ * Restituisce il template HTML per un singolo “mushroom”
+ */
+  _renderMushroom(item, idx) {
+    // stato dell’entità
+    const state = this.hass.states[item.entity]?.state;
+    // icona (dal config o fallback)
+    const icon  = item.icon || 'mdi:help-circle-outline';
+
+    // decidi se è “on” oppure “off”
+    const isOn = state === 'on';
+
+    // colori: se hai definito custom.colors nel tuo config
+    const color = isOn
+      ? (this.config.colors?.active   || 'var(--primary-text-color)')
+      : (this.config.colors?.inactive || 'var(--secondary-text-color)');
+
+    const bg = isOn
+      ? (this.config.colors?.backgroundActive   || 'rgba(var(--rgb-primary-color),0.1)')
+      : (this.config.colors?.backgroundInactive || 'var(--divider-color)');
+
+    return html`
+      <div class="mushroom" style="background: ${bg};">
+        <ha-icon
+          .icon=${icon}
+          style="color: ${color};"
+        ></ha-icon>
+        ${ item.show_state
+            ? html`<span class="state">${state}</span>`
+            : nothing }
+      </div>
+    `;
+  }
+  
+
   
   
 
