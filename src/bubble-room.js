@@ -187,23 +187,25 @@ class BubbleRoom extends LitElement {
    * @param {number} idx
    * @param {string} iconColor
    */
-  _renderMushroom(item, idx, iconColor) {
+  _renderMushroom(item, idx, color) {
+    // ottengo sempre lo style di default in base all'indice
     const style = this._defaultMushroomStyle(idx);
   
-    // se è un blocco temperatura/umidità, mostro testo
+    // 1) caso temperatura/umidità
     if (item.temperature_sensor || item.humidity_sensor) {
       const text = this._buildTemperatureText(item);
       return html`
         <div class="mushroom-item" style="${style}">
-          <span class="fit-text" style="color: ${iconColor};">
+          <span class="fit-text" style="color: ${color};">
             ${text}
           </span>
         </div>
       `;
     }
   
-    // altrimenti prendo l’icona e la coloro
-    const icon = this._getFallbackIcon(item.entity, item.icon ?? '');
+    // 2) altrimenti è un mushroom “iconico”
+    // ricavo l'icona (custom o fallback)
+    const icon = this._getFallbackIcon(item.entity, item.icon);
   
     return html`
       <div
@@ -214,13 +216,13 @@ class BubbleRoom extends LitElement {
         @pointerleave=${e => this._cancelHold(e)}
       >
         <ha-icon
-          class="fit-text"
           icon="${icon}"
-          style="color: ${iconColor};"
+          style="color: ${color};"
         ></ha-icon>
       </div>
     `;
   }
+  
   
 
   // Funzione helper per costruire il testo per temperatura e umidità

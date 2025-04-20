@@ -26,7 +26,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
             ${e}
           </span>
         </div>
-      `}const o=this._getFallbackIcon(t.entity,t.icon??"");return D`
+      `}const o=this._getFallbackIcon(t.entity,t.icon);return D`
       <div
         class="mushroom-item"
         style="${n}"
@@ -35,7 +35,6 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
         @pointerleave=${t=>this._cancelHold(t)}
       >
         <ha-icon
-          class="fit-text"
           icon="${o}"
           style="color: ${i};"
         ></ha-icon>
