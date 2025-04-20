@@ -692,6 +692,11 @@ class BubbleRoom extends LitElement {
       border_radius
     } = this.config;
   
+
+
+    const mainIcon = icon?.trim()
+      ? icon
+      : this._getFallbackIcon(this.config.entity, '');
     // ora puoi usarli senza ReferenceError
     // (segue il resto del tuo codice, inclusa la lettura dei CSS-vars)
   
@@ -751,24 +756,22 @@ class BubbleRoom extends LitElement {
 
         <div class="card">
           <div class="grid-container">
-            <div class="name-area">${name}</div>
+            <div class="name-area" style="color: ${bubbleIconColor};">
+              ${name}
+            </div>
   
             <!-- Bubble centrale -->
-            <div class="icon-area">
-              <div class="bubble-icon-container"
-                   style="background-color: ${bubbleBg};"
-                   @pointerdown=${e => this._startHold(e, this.config)}
-                   @pointerup  =${e => this._endHold(e, this.config, () => this._handleMainIconTap())}
-                   @pointerleave=${e => this._cancelHold(e)}>
-                ${ mainIcon
-                   ? html`
-                      <ha-icon
-                        class="bubble-icon"
-                        icon=${mainIcon}
-                        style="color: ${bubbleIconColor};"
-                      ></ha-icon>`
-                   : nothing }
-              </div>
+            <div class="bubble-icon-container"
+                 style="background-color: ${bubbleBg};">
+              ${ mainIcon
+                ? html`
+                    <ha-icon
+                      class="bubble-icon"
+                      icon="${mainIcon}"
+                      style="color: ${bubbleIconColor};"
+                    ></ha-icon>`
+                : nothing }
+            </div>
   
               <!-- Mushrooms -->
               <div class="mushroom-container">
