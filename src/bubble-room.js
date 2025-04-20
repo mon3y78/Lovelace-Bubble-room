@@ -309,14 +309,15 @@ class BubbleRoom extends LitElement {
         }
       }
     }
+    const userColors = config.colors || {};
+
     this.config = {
       entities,
       colors: {
-        active: 'rgba(var(--color-green), 1)',
-        inactive: 'rgba(var(--color-green), 0.3)',
-        backgroundActive: 'rgba(var(--color-green), 0.4)',
-        backgroundInactive: 'rgba(var(--color-green), 0.1)',
-        ...config.colors
+        ...(userColors.active           !== undefined ? { active: userColors.active }           : {}),
+        ...(userColors.inactive         !== undefined ? { inactive: userColors.inactive }       : {}),
+        ...(userColors.backgroundActive !== undefined ? { backgroundActive: userColors.backgroundActive }   : {}),
+        ...(userColors.backgroundInactive!== undefined ? { backgroundInactive: userColors.backgroundInactive } : {}),
       },
       icon: config.icon || '',
       name: config.name || "Salotto",
@@ -724,20 +725,18 @@ class BubbleRoom extends LitElement {
     // mappale in un array di oggetti { item, idx, color }
     const mushrooms = mushroomKeys.map((key, idx) => {
       const item = this.config.entities[key];
-    
-      // se non esiste OPPURE (non ha entity E non ha sensori temp/umidità) → placeholder
-      if (!item || (!item.entity && !item.temperature_sensor && !item.humidity_sensor)) {
+      // se non c’è item o (per temperature) non ci sono sensori, lascia vuoto
+      if (!item || (key === 'temperature' && !item.temperature_sensor && !item.humidity_sensor)) {
         return { item: null, idx, color: null };
       }
-    
-      // altrimenti calcola il colore in base allo stato "on/off" se esiste un entity
-      const stateOn = item.entity 
+      // calcola stato on/off (se c’è .entity)
+      const stateOn = item.entity
         ? this.hass.states[item.entity]?.state === 'on'
         : false;
-      const color = stateOn ? iconOnColor : iconOffColor;
-    
+      const color   = stateOn ? iconOnColor : iconOffColor;
       return { item, idx, color };
     });
+ 
 
 
     
@@ -768,19 +767,11 @@ class BubbleRoom extends LitElement {
               </div>
               <!-- Mushrooms -->
               <div class="mushroom-container">
-                ${mushrooms.map(({ item, idx, color }) => {
-                  if (!item) {
-                    // placeholder trasparente così non sposta le altre
-                    return html`
-                      <div
-                        class="mushroom-item"
-                        style="${this._defaultMushroomStyle(idx)}"
-                      ></div>
-                    `;
-                  }
-                  // altrimenti chiama il tuo helper passandogli l’item, l’indice e il colore
-                  return this._renderMushroom(item, idx, color);
-                })}
+                ${mushrooms.map(({ item, idx, color }) =>
+                  !item
+                    ? html`<div class="mushroom-item" style="${this._defaultMushroomStyle(idx)}"></div>`
+                    : this._renderMushroom(item, idx, color)
+                )}
               </div>
 
             </div>
