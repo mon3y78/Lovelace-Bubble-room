@@ -640,14 +640,13 @@ class BubbleRoom extends LitElement {
     const nameColor = bubbleIconColor;
 
     // 1. Ricava inline‑style solo se background !== 'default'
-    const haCardStyle = {};
-    if (background && background !== 'default') {
-      haCardStyle['--bubble-room-background'] = background;
-    }
-    if (border_radius && border_radius !== 'default') {
-      haCardStyle['--bubble-room-border-radius'] = border_radius;
-    }
+    const cardStyles = [];
+    if ( background && background !== "default" )
+      cardStyles.push(`--bubble-room-background: ${background};`);
+    if ( border_radius && border_radius !== "default" )
+      cardStyles.push(`--bubble-room-border-radius: ${border_radius};`);
 
+    const haCardInlineStyles = cardStyles.join(" ");
     // 2. Trasforma l’oggetto in stringa CSS
     const haCardStyleString = Object
       .entries(haCardStyle)
@@ -688,7 +687,7 @@ class BubbleRoom extends LitElement {
 
 
     return html`
-      <ha-card style="${haCardStyleString}">
+      <ha-card style="${haCardInlineStyles}">
         <div class="card">
           <div class="grid-container">
             <div class="name-area" style="color: ${bubbleIconColor};">
