@@ -618,8 +618,22 @@ class BubbleRoom extends LitElement {
     const { entities, name, icon, background, border_radius, colors } = this.config;
     const hass = this.hass;
   
-    // 1) Stato presenza
-    const presenceOn = hass.states[entities.presence.entity]?.state === 'on';
+
+
+    // …  
+    // Home Assistant theme variables
+    const ACCENT_ICON    = 'var(--primary-color)';            // icona on
+    const INACTIVE_ICON  = 'var(--secondary-text-color)';     // icona off
+    const ACCENT_BG      = 'rgba(var(--rgb-primary-color),0.1)'; // cerchio on
+    const INACTIVE_BG    = 'var(--divider-color, rgba(0,0,0,0.12))'; // cerchio off
+  
+    // stato di presenza
+    const presenceOn     = hass.states[entities.presence.entity]?.state === 'on';
+  
+    // colori finali per il “bubble” principale
+    const bubbleIconColor = presenceOn ? ACCENT_ICON : INACTIVE_ICON;
+    const bubbleBg        = presenceOn ? ACCENT_BG  : INACTIVE_BG;
+    // …
   
     // 2) Colori di fallback tema HA
     const PRIMARY = 'var(--primary-color)';
@@ -632,9 +646,6 @@ class BubbleRoom extends LitElement {
     const iconOnColor  = colors.active   !== 'default' ? colors.active   : ACCENT;
     const bgOffColor   = colors.backgroundInactive !== 'default' ? colors.backgroundInactive : RGBA10;
     const bgOnColor    = colors.backgroundActive   !== 'default' ? colors.backgroundActive   : RGBA30;
-  
-    const bubbleBg        = presenceOn ? bgOnColor  : bgOffColor;
-    const bubbleIconColor = presenceOn ? iconOnColor : iconOffColor;
   
     // 4) Inline‑vars per <ha-card>
     const vars = [];
@@ -678,6 +689,7 @@ class BubbleRoom extends LitElement {
             <div class="icon-area">
               <div
                 class="bubble-icon-container"
+                style="background-color: ${bubbleBg};"
                 @pointerdown=${e => this._startHold(e, this.config)}
                 @pointerup=${e => this._endHold(e, this.config, () => this._handleMainIconTap())}
                 @pointerleave=${e => this._cancelHold(e)}
@@ -735,26 +747,32 @@ class BubbleRoom extends LitElement {
                 })}
               </div>
             </div>
+      <!-- Sub‑button -->
             <div class="bubble-sub-button-container">
               ${subButtons.map(btn => {
-                // Aggiungi un controllo per verificare che btn.entity non sia vuota
                 if (!btn?.entity) return nothing;
                 const state = hass.states[btn.entity]?.state || 'off';
-                const btnColor = state === 'on' ? colors.active : colors.inactive;
+                // prendo sempre da config.colors (o dal tema come fallback)
+                const btnColor = 
+                  state === 'on'
+                    ? (colors.active   !== 'default' ? colors.active   : 'var(--primary-color)')
+                    : (colors.inactive !== 'default' ? colors.inactive : 'var(--secondary-text-color)');
                 const fallbackIcon = this._getFallbackIcon(btn.entity);
-                const iconToUse = btn.icon && btn.icon.trim() !== "" ? btn.icon : fallbackIcon;
-                const iconColor = state === 'on'
-                  ? (btn.icon_color && btn.icon_color.on ? btn.icon_color.on : 'orange')
-                  : (btn.icon_color && btn.icon_color.off ? btn.icon_color.off : '#80808055');
+                const iconToUse   = btn.icon && btn.icon.trim() !== "" ? btn.icon : fallbackIcon;
+                const iconColor   = state === 'on'
+                  ? (btn.icon_color?.on  || bubbleIconColor)
+                  : (btn.icon_color?.off || bubbleIconColor);
                 return html`
-                  <div class="bubble-sub-button"
-                      style="background-color: ${btnColor};"
-                      @pointerdown="${(e) => this._startHold(e, btn)}"
-                      @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
-                      @pointerleave="${(e) => this._cancelHold(e)}">
-                    ${iconToUse ? html`
-                      <ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>
-                    ` : nothing}
+                  <div
+                    class="bubble-sub-button"
+                    style="background-color: ${btnColor};"
+                    @pointerdown=${e => this._startHold(e, btn)}
+                    @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
+                    @pointerleave=${e => this._cancelHold(e)}
+                  >
+                    ${iconToUse
+                      ? html`<ha-icon icon="${iconToUse}" style="color: ${iconColor};"></ha-icon>`
+                      : nothing }
                   </div>
                 `;
               })}
