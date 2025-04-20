@@ -180,6 +180,48 @@ class BubbleRoom extends LitElement {
         return '';
     }
   }
+  /**
+   * @param {object} item
+   * @param {number} idx
+   * @param {string} iconColor
+   */
+  _renderMushroom(item, idx, iconColor) {
+    const posStyle = item.style || this._defaultMushroomStyle(idx);
+
+    // 1) temperatura/umidità
+    if (item.temperature_sensor || item.humidity_sensor) {
+      const txt = this._buildTemperatureText(item);
+      return html`
+        <div class="mushroom-item" style="${posStyle}">
+          ${txt}
+        </div>
+      `;
+    }
+
+    // 2) icona normale
+    const entityId     = item.entity;
+    const explicitIcon = item.icon || '';
+    const iconName     = this._getFallbackIcon(entityId, explicitIcon);
+
+    // 3) colore on/off
+    const isOn = this.hass.states[entityId]?.state === 'on';
+    const color = isOn ? iconColor : 'var(--secondary-text-color)';
+
+    return html`
+      <div
+        class="mushroom-item"
+        style="${posStyle}"
+        @pointerdown=${e => this._startHold(e, item)}
+        @pointerup=${e => this._endHold(e, item, () => this._handleMushroomTap(item))}
+        @pointerleave=${e => this._cancelHold(e)}
+      >
+        <ha-icon
+          icon="${iconName}"
+          style="color: ${color};"
+        ></ha-icon>
+      </div>
+    `;
+  }
 
   // Funzione helper per costruire il testo per temperatura e umidità
   _buildTemperatureText(item) {
@@ -433,39 +475,7 @@ class BubbleRoom extends LitElement {
    * item.style, item.entity e item.icon,
    * e ritorna un template Lit con posizione e azioni.
    */
-  _renderMushroom(item, idx, iconColor) {
-    // prende lo style personalizzato o il fallback
-    const posStyle = item.style || this._defaultMushroomStyle(idx);
-    // recupera l’icona (passando sia entity che explicit icon)
-    const ic = this._getFallbackIcon(item.entity, item.icon);
-    // stato “on/OFF” per colorare l’icona
-    const isOn = this.hass.states[item.entity]?.state === 'on';
-  
-    // caso temperatura → testo
-    if (item.temperature_sensor) {
-      return html`
-        <div class="mushroom-item"
-              style="${posStyle}">
-          ${this._buildTemperatureText(item)}
-        </div>
-      `;
-    }
-  
-    return html`
-      <div
-        class="mushroom-item"
-        style="${posStyle}"
-        @pointerdown=${e => this._startHold(e, item)}
-        @pointerup=${e => this._endHold(e, item, () => this._handleMushroomTap(item))}
-        @pointerleave=${e => this._cancelHold(e)}
-      >
-        <ha-icon
-          icon="${ic}"
-          style="color: ${isOn ? iconColor : /* off‐color */ `var(--secondary-text-color)`};"
-        ></ha-icon>
-      </div>
-    `;
-  }
+
     
 
   _defaultMushroomStyle(index) {
@@ -737,7 +747,7 @@ class BubbleRoom extends LitElement {
               </div>
               <!-- Mushrooms -->
               <div class="mushroom-container">
-                ${mushrooms.map(({ key, item }, idx) =>
+                ${mushrooms.map((item, idx) =>
                   item
                     // se esiste, renderizza col suo stile (fallback a default)
                     ? this._renderMushroom(item, idx, bubbleIconColor)
