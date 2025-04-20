@@ -42,10 +42,10 @@ class BubbleRoom extends LitElement {
                         tap_action: { action: 'more-info' } },
       },
       colors: {
-        active:             'rgba(var(--color-green), 1)',
-        inactive:           'rgba(var(--color-green), 0.3)',
-        backgroundActive:   'rgba(var(--color-green), 0.4)',
-        backgroundInactive: 'rgba(var(--color-green), 0.1)',
+        active:             'var(--primary-color)',
+        inactive:           'var(--secondary-text-color)',
+        backgroundActive:   'color-mix(in srgb, var(--primary-color) 85%, transparent)',
+        backgroundInactive: 'var(--card-background-color)',
       },
       icon:       '',
       name:       'Salotto',
@@ -499,9 +499,8 @@ class BubbleRoom extends LitElement {
 
     const ACCENT_ICON    = 'var(--primary-color)';
     const INACTIVE_ICON  = 'var(--secondary-text-color)';
-    const ACCENT_BG      = 'rgba(var(--rgb-primary-color),0.1)';
-    const INACTIVE_BG    = 'var(--divider-color, rgba(0,0,0,0.12))';
-
+    const ACCENT_BG      = 'color-mix(in srgb, var(--primary-color) 20%, transparent)';
+    const INACTIVE_BG    = 'var(--card-background-color)';
     const iconOnColor = colors.active;
     const iconOffColor = colors.inactive;
     const bgOnColor = colors.backgroundActive;
