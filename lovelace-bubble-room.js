@@ -144,16 +144,12 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
         white-space: nowrap;
         overflow: hidden;
       }  
-    `}_defaultMushroomStyle(t){switch(t){case 0:return"top: -77px; left: 0px;";case 1:return"top: -85px; left: 38px;";case 2:return"top: -64px; left: 77px;";case 3:return"bottom: 39px; left: 96px;";case 4:return"bottom: -1px; left: 85px;";case 5:return"bottom: -2px; left: -2px;";case 6:return"top: -140px; left: 5px;";case 7:return"top: -95px; right: 5px;";default:return""}}_startHold(t,e){t.stopPropagation(),this._holdTriggered=!1,this._holdTimeout=setTimeout((()=>{this._holdTriggered=!0,this._handleHoldAction(e)}),500)}_endHold(t,e,i){t.stopPropagation(),clearTimeout(this._holdTimeout),this._holdTriggered||i(),this._holdTriggered=!1}_cancelHold(t){clearTimeout(this._holdTimeout),this._holdTriggered=!1}_handleHoldAction(t){if(!t.hold_action)return void this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:t.entity},bubbles:!0,composed:!0}));switch(t.hold_action.action){case"more-info":default:this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:t.entity},bubbles:!0,composed:!0}));break;case"toggle":this._toggleEntity(t.entity);break;case"call-service":if(t.hold_action.service){const[e,i]=t.hold_action.service.split("."),n=t.hold_action.service_data||{};n.entity_id||(n.entity_id=t.entity),this.hass.callService(e,i,n)}break;case"navigate":t.hold_action.navigation_path&&(window.history.pushState({},"",t.hold_action.navigation_path),window.dispatchEvent(new Event("location-changed")))}}_handleMainIconTap(){if(!this.config.tap_action)return;switch(this.config.tap_action.action){case"toggle":this._toggleEntity(this.config.entity);break;case"more-info":this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:this.config.entity},bubbles:!0,composed:!0}));break;case"navigate":this.config.tap_action.navigation_path&&(window.history.pushState({},"",this.config.tap_action.navigation_path),window.dispatchEvent(new Event("location-changed")));break;case"call-service":if(this.config.tap_action.service){const[t,e]=this.config.tap_action.service.split("."),i=this.config.tap_action.service_data||{};i.entity_id||(i.entity_id=this.config.entity),this.hass.callService(t,e,i)}}}_toggleEntity(t){this.hass&&this.hass.callService("homeassistant","toggle",{entity_id:t})}_handleSubButtonTap(t){if(!t.tap_action||"none"===t.tap_action.action)return;switch(t.tap_action.action){case"toggle":this._toggleEntity(t.entity);break;case"more-info":this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:t.entity},bubbles:!0,composed:!0}));break;case"navigate":t.tap_action.navigation_path&&(window.history.pushState({},"",t.tap_action.navigation_path),window.dispatchEvent(new Event("location-changed")));break;case"call-service":if(t.tap_action.service){const[e,i]=t.tap_action.service.split("."),n=t.tap_action.service_data||{};n.entity_id||(n.entity_id=t.entity),this.hass.callService(e,i,n)}}}_handleMushroomTap(t){if(!t.tap_action||"none"===t.tap_action.action)return;switch(t.tap_action.action){case"toggle":this._toggleEntity(t.entity);break;case"more-info":this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:t.entity},bubbles:!0,composed:!0}));break;case"navigate":t.tap_action.navigation_path&&(window.history.pushState({},"",t.tap_action.navigation_path),window.dispatchEvent(new Event("location-changed")));break;case"call-service":if(t.tap_action.service){const[e,i]=t.tap_action.service.split("."),n=t.tap_action.service_data||{};n.entity_id||(n.entity_id=t.entity),this.hass.callService(e,i,n)}}}render(){if(!this.config||!this.hass)return D`<div>Loading…</div>`;const{entities:t,name:e,icon:i,background:n,border_radius:o,colors:s}=this.config,a=this.hass,r=s.active&&"default"!==s.active?s.active:"var(--primary-color)",c=s.inactive&&"default"!==s.inactive?s.inactive:"var(--secondary-text-color)",l=s.backgroundActive&&"default"!==s.backgroundActive?s.backgroundActive:"rgba(var(--rgb-primary-color), 0.1)",d=s.backgroundInactive&&"default"!==s.backgroundInactive?s.backgroundInactive:"var(--divider-color, rgba(0,0,0,0.12))",h=[];n&&"default"!==n&&h.push(`--bubble-room-background: ${n}`),o&&"default"!==o&&h.push(`--bubble-room-border-radius: ${o}`);const u=h.join("; "),p="on"===a.states[t.presence.entity]?.state,g=i?.trim()?i:this._getFallbackIcon(t.presence.entity),_=[t["sub-button1"],t["sub-button2"],t["sub-button3"],t["sub-button4"]].filter((t=>t&&t.entity)),v=[t.entities1,t.entities2,t.entities3,t.entities4,t.entities5,t.climate,t.temperature,t.camera];return D`
-      <ha-card style="${u}">
+    `}_defaultMushroomStyle(t){switch(t){case 0:return"top: -77px; left: 0px;";case 1:return"top: -85px; left: 38px;";case 2:return"top: -64px; left: 77px;";case 3:return"bottom: 39px; left: 96px;";case 4:return"bottom: -1px; left: 85px;";case 5:return"bottom: -2px; left: -2px;";case 6:return"top: -140px; left: 5px;";case 7:return"top: -95px; right: 5px;";default:return""}}_startHold(t,e){t.stopPropagation(),this._holdTriggered=!1,this._holdTimeout=setTimeout((()=>{this._holdTriggered=!0,this._handleHoldAction(e)}),500)}_endHold(t,e,i){t.stopPropagation(),clearTimeout(this._holdTimeout),this._holdTriggered||i(),this._holdTriggered=!1}_cancelHold(t){clearTimeout(this._holdTimeout),this._holdTriggered=!1}_handleHoldAction(t){if(!t.hold_action)return void this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:t.entity},bubbles:!0,composed:!0}));switch(t.hold_action.action){case"more-info":default:this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:t.entity},bubbles:!0,composed:!0}));break;case"toggle":this._toggleEntity(t.entity);break;case"call-service":if(t.hold_action.service){const[e,i]=t.hold_action.service.split("."),n=t.hold_action.service_data||{};n.entity_id||(n.entity_id=t.entity),this.hass.callService(e,i,n)}break;case"navigate":t.hold_action.navigation_path&&(window.history.pushState({},"",t.hold_action.navigation_path),window.dispatchEvent(new Event("location-changed")))}}_handleMainIconTap(){if(!this.config.tap_action)return;switch(this.config.tap_action.action){case"toggle":this._toggleEntity(this.config.entity);break;case"more-info":this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:this.config.entity},bubbles:!0,composed:!0}));break;case"navigate":this.config.tap_action.navigation_path&&(window.history.pushState({},"",this.config.tap_action.navigation_path),window.dispatchEvent(new Event("location-changed")));break;case"call-service":if(this.config.tap_action.service){const[t,e]=this.config.tap_action.service.split("."),i=this.config.tap_action.service_data||{};i.entity_id||(i.entity_id=this.config.entity),this.hass.callService(t,e,i)}}}_toggleEntity(t){this.hass&&this.hass.callService("homeassistant","toggle",{entity_id:t})}_handleSubButtonTap(t){if(!t.tap_action||"none"===t.tap_action.action)return;switch(t.tap_action.action){case"toggle":this._toggleEntity(t.entity);break;case"more-info":this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:t.entity},bubbles:!0,composed:!0}));break;case"navigate":t.tap_action.navigation_path&&(window.history.pushState({},"",t.tap_action.navigation_path),window.dispatchEvent(new Event("location-changed")));break;case"call-service":if(t.tap_action.service){const[e,i]=t.tap_action.service.split("."),n=t.tap_action.service_data||{};n.entity_id||(n.entity_id=t.entity),this.hass.callService(e,i,n)}}}_handleMushroomTap(t){if(!t.tap_action||"none"===t.tap_action.action)return;switch(t.tap_action.action){case"toggle":this._toggleEntity(t.entity);break;case"more-info":this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:t.entity},bubbles:!0,composed:!0}));break;case"navigate":t.tap_action.navigation_path&&(window.history.pushState({},"",t.tap_action.navigation_path),window.dispatchEvent(new Event("location-changed")));break;case"call-service":if(t.tap_action.service){const[e,i]=t.tap_action.service.split("."),n=t.tap_action.service_data||{};n.entity_id||(n.entity_id=t.entity),this.hass.callService(e,i,n)}}}render(){if(!this.config||!this.hass)return D`<div>Loading…</div>`;const{entities:t,name:e,icon:i,background:n,border_radius:o,colors:s}=this.config,a=this.hass,r="var(--secondary-text-color)",c="on"===a.states[t.presence.entity]?.state,l=c?"var(--primary-color)":r,d=c?"rgba(var(--rgb-primary-color),0.1)":"var(--divider-color, rgba(0,0,0,0.12))",h="var(--primary-color)",u="default"!==s.inactive?s.inactive:h,p="default"!==s.active?s.active:"var(--accent-color)";"default"===s.backgroundInactive||s.backgroundInactive,"default"===s.backgroundActive||s.backgroundActive;const g=[];n&&"default"!==n&&g.push(`--bubble-room-background: ${n}`),o&&"default"!==o&&g.push(`--bubble-room-border-radius: ${o}`);const _=g.join("; "),v=i?.trim()?i:this._getFallbackIcon(this.config.entity),m=[t["sub-button1"],t["sub-button2"],t["sub-button3"],t["sub-button4"]],f=[t.entities1,t.entities2,t.entities3,t.entities4,t.entities5,t.climate,t.temperature,t.camera];return D`
+      <ha-card style="${_}">
         <div class="card">
           <div class="grid-container">
-  
             <!-- Titolo -->
-            <div
-              class="name-area"
-              style="color: ${p?r:c};"
-            >
+            <div class="name-area" style="color: ${l};">
               ${e}
             </div>
   
@@ -161,51 +157,45 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
             <div class="icon-area">
               <div
                 class="bubble-icon-container"
-                style="background-color: ${p?l:d};"
+                style="background-color: ${d};"
                 @pointerdown=${t=>this._startHold(t,this.config)}
                 @pointerup=${t=>this._endHold(t,this.config,(()=>this._handleMainIconTap()))}
                 @pointerleave=${t=>this._cancelHold(t)}
               >
-                ${g?D`
-                  <ha-icon
-                    class="bubble-icon"
-                    icon="${g}"
-                    style="color: ${p?r:c};"
-                  ></ha-icon>
-                `:L}
+                ${v?D`<ha-icon
+                            class="bubble-icon"
+                            icon=${v}
+                            style="color: ${l};"
+                          ></ha-icon>`:L}
               </div>
   
-              <!-- Mushrooms -->
+              <!-- I “mushroom” attorno al cerchio -->
               <div class="mushroom-container">
-                ${v.map(((t,e)=>{if(t.temperature_sensor||t.humidity_sensor){const i=this._buildTemperatureText(t);return i?D`
-                      <div
-                        class="mushroom-item"
-                        style="${t.style??this._defaultMushroomStyle(e)}"
-                        @pointerdown=${e=>this._startHold(e,t)}
-                        @pointerup=${e=>this._endHold(e,t,(()=>this._handleMushroomTap(t)))}
-                        @pointerleave=${t=>this._cancelHold(t)}
-                      >
-                        <div class="mushroom-primary fit-text">${i}</div>
+                ${f.map(((t,e)=>{if(!t)return L;if(t.temperature_sensor||t.humidity_sensor){const i=this._buildTemperatureText(t);return i?D`
+                      <div class="mushroom-item"
+                           style="${t.style??this._defaultMushroomStyle(e)}"
+                           @pointerdown=${e=>this._startHold(e,t)}
+                           @pointerup=${e=>this._endHold(e,t,(()=>this._handleMushroomTap(t)))}
+                           @pointerleave=${t=>this._cancelHold(t)}>
+                        <div class="mushroom-primary fit-text">
+                          ${i}
+                        </div>
                       </div>
-                    `:L}const i="on"===(a.states[t.entity]?.state||"off")?t.icon_color?.on||r:t.icon_color?.off||c,n=t.icon?.trim()?t.icon:this._getFallbackIcon(t.entity);return D`
-                    <div
-                      class="mushroom-item"
-                      style="${t.style??this._defaultMushroomStyle(e)}"
-                      @pointerdown=${e=>this._startHold(e,t)}
-                      @pointerup=${e=>this._endHold(e,t,(()=>this._handleMushroomTap(t)))}
-                      @pointerleave=${t=>this._cancelHold(t)}
-                    >
-                      ${n?D`
-                        <ha-icon icon="${n}" style="color: ${i};"></ha-icon>
-                      `:L}
+                    `:L}const i="on"===(a.states[t.entity]?.state||"off")?t.icon_color?.on||p:t.icon_color?.off||u,n=this._getFallbackIcon(t.entity,t.icon),o=t.icon?.trim()?t.icon:n;return D`
+                    <div class="mushroom-item"
+                         style="${t.style??this._defaultMushroomStyle(e)}"
+                         @pointerdown=${e=>this._startHold(e,t)}
+                         @pointerup=${e=>this._endHold(e,t,(()=>this._handleMushroomTap(t)))}
+                         @pointerleave=${t=>this._cancelHold(t)}>
+                      ${o?D`<ha-icon icon="${o}" style="color: ${i};"></ha-icon>`:L}
                     </div>
                   `}))}
               </div>
             </div>
   
-            <!-- Sub‑button -->
+            <!-- Sub‑button a destra -->
             <div class="bubble-sub-button-container">
-              ${_.map((t=>{const e="on"===a.states[t.entity]?.state,i=e?r:c,n=t.icon?.trim()?t.icon:this._getFallbackIcon(t.entity),o=e?t.icon_color?.on||r:t.icon_color?.off||c;return D`
+              ${m.map((t=>{if(!t?.entity)return L;const e=a.states[t.entity]?.state||"off",i="on"===e?"default"!==s.active?s.active:h:"default"!==s.inactive?s.inactive:r,n=this._getFallbackIcon(t.entity,t.icon),o=t.icon?.trim()?t.icon:n,c="on"===e?t.icon_color?.on||p:t.icon_color?.off||u;return D`
                   <div
                     class="bubble-sub-button"
                     style="background-color: ${i};"
@@ -213,9 +203,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
                     @pointerup=${e=>this._endHold(e,t,(()=>this._handleSubButtonTap(t)))}
                     @pointerleave=${t=>this._cancelHold(t)}
                   >
-                    ${n?D`
-                      <ha-icon icon="${n}" style="color: ${o};"></ha-icon>
-                    `:L}
+                    ${o?D`<ha-icon icon="${o}" style="color: ${c};"></ha-icon>`:L}
                   </div>
                 `}))}
             </div>
