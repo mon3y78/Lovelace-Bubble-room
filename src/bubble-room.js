@@ -396,7 +396,7 @@ class BubbleRoom extends LitElement {
         margin-left: 0;
         font-size: 30px;
         font-weight: bold;
-        color: var(--bubble-room-name-color, var(--primary-text-color)) !important;
+        color: var(--bubble-room-name-color) !important;
 
       }
       .icon-area {
@@ -417,10 +417,7 @@ class BubbleRoom extends LitElement {
         align-items: center;
         top: -39px;
         left: -40px;
-        background-color: var(
-          --bubble-room-icon-bg,
-          rgba(var(--rgb-primary-color), 0.1)
-        ) !important;
+        background-color: var(--bubble-room-icon-bg) !important;
       }
       .bubble-icon {
         position: absolute;
@@ -429,7 +426,7 @@ class BubbleRoom extends LitElement {
         width: 50% !important;
         --mdc-icon-size: 75px !important;
         opacity: 0.5 !important;
-        color: var(--bubble-room-icon-color, var(--primary-color)) !important;
+        color: var(--bubble-room-icon-color) !important;
       }
       .bubble-sub-button-container {
         grid-area: b;
@@ -452,13 +449,11 @@ class BubbleRoom extends LitElement {
         margin: 3px;
         cursor: pointer; 
         color: var(--bubble-room-sub-icon-color, var(--primary-text-color));
-        background-color: var(
-          --bubble-room-sub-bg,
-          var(--divider-color, rgba(0,0,0,0.12))
-        ) !important;
+        background-color: var(--bubble-room-sub-bg) !important;
       }
       .bubble-sub-button ha-icon {
-        color: var(--bubble-room-sub-icon-color, var(--secondary-text-color)) !important;
+        color: var(--bubble-room-sub-icon-color) !important;
+
       }  
       .mushroom-container {
         position: absolute;
@@ -740,15 +735,20 @@ class BubbleRoom extends LitElement {
     });
   
     return html`
-      <ha-card style="${cardStyle}">
+      <ha-card
+        style="
+          ${cardStyle};
+          --bubble-room-name-color: ${bubbleIconColor};
+          --bubble-room-icon-bg: ${bubbleBg};
+          --bubble-room-icon-color: ${bubbleIconColor};
+          --bubble-room-sub-bg: ${iconOffColor};
+          --bubble-room-sub-icon-color: ${iconOnColor};
+        "
+      >
+
         <div class="card">
           <div class="grid-container">
-  
-            <!-- Titolo -->
-            <div class="name-area"
-                 style="color: ${bubbleIconColor};">
-              ${name}
-            </div>
+            <div class="name-area">${name}</div>
   
             <!-- Bubble centrale -->
             <div class="icon-area">
