@@ -268,7 +268,7 @@ class BubbleRoom extends LitElement {
         margin-top: -67px;
         font-size: 30px;
         font-weight: bold;
-        color: var(--bubble-room-name-color) !important;
+        color: var(--bubble-room-name-color);
       }
       .icon-area {
         grid-area: i;
@@ -288,7 +288,7 @@ class BubbleRoom extends LitElement {
         align-items: center;
         top: -39px;
         left: -40px;
-        background-color: var(--bubble-room-icon-bg) !important;
+        background-color: var(--bubble-room-icon-bg);
       }
       .bubble-icon {
         position: absolute;
@@ -296,7 +296,7 @@ class BubbleRoom extends LitElement {
         left: 30%;
         --mdc-icon-size: 75px;
         opacity: 0.5;
-        color: var(--bubble-room-icon-color) !important;
+        color: var(--bubble-room-icon-color);
       }
       .bubble-sub-button-container {
         grid-area: b;
@@ -495,7 +495,7 @@ class BubbleRoom extends LitElement {
     const ACCENT_BG      = 'rgba(var(--rgb-primary-color),0.1)';
     const INACTIVE_BG    = 'var(--divider-color, rgba(0,0,0,0.12))';
 
-    const iconOnColor    = colors.active             ?? ACCENT_ICON;
+    const iconOnColor = this.config.colors.active;
     const iconOffColor   = colors.inactive           ?? INACTIVE_ICON;
     const bgOnColor      = colors.backgroundActive   ?? ACCENT_BG;
     const bgOffColor     = colors.backgroundInactive ?? INACTIVE_BG;
