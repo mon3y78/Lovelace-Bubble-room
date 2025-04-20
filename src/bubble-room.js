@@ -678,87 +678,76 @@ class BubbleRoom extends LitElement {
   }
   
   render() {
-    // recupero i valori raw dal tema
-    const styles = getComputedStyle(this);
-    let primaryRaw   = styles.getPropertyValue('--primary-color').trim();         // es. "#2196F3" o "rgb(33,150,243)"
-    let secondaryRaw = styles.getPropertyValue('--secondary-text-color').trim(); // es. "#B6B6B6" o "rgb(182,182,182)"
+    if (!this.config || !this.hass) {
+      return html`<div>Loading…</div>`;
+    }
   
-    // helper: se arriva in hex, lo converto in rgb(r,g,b)
+    // ==== aggiungi background e border_radius qui ====
+    const {
+      entities,
+      name,
+      icon,
+      colors: userColors = {},
+      background,
+      border_radius
+    } = this.config;
+  
+    // ora puoi usarli senza ReferenceError
+    // (segue il resto del tuo codice, inclusa la lettura dei CSS-vars)
+  
+    // 1) leggo le variabili di tema e le converto in rgb/rgba
+    const styles = getComputedStyle(this);
+    let primaryRaw   = styles.getPropertyValue('--primary-color').trim();
+    let secondaryRaw = styles.getPropertyValue('--secondary-text-color').trim();
+  
+    // helper per esadecimali → rgb
     function hexToRgb(hex) {
       hex = hex.replace(/^#/, '');
-      if (hex.length === 3) hex = hex.split('').map(c => c+c).join('');
+      if (hex.length === 3)
+        hex = hex.split('').map(c => c + c).join('');
       const num = parseInt(hex, 16);
-      return { r: num >> 16, g: (num >> 8)&0xff, b: num & 0xff };
+      return { r: num >> 16, g: (num >> 8) & 0xff, b: num & 0xff };
     }
     if (primaryRaw.startsWith('#')) {
-      const {r,g,b} = hexToRgb(primaryRaw);
+      const { r, g, b } = hexToRgb(primaryRaw);
       primaryRaw = `rgb(${r}, ${g}, ${b})`;
     }
     if (secondaryRaw.startsWith('#')) {
-      const {r,g,b} = hexToRgb(secondaryRaw);
+      const { r, g, b } = hexToRgb(secondaryRaw);
       secondaryRaw = `rgb(${r}, ${g}, ${b})`;
     }
   
-    // ora posso definire i miei fallback “accent” e “inactive”
+    // 2) definisci i fallback “accent” e “inactive”
     const ACCENT_ICON   = primaryRaw;
     const INACTIVE_ICON = secondaryRaw;
-    const ACCENT_BG     = primaryRaw.replace('rgb(', 'rgba(').replace(')', ', 0.1)');  
+    const ACCENT_BG     = primaryRaw.replace('rgb(', 'rgba(').replace(')', ', 0.1)');
     const INACTIVE_BG   = secondaryRaw.replace('rgb(', 'rgba(').replace(')', ', 0.1)');
   
-    // stato di presenza
-    const presenceOn = this.hass.states[this.config.entities.presence.entity]?.state === 'on';
+    // 3) stato presenza
+    const presenceOn = this.hass.states[entities.presence.entity]?.state === 'on';
   
-    // colori finali
-    const iconOnColor  = this.config.colors?.active            ?? ACCENT_ICON;
-    const iconOffColor = this.config.colors?.inactive          ?? INACTIVE_ICON;
-    const bgOnColor    = this.config.colors?.backgroundActive  ?? ACCENT_BG;
-    const bgOffColor   = this.config.colors?.backgroundInactive?? INACTIVE_BG;
-    
+    // 4) applica eventuali colori da config o fai fallback
+    const iconOnColor  = userColors.active            ?? ACCENT_ICON;
+    const iconOffColor = userColors.inactive          ?? INACTIVE_ICON;
+    const bgOnColor    = userColors.backgroundActive  ?? ACCENT_BG;
+    const bgOffColor   = userColors.backgroundInactive?? INACTIVE_BG;
+  
     const bubbleIconColor = presenceOn ? iconOnColor  : iconOffColor;
     const bubbleBg        = presenceOn ? bgOnColor    : bgOffColor;
   
-    // inline card style (permette override via config.background, config.border_radius)
+    // 5) costruisci lo stile inline del card (includi anche background/border_radius)
     const cardVars = [];
     if (background)    cardVars.push(`--bubble-room-background: ${background}`);
     if (border_radius) cardVars.push(`--bubble-room-border-radius: ${border_radius}`);
+    cardVars.push(`--bubble-room-name-color: ${bubbleIconColor}`);
+    cardVars.push(`--bubble-room-icon-bg: ${bubbleBg}`);
+    cardVars.push(`--bubble-room-icon-color: ${bubbleIconColor}`);
+    cardVars.push(`--bubble-room-sub-bg: ${iconOffColor}`);
+    cardVars.push(`--bubble-room-sub-icon-color: ${iconOnColor}`);
     const cardStyle = cardVars.join(';');
   
-    // icona principale (fai trim in JS, così non chiami split() su null)
-    const mainIcon = icon?.trim()
-      ? icon
-      : this._getFallbackIcon(this.config.entity, '');
-  
-    // sub‑buttons
-    const subButtons = [
-      entities['sub-button1'],
-      entities['sub-button2'],
-      entities['sub-button3'],
-      entities['sub-button4']
-    ].filter(b => b && b.entity);
-  
-    // mushrooms
-    const mushroomKeys = [
-      'entities1','entities2','entities3','entities4','entities5',
-      'climate','temperature','camera'
-    ];
-    const mushrooms = mushroomKeys.map((key, idx) => {
-      const item = this.config.entities[key];
-      if (!item) return { item: null, idx, color: null };
-      const on = this.hass.states[item.entity]?.state === 'on';
-      return { item, idx, color: on ? iconOnColor : iconOffColor };
-    });
-  
     return html`
-      <ha-card
-        style="
-          ${cardStyle};
-          --bubble-room-name-color: ${bubbleIconColor};
-          --bubble-room-icon-bg: ${bubbleBg};
-          --bubble-room-icon-color: ${bubbleIconColor};
-          --bubble-room-sub-bg: ${iconOffColor};
-          --bubble-room-sub-icon-color: ${iconOnColor};
-        "
-      >
+      <ha-card style="${cardStyle}">
 
         <div class="card">
           <div class="grid-container">
