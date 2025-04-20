@@ -412,16 +412,46 @@ class BubbleRoom extends LitElement {
         position: absolute;
         pointer-events: auto;
         cursor: pointer;
+        background-color: transparent !important;
+        background: transparent !important;
+        border: none !important;
       }
       .mushroom-item ha-icon {
         --mdc-icon-size: 33px;
         width: 33px;
         height: 33px;
+        background: none !important;
       }
       .fit-text {
         white-space: nowrap;
         overflow: hidden;
       }  
+    `;
+  }
+    /**
+   * Renderizza una singola “mushroom”: prendi
+   * item.style, item.entity e item.icon,
+   * e ritorna un template Lit con posizione e azioni.
+   */
+  _renderMushroom(item, idx) {
+    // qui decidi lo style: o quello esplicito oppure il fallback
+    const style = item.style || '';
+    // ottieni l’icona (puoi passare anche item.icon se ne hai messa una in config)
+    const icon = this._getFallbackIcon(item.entity, item.icon);
+
+    return html`
+      <div
+        class="mushroom-item"
+        style="${style}"
+        @pointerdown=${e => this._startHold(e, item)}
+        @pointerup=${e => this._endHold(e, item, () => this._handleMushroomTap(item))}
+        @pointerleave=${e => this._cancelHold(e)}
+      >
+        <ha-icon
+          icon="${icon}"
+          style="color: ${/* qui metti il colore: es. item.color o userColors.active */ ''};"
+        ></ha-icon>
+      </div>
     `;
   }
 
@@ -609,41 +639,7 @@ class BubbleRoom extends LitElement {
         break;
     }
   }
-
-
-  _renderMushroom(item, idx) {
-    if (!item || !item.entity) return nothing;
-    // 1) stato on/off
-    const isOn = this.hass.states[item.entity]?.state === 'on';
-    // 2) icona (fallback)
-    const icon = this._getFallbackIcon(item.entity, item.icon);
-    // 3) stile di posizionamento (top/left/bottom/right)
-    const positionStyle = item.style || '';
-    // 4) colori dal config o tema
-    const color = isOn
-      ? this.config.colors.active
-      : this.config.colors.inactive;
-    const bg = isOn
-      ? this.config.colors.backgroundActive
-      : this.config.colors.backgroundInactive;
-
-    return html`
-      <div
-        class="mushroom-item"
-        style="${positionStyle}; background-color: ${bg};"
-        @pointerdown=${e => this._startHold(e, item)}
-        @pointerup=${e => this._endHold(e, item, () => this._handleMushroomTap(item))}
-        @pointerleave=${e => this._cancelHold(e)}
-      >
-        <ha-icon
-          icon="${icon}"
-          style="color: ${color}; --mdc-icon-size: 33px;"
-        ></ha-icon>
-      </div>
-    `;
-  }
-
-
+  
   render() {
     if (!this.config || !this.hass) {
       return html`<div>Loading…</div>`;
@@ -721,11 +717,7 @@ class BubbleRoom extends LitElement {
               </div>
               <!-- Mushrooms -->
               <div class="mushroom-container">
-                ${mushrooms.map((item, idx) => {
-                  /* qui va il tuo map per renderizzare sensori e icone,
-                     esattamente come già avevi */
-                  return this._renderMushroom(item, idx);
-                })}
+                  ${mushrooms.map((item, idx) => this._renderMushroom(item, idx))}
               </div>
             </div>
             <!-- Sub‑button -->
