@@ -186,17 +186,15 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
         <div class="card">
           <div class="grid-container">
             <!-- Titolo -->
-            <div
-              class="name-area"
-              ${void 0!==o.active?`style="color: ${p};"`:""}
-            >
+            <div class="name-area" style="color: ${p};">
               ${e}
             </div>
             <!-- Bubble principale -->
             <div class="icon-area">
+              <!-- Bubble principale -->
               <div
                 class="bubble-icon-container"
-                ${void 0!==o.backgroundActive?`style="background-color: ${g};"`:""}
+                style="background-color: ${g};"
                 @pointerdown=${t=>this._startHold(t,this.config)}
                 @pointerup=${t=>this._endHold(t,this.config,(()=>this._handleMainIconTap()))}
                 @pointerleave=${t=>this._cancelHold(t)}
@@ -205,7 +203,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
                     <ha-icon
                       class="bubble-icon"
                       icon=${v}
-                      ${void 0!==o.active?`style="color: ${p};"`:""}
+                      style="color: ${p};"
                     ></ha-icon>`:L}
               </div>
               <!-- Mushrooms -->
@@ -216,18 +214,15 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
             </div>
             <!-- Sub‑button -->
             <div class="bubble-sub-button-container">
-              ${f.map((t=>{const e="on"===r.states[t.entity]?.state,i=e?l:d,n=e?l:d,s=this._getFallbackIcon(t.entity);return D`
+              ${f.map((t=>{const e="on"===r.states[t.entity]?.state,i=e?l:d,n=e?l:d,o=this._getFallbackIcon(t.entity);return D`
                   <div
                     class="bubble-sub-button"
-                    ${void 0!==o.active?`style="background-color: ${i};"`:""}
+                    style="background-color: ${i};"
                     @pointerdown=${e=>this._startHold(e,t)}
                     @pointerup=${e=>this._endHold(e,t,(()=>this._handleSubButtonTap(t)))}
                     @pointerleave=${t=>this._cancelHold(t)}
                   >
-                    <ha-icon
-                      icon="${s}"
-                      ${void 0!==o.active?`style="color: ${n};"`:""}
-                    ></ha-icon>
+                    <ha-icon icon="${o}" style="color: ${n};"></ha-icon>
                   </div>
                 `}))}
             </div>

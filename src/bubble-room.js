@@ -759,21 +759,15 @@ class BubbleRoom extends LitElement {
         <div class="card">
           <div class="grid-container">
             <!-- Titolo -->
-            <div
-              class="name-area"
-              ${userColors.active !== undefined
-                ? `style="color: ${bubbleIconColor};"`
-                : ''}
-            >
+            <div class="name-area" style="color: ${bubbleIconColor};">
               ${name}
             </div>
             <!-- Bubble principale -->
             <div class="icon-area">
+              <!-- Bubble principale -->
               <div
                 class="bubble-icon-container"
-                ${userColors.backgroundActive !== undefined
-                  ? `style="background-color: ${bubbleBg};"`
-                  : ''}
+                style="background-color: ${bubbleBg};"
                 @pointerdown=${e => this._startHold(e, this.config)}
                 @pointerup=${e => this._endHold(e, this.config, () => this._handleMainIconTap())}
                 @pointerleave=${e => this._cancelHold(e)}
@@ -783,9 +777,7 @@ class BubbleRoom extends LitElement {
                     <ha-icon
                       class="bubble-icon"
                       icon=${mainIcon}
-                      ${userColors.active !== undefined
-                        ? `style="color: ${bubbleIconColor};"`
-                        : ''}
+                      style="color: ${bubbleIconColor};"
                     ></ha-icon>`
                   : nothing }
               </div>
@@ -803,26 +795,19 @@ class BubbleRoom extends LitElement {
             <div class="bubble-sub-button-container">
               ${subButtons.map(btn => {
                 const state = hass.states[btn.entity]?.state === 'on';
-                const btnBg = state ? iconOnColor : iconOffColor;
-                const iconCol = state ? iconOnColor : iconOffColor;
-                const ic = this._getFallbackIcon(btn.entity);
-            
+                const btnBg   = state ? iconOnColor  : iconOffColor;
+                const iconCol = state ? iconOnColor  : iconOffColor;
+                const ic      = this._getFallbackIcon(btn.entity);
+
                 return html`
                   <div
                     class="bubble-sub-button"
-                    ${userColors.active !== undefined
-                      ? `style="background-color: ${btnBg};"`
-                      : ''}
+                    style="background-color: ${btnBg};"
                     @pointerdown=${e => this._startHold(e, btn)}
                     @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
                     @pointerleave=${e => this._cancelHold(e)}
                   >
-                    <ha-icon
-                      icon="${ic}"
-                      ${userColors.active !== undefined
-                        ? `style="color: ${iconCol};"`
-                        : ''}
-                    ></ha-icon>
+                    <ha-icon icon="${ic}" style="color: ${iconCol};"></ha-icon>
                   </div>
                 `;
               })}
