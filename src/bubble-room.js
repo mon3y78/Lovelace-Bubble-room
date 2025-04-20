@@ -657,8 +657,8 @@ class BubbleRoom extends LitElement {
       entities.climate,
       entities.temperature,
       entities.camera
-    ].filter(item => item && (item.entity || item.temperature_sensor || item.humidity_sensor));
-  
+    ];
+    
     return html`
       <ha-card style="${cardStyle}">
         <div class="card">
