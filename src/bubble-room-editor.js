@@ -56,10 +56,10 @@ class BubbleRoomEditor extends LitElement {
         }
       },
       colors: {
-        active: 'rgba(var(--color-green), 1)',
-        inactive: 'rgba(var(--color-green), 0.3)',
-        backgroundActive: 'rgba(var(--color-green), 0.4)',
-        backgroundInactive: 'rgba(var(--color-green), 0.1)'
+        active: 'var(--primary-color)',
+        inactive: 'var(--secondary-text-color)',
+        backgroundActive: 'color-mix(in srgb, var(--primary-color) 85%, transparent)',
+        backgroundInactive: 'var(--card-background-color)'
       },
       name: 'Salotto',
       icon: 'mdi:sofa',
@@ -99,11 +99,11 @@ class BubbleRoomEditor extends LitElement {
     }
     if (!config.colors) {
       config.colors = {
-        active: "rgba(var(--color-green), 1)",
-        inactive: "rgba(var(--color-green), 0.3)",
-        backgroundActive: "rgba(var(--color-green), 0.4)",
-        backgroundInactive: "rgba(var(--color-green), 0.1)"
-      };
+        active: 'var(--primary-color)',
+        inactive: 'var(--secondary-text-color)',
+        backgroundActive: 'color-mix(in srgb, var(--primary-color) 85%, transparent)',
+        backgroundInactive: 'var(--card-background-color)'
+      };    
     }
     if (!config.hold_action) {
       config.hold_action = { action: 'more-info', navigation_path: '' };
