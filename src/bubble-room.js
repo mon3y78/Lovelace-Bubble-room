@@ -202,10 +202,10 @@ class BubbleRoom extends LitElement {
     this.config = {
       entities,
       colors: {
-        active:             userColors.active && userColors.active.trim()             ? userColors.active             : 'var(--primary-color)',
-        inactive:           userColors.inactive && userColors.inactive.trim()         ? userColors.inactive           : 'var(--secondary-text-color)',
-        backgroundActive:   userColors.backgroundActive && userColors.backgroundActive.trim()   ? userColors.backgroundActive   : 'color-mix(in srgb, var(--primary-color) 85%, transparent)',
-        backgroundInactive: userColors.backgroundInactive && userColors.backgroundInactive.trim() ? userColors.backgroundInactive : 'var(--card-background-color)',
+        active: userColors.active ?? 'var(--primary-color)',
+        inactive: userColors.inactive ?? 'var(--primary-color-faded)',
+        backgroundActive: userColors.backgroundActive ?? 'color-mix(in srgb, var(--primary-color) 85%, transparent)',
+        backgroundInactive: userColors.backgroundInactive ?? 'color-mix(in srgb, var(--primary-color) 15%, transparent)',
       },
       icon:       config.icon       || '',
       name:       config.name       || 'Salotto',
