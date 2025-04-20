@@ -485,6 +485,12 @@ class BubbleRoom extends LitElement {
     if (!this.config || !this.hass) {
       return html`<div>Loading…</div>`;
     }
+    console.log('>>> CONFIG COLORS');
+    console.log('active:', this.config.colors.active);
+    console.log('inactive:', this.config.colors.inactive);
+    console.log('backgroundActive:', this.config.colors.backgroundActive);
+    console.log('backgroundInactive:', this.config.colors.backgroundInactive);
+
 
     const { entities, name, icon, background, border_radius } = this.config;
     const colors = this.config.colors;
@@ -513,7 +519,7 @@ class BubbleRoom extends LitElement {
       `--bubble-room-icon-color: ${bubbleIconColor}`,
       `--bubble-room-name-color: ${bubbleIconColor}`
     ].filter(v => v).join(';');
-
+    console.log('>>> CSS cardVars', cardVars);
     const mainIcon = icon?.trim() ? icon : this._getFallbackIcon(entities.presence.entity);
 
     const subButtons = [
