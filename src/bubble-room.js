@@ -204,7 +204,7 @@ class BubbleRoom extends LitElement {
       colors: {
         active:             userColors.active             ?? 'var(--primary-color)',
         inactive:           userColors.inactive           ?? 'var(--secondary-text-color)',
-        backgroundActive:   userColors.backgroundActive   ?? 'color-mix(in srgb, var(--primary-color) 25%, transparent)',
+        backgroundActive: userColors.backgroundActive ?? 'color-mix(in srgb, var(--primary-color) 85%, transparent)',
         backgroundInactive: userColors.backgroundInactive ?? 'var(--card-background-color)',
       },
       icon:       config.icon       || '',
@@ -496,9 +496,10 @@ class BubbleRoom extends LitElement {
     const INACTIVE_BG    = 'var(--divider-color, rgba(0,0,0,0.12))';
 
     const iconOnColor = this.config.colors.active;
-    const iconOffColor   = colors.inactive           ?? INACTIVE_ICON;
-    const bgOnColor      = colors.backgroundActive   ?? ACCENT_BG;
-    const bgOffColor     = colors.backgroundInactive ?? INACTIVE_BG;
+    const iconOffColor   = this.config.colors.inactive;
+    const bgOnColor      = this.config.colors.backgroundActive;
+    const bgOffColor     = this.config.colors.backgroundInactive;
+ 
 
     const bubbleIconColor = presenceOn ? iconOnColor : iconOffColor;
     const bubbleBgColor   = presenceOn ? bgOnColor   : bgOffColor;
