@@ -8,7 +8,7 @@ class BubbleRoom extends LitElement {
       hass: { type: Object },
     };
   }
-  
+
   firstUpdated() {
     const els = this.shadowRoot.querySelectorAll('.mushroom-primary');
     if (!els.length) return;
@@ -422,19 +422,6 @@ class BubbleRoom extends LitElement {
         white-space: nowrap;
         overflow: hidden;
       }  
-      .mushrooms {
-        position: relative;
-        width: 200px;   /* uguale alla tua area di disegno */
-        height: 200px;  /* idem */
-      }
-      .mushroom {
-        width: 32px;
-        height: 32px;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
     `;
   }
 
@@ -623,12 +610,44 @@ class BubbleRoom extends LitElement {
     }
   }
 
+
+  _renderMushroom(item, idx) {
+    // 1) stato on/off
+    const isOn = this.hass.states[item.entity]?.state === 'on';
+    // 2) icona (fallback)
+    const icon = this._getFallbackIcon(item.entity, item.icon);
+    // 3) stile di posizionamento (top/left/bottom/right)
+    const positionStyle = item.style || '';
+    // 4) colori dal config o tema
+    const color = isOn
+      ? this.config.colors.active
+      : this.config.colors.inactive;
+    const bg = isOn
+      ? this.config.colors.backgroundActive
+      : this.config.colors.backgroundInactive;
+
+    return html`
+      <div
+        class="mushroom-item"
+        style="${positionStyle}; background-color: ${bg};"
+        @pointerdown=${e => this._startHold(e, item)}
+        @pointerup=${e => this._endHold(e, item, () => this._handleMushroomTap(item))}
+        @pointerleave=${e => this._cancelHold(e)}
+      >
+        <ha-icon
+          icon="${icon}"
+          style="color: ${color}; --mdc-icon-size: 33px;"
+        ></ha-icon>
+      </div>
+    `;
+  }
+
+
   render() {
     if (!this.config || !this.hass) {
       return html`<div>Loading…</div>`;
     }
-    
-
+  
     const { entities, name, icon, tap_action, colors: userColors = {}, background, border_radius } = this.config;
     const hass = this.hass;
   
@@ -733,45 +752,6 @@ class BubbleRoom extends LitElement {
     `;
   }
   
-
-  /**
- * Restituisce il template HTML per un singolo “mushroom”
- */
-  _renderMushroom(item, idx) {
-    const state = this.hass.states[item.entity]?.state;
-    const icon  = item.icon || 'mdi:help-circle-outline';
-    const isOn  = state === 'on';
-  
-    // colori come prima
-    const color = isOn
-      ? (this.config.colors?.active   || 'var(--primary-text-color)')
-      : (this.config.colors?.inactive || 'var(--secondary-text-color)');
-    const bg = isOn
-      ? (this.config.colors?.backgroundActive   || 'rgba(var(--rgb-primary-color),0.1)')
-      : (this.config.colors?.backgroundInactive || 'var(--divider-color)');
-  
-    // estrai le coordinate dal tuo item
-    const top  = item.top  ?? 0;
-    const left = item.left ?? 0;
-  
-    return html`
-      <div
-        class="mushroom"
-        style="
-          position: absolute;
-          top: ${top}px;
-          left: ${left}px;
-          background: ${bg};
-        "
-      >
-        <ha-icon .icon=${icon} style="color: ${color}"></ha-icon>
-        ${item.show_state ? html`<span class="state">${state}</span>` : nothing}
-      </div>
-    `;
-  }
-  
-  
-
   
   
 
