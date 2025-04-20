@@ -321,6 +321,16 @@ class BubbleRoomEditor extends LitElement {
             />
           </div>
           <div class="input-group">
+            <label>Unit:</label>
+            <select
+              @change="${this._updateTemperature('unit')}"
+              .value="${this._config.entities?.temperature?.unit || 'C'}"
+            >
+              <option value="C">Celsius (°C)</option>
+              <option value="F">Fahrenheit (°F)</option>
+            </select>
+          </div>
+          <div class="input-group">
             <label>Humidity Sensor:</label>
             <input
               type="text"
@@ -329,6 +339,14 @@ class BubbleRoomEditor extends LitElement {
               @input="${this._updateTemperature('humidity_sensor')}"
             />
           </div>
+          <div class="input-group">
+            <label>Temperature Unit:</label>
+            <select @change="${this._updateTemperatureUnit}" .value="${this._config.entities?.temperature?.unit || 'C'}">
+              <option value="C">Celsius (°C)</option>
+              <option value="F">Fahrenheit (°F)</option>
+            </select>
+          </div>
+
         </div>
       </ha-expansion-panel>
 
@@ -649,15 +667,36 @@ class BubbleRoomEditor extends LitElement {
     return (e) => {
       const value = e.target.value;
       const tempConfig = { ...this._config.entities?.temperature, [field]: value };
+      const unit = this._config.entities?.temperature?.unit || 'C';
+  
       if (tempConfig.temperature_sensor && tempConfig.humidity_sensor) {
-        tempConfig.primary = `🌡️{{ states("${tempConfig.temperature_sensor}") }}°C 💦{{ states("${tempConfig.humidity_sensor}") }}%`;
+        tempConfig.primary = `🌡️{{ states("${tempConfig.temperature_sensor}") }}${unit} 💦{{ states("${tempConfig.humidity_sensor}") }}%`;
       }
-      const entities = { ...this._config.entities, temperature: tempConfig };
+  
+      const entities = {
+        ...this._config.entities,
+        temperature: { ...tempConfig, unit },
+      };
+  
       this._config = { ...this._config, entities };
       this.requestUpdate();
       this._fireConfigChanged();
     };
   }
+  _updateTemperatureUnit(e) {
+    const unit = e.target.value;
+    const tempConfig = { ...this._config.entities?.temperature, unit };
+  
+    if (tempConfig.temperature_sensor && tempConfig.humidity_sensor) {
+      tempConfig.primary = `🌡️{{ states("${tempConfig.temperature_sensor}") }}${unit} 💦{{ states("${tempConfig.humidity_sensor}") }}%`;
+    }
+  
+    const entities = { ...this._config.entities, temperature: tempConfig };
+    this._config = { ...this._config, entities };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
+  
 
   _updateTapActionField(field) {
     return (ev) => {
