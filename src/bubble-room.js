@@ -133,8 +133,9 @@ class BubbleRoom extends LitElement {
     const hass = this.hass;
     const temp = item.temperature_sensor ? hass.states[item.temperature_sensor]?.state : null;
     const hum  = item.humidity_sensor   ? hass.states[item.humidity_sensor]?.state    : null;
+    const unit = item.unit === 'F' ? '°F' : '°C';  // default a Celsius se non specificato
     let text = '';
-    if (temp != null && temp !== '') text += `🌡️${temp}°C`;
+    if (temp != null && temp !== '') text += `🌡️${temp}${unit}`;
     if (hum  != null && hum  !== '') text += (text ? ' ' : '') + `💦${hum}%`;
     return text;
   }
@@ -605,4 +606,3 @@ window.customCards.push({
   preview: true,
   documentationURL: 'https://github.com/mon3y78/Lovelace-Bubble-room'
 });
-console.log('[Bubble Room] Custom card script loaded');
