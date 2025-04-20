@@ -486,7 +486,8 @@ class BubbleRoom extends LitElement {
       return html`<div>Loading…</div>`;
     }
 
-    const { entities, name, icon, colors = {}, background, border_radius } = this.config;
+    const { entities, name, icon, background, border_radius } = this.config;
+    const colors = this.config.colors;
     const hass = this.hass;
     const presenceOn = hass.states[entities.presence.entity]?.state === 'on';
 
@@ -495,10 +496,11 @@ class BubbleRoom extends LitElement {
     const ACCENT_BG      = 'rgba(var(--rgb-primary-color),0.1)';
     const INACTIVE_BG    = 'var(--divider-color, rgba(0,0,0,0.12))';
 
-    const iconOnColor = this.config.colors.active;
-    const iconOffColor   = this.config.colors.inactive;
-    const bgOnColor      = this.config.colors.backgroundActive;
-    const bgOffColor     = this.config.colors.backgroundInactive;
+    const iconOnColor = colors.active;
+    const iconOffColor = colors.inactive;
+    const bgOnColor = colors.backgroundActive;
+    const bgOffColor = colors.backgroundInactive;
+
  
 
     const bubbleIconColor = presenceOn ? iconOnColor : iconOffColor;
