@@ -434,28 +434,39 @@ class BubbleRoom extends LitElement {
    * e ritorna un template Lit con posizione e azioni.
    */
   _renderMushroom(item, idx, iconColor) {
-    // qui decidi lo style: o quello esplicito oppure il fallback
-    const style = item.style || '';
-    // ottieni l’icona (puoi passare anche item.icon se ne hai messa una in config)
-    const icon = this._getFallbackIcon(item.entity, item.icon);
-
+    // prende lo style personalizzato o il fallback
+    const posStyle = item.style || this._defaultMushroomStyle(idx);
+    // recupera l’icona (passando sia entity che explicit icon)
+    const ic = this._getFallbackIcon(item.entity, item.icon);
+    // stato “on/OFF” per colorare l’icona
+    const isOn = this.hass.states[item.entity]?.state === 'on';
+  
+    // caso temperatura → testo
+    if (item.temperature_sensor) {
+      return html`
+        <div class="mushroom-item"
+              style="${posStyle}">
+          ${this._buildTemperatureText(item)}
+        </div>
+      `;
+    }
+  
     return html`
       <div
         class="mushroom-item"
-        style="${item.style || this._defaultMushroomStyle(idx)}"
+        style="${posStyle}"
         @pointerdown=${e => this._startHold(e, item)}
         @pointerup=${e => this._endHold(e, item, () => this._handleMushroomTap(item))}
         @pointerleave=${e => this._cancelHold(e)}
       >
         <ha-icon
-          icon="${this._getFallbackIcon(item.entity, item.icon)}"
-    -     style="color: ${''};"
-    +     style="color: ${iconColor};"
+          icon="${ic}"
+          style="color: ${isOn ? iconColor : /* off‐color */ `var(--secondary-text-color)`};"
         ></ha-icon>
       </div>
     `;
-
   }
+    
 
   _defaultMushroomStyle(index) {
     switch (index) {
@@ -725,21 +736,21 @@ class BubbleRoom extends LitElement {
                   : nothing }
               </div>
               <!-- Mushrooms -->
-                  <div class="mushroom-container">
-                    ${mushrooms.map(({ key, item }, idx) =>
-                      item
-                        // se esiste, renderizza col suo stile (fallback a default)
-                        ? this._renderMushroom(item, idx, bubbleIconColor)
-                        // altrimenti butta dentro un div trasparente con lo style di default,
-                        // così gli altri non si spostano
-                        : html`
-                          <div
-                            class="mushroom-item"
-                            style="${this._defaultMushroomStyle(idx)}"
-                          ></div>
-                        `
-                    )}
-                  </div>
+              <div class="mushroom-container">
+                ${mushrooms.map(({ key, item }, idx) =>
+                  item
+                    // se esiste, renderizza col suo stile (fallback a default)
+                    ? this._renderMushroom(item, idx, bubbleIconColor)
+                    // altrimenti butta dentro un div trasparente con lo style di default,
+                    // così gli altri non si spostano
+                    : html`
+                      <div
+                        class="mushroom-item"
+                        style="${this._defaultMushroomStyle(idx)}"
+                      ></div>
+                    `
+                )}
+              </div>
             </div>
             <!-- Sub‑button -->
             <div class="bubble-sub-button-container">
