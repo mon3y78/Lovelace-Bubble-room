@@ -538,14 +538,14 @@ class BubbleRoom extends LitElement {
       <ha-card style="${cardVars}">
         <div class="card">
           <div class="grid-container">
-            <div class="name-area">${name}</div>
+            <div class="name-area" style="color: ${bubbleIconColor};">${name}</div>
             <div class="icon-area">
               <div class="bubble-icon-container"
                    @pointerdown=${e => this._startHold(e, this.config)}
                    @pointerup=${e => this._endHold(e, this.config, () => this._handleMainIconTap())}
                    @pointerleave=${() => this._cancelHold()}>
                 ${ mainIcon
-                  ? html`<ha-icon class="bubble-icon" icon="${mainIcon}"></ha-icon>`
+                  ? html`<ha-icon class="bubble-icon" icon="${mainIcon}" style="color: ${bubbleIconColor};"></ha-icon>`
                   : nothing }
               </div>
               <div class="mushroom-container">

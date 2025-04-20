@@ -143,13 +143,13 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
       <ha-card style="${_}">
         <div class="card">
           <div class="grid-container">
-            <div class="name-area">${e}</div>
+            <div class="name-area" style="color: ${m};">${e}</div>
             <div class="icon-area">
               <div class="bubble-icon-container"
                    @pointerdown=${t=>this._startHold(t,this.config)}
                    @pointerup=${t=>this._endHold(t,this.config,(()=>this._handleMainIconTap()))}
                    @pointerleave=${()=>this._cancelHold()}>
-                ${v?D`<ha-icon class="bubble-icon" icon="${v}"></ha-icon>`:L}
+                ${v?D`<ha-icon class="bubble-icon" icon="${v}" style="color: ${m};"></ha-icon>`:L}
               </div>
               <div class="mushroom-container">
                 ${b.map((({item:t,idx:e,color:i})=>t?this._renderMushroom(t,e,i):D`<div class="mushroom-item" style="${this._defaultMushroomStyle(e)}"></div>`))}
