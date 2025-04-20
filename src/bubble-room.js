@@ -422,6 +422,19 @@ class BubbleRoom extends LitElement {
         white-space: nowrap;
         overflow: hidden;
       }  
+      .mushrooms {
+        position: relative;
+        width: 200px;   /* uguale alla tua area di disegno */
+        height: 200px;  /* idem */
+      }
+      .mushroom {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
     `;
   }
 
@@ -725,35 +738,38 @@ class BubbleRoom extends LitElement {
  * Restituisce il template HTML per un singolo “mushroom”
  */
   _renderMushroom(item, idx) {
-    // stato dell’entità
     const state = this.hass.states[item.entity]?.state;
-    // icona (dal config o fallback)
     const icon  = item.icon || 'mdi:help-circle-outline';
-
-    // decidi se è “on” oppure “off”
-    const isOn = state === 'on';
-
-    // colori: se hai definito custom.colors nel tuo config
+    const isOn  = state === 'on';
+  
+    // colori come prima
     const color = isOn
       ? (this.config.colors?.active   || 'var(--primary-text-color)')
       : (this.config.colors?.inactive || 'var(--secondary-text-color)');
-
     const bg = isOn
       ? (this.config.colors?.backgroundActive   || 'rgba(var(--rgb-primary-color),0.1)')
       : (this.config.colors?.backgroundInactive || 'var(--divider-color)');
-
+  
+    // estrai le coordinate dal tuo item
+    const top  = item.top  ?? 0;
+    const left = item.left ?? 0;
+  
     return html`
-      <div class="mushroom" style="background: ${bg};">
-        <ha-icon
-          .icon=${icon}
-          style="color: ${color};"
-        ></ha-icon>
-        ${ item.show_state
-            ? html`<span class="state">${state}</span>`
-            : nothing }
+      <div
+        class="mushroom"
+        style="
+          position: absolute;
+          top: ${top}px;
+          left: ${left}px;
+          background: ${bg};
+        "
+      >
+        <ha-icon .icon=${icon} style="color: ${color}"></ha-icon>
+        ${item.show_state ? html`<span class="state">${state}</span>` : nothing}
       </div>
     `;
   }
+  
   
 
   
