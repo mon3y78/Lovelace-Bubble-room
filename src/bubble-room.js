@@ -314,11 +314,11 @@ class BubbleRoom extends LitElement {
         border-radius: 10px;
         margin: 3px;
         cursor: pointer;
-        background-color: var(--bubble-room-sub-bg, var(--divider-color)) !important;
-        color: var(--bubble-room-sub-icon-color, var(--primary-text-color)) !important;
+        background-color: var(--bubble-room-sub-bg, var(--divider-color));
+        color: var(--bubble-room-sub-icon-color, var(--primary-text-color));
       }
       .bubble-sub-button ha-icon {
-        color: var(--bubble-room-sub-icon-color, var(--secondary-text-color)) !important;
+        color: var(--bubble-room-sub-icon-color, var(--secondary-text-color));
       }
       .mushroom-container {
         position: absolute;
@@ -564,7 +564,7 @@ class BubbleRoom extends LitElement {
                   const iconCol = isOn ? iconOnColor : iconOffColor;
                   const ic      = this._getFallbackIcon(btn.entity);
                   return html`
-                    <div class="bubble-sub-button"
+                    <div class="bubble-sub-button ${isOn ? 'active' : 'inactive'}"
                          style="background-color: ${btnBg};"
                          @pointerdown=${e => this._startHold(e, btn)}
                          @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
