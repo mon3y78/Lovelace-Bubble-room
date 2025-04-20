@@ -624,20 +624,24 @@ class BubbleRoom extends LitElement {
     const ACCENT_BG     = 'rgba(var(--rgb-primary-color),0.1)';
     const INACTIVE_BG   = 'var(--divider-color, rgba(0,0,0,0.12))';
   
+
+    const iconOffColor = colors.inactive !== 'default' ? colors.inactive : PRIMARY;
+    const iconOnColor  = colors.active   !== 'default' ? colors.active   : ACCENT;
+    const bgOffColor   = colors.backgroundInactive !== 'default' ? colors.backgroundInactive : RGBA10;
+    const bgOnColor    = colors.backgroundActive   !== 'default' ? colors.backgroundActive   : RGBA30;  
+
     // presenza ON/OFF
     const presenceOn      = hass.states[entities.presence.entity]?.state === 'on';
-    const bubbleIconColor = presenceOn ? ACCENT_ICON : INACTIVE_ICON;
-    const bubbleBg        = presenceOn ? ACCENT_BG  : INACTIVE_BG;
-  
+    // SOSTITUISCI CON QUESTO
+    const bubbleIconColor = presenceOn ? iconOnColor : iconOffColor;
+    const bubbleBg        = presenceOn ? bgOnColor   : bgOffColor;
+
     // palette custom vs tema HA
     const PRIMARY  = 'var(--primary-color)';
     const ACCENT   = 'var(--accent-color)';
     const RGBA10   = 'rgba(var(--rgb-primary-color),0.1)';
     const RGBA30   = 'rgba(var(--rgb-primary-color),0.3)';
-    const iconOffColor = colors.inactive !== 'default' ? colors.inactive : PRIMARY;
-    const iconOnColor  = colors.active   !== 'default' ? colors.active   : ACCENT;
-    const bgOffColor   = colors.backgroundInactive !== 'default' ? colors.backgroundInactive : RGBA10;
-    const bgOnColor    = colors.backgroundActive   !== 'default' ? colors.backgroundActive   : RGBA30;
+
   
     // inline vars per <ha-card>
     const vars = [];
