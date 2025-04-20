@@ -88,9 +88,11 @@ class BubbleRoom extends LitElement {
   }
 
   // Funzione helper per ottenere l'icona di fallback
-  _getFallbackIcon(entityId, explicitIcon = '') {
-    // se explicitIcon è stringa non vuota, la uso
-    if (typeof explicitIcon === 'string' && explicitIcon.trim() !== '') {
+  _getFallbackIcon(entityId, explicitIcon) {
+    // se arriva null/undefined, diventa sempre stringa vuota
+    explicitIcon = typeof explicitIcon === 'string' ? explicitIcon : '';
+  
+    if (explicitIcon.trim() !== '') {
       return explicitIcon;
     }
   
@@ -205,7 +207,7 @@ class BubbleRoom extends LitElement {
   
     // 2) altrimenti è un mushroom “iconico”
     // ricavo l'icona (custom o fallback)
-    const icon = this._getFallbackIcon(item.entity, item.icon);
+    const icon = this._getFallbackIcon(item.entity, item.icon || '');
   
     return html`
       <div
