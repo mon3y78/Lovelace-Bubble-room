@@ -724,13 +724,18 @@ class BubbleRoom extends LitElement {
     // mappale in un array di oggetti { item, idx, color }
     const mushrooms = mushroomKeys.map((key, idx) => {
       const item = this.config.entities[key];
-      // se non esiste o non ha entity, lo lasciamo undefined
-      if (!item || !item.entity) {
+    
+      // se non esiste OPPURE (non ha entity E non ha sensori temp/umidità) → placeholder
+      if (!item || (!item.entity && !item.temperature_sensor && !item.humidity_sensor)) {
         return { item: null, idx, color: null };
       }
-      // calcola lo stato “on/off” per scegliere il colore
-      const stateOn = this.hass.states[item.entity]?.state === 'on';
+    
+      // altrimenti calcola il colore in base allo stato "on/off" se esiste un entity
+      const stateOn = item.entity 
+        ? this.hass.states[item.entity]?.state === 'on'
+        : false;
       const color = stateOn ? iconOnColor : iconOffColor;
+    
       return { item, idx, color };
     });
 
