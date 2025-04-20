@@ -204,8 +204,8 @@ class BubbleRoom extends LitElement {
       colors: {
         active:             userColors.active             ?? 'var(--primary-color)',
         inactive:           userColors.inactive           ?? 'var(--secondary-text-color)',
-        backgroundActive:   userColors.backgroundActive   ?? 'var(--primary-color, #03a9f4)',
-        backgroundInactive: userColors.backgroundInactive ?? 'var(--card-background-color, rgba(0,0,0,0.12))',
+        backgroundActive:   userColors.backgroundActive   ?? 'color-mix(in srgb, var(--primary-color) 25%, transparent)',
+        backgroundInactive: userColors.backgroundInactive ?? 'var(--card-background-color)',
       },
       icon:       config.icon       || '',
       name:       config.name       || 'Salotto',
@@ -314,8 +314,8 @@ class BubbleRoom extends LitElement {
         border-radius: 10px;
         margin: 3px;
         cursor: pointer;
-        background-color: var(--bubble-room-sub-bg, var(--divider-color));
-        color: var(--bubble-room-sub-icon-color, var(--primary-text-color));
+        background-color: var(--bubble-room-sub-bg, var(--card-background-color));
+        color: var(--bubble-room-sub-icon-color, var(--primary-color));
       }
       .bubble-sub-button ha-icon {
         color: var(--bubble-room-sub-icon-color, var(--secondary-text-color));
@@ -566,7 +566,7 @@ class BubbleRoom extends LitElement {
                   const ic      = this._getFallbackIcon(btn.entity);
                   return html`
                     <div class="bubble-sub-button ${isOn ? 'active' : 'inactive'}"
-                         style="background-color: ${btnBg};"
+                         style="background-color: ${btnBg}; color: ${iconCol};"
                          @pointerdown=${e => this._startHold(e, btn)}
                          @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
                          @pointerleave=${() => this._cancelHold()}>
