@@ -20,113 +20,156 @@ const S=globalThis,A=S.trustedTypes,w=A?A.createPolicy("lit-html",{createHTML:t=
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-class ot extends ${constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const e=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=((t,e,i)=>{const n=i?.renderBefore??e;let o=n._$litPart$;if(void 0===o){const t=i?.renderBefore??null;n._$litPart$=o=new G(e.insertBefore(T(),t),t,void 0,i??{})}return o._$AI(t),o})(e,this.renderRoot,this.renderOptions)}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0)}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1)}render(){return F}}ot._$litElement$=!0,ot.finalized=!0,globalThis.litElementHydrateSupport?.({LitElement:ot});const st=globalThis.litElementPolyfillSupport;st?.({LitElement:ot}),(globalThis.litElementVersions??=[]).push("4.1.1");var at=function(t){if(t){var e=function(t){return[].slice.call(t)},i=3,n=[],o=null,s="requestAnimationFrame"in t?function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{sync:!1};t.cancelAnimationFrame(o);var i=function(){return r(n.filter((function(t){return t.dirty&&t.active})))};if(e.sync)return i();o=t.requestAnimationFrame(i)}:function(){},a=function(t){return function(e){n.forEach((function(e){return e.dirty=t})),s(e)}},r=function(t){t.filter((function(t){return!t.styleComputed})).forEach((function(t){t.styleComputed=h(t)})),t.filter(u).forEach(p);var e=t.filter(d);e.forEach(l),e.forEach((function(t){p(t),c(t)})),e.forEach(g)},c=function(t){return t.dirty=0},l=function(t){t.availableWidth=t.element.parentNode.clientWidth,t.currentWidth=t.element.scrollWidth,t.previousFontSize=t.currentFontSize,t.currentFontSize=Math.min(Math.max(t.minSize,t.availableWidth/t.currentWidth*t.previousFontSize),t.maxSize),t.whiteSpace=t.multiLine&&t.currentFontSize===t.minSize?"normal":"nowrap"},d=function(t){return 2!==t.dirty||2===t.dirty&&t.element.parentNode.clientWidth!==t.availableWidth},h=function(e){var i=t.getComputedStyle(e.element,null);return e.currentFontSize=parseFloat(i.getPropertyValue("font-size")),e.display=i.getPropertyValue("display"),e.whiteSpace=i.getPropertyValue("white-space"),!0},u=function(t){var e=!1;return!t.preStyleTestCompleted&&(/inline-/.test(t.display)||(e=!0,t.display="inline-block"),"nowrap"!==t.whiteSpace&&(e=!0,t.whiteSpace="nowrap"),t.preStyleTestCompleted=!0,e)},p=function(t){t.element.style.whiteSpace=t.whiteSpace,t.element.style.display=t.display,t.element.style.fontSize=t.currentFontSize+"px"},g=function(t){t.element.dispatchEvent(new CustomEvent("fit",{detail:{oldValue:t.previousFontSize,newValue:t.currentFontSize,scaleFactor:t.currentFontSize/t.previousFontSize}}))},m=function(t,e){return function(i){t.dirty=e,t.active&&s(i)}},_=function(t){return function(){n=n.filter((function(e){return e.element!==t.element})),t.observeMutations&&t.observer.disconnect(),t.element.style.whiteSpace=t.originalStyle.whiteSpace,t.element.style.display=t.originalStyle.display,t.element.style.fontSize=t.originalStyle.fontSize}},v=function(t){return function(){t.active||(t.active=!0,s())}},f=function(t){return function(){return t.active=!1}},b=function(t){t.observeMutations&&(t.observer=new MutationObserver(m(t,1)),t.observer.observe(t.element,t.observeMutations))},y={minSize:16,maxSize:512,multiLine:!0,observeMutations:"MutationObserver"in t&&{subtree:!0,childList:!0,characterData:!0}},$=null,S=function(){t.clearTimeout($),$=t.setTimeout(a(2),E.observeWindowDelay)},A=["resize","orientationchange"];return Object.defineProperty(E,"observeWindow",{set:function(e){var i="".concat(e?"add":"remove","EventListener");A.forEach((function(e){t[i](e,S)}))}}),E.observeWindow=!0,E.observeWindowDelay=100,E.fitAll=a(i),E}function w(t,e){var o=Object.assign({},y,e),a=t.map((function(t){var e=Object.assign({},o,{element:t,active:!0});return function(t){t.originalStyle={whiteSpace:t.element.style.whiteSpace,display:t.element.style.display,fontSize:t.element.style.fontSize},b(t),t.newbie=!0,t.dirty=!0,n.push(t)}(e),{element:t,fit:m(e,i),unfreeze:v(e),freeze:f(e),unsubscribe:_(e)}}));return s(),a}function E(t){var i=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};return"string"==typeof t?w(e(document.querySelectorAll(t)),i):w([t],i)[0]}}("undefined"==typeof window?null:window);customElements.define("bubble-room",class extends ot{static get properties(){return{config:{type:Object},hass:{type:Object}}}firstUpdated(){const t=this.shadowRoot.querySelectorAll(".mushroom-primary");if(!t.length)return;at(t,{maxSize:20,multiLine:!1}).forEach((t=>t.unsubscribe()))}static async getConfigElement(){return await Promise.resolve().then((function(){return rt})),document.createElement("bubble-room-editor")}static getStubConfig(){return{entities:{presence:{entity:"binary_sensor.aqara_fp1_presence"},"sub-button1":{entity:"light.luce_ventola",icon:"",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},"sub-button2":{entity:"fan.sonoff_1000f6e5c7",icon:"",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},"sub-button3":{entity:"media_player.google_nest_1",icon:"",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},"sub-button4":{entity:"vacuum.slider",icon:"",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},climate:{entity:"climate.termostato_salotto",icon:"",tap_action:{action:"more-info"}},camera:{entity:"camera.front_door",icon:"",tap_action:{action:"more-info"},preview_url:""},entities1:{entity:"sensor.some_sensor1",icon:""},entities2:{entity:"sensor.some_sensor2",icon:""},entities3:{entity:"sensor.some_sensor3",icon:""},entities4:{entity:"sensor.some_sensor4",icon:""},entities5:{entity:"sensor.some_sensor5",icon:""},temperature:{temperature_sensor:"sensor.vindstyrka_salotto_temperature",humidity_sensor:"sensor.vindstyrka_salotto_humidity",tap_action:{action:"more-info"}}},colors:{active:"rgba(var(--color-green), 1)",inactive:"rgba(var(--color-green), 0.3)",backgroundActive:"rgba(var(--color-green), 0.4)",backgroundInactive:"rgba(var(--color-green), 0.1)"},icon:"",name:"Salotto",tap_action:{action:"navigate",navigation_path:"/lovelace/sala"}}}_getFallbackIcon(t,e){if(""!==(e="string"==typeof e?e:"").trim())return e;if(this.hass?.entities?.[t]?.icon)return this.hass.entities[t].icon;const i=this.hass?.states?.[t];if(i?.attributes?.icon)return i.attributes.icon;if(i?.attributes?.device_class)return this._getDeviceClassIcon(i.attributes.device_class,i.state);const n=t?.split?.(".")?.[0]||"";return this._getDomainDefaultIcon(n,i?.state)}_getDeviceClassIcon(t,e){switch(t){case"door":return"on"===e?"mdi:door-open":"mdi:door-closed";case"window":return"on"===e?"mdi:window-open":"mdi:window-closed";case"motion":return"on"===e?"mdi:motion-sensor":"mdi:motion-sensor-off";case"moisture":return"on"===e?"mdi:water-alert":"mdi:water-off";case"smoke":return"on"===e?"mdi:smoke":"mdi:smoke-detector-off";case"gas":return"on"===e?"mdi:gas-cylinder":"mdi:gas-off";case"problem":return"mdi:alert";case"connectivity":return"mdi:connection";case"occupancy":case"presence":return"on"===e?"mdi:account-voice":"mdi:account-voice-off";case"tamper":return"mdi:lock-open-alert";case"vibration":return"on"===e?"mdi:vibrate":"mdi:vibrate-off";case"running":return"on"===e?"mdi:server-network":"mdi:server-network-off";case"shutter":return"on"===e?"mdi:window-shutter-open":"mdi:window-shutter";case"blind":return"on"===e?"mdi:blinds-horizontal":"mdi:blinds-horizontal-closed";default:return""}}_getDomainDefaultIcon(t,e){switch(t){case"light":return"mdi:lightbulb";case"switch":case"input_boolean":return"mdi:toggle-switch";case"fan":return"mdi:fan";case"climate":return"mdi:thermostat";case"media_player":return"mdi:speaker";case"vacuum":return"mdi:robot-vacuum";case"binary_sensor":return"on"===e?"mdi:motion-sensor":"mdi:motion-sensor-off";case"sensor":return"mdi:information-outline";case"cover":return"open"===e?"mdi:blinds-open":"mdi:blinds-closed";case"lock":return"locked"===e?"mdi:lock":"mdi:lock-open";case"door":return"open"===e?"mdi:door-open":"mdi:door-closed";case"window":return"open"===e?"mdi:window-open":"mdi:window-closed";default:return""}}_renderMushroom(t,e,i){const n=this._defaultMushroomStyle(e);if(t.temperature_sensor||t.humidity_sensor){const e=this._buildTemperatureText(t);return D`
+class ot extends ${constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const e=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=((t,e,i)=>{const n=i?.renderBefore??e;let o=n._$litPart$;if(void 0===o){const t=i?.renderBefore??null;n._$litPart$=o=new G(e.insertBefore(T(),t),t,void 0,i??{})}return o._$AI(t),o})(e,this.renderRoot,this.renderOptions)}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0)}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1)}render(){return F}}ot._$litElement$=!0,ot.finalized=!0,globalThis.litElementHydrateSupport?.({LitElement:ot});const st=globalThis.litElementPolyfillSupport;st?.({LitElement:ot}),(globalThis.litElementVersions??=[]).push("4.1.1");var at=function(t){if(t){var e=function(t){return[].slice.call(t)},i=3,n=[],o=null,s="requestAnimationFrame"in t?function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{sync:!1};t.cancelAnimationFrame(o);var i=function(){return r(n.filter((function(t){return t.dirty&&t.active})))};if(e.sync)return i();o=t.requestAnimationFrame(i)}:function(){},a=function(t){return function(e){n.forEach((function(e){return e.dirty=t})),s(e)}},r=function(t){t.filter((function(t){return!t.styleComputed})).forEach((function(t){t.styleComputed=h(t)})),t.filter(u).forEach(p);var e=t.filter(d);e.forEach(l),e.forEach((function(t){p(t),c(t)})),e.forEach(g)},c=function(t){return t.dirty=0},l=function(t){t.availableWidth=t.element.parentNode.clientWidth,t.currentWidth=t.element.scrollWidth,t.previousFontSize=t.currentFontSize,t.currentFontSize=Math.min(Math.max(t.minSize,t.availableWidth/t.currentWidth*t.previousFontSize),t.maxSize),t.whiteSpace=t.multiLine&&t.currentFontSize===t.minSize?"normal":"nowrap"},d=function(t){return 2!==t.dirty||2===t.dirty&&t.element.parentNode.clientWidth!==t.availableWidth},h=function(e){var i=t.getComputedStyle(e.element,null);return e.currentFontSize=parseFloat(i.getPropertyValue("font-size")),e.display=i.getPropertyValue("display"),e.whiteSpace=i.getPropertyValue("white-space"),!0},u=function(t){var e=!1;return!t.preStyleTestCompleted&&(/inline-/.test(t.display)||(e=!0,t.display="inline-block"),"nowrap"!==t.whiteSpace&&(e=!0,t.whiteSpace="nowrap"),t.preStyleTestCompleted=!0,e)},p=function(t){t.element.style.whiteSpace=t.whiteSpace,t.element.style.display=t.display,t.element.style.fontSize=t.currentFontSize+"px"},g=function(t){t.element.dispatchEvent(new CustomEvent("fit",{detail:{oldValue:t.previousFontSize,newValue:t.currentFontSize,scaleFactor:t.currentFontSize/t.previousFontSize}}))},m=function(t,e){return function(i){t.dirty=e,t.active&&s(i)}},_=function(t){return function(){n=n.filter((function(e){return e.element!==t.element})),t.observeMutations&&t.observer.disconnect(),t.element.style.whiteSpace=t.originalStyle.whiteSpace,t.element.style.display=t.originalStyle.display,t.element.style.fontSize=t.originalStyle.fontSize}},v=function(t){return function(){t.active||(t.active=!0,s())}},f=function(t){return function(){return t.active=!1}},b=function(t){t.observeMutations&&(t.observer=new MutationObserver(m(t,1)),t.observer.observe(t.element,t.observeMutations))},y={minSize:16,maxSize:512,multiLine:!0,observeMutations:"MutationObserver"in t&&{subtree:!0,childList:!0,characterData:!0}},$=null,S=function(){t.clearTimeout($),$=t.setTimeout(a(2),E.observeWindowDelay)},A=["resize","orientationchange"];return Object.defineProperty(E,"observeWindow",{set:function(e){var i="".concat(e?"add":"remove","EventListener");A.forEach((function(e){t[i](e,S)}))}}),E.observeWindow=!0,E.observeWindowDelay=100,E.fitAll=a(i),E}function w(t,e){var o=Object.assign({},y,e),a=t.map((function(t){var e=Object.assign({},o,{element:t,active:!0});return function(t){t.originalStyle={whiteSpace:t.element.style.whiteSpace,display:t.element.style.display,fontSize:t.element.style.fontSize},b(t),t.newbie=!0,t.dirty=!0,n.push(t)}(e),{element:t,fit:m(e,i),unfreeze:v(e),freeze:f(e),unsubscribe:_(e)}}));return s(),a}function E(t){var i=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};return"string"==typeof t?w(e(document.querySelectorAll(t)),i):w([t],i)[0]}}("undefined"==typeof window?null:window);customElements.define("bubble-room",class extends ot{static get properties(){return{config:{type:Object},hass:{type:Object}}}firstUpdated(){const t=this.shadowRoot.querySelectorAll(".mushroom-primary");if(!t.length)return;at(t,{maxSize:20,multiLine:!1}).forEach((t=>t.unsubscribe()))}static async getConfigElement(){return await Promise.resolve().then((function(){return rt})),document.createElement("bubble-room-editor")}static getStubConfig(){return{entities:{presence:{entity:"binary_sensor.aqara_fp1_presence"},"sub-button1":{entity:"light.luce_ventola",icon:"",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},"sub-button2":{entity:"fan.sonoff_1000f6e5c7",icon:"",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},"sub-button3":{entity:"media_player.google_nest_1",icon:"",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},"sub-button4":{entity:"vacuum.slider",icon:"",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},climate:{entity:"climate.termostato_salotto",icon:"",tap_action:{action:"more-info"}},camera:{entity:"camera.front_door",icon:"",tap_action:{action:"more-info"},preview_url:""},entities1:{entity:"sensor.some_sensor1",icon:""},entities2:{entity:"sensor.some_sensor2",icon:""},entities3:{entity:"sensor.some_sensor3",icon:""},entities4:{entity:"sensor.some_sensor4",icon:""},entities5:{entity:"sensor.some_sensor5",icon:""},temperature:{temperature_sensor:"sensor.vindstyrka_salotto_temperature",humidity_sensor:"sensor.vindstyrka_salotto_humidity",tap_action:{action:"more-info"}}},colors:{active:"rgba(var(--color-green), 1)",inactive:"rgba(var(--color-green), 0.3)",backgroundActive:"rgba(var(--color-green), 0.4)",backgroundInactive:"rgba(var(--color-green), 0.1)"},icon:"",name:"Salotto",tap_action:{action:"navigate",navigation_path:"/lovelace/sala"}}}_getFallbackIcon(t,e){if((e="string"==typeof e?e:"").trim())return e;if(this.hass?.entities?.[t]?.icon)return this.hass.entities[t].icon;const i=this.hass?.states?.[t];if(i?.attributes?.icon)return i.attributes.icon;if(i?.attributes?.device_class)return this._getDeviceClassIcon(i.attributes.device_class,i.state);const n=t?.split?.(".")?.[0]||"";return this._getDomainDefaultIcon(n,i?.state)}_getDeviceClassIcon(t,e){switch(t){case"door":return"on"===e?"mdi:door-open":"mdi:door-closed";case"window":return"on"===e?"mdi:window-open":"mdi:window-closed";case"motion":return"on"===e?"mdi:motion-sensor":"mdi:motion-sensor-off";case"moisture":return"on"===e?"mdi:water-alert":"mdi:water-off";case"smoke":return"on"===e?"mdi:smoke":"mdi:smoke-detector-off";case"gas":return"on"===e?"mdi:gas-cylinder":"mdi:gas-off";case"problem":return"mdi:alert";case"connectivity":return"mdi:connection";case"occupancy":case"presence":return"on"===e?"mdi:account-voice":"mdi:account-voice-off";case"tamper":return"mdi:lock-open-alert";case"vibration":return"on"===e?"mdi:vibrate":"mdi:vibrate-off";case"running":return"on"===e?"mdi:server-network":"mdi:server-network-off";case"shutter":return"on"===e?"mdi:window-shutter-open":"mdi:window-shutter";case"blind":return"on"===e?"mdi:blinds-horizontal":"mdi:blinds-horizontal-closed";default:return""}}_getDomainDefaultIcon(t,e){switch(t){case"light":return"mdi:lightbulb";case"switch":case"input_boolean":return"mdi:toggle-switch";case"fan":return"mdi:fan";case"climate":return"mdi:thermostat";case"media_player":return"mdi:speaker";case"vacuum":return"mdi:robot-vacuum";case"binary_sensor":return"on"===e?"mdi:motion-sensor":"mdi:motion-sensor-off";case"sensor":return"mdi:information-outline";case"cover":return"open"===e?"mdi:blinds-open":"mdi:blinds-closed";case"lock":return"locked"===e?"mdi:lock":"mdi:lock-open";case"door":return"open"===e?"mdi:door-open":"mdi:door-closed";case"window":return"open"===e?"mdi:window-open":"mdi:window-closed";default:return""}}_renderMushroom(t,e,i){const n=this._defaultMushroomStyle(e);if(t.temperature_sensor||t.humidity_sensor){const e=this._buildTemperatureText(t);return D`
         <div class="mushroom-item" style="${n}">
           <span class="fit-text" style="color: ${i};">${e}</span>
         </div>
       `}const o=this._getFallbackIcon(t.entity,t.icon||"");return D`
-      <div
-        class="mushroom-item"
-        style="${n}"
-        @pointerdown=${e=>this._startHold(e,t)}
-        @pointerup=${e=>this._endHold(e,t,(()=>this._handleMushroomTap(t)))}
-        @pointerleave=${t=>this._cancelHold(t)}
-      >
+      <div class="mushroom-item" style="${n}"
+           @pointerdown=${e=>this._startHold(e,t)}
+           @pointerup=${e=>this._endHold(e,t,(()=>this._handleMushroomTap(t)))}
+           @pointerleave=${()=>this._cancelHold()}>
         <ha-icon icon="${o}" style="color: ${i};"></ha-icon>
       </div>
-    `}_buildTemperatureText(t){const e=this.hass,i=t.temperature_sensor?e.states[t.temperature_sensor]?.state:null,n=t.humidity_sensor?e.states[t.humidity_sensor]?.state:null;let o="";return null!=i&&""!==i&&(o+=`🌡️${i}°C`),null!=n&&""!==n&&(o+=(o?" ":"")+`💦${n}%`),o}setConfig(t){if(!(t=JSON.parse(JSON.stringify(t)))||"object"!=typeof t||Array.isArray(t))throw new Error("La configurazione deve essere un oggetto valido.");if(!t.entities||"object"!=typeof t.entities)throw new Error("Devi definire almeno la proprietà 'entities' nella configurazione.");const e=["presence","sub-button1","sub-button2","sub-button3","sub-button4","entities1","entities2","entities3","entities4","entities5","climate","camera","temperature"],i={tap_action:{action:"toggle"},hold_action:{action:"more-info"}},n={};for(const o in t.entities){let s=t.entities[o];if(/^entities[1-5]$/.test(o)&&s&&"object"==typeof s&&Object.keys(s).some((t=>/^\d+$/.test(t)))){const t={},e=Object.keys(s).filter((t=>/^\d+$/.test(t)));for(const e in s)/^\d+$/.test(e)||(t[e]=s[e]);t.entity=e.sort(((t,e)=>t-e)).map((t=>s[t])).join(""),s=t}if("climate"===o&&"string"==typeof s&&(s={entity:s,...i}),"string"==typeof s)n[o]=e.includes(o)?"presence"===o?{entity:s}:{entity:s,...i}:s;else if("object"==typeof s)if(e.includes(o)){if(!s.style&&o.startsWith("entities")){const t=Number(o.replace("entities",""))-1;s.style=this._defaultMushroomStyle(t)}n[o]="presence"===o?{...s}:{...i,...s}}else n[o]=s}const o=t.colors||{};this.config={entities:n,colors:{...void 0!==o.active?{active:o.active}:{},...void 0!==o.inactive?{inactive:o.inactive}:{},...void 0!==o.backgroundActive?{backgroundActive:o.backgroundActive}:{},...void 0!==o.backgroundInactive?{backgroundInactive:o.backgroundInactive}:{}},icon:t.icon||"",name:t.name||"Salotto",tap_action:t.tap_action||{action:"navigate",navigation_path:""}},!this.config.entity&&this.config.entities.presence&&(this.config.entity=this.config.entities.presence.entity)}getConfig(){const t=JSON.parse(JSON.stringify(this._config)),e={};return Object.entries(t.entities).forEach((([t,i])=>{(t.startsWith("sub-button")||i.entity&&i.entity.trim())&&(e[t]=i)})),t.entities=e,this._config=t,t}static get styles(){return s`
-      *,*::before,*::after{box-sizing:border-box}
-      :host{display:block;--card-height:190px;font-family:sans-serif}
-      ha-card{
-        display:block;margin:0;padding:0!important;
-        background:var(--card-background-color,var(--ha-card-background,white))!important;
-        border-radius:var(--bubble-room-border-radius,var(--ha-card-border-radius,8px))!important;
+    `}_buildTemperatureText(t){const e=this.hass,i=t.temperature_sensor?e.states[t.temperature_sensor]?.state:null,n=t.humidity_sensor?e.states[t.humidity_sensor]?.state:null;let o="";return null!=i&&""!==i&&(o+=`🌡️${i}°C`),null!=n&&""!==n&&(o+=(o?" ":"")+`💦${n}%`),o}setConfig(t){if(!(t=JSON.parse(JSON.stringify(t)))||"object"!=typeof t||Array.isArray(t))throw new Error("La configurazione deve essere un oggetto valido.");if(!t.entities||"object"!=typeof t.entities)throw new Error("Devi definire almeno la proprietà 'entities' nella configurazione.");const e=["presence","sub-button1","sub-button2","sub-button3","sub-button4","entities1","entities2","entities3","entities4","entities5","climate","camera","temperature"],i={tap_action:{action:"toggle"},hold_action:{action:"more-info"}},n={};for(const o in t.entities){let s=t.entities[o];if(["entities1","entities2","entities3","entities4","entities5"].includes(o)&&"object"==typeof s){const t={},e=Object.keys(s).filter((t=>/^\d+$/.test(t)));Object.entries(s).forEach((([e,i])=>{/^\d+$/.test(e)||(t[e]=i)})),e.length&&(t.entity=e.sort(((t,e)=>t-e)).map((t=>s[t])).join("")),s=t}if("climate"===o&&"string"==typeof s&&(s={entity:s,...i}),"string"==typeof s)n[o]=e.includes(o)?"presence"===o?{entity:s}:{entity:s,...i}:s;else if("object"==typeof s)if(e.includes(o)){if(!s.style&&o.startsWith("entities")){const t=Number(o.replace("entities",""))-1;s.style=this._defaultMushroomStyle(t)}n[o]="presence"===o?{...s}:{...i,...s}}else n[o]=s}const o=t.colors||{};this.config={entities:n,colors:{...void 0!==o.active?{active:o.active}:{},...void 0!==o.inactive?{inactive:o.inactive}:{},...void 0!==o.backgroundActive?{backgroundActive:o.backgroundActive}:{},...void 0!==o.backgroundInactive?{backgroundInactive:o.backgroundInactive}:{}},icon:t.icon||"",name:t.name||"Salotto",tap_action:t.tap_action||{action:"navigate",navigation_path:""}},!this.config.entity&&this.config.entities.presence&&(this.config.entity=this.config.entities.presence.entity)}getConfig(){const t=JSON.parse(JSON.stringify(this._config)),e={};return Object.entries(t.entities).forEach((([t,i])=>{(t.startsWith("sub-button")||i.entity&&i.entity.trim())&&(e[t]=i)})),t.entities=e,this._config=t,t}static get styles(){return s`
+      *, *::before, *::after { box-sizing: border-box; }
+      :host { display: block; --card-height: 190px; font-family: sans-serif; }
+      ha-card {
+        display: block;
+        margin: 0;
+        padding: 0 !important;
+        background: var(--bubble-room-background, var(--card-background-color, var(--ha-card-background, white))) !important;
+        border-radius: var(--bubble-room-border-radius, var(--ha-card-border-radius, 8px)) !important;
       }
-      .card{position:relative;width:100%;height:var(--card-height);overflow:hidden;border-radius:inherit}
-      .grid-container{
-        display:grid;width:100%;height:100%;
-        grid-template-areas:". . . b" "n n n b" "i i . b" "i i . b";
-        grid-template-columns:35% 35% 10% 20%;
-        grid-template-rows:25% 25% 25% 25%;
+      .card {
+        position: relative;
+        width: 100%;
+        height: var(--card-height);
+        overflow: hidden;
+        border-radius: inherit;
       }
-      .name-area{
-        grid-area:n;display:flex;align-items:center;padding-left:2px;margin-top:-67px;
-        font-size:30px;font-weight:bold;color:var(--bubble-room-name-color)!important;
+      .grid-container {
+        display: grid;
+        width:100%;
+        height:100%;
+        grid-template-areas:
+          ". . . b"
+          "n n n b"
+          "i i . b"
+          "i i . b";
+        grid-template-columns: 35% 35% 10% 20%;
+        grid-template-rows: 25% 25% 25% 25%;
       }
-      .icon-area{grid-area:i;position:relative;display:flex;justify-content:center;align-items:center}
-      .bubble-icon-container{
-        position:absolute;cursor:pointer;border-radius:50%;width:170px;height:170px;
-        display:flex;justify-content:center;align-items:center;top:-39px;left:-40px;
-        background-color:var(--bubble-room-icon-bg)!important;
+      .name-area {
+        grid-area: n;
+        display: flex;
+        align-items: center;
+        padding-left: 2px;
+        margin-top: -67px;
+        font-size: 30px;
+        font-weight: bold;
+        color: var(--bubble-room-name-color) !important;
       }
-      .bubble-icon{
-        position:absolute;top:20%;left:30%;--mdc-icon-size:75px;opacity:0.5;
-        color:var(--bubble-room-icon-color)!important;
+      .icon-area {
+        grid-area: i;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
-      .bubble-sub-button-container{
-        grid-area:b;display:flex;flex-direction:column;justify-content:center;align-items:center;
+      .bubble-icon-container {
+        position: absolute;
+        cursor: pointer;
+        border-radius: 50%;
+        width: 170px;
+        height: 170px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        top: -39px;
+        left: -40px;
+        background-color: var(--bubble-room-icon-bg) !important;
       }
-      .bubble-sub-button{
-        display:flex;align-items:center;justify-content:center;width:100%;padding:10px;
-        border-radius:10px;margin:3px;cursor:pointer;
-        background-color:var(--bubble-room-sub-bg,var(--divider-color))!important;
-        color:var(--bubble-room-sub-icon-color,var(--primary-text-color))!important;
+      .bubble-icon {
+        position: absolute;
+        top: 20%;
+        left: 30%;
+        --mdc-icon-size: 75px;
+        opacity: 0.5;
+        color: var(--bubble-room-icon-color) !important;
       }
-      .bubble-sub-button ha-icon{
-        color:var(--bubble-room-sub-icon-color,var(--secondary-text-color))!important;
+      .bubble-sub-button-container {
+        grid-area: b;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
       }
-      .mushroom-container{position:absolute;bottom:0;left:0;width:100%;height:50%;pointer-events:none}
-      .mushroom-item{position:absolute;pointer-events:auto}
-      .mushroom-item ha-icon{--mdc-icon-size:33px}
-      .fit-text{white-space:nowrap;overflow:hidden}
-    `}_defaultMushroomStyle(t){switch(t){case 0:return"top: -77px; left: 0px;";case 1:return"top: -85px; left: 38px;";case 2:return"top: -64px; left: 77px;";case 3:return"bottom: 39px; left: 96px;";case 4:return"bottom: -1px; left: 85px;";case 5:return"bottom: -2px; left: -2px;";case 6:return"top: -140px; left: 5px;";case 7:return"top: -95px; right: 5px;";default:return""}}_startHold(t,e){t.stopPropagation(),this._holdTriggered=!1,this._holdTimeout=setTimeout((()=>{this._holdTriggered=!0,this._handleHoldAction(e)}),500)}_endHold(t,e,i){t.stopPropagation(),clearTimeout(this._holdTimeout),this._holdTriggered||i(),this._holdTriggered=!1}_cancelHold(){clearTimeout(this._holdTimeout),this._holdTriggered=!1}_handleHoldAction(t){if(!t.hold_action)return void this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:t.entity},bubbles:!0,composed:!0}));const{action:e,service:i,service_data:n,navigation_path:o}=t.hold_action;switch(e){case"more-info":this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:t.entity},bubbles:!0,composed:!0}));break;case"toggle":this._toggleEntity(t.entity);break;case"call-service":if(i){const[e,o]=i.split("."),s={...n,entity_id:n?.entity_id||t.entity};this.hass.callService(e,o,s)}break;case"navigate":o&&(window.history.pushState({},"",o),window.dispatchEvent(new Event("location-changed")))}}_handleMainIconTap(){const{action:t,service:e,service_data:i,navigation_path:n}=this.config.tap_action||{};switch(t){case"toggle":this._toggleEntity(this.config.entity);break;case"more-info":this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:this.config.entity},bubbles:!0,composed:!0}));break;case"call-service":if(e){const[t,n]=e.split("."),o={...i,entity_id:i?.entity_id||this.config.entity};this.hass.callService(t,n,o)}break;case"navigate":n&&(window.history.pushState({},"",n),window.dispatchEvent(new Event("location-changed")))}}_toggleEntity(t){this.hass&&this.hass.callService("homeassistant","toggle",{entity_id:t})}_handleSubButtonTap(t){const{action:e,service:i,service_data:n,navigation_path:o}=t.tap_action||{};switch(e){case"toggle":this._toggleEntity(t.entity);break;case"more-info":this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:t.entity},bubbles:!0,composed:!0}));break;case"call-service":if(i){const[e,o]=i.split("."),s={...n,entity_id:n?.entity_id||t.entity};this.hass.callService(e,o,s)}break;case"navigate":o&&(window.history.pushState({},"",o),window.dispatchEvent(new Event("location-changed")))}}_handleMushroomTap(t){this._handleSubButtonTap(t)}render(){if(!this.config||!this.hass)return D`<div>Loading…</div>`;const{entities:t,name:e,icon:i,colors:n={},background:o,border_radius:s}=this.config,a=this.hass,r="on"===a.states[t.presence.entity]?.state,c=n.active??"var(--primary-color)",l=n.inactive??"var(--secondary-text-color)",d=n.backgroundActive??"rgba(var(--rgb-primary-color),0.1)",h=n.backgroundInactive??"var(--divider-color, rgba(0,0,0,0.12))",u=r?c:l,p=[o?`--bubble-room-background: ${o}`:"",s?`--bubble-room-border-radius: ${s}`:"",`--bubble-room-icon-bg: ${r?d:h}`,`--bubble-room-icon-color: ${u}`,`--bubble-room-name-color: ${u}`].filter((t=>t)).join(";"),g=i?.trim()?i:this._getFallbackIcon(t.presence.entity,""),m=[t["sub-button1"],t["sub-button2"],t["sub-button3"],t["sub-button4"]].filter((t=>t&&t.entity)),_=["entities1","entities2","entities3","entities4","entities5","climate","temperature","camera"].map(((e,i)=>{const n=t[e];if(!n)return{item:null,idx:i,color:null};if(n.temperature_sensor||n.humidity_sensor)return{item:n,idx:i,color:u};return{item:n,idx:i,color:"on"===a.states[n.entity]?.state?c:l}}));return D`
+      .bubble-sub-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        margin: 3px;
+        cursor: pointer;
+        background-color: var(--bubble-room-sub-bg, var(--divider-color)) !important;
+        color: var(--bubble-room-sub-icon-color, var(--primary-text-color)) !important;
+      }
+      .bubble-sub-button ha-icon {
+        color: var(--bubble-room-sub-icon-color, var(--secondary-text-color)) !important;
+      }
+      .mushroom-container {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 50%;
+        pointer-events: none;
+      }
+      .mushroom-item {
+        position: absolute;
+        pointer-events: auto;
+      }
+      .mushroom-item ha-icon {
+        --mdc-icon-size: 33px;
+      }
+      .fit-text {
+        white-space: nowrap;
+        overflow: hidden;
+      }
+    `}_defaultMushroomStyle(t){switch(t){case 0:return"top: -77px; left: 0px;";case 1:return"top: -85px; left: 38px;";case 2:return"top: -64px; left: 77px;";case 3:return"bottom: 39px; left: 96px;";case 4:return"bottom: -1px; left: 85px;";case 5:return"bottom: -2px; left: -2px;";case 6:return"top: -140px; left: 5px;";case 7:return"top: -95px; right: 5px;";default:return""}}_startHold(t,e){t.stopPropagation(),this._holdTriggered=!1,this._holdTimeout=setTimeout((()=>{this._holdTriggered=!0,this._handleHoldAction(e)}),500)}_endHold(t,e,i){t.stopPropagation(),clearTimeout(this._holdTimeout),this._holdTriggered||i(),this._holdTriggered=!1}_cancelHold(){clearTimeout(this._holdTimeout),this._holdTriggered=!1}_handleHoldAction(t){if(!t.hold_action)return void this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:t.entity},bubbles:!0,composed:!0}));const{action:e,service:i,service_data:n,navigation_path:o}=t.hold_action;switch(e){case"more-info":this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:t.entity},bubbles:!0,composed:!0}));break;case"toggle":this._toggleEntity(t.entity);break;case"call-service":if(i){const[e,o]=i.split("."),s={...n,entity_id:n?.entity_id||t.entity};this.hass.callService(e,o,s)}break;case"navigate":o&&(window.history.pushState({},"",o),window.dispatchEvent(new Event("location-changed")))}}_handleMainIconTap(){const{action:t,service:e,service_data:i,navigation_path:n}=this.config.tap_action||{};switch(t){case"toggle":this._toggleEntity(this.config.entity);break;case"more-info":this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:this.config.entity},bubbles:!0,composed:!0}));break;case"call-service":if(e){const[t,n]=e.split("."),o={...i,entity_id:i?.entity_id||this.config.entity};this.hass.callService(t,n,o)}break;case"navigate":n&&(window.history.pushState({},"",n),window.dispatchEvent(new Event("location-changed")))}}_toggleEntity(t){this.hass&&this.hass.callService("homeassistant","toggle",{entity_id:t})}_handleSubButtonTap(t){const{action:e,service:i,service_data:n,navigation_path:o}=t.tap_action||{};switch(e){case"toggle":this._toggleEntity(t.entity);break;case"more-info":this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:t.entity},bubbles:!0,composed:!0}));break;case"call-service":if(i){const[e,o]=i.split("."),s={...n,entity_id:n?.entity_id||t.entity};this.hass.callService(e,o,s)}break;case"navigate":o&&(window.history.pushState({},"",o),window.dispatchEvent(new Event("location-changed")))}}_handleMushroomTap(t){this._handleSubButtonTap(t)}render(){if(!this.config||!this.hass)return D`<div>Loading…</div>`;const{entities:t,name:e,icon:i,colors:n={},background:o,border_radius:s}=this.config,a=this.hass,r="on"===a.states[t.presence.entity]?.state,c=n.active??"var(--primary-color)",l=n.inactive??"var(--secondary-text-color)",d=n.backgroundActive??"rgba(var(--rgb-primary-color),0.1)",h=n.backgroundInactive??"var(--divider-color, rgba(0,0,0,0.12))",u=r?c:l,p=[o?`--bubble-room-background: ${o}`:"",s?`--bubble-room-border-radius: ${s}`:"",`--bubble-room-icon-bg: ${r?d:h}`,`--bubble-room-icon-color: ${u}`,`--bubble-room-name-color: ${u}`].filter((t=>t)).join(";"),g=i?.trim()?i:this._getFallbackIcon(t.presence.entity),m=[t["sub-button1"],t["sub-button2"],t["sub-button3"],t["sub-button4"]].filter((t=>t&&t.entity)),_=["entities1","entities2","entities3","entities4","entities5","climate","temperature","camera"].map(((e,i)=>{const n=t[e];if(!n)return{item:null,idx:i,color:null};if(n.temperature_sensor||n.humidity_sensor)return{item:n,idx:i,color:u};return{item:n,idx:i,color:"on"===a.states[n.entity]?.state?c:l}}));return D`
       <ha-card style="${p}">
         <div class="card">
           <div class="grid-container">
-  
-            <div class="name-area" style="color: ${u};">
-              ${e}
-            </div>
-  
+            <div class="name-area">${e}</div>
             <div class="icon-area">
-              <div
-                class="bubble-icon-container"
-                @pointerdown=${t=>this._startHold(t,this.config)}
-                @pointerup  =${t=>this._endHold(t,this.config,(()=>this._handleMainIconTap()))}
-                @pointerleave=${()=>this._cancelHold()}
-              >
-                ${g?D`<ha-icon
-                            class="bubble-icon"
-                            icon="${g}"
-                            style="color: ${u};"
-                          ></ha-icon>`:L}
+              <div class="bubble-icon-container"
+                   @pointerdown=${t=>this._startHold(t,this.config)}
+                   @pointerup=${t=>this._endHold(t,this.config,(()=>this._handleMainIconTap()))}
+                   @pointerleave=${()=>this._cancelHold()}>
+                ${g?D`<ha-icon class="bubble-icon" icon="${g}"></ha-icon>`:L}
               </div>
               <div class="mushroom-container">
-                ${_.map((({item:t,idx:e,color:i})=>t?this._renderMushroom(t,e,i):D`
-                        <div class="mushroom-item"
-                             style="${this._defaultMushroomStyle(e)}"></div>
-                      `))}
+                ${_.map((({item:t,idx:e,color:i})=>t?this._renderMushroom(t,e,i):D`<div class="mushroom-item" style="${this._defaultMushroomStyle(e)}"></div>`))}
               </div>
             </div>
-  
             <div class="bubble-sub-button-container">
-              ${m.map((t=>{const e="on"===a.states[t.entity]?.state,i=e?c:l,n=e?c:l,o=this._getFallbackIcon(t.entity,t.icon||"");return D`
-                    <div
-                      class="bubble-sub-button"
-                      style="background-color: ${i};"
-                      @pointerdown=${e=>this._startHold(e,t)}
-                      @pointerup  =${e=>this._endHold(e,t,(()=>this._handleSubButtonTap(t)))}
-                      @pointerleave=${()=>this._cancelHold()}
-                    >
+              ${m.map((t=>{const e="on"===a.states[t.entity]?.state,i=e?c:l,n=e?c:l,o=this._getFallbackIcon(t.entity);return D`
+                    <div class="bubble-sub-button"
+                         style="background-color: ${i};"
+                         @pointerdown=${e=>this._startHold(e,t)}
+                         @pointerup=${e=>this._endHold(e,t,(()=>this._handleSubButtonTap(t)))}
+                         @pointerleave=${()=>this._cancelHold()}>
                       <ha-icon icon="${o}" style="color: ${n};"></ha-icon>
                     </div>
                   `}))}
             </div>
-  
           </div>
         </div>
       </ha-card>
-    `}set hass(t){this._hass=t,this.requestUpdate()}}),window.customCards=window.customCards||[],window.customCards.push({type:"bubble-room",name:"Bubble Room",description:"Bubble Room",preview:!0,documentationURL:"https://github.com/mon3y78/Lovelace-Bubble-room"});customElements.define("bubble-room-editor",class extends ot{static get properties(){return{_config:{type:Object},hass:{type:Object},_iconList:{type:Array}}}static async getConfigElement(){return await Promise.resolve().then((function(){return rt})),document.createElement("bubble-room-editor")}static getStubConfig(){return{entities:{presence:{entity:"binary_sensor.aqara_fp1_presence"},"sub-button1":{entity:"light.luce_ventola",icon:"mdi:lightbulb",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},"sub-button2":{entity:"fan.sonoff_1000f6e5c7",icon:"mdi:fan",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},"sub-button3":{entity:"media_player.google_nest_1",icon:"mdi:speaker",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},"sub-button4":{entity:"vacuum.slider",icon:"mdi:robot-vacuum",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},climate:{entity:"climate.termostato_salotto",icon:"mdi:thermostat",tap_action:{action:"more-info"}},entities1:{entity:"sensor.some_sensor1",icon:"mdi:information-outline"},entities2:{entity:"sensor.some_sensor2",icon:"mdi:information-outline"},entities3:{entity:"sensor.some_sensor3",icon:"mdi:information-outline"},entities4:{entity:"sensor.some_sensor4",icon:"mdi:information-outline"},entities5:{entity:"sensor.some_sensor5",icon:"mdi:information-outline"},temperature:{temperature_sensor:"sensor.vindstyrka_salotto_temperature",humidity_sensor:"sensor.vindstyrka_salotto_humidity",tap_action:{action:"more-info"}}},colors:{active:"rgba(var(--color-green), 1)",inactive:"rgba(var(--color-green), 0.3)",backgroundActive:"rgba(var(--color-green), 0.4)",backgroundInactive:"rgba(var(--color-green), 0.1)"},name:"Salotto",icon:"mdi:sofa",tap_action:{action:"navigate",navigation_path:"/lovelace/sala"},hold_action:{action:"more-info",navigation_path:""}}}constructor(){super(),this._iconList=["mdi:lightbulb","mdi:fan","mdi:play-circle","mdi:robot-vacuum","mdi:information-outline","mdi:sofa","mdi:account","mdi:bed","mdi:home","mdi:weather-sunny","mdi:weather-cloudy","mdi:weather-rainy"]}connectedCallback(){super.connectedCallback()}setConfig(t){t||(t={}),t.entities||(t.entities={}),t.colors||(t.colors={active:"rgba(var(--color-green), 1)",inactive:"rgba(var(--color-green), 0.3)",backgroundActive:"rgba(var(--color-green), 0.4)",backgroundInactive:"rgba(var(--color-green), 0.1)"}),t.hold_action||(t.hold_action={action:"more-info",navigation_path:""}),this._config=t}getConfig(){const t=JSON.parse(JSON.stringify(this._config)),e={};return Object.keys(t.entities).forEach((i=>{const n=t.entities[i];n.entity&&""!==n.entity.trim()&&(e[i]=n)})),t.entities=e,this._config=t,t}_defaultIconList(){return this._iconList}static get styles(){return s`
+    `}set hass(t){this._hass=t,this.requestUpdate()}get hass(){return this._hass}}),window.customCards=window.customCards||[],window.customCards.push({type:"bubble-room",name:"Bubble Room",description:"Bubble Room",preview:!0,documentationURL:"https://github.com/mon3y78/Lovelace-Bubble-room"});customElements.define("bubble-room-editor",class extends ot{static get properties(){return{_config:{type:Object},hass:{type:Object},_iconList:{type:Array}}}static async getConfigElement(){return await Promise.resolve().then((function(){return rt})),document.createElement("bubble-room-editor")}static getStubConfig(){return{entities:{presence:{entity:"binary_sensor.aqara_fp1_presence"},"sub-button1":{entity:"light.luce_ventola",icon:"mdi:lightbulb",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},"sub-button2":{entity:"fan.sonoff_1000f6e5c7",icon:"mdi:fan",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},"sub-button3":{entity:"media_player.google_nest_1",icon:"mdi:speaker",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},"sub-button4":{entity:"vacuum.slider",icon:"mdi:robot-vacuum",tap_action:{action:"toggle"},hold_action:{action:"more-info"}},climate:{entity:"climate.termostato_salotto",icon:"mdi:thermostat",tap_action:{action:"more-info"}},entities1:{entity:"sensor.some_sensor1",icon:"mdi:information-outline"},entities2:{entity:"sensor.some_sensor2",icon:"mdi:information-outline"},entities3:{entity:"sensor.some_sensor3",icon:"mdi:information-outline"},entities4:{entity:"sensor.some_sensor4",icon:"mdi:information-outline"},entities5:{entity:"sensor.some_sensor5",icon:"mdi:information-outline"},temperature:{temperature_sensor:"sensor.vindstyrka_salotto_temperature",humidity_sensor:"sensor.vindstyrka_salotto_humidity",tap_action:{action:"more-info"}}},colors:{active:"rgba(var(--color-green), 1)",inactive:"rgba(var(--color-green), 0.3)",backgroundActive:"rgba(var(--color-green), 0.4)",backgroundInactive:"rgba(var(--color-green), 0.1)"},name:"Salotto",icon:"mdi:sofa",tap_action:{action:"navigate",navigation_path:"/lovelace/sala"},hold_action:{action:"more-info",navigation_path:""}}}constructor(){super(),this._iconList=["mdi:lightbulb","mdi:fan","mdi:play-circle","mdi:robot-vacuum","mdi:information-outline","mdi:sofa","mdi:account","mdi:bed","mdi:home","mdi:weather-sunny","mdi:weather-cloudy","mdi:weather-rainy"]}connectedCallback(){super.connectedCallback()}setConfig(t){t||(t={}),t.entities||(t.entities={}),t.colors||(t.colors={active:"rgba(var(--color-green), 1)",inactive:"rgba(var(--color-green), 0.3)",backgroundActive:"rgba(var(--color-green), 0.4)",backgroundInactive:"rgba(var(--color-green), 0.1)"}),t.hold_action||(t.hold_action={action:"more-info",navigation_path:""}),this._config=t}getConfig(){const t=JSON.parse(JSON.stringify(this._config)),e={};return Object.keys(t.entities).forEach((i=>{const n=t.entities[i];n.entity&&""!==n.entity.trim()&&(e[i]=n)})),t.entities=e,this._config=t,t}_defaultIconList(){return this._iconList}static get styles(){return s`
       :host {
         display: block;
         margin: 0;
