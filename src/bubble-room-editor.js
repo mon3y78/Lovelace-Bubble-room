@@ -98,13 +98,14 @@ class BubbleRoomEditor extends LitElement {
       config.entities = {};
     }
     if (!config.colors) {
-      config.colors = {
-        active: 'var(--primary-color)',
-        inactive: 'var(--secondary-text-color)',
-        backgroundActive: 'color-mix(in srgb, var(--primary-color) 85%, transparent)',
-        backgroundInactive: 'var(--card-background-color)'
-      };    
+      config.colors = {};
     }
+    
+    config.colors.active = config.colors.active || 'var(--primary-color)';
+    config.colors.inactive = config.colors.inactive || 'color-mix(in srgb, var(--primary-color) 40%, transparent)';
+    config.colors.backgroundActive = config.colors.backgroundActive || 'color-mix(in srgb, var(--primary-color) 20%, transparent)';
+    config.colors.backgroundInactive = config.colors.backgroundInactive || 'color-mix(in srgb, var(--primary-color) 10%, transparent)';
+    
     if (!config.hold_action) {
       config.hold_action = { action: 'more-info', navigation_path: '' };
     }
