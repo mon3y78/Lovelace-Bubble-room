@@ -318,7 +318,7 @@ class BubbleRoom extends LitElement {
         color: var(--bubble-room-sub-icon-color, var(--primary-color));
       }
       .bubble-sub-button ha-icon {
-        color: var(--bubble-room-sub-icon-color, var(--secondary-text-color));
+        color: inherit;
       }
       .mushroom-container {
         position: absolute;
@@ -570,7 +570,7 @@ class BubbleRoom extends LitElement {
                          @pointerdown=${e => this._startHold(e, btn)}
                          @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
                          @pointerleave=${() => this._cancelHold()}>
-                      <ha-icon icon="${ic}" style="color: ${iconCol};"></ha-icon>
+                      <ha-icon icon="${ic}" style="color: inherit;"></ha-icon>
                     </div>
                   `;
                 }) }

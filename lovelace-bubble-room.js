@@ -118,7 +118,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
         color: var(--bubble-room-sub-icon-color, var(--primary-color));
       }
       .bubble-sub-button ha-icon {
-        color: var(--bubble-room-sub-icon-color, var(--secondary-text-color));
+        color: inherit;
       }
       .mushroom-container {
         position: absolute;
@@ -162,7 +162,7 @@ class ot extends ${constructor(){super(...arguments),this.renderOptions={host:th
                          @pointerdown=${e=>this._startHold(e,t)}
                          @pointerup=${e=>this._endHold(e,t,(()=>this._handleSubButtonTap(t)))}
                          @pointerleave=${()=>this._cancelHold()}>
-                      <ha-icon icon="${o}" style="color: ${n};"></ha-icon>
+                      <ha-icon icon="${o}" style="color: inherit;"></ha-icon>
                     </div>
                   `}))}
             </div>
