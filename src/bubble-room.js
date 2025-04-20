@@ -612,6 +612,7 @@ class BubbleRoom extends LitElement {
 
 
   _renderMushroom(item, idx) {
+    if (!item || !item.entity) return nothing;
     // 1) stato on/off
     const isOn = this.hass.states[item.entity]?.state === 'on';
     // 2) icona (fallback)
@@ -690,7 +691,8 @@ class BubbleRoom extends LitElement {
       entities.entities1, entities.entities2, entities.entities3,
       entities.entities4, entities.entities5,
       entities.climate, entities.temperature, entities.camera
-    ].filter(Boolean);
+    ]
+    .filter(item => item && item.entity && item.entity.trim() !== '');
   
     return html`
       <ha-card style="${cardStyle}">
