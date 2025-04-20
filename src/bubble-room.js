@@ -190,41 +190,20 @@ class BubbleRoom extends LitElement {
    * @param {string} iconColor
    */
   _renderMushroom(item, idx, iconColor) {
-    const posStyle = item.style || this._defaultMushroomStyle(idx);
-
-    // se è temperatura / umidità
-    if (item.temperature_sensor || item.humidity_sensor) {
-      const txt = this._buildTemperatureText(item);
-      return html`
-        <div class="mushroom-item" style="${posStyle}">
-          ${txt}
-        </div>
-      `;
-    }
-
-    // altrimenti icona normale
-    const entityId = item.entity;
-    if (!entityId) {
-      // niente entity, ritorno vuoto per non rompere il layout
-      return html``;
-    }
-
-    const explicitIcon = item.icon || '';
-    const iconName = this._getFallbackIcon(entityId, explicitIcon);
-    const stateOn = this.hass.states[entityId]?.state === 'on';
-    const color = stateOn ? iconColor : 'var(--secondary-text-color)';
-
+    const icon = this._getFallbackIcon(item.entity, item.icon);
     return html`
       <div
         class="mushroom-item"
-        style="${posStyle}"
+        style="${this._defaultMushroomStyle(idx)}"
         @pointerdown=${e => this._startHold(e, item)}
         @pointerup=${e => this._endHold(e, item, () => this._handleMushroomTap(item))}
         @pointerleave=${e => this._cancelHold(e)}
       >
-        ${iconName
-          ? html`<ha-icon icon="${iconName}" style="color: ${color};"></ha-icon>`
-          : nothing}
+        <ha-icon
+          class="fit-text"
+          icon="${icon}"
+          style="color: ${iconColor};"
+        ></ha-icon>
       </div>
     `;
   }
@@ -723,14 +702,10 @@ class BubbleRoom extends LitElement {
       'entities1','entities2','entities3','entities4','entities5',
       'climate','temperature','camera'
     ];
-    // 2) mappale in array di oggetti { key, item }
-    const mushrooms = mushroomKeys.map(key => ({
-      key,
-      item: this.config.entities[key]  // può venirti undefined
-    })).filter(({ item }) => {
-      // se vuoi includere anche gli “slot vuoti” per mantenere la posizione
-      // commenta via la filter e ricadi nel fallback HTML vuoto
-      return item;
+    const mushrooms = mushroomKeys.map((key, idx) => {
+      const item = this.config.entities[key];
+      const stateOn = item && this.hass.states[item.entity]?.state === 'on';
+      return { item, idx, color: stateOn ? iconOnColor : iconOffColor };
     });
 
 
@@ -762,8 +737,15 @@ class BubbleRoom extends LitElement {
               </div>
               <!-- Mushrooms -->
               <div class="mushroom-container">
-                ${mushrooms.map(({ item }, idx) =>
-                  this._renderMushroom(item, idx, bubbleIconColor)
+                ${mushrooms.map(({ item, idx, color }) =>
+                  item
+                    ? this._renderMushroom(item, idx, color)
+                    : html`
+                      <div
+                        class="mushroom-item"
+                        style="${this._defaultMushroomStyle(idx)}"
+                      ></div>
+                    `
                 )}
               </div>
 
