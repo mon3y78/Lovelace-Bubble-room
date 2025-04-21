@@ -135,7 +135,7 @@ class BubbleRoom extends LitElement {
     const hass = this.hass;
     const temp = item.temperature_sensor ? hass.states[item.temperature_sensor]?.state : null;
     const hum  = item.humidity_sensor   ? hass.states[item.humidity_sensor]?.state    : null;
-    const unit = item.unit === 'F' ? '°F' : '°C';  // default a Celsius se non specificato
+    const unit = item.unit && item.unit === 'F' ? '°F' : '°C';
     let text = '';
     if (temp != null && temp !== '') text += `🌡️${temp}${unit}`;
     if (hum  != null && hum  !== '') text += (text ? ' ' : '') + `💦${hum}%`;
