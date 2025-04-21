@@ -40,7 +40,6 @@ class BubbleRoom extends LitElement {
         temperature:   {
           temperature_sensor: 'sensor.vindstyrka_salotto_temperature',
           humidity_sensor:    'sensor.vindstyrka_salotto_humidity',
-          unit: 'F',
           tap_action: { action: 'more-info' }
         },
       },
@@ -113,10 +112,9 @@ class BubbleRoom extends LitElement {
     const style = this._defaultMushroomStyle(idx);
     if (item.temperature_sensor || item.humidity_sensor) {
       const text = this._buildTemperatureText(item);
-      const textColor = item.unit === 'F' ? 'red' : color;  // puoi cambiare il colore 'red' se vuoi
       return html`
         <div class="mushroom-item" style="${style}">
-          <span class="fit-text" style="color: ${textColor};">${text}</span>
+          <span class="fit-text" style="color: ${color};">${text}</span>
         </div>
       `;
     }
@@ -135,9 +133,8 @@ class BubbleRoom extends LitElement {
     const hass = this.hass;
     const temp = item.temperature_sensor ? hass.states[item.temperature_sensor]?.state : null;
     const hum  = item.humidity_sensor   ? hass.states[item.humidity_sensor]?.state    : null;
-    const unit = item.unit && item.unit === 'F' ? '°F' : '°C';
     let text = '';
-    if (temp != null && temp !== '') text += `🌡️${temp}${unit}`;
+    if (temp != null && temp !== '') text += `🌡️${temp}°C`;
     if (hum  != null && hum  !== '') text += (text ? ' ' : '') + `💦${hum}%`;
     return text;
   }
