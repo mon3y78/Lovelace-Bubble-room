@@ -131,10 +131,19 @@ class BubbleRoom extends LitElement {
 
   _buildTemperatureText(item) {
     const hass = this.hass;
-    const temp = item.temperature_sensor ? hass.states[item.temperature_sensor]?.state : null;
+    const rawTemp = item.temperature_sensor
+      ? hass.states[item.temperature_sensor]?.state
+      : null;
     const hum  = item.humidity_sensor   ? hass.states[item.humidity_sensor]?.state    : null;
     let text = '';
-    if (temp != null && temp !== '') text += `🌡️${temp}°C`;
+    if (rawTemp != null && rawTemp !== '') {
+      const unit = this.config.entities.temperature.unit || 'C';
+      let tempNum = parseFloat(rawTemp);
+      if (unit === 'F') {
+        tempNum = Math.round((tempNum * 9/5) + 32);
+      }
+      text += `🌡️${tempNum}°${unit}`;
+    }  
     if (hum  != null && hum  !== '') text += (text ? ' ' : '') + `💦${hum}%`;
     return text;
   }
@@ -213,6 +222,13 @@ class BubbleRoom extends LitElement {
       name:       config.name       || 'Salotto',
       tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
     };
+    
+    if (
+      this.config.entities.temperature &&
+      !this.config.entities.temperature.unit
+    ) {
+      this.config.entities.temperature.unit = 'C';
+    }
 
     if (!this.config.entity && this.config.entities.presence) {
       this.config.entity = this.config.entities.presence.entity;

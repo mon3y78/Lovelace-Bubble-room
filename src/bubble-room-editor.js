@@ -52,6 +52,7 @@ class BubbleRoomEditor extends LitElement {
         temperature: {
           temperature_sensor: 'sensor.vindstyrka_salotto_temperature',
           humidity_sensor: 'sensor.vindstyrka_salotto_humidity',
+          unit:               'C',              
           tap_action: { action: 'more-info' }
         }
       },
@@ -105,13 +106,23 @@ class BubbleRoomEditor extends LitElement {
     config.colors.inactive = config.colors.inactive || 'color-mix(in srgb, var(--primary-color) 40%, transparent)';
     config.colors.backgroundActive = config.colors.backgroundActive || 'color-mix(in srgb, var(--primary-color) 20%, transparent)';
     config.colors.backgroundInactive = config.colors.backgroundInactive || 'color-mix(in srgb, var(--primary-color) 10%, transparent)';
-    
+    if (!config.entities.temperature) {
+      config.entities.temperature = {};
+    }
+    config.entities.temperature.unit = config.entities.temperature.unit || 'C';
     if (!config.hold_action) {
       config.hold_action = { action: 'more-info', navigation_path: '' };
     }
     this._config = config;
   }
-
+  _updateTemperatureUnit(ev) {
+    const unit = ev.target.value;                          // 'C' o 'F'
+    const tempCfg = { ...this._config.entities.temperature, unit };
+    const entities = { ...this._config.entities, temperature: tempCfg };
+    this._config = { ...this._config, entities };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
   getConfig() {
     const configCopy = JSON.parse(JSON.stringify(this._config));
     const filteredEntities = {};
@@ -328,6 +339,16 @@ class BubbleRoomEditor extends LitElement {
               list="entity-list"
               @input="${this._updateTemperature('humidity_sensor')}"
             />
+          </div>
+          <div class="input-group">
+            <label>Unità:</label>
+            <select
+              .value="${this._config.entities?.temperature?.unit || 'C'}"
+              @change="${this._updateTemperatureUnit}"
+            >
+              <option value="C">°C</option>
+              <option value="F">°F</option>
+            </select>
           </div>
         </div>
       </ha-expansion-panel>
