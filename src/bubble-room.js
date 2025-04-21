@@ -222,7 +222,7 @@ class BubbleRoom extends LitElement {
       name:       config.name       || 'Salotto',
       tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
     };
-    
+
     if (
       this.config.entities.temperature &&
       !this.config.entities.temperature.unit
@@ -621,4 +621,3 @@ window.customCards.push({
   preview: true,
   documentationURL: 'https://github.com/mon3y78/Lovelace-Bubble-room'
 });
-console.log('[Bubble Room] Custom card script loaded');

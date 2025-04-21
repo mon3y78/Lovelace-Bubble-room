@@ -332,15 +332,6 @@ class BubbleRoomEditor extends LitElement {
             />
           </div>
           <div class="input-group">
-            <label>Humidity Sensor:</label>
-            <input
-              type="text"
-              .value="${this._config.entities?.temperature?.humidity_sensor || ''}"
-              list="entity-list"
-              @input="${this._updateTemperature('humidity_sensor')}"
-            />
-          </div>
-          <div class="input-group">
             <label>Unità:</label>
             <select
               .value="${this._config.entities?.temperature?.unit || 'C'}"
@@ -349,6 +340,15 @@ class BubbleRoomEditor extends LitElement {
               <option value="C">°C</option>
               <option value="F">°F</option>
             </select>
+          </div>
+          <div class="input-group">
+            <label>Humidity Sensor:</label>
+            <input
+              type="text"
+              .value="${this._config.entities?.temperature?.humidity_sensor || ''}"
+              list="entity-list"
+              @input="${this._updateTemperature('humidity_sensor')}"
+            />
           </div>
         </div>
       </ha-expansion-panel>
