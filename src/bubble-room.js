@@ -40,6 +40,7 @@ class BubbleRoom extends LitElement {
         temperature:   {
           temperature_sensor: 'sensor.vindstyrka_salotto_temperature',
           humidity_sensor:    'sensor.vindstyrka_salotto_humidity',
+          unit: 'F',
           tap_action: { action: 'more-info' }
         },
       },
