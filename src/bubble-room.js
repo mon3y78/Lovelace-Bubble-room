@@ -138,12 +138,8 @@ class BubbleRoom extends LitElement {
     let text = '';
     if (rawTemp != null && rawTemp !== '') {
       const unit = this.config.entities.temperature.unit || 'C';
-      let tempNum = parseFloat(rawTemp);
-      if (unit === 'F') {
-        tempNum = Math.round((tempNum * 9/5) + 32);
-      }
-      text += `🌡️${tempNum}°${unit}`;
-    }  
+      text += `🌡️${rawTemp}°${unit}`;
+    }
     if (hum  != null && hum  !== '') text += (text ? ' ' : '') + `💦${hum}%`;
     return text;
   }
