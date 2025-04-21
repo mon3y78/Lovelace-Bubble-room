@@ -112,9 +112,10 @@ class BubbleRoom extends LitElement {
     const style = this._defaultMushroomStyle(idx);
     if (item.temperature_sensor || item.humidity_sensor) {
       const text = this._buildTemperatureText(item);
+      const textColor = item.unit === 'F' ? 'red' : color;  // puoi cambiare il colore 'red' se vuoi
       return html`
         <div class="mushroom-item" style="${style}">
-          <span class="fit-text" style="color: ${color};">${text}</span>
+          <span class="fit-text" style="color: ${textColor};">${text}</span>
         </div>
       `;
     }
