@@ -605,3 +605,4 @@ window.customCards.push({
   preview: true,
   documentationURL: 'https://github.com/mon3y78/Lovelace-Bubble-room'
 });
+console.log('[Bubble Room] Custom card script loaded');
