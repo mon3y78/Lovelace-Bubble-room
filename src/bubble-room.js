@@ -64,7 +64,9 @@ class BubbleRoom extends LitElement {
     if (stateObj?.attributes?.device_class) {
       return this._getDeviceClassIcon(stateObj.attributes.device_class, stateObj.state);
     }
-    const domain = entityId?.split?.('.')?.[0] || '';
+    if (!entityId || typeof entityId !== 'string') return '';
+    const domain = entityId.split('.')[0];
+
     return this._getDomainDefaultIcon(domain, stateObj?.state);
   }
 
@@ -547,7 +549,10 @@ class BubbleRoom extends LitElement {
       if (item.temperature_sensor || item.humidity_sensor) {
         return { item, idx, color: bubbleIconColor };
       }
-      const on = hass.states[item.entity]?.state === 'on';
+      const entityId = item.entity;
+      if (!entityId) return { item: null, idx, color: null };
+      const on = hass.states[entityId]?.state === 'on';
+
       return { item, idx, color: on ? iconOnColor : iconOffColor };
     });
 
@@ -580,7 +585,7 @@ class BubbleRoom extends LitElement {
                   const btnBg   = isOn ? this.config.colors.backgroundActive   ?? ACCENT_BG : this.config.colors.backgroundInactive ?? INACTIVE_BG;
                   const iconCol = isOn ? this.config.colors.active             ?? ACCENT_ICON : this.config.colors.inactive ?? INACTIVE_ICON;
 
-                  const ic      = this._getFallbackIcon(btn.entity);
+                  const ic      = this._getFallbackIcon(btn.entity, btn.icon || '');
                   return html`
                     <div class="bubble-sub-button ${isOn ? 'active' : 'inactive'}"
                          style="background-color: ${btnBg}; color: ${iconCol};"
