@@ -463,9 +463,11 @@ class BubbleRoom extends LitElement {
   }
   
   render() {
+    const layout = this._getLayoutStyle(this.config?.layout_mode || '6x3');
+    const layoutClass = `layout-${this.config?.layout_mode || '6x3'}`;
     if (!this.config || !this.hass) {
       console.log("bubble-room.js: config or hass not defined yet");
-      return html`<div>Loading...</div>`;
+      return html`<div style="height: ${layout.cardHeight};">Loading...</div>`;
     }
     
     const { entities, colors, name, icon } = this.config;
