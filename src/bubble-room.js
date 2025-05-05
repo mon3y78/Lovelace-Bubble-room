@@ -84,55 +84,47 @@ class BubbleRoom extends LitElement {
 
   setConfig(config) {
     if (!config) throw new Error('Invalid configuration');
-    
-    // Create a new config object instead of modifying the incoming one
-    const newConfig = {
-      entities: {},
-      colors: {},
-      ...config // Spread the original config first
-    };
+  
+    // Create a deep clone of the config to work with
+    const newConfig = JSON.parse(JSON.stringify(config));
   
     // Migrate old temperature config to new sensors array
-    if (config.entities?.temperature && !config.entities?.sensors) {
+    if (newConfig.entities?.temperature && !newConfig.entities?.sensors) {
       newConfig.entities.sensors = [];
       
-      if (config.entities.temperature.temperature_sensor) {
+      if (newConfig.entities.temperature.temperature_sensor) {
         newConfig.entities.sensors.push({
           type: 'temperature',
-          entity: config.entities.temperature.temperature_sensor,
-          unit: config.entities.temperature.unit || '°C'
+          entity: newConfig.entities.temperature.temperature_sensor,
+          unit: newConfig.entities.temperature.unit || '°C'
         });
       }
       
-      if (config.entities.temperature.humidity_sensor) {
+      if (newConfig.entities.temperature.humidity_sensor) {
         newConfig.entities.sensors.push({
           type: 'humidity',
-          entity: config.entities.temperature.humidity_sensor
+          entity: newConfig.entities.temperature.humidity_sensor
         });
       }
+      
+      // Remove the old temperature config
+      delete newConfig.entities.temperature;
     }
   
-    // Ensure entities exists
-    newConfig.entities = {
-      ...config.entities,
-      ...newConfig.entities
+    // Set defaults while preserving any existing values
+    this.config = {
+      entities: newConfig.entities || {},
+      colors: {
+        active: newConfig.colors?.active || 'var(--primary-color)',
+        inactive: newConfig.colors?.inactive || 'var(--secondary-text-color)',
+        backgroundActive: newConfig.colors?.backgroundActive || 'color-mix(in srgb, var(--primary-color) 20%, transparent)',
+        backgroundInactive: newConfig.colors?.backgroundInactive || 'color-mix(in srgb, var(--primary-color) 10%, transparent)',
+        ...newConfig.colors
+      },
+      icon: newConfig.icon || '',
+      name: newConfig.name || 'Room',
+      tap_action: newConfig.tap_action || { action: 'navigate', navigation_path: '' }
     };
-  
-    // Set default colors
-    newConfig.colors = {
-      active: config.colors?.active || 'var(--primary-color)',
-      inactive: config.colors?.inactive || 'var(--secondary-text-color)',
-      backgroundActive: config.colors?.backgroundActive || 'color-mix(in srgb, var(--primary-color) 20%, transparent)',
-      backgroundInactive: config.colors?.backgroundInactive || 'color-mix(in srgb, var(--primary-color) 10%, transparent)',
-      ...config.colors
-    };
-  
-    // Set other defaults
-    newConfig.icon = config.icon || '';
-    newConfig.name = config.name || 'Room';
-    newConfig.tap_action = config.tap_action || { action: 'navigate', navigation_path: '' };
-  
-    this.config = newConfig;
   }
 
   _getFallbackIcon(entityId, explicitIcon) {
