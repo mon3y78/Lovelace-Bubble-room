@@ -123,6 +123,13 @@ class BubbleRoomEditor extends LitElement {
     this.requestUpdate();
     this._fireConfigChanged();
   }
+  _updateLayoutMode(ev) {
+    const layout_mode = ev.target.value;
+    this._config = { ...this._config, layout_mode };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
+  
   getConfig() {
     const configCopy = JSON.parse(JSON.stringify(this._config));
     const filteredEntities = {};
@@ -259,7 +266,10 @@ class BubbleRoomEditor extends LitElement {
           </div>
           <div class="input-group">
             <label>Layout:</label>
-              <select ...>
+              <select .value="${this._config.layout_mode || '6x3'}" @change="${this._updateLayoutMode}">
+                <option value="6x3">6x3</option>
+                <option value="12x4">12x4</option>
+              </select>
                 <option value="6x3">6x3</option>
                 <option value="12x4">12x4</option>
               </select>
