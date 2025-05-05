@@ -10,6 +10,60 @@ class BubbleRoom extends LitElement {
     };
   }
 
+  constructor() {
+    super();
+    this._fittyInstances = [];
+  }
+
+  firstUpdated() {
+    this._initFitty();
+  }
+
+  updated(changedProperties) {
+    if (changedProperties.has('hass') || changedProperties.has('config')) {
+      // Aspetta che il rendering sia completato prima di inizializzare fitty
+      setTimeout(() => this._initFitty(), 0);
+    }
+  }
+
+  disconnectedCallback() {
+    this._cleanupFitty();
+    super.disconnectedCallback();
+  }
+
+  _initFitty() {
+    this._cleanupFitty();
+    
+    const els = this.shadowRoot?.querySelectorAll('.fit-text');
+    if (els && els.length > 0) {
+      try {
+        this._fittyInstances = fitty(els, {
+          maxSize: 20,
+          minSize: 10,
+          multiLine: false,
+          observeMutations: false // Disabilita l'osservazione automatica
+        });
+      } catch (e) {
+        console.error('Fitty initialization error:', e);
+      }
+    }
+  }
+
+  _cleanupFitty() {
+    if (this._fittyInstances?.length) {
+      this._fittyInstances.forEach(instance => {
+        try {
+          if (typeof instance.unsubscribe === 'function') {
+            instance.unsubscribe();
+          }
+        } catch (e) {
+          console.debug('Error cleaning up fitty instance', e);
+        }
+      });
+      this._fittyInstances = [];
+    }
+  }
+  
   static getStubConfig() {
     return {
       entities: {
@@ -212,7 +266,7 @@ class BubbleRoom extends LitElement {
   _renderMushroom(item, idx, color) {
     const style = this._defaultMushroomStyle(idx);
     
-    if (item.type) { // Sensor item
+    if (item?.type) { // Verifica aggiuntiva sull'item
       const text = this._buildSensorText(item);
       if (!text) return nothing;
       
@@ -225,7 +279,7 @@ class BubbleRoom extends LitElement {
       `;
     }
     
-    const icon = this._getFallbackIcon(item.entity, item.icon || '');
+    const icon = this._getFallbackIcon(item?.entity, item?.icon || '');
     if (!icon) return nothing;
     
     return html`
@@ -544,6 +598,22 @@ class BubbleRoom extends LitElement {
         text-align: center;
         display: block;
         width: 100%;
+      }
+      .fit-text {
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-align: center;
+        width: 100%;
+        /* Aggiungi una larghezza massima per sicurezza */
+        max-width: 100px;
+      }
+
+      .mushroom-item {
+        pointer-events: auto;
+        /* Assicura che l'elemento sia sempre visibile */
+        display: block;
+        visibility: visible;
       }
     `;
   }
