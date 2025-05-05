@@ -132,6 +132,12 @@ class BubbleRoomEditor extends LitElement {
   
   getConfig() {
     const configCopy = JSON.parse(JSON.stringify(this._config));
+    
+    // Mantieni layout_mode
+    if (!configCopy.layout_mode) {
+      configCopy.layout_mode = this._config.layout_mode || '6x3';
+    }
+  
     const filteredEntities = {};
     Object.keys(configCopy.entities).forEach((key) => {
       const entityConfig = configCopy.entities[key];
@@ -140,17 +146,19 @@ class BubbleRoomEditor extends LitElement {
       }
     });
     configCopy.entities = filteredEntities;
-    this._config = configCopy;
-    if (config.colors) {
-      Object.keys(config.colors).forEach(k => {
-        if (config.colors[k].trim() === '') {
-          delete config.colors[k];
+  
+    if (configCopy.colors) {
+      Object.keys(configCopy.colors).forEach(k => {
+        if (configCopy.colors[k].trim() === '') {
+          delete configCopy.colors[k];
         }
       });
     }
+  
     console.log("Editor - Config finale restituita:", configCopy);
     return configCopy;
   }
+  
 
   _defaultIconList() {
     return this._iconList;
