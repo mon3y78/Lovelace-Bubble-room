@@ -86,37 +86,48 @@ class BubbleRoom extends LitElement {
   setConfig(config) {
     if (!config) throw new Error('Invalid configuration');
     
+    // Creiamo una copia profonda della configurazione per evitare problemi con oggetti non estensibili
+    const newConfig = JSON.parse(JSON.stringify(config));
+    
     // Migrate old temperature config to new sensors array
-    if (config.entities?.temperature && !config.entities?.sensors) {
-      config.entities.sensors = [];
+    if (newConfig.entities?.temperature && !newConfig.entities?.sensors) {
+      newConfig.entities.sensors = [];
       
-      if (config.entities.temperature.temperature_sensor) {
-        config.entities.sensors.push({
+      if (newConfig.entities.temperature.temperature_sensor) {
+        newConfig.entities.sensors.push({
           type: 'temperature',
-          entity: config.entities.temperature.temperature_sensor,
-          unit: config.entities.temperature.unit || '°C'
+          entity: newConfig.entities.temperature.temperature_sensor,
+          unit: newConfig.entities.temperature.unit || '°C'
         });
       }
       
-      if (config.entities.temperature.humidity_sensor) {
-        config.entities.sensors.push({
+      if (newConfig.entities.temperature.humidity_sensor) {
+        newConfig.entities.sensors.push({
           type: 'humidity',
-          entity: config.entities.temperature.humidity_sensor
+          entity: newConfig.entities.temperature.humidity_sensor
         });
       }
     }
-
+  
+    // Assicuriamoci che entities esista
+    if (!newConfig.entities) newConfig.entities = {};
+    
+    // Assicuriamoci che sensors esista come array
+    if (!Array.isArray(newConfig.entities.sensors)) {
+      newConfig.entities.sensors = [];
+    }
+  
     this.config = {
-      entities: config.entities || {},
+      entities: newConfig.entities || {},
       colors: {
-        active: config.colors?.active || 'var(--primary-color)',
-        inactive: config.colors?.inactive || 'var(--secondary-text-color)',
-        backgroundActive: config.colors?.backgroundActive || 'color-mix(in srgb, var(--primary-color) 20%, transparent)',
-        backgroundInactive: config.colors?.backgroundInactive || 'color-mix(in srgb, var(--primary-color) 10%, transparent)'
+        active: newConfig.colors?.active || 'var(--primary-color)',
+        inactive: newConfig.colors?.inactive || 'var(--secondary-text-color)',
+        backgroundActive: newConfig.colors?.backgroundActive || 'color-mix(in srgb, var(--primary-color) 20%, transparent)',
+        backgroundInactive: newConfig.colors?.backgroundInactive || 'color-mix(in srgb, var(--primary-color) 10%, transparent)'
       },
-      icon: config.icon || '',
-      name: config.name || 'Room',
-      tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
+      icon: newConfig.icon || '',
+      name: newConfig.name || 'Room',
+      tap_action: newConfig.tap_action || { action: 'navigate', navigation_path: '' }
     };
   }
 

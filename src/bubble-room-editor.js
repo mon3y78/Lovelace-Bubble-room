@@ -82,6 +82,11 @@ class BubbleRoomEditor extends LitElement {
   }
 
   setConfig(config) {
+      // Creiamo una copia profonda per evitare problemi con oggetti non estensibili
+    const newConfig = config ? JSON.parse(JSON.stringify(config)) : {};
+    
+    if (!newConfig.entities) newConfig.entities = {};
+    if (!newConfig.colors) newConfig.colors = {};
     if (!config) config = {};
     if (!config.entities) config.entities = {};
     if (!config.colors) config.colors = {};
