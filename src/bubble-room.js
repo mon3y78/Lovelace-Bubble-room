@@ -85,12 +85,19 @@ class BubbleRoom extends LitElement {
   setConfig(config) {
     if (!config) throw new Error('Invalid configuration');
     
+    // Create a new config object instead of modifying the incoming one
+    const newConfig = {
+      entities: {},
+      colors: {},
+      ...config // Spread the original config first
+    };
+  
     // Migrate old temperature config to new sensors array
     if (config.entities?.temperature && !config.entities?.sensors) {
-      config.entities.sensors = [];
+      newConfig.entities.sensors = [];
       
       if (config.entities.temperature.temperature_sensor) {
-        config.entities.sensors.push({
+        newConfig.entities.sensors.push({
           type: 'temperature',
           entity: config.entities.temperature.temperature_sensor,
           unit: config.entities.temperature.unit || '°C'
@@ -98,25 +105,34 @@ class BubbleRoom extends LitElement {
       }
       
       if (config.entities.temperature.humidity_sensor) {
-        config.entities.sensors.push({
+        newConfig.entities.sensors.push({
           type: 'humidity',
           entity: config.entities.temperature.humidity_sensor
         });
       }
     }
-
-    this.config = {
-      entities: config.entities || {},
-      colors: {
-        active: config.colors?.active || 'var(--primary-color)',
-        inactive: config.colors?.inactive || 'var(--secondary-text-color)',
-        backgroundActive: config.colors?.backgroundActive || 'color-mix(in srgb, var(--primary-color) 20%, transparent)',
-        backgroundInactive: config.colors?.backgroundInactive || 'color-mix(in srgb, var(--primary-color) 10%, transparent)'
-      },
-      icon: config.icon || '',
-      name: config.name || 'Room',
-      tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
+  
+    // Ensure entities exists
+    newConfig.entities = {
+      ...config.entities,
+      ...newConfig.entities
     };
+  
+    // Set default colors
+    newConfig.colors = {
+      active: config.colors?.active || 'var(--primary-color)',
+      inactive: config.colors?.inactive || 'var(--secondary-text-color)',
+      backgroundActive: config.colors?.backgroundActive || 'color-mix(in srgb, var(--primary-color) 20%, transparent)',
+      backgroundInactive: config.colors?.backgroundInactive || 'color-mix(in srgb, var(--primary-color) 10%, transparent)',
+      ...config.colors
+    };
+  
+    // Set other defaults
+    newConfig.icon = config.icon || '';
+    newConfig.name = config.name || 'Room';
+    newConfig.tap_action = config.tap_action || { action: 'navigate', navigation_path: '' };
+  
+    this.config = newConfig;
   }
 
   _getFallbackIcon(entityId, explicitIcon) {
