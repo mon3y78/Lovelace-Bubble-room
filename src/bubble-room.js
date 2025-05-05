@@ -183,7 +183,8 @@ class BubbleRoom extends LitElement {
         }
       }
     }
-    this.config = {
+        this.config.layout_mode = config.layout_mode || '6x3';
+this.config = {
       entities,
       colors: {
         active: 'rgba(var(--color-green), 1)',
@@ -196,8 +197,6 @@ class BubbleRoom extends LitElement {
       icon: config.icon || "mdi:sofa",
       tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
     };
-
-    console.log("BubbleRoom - Config ricevuta:", this.config);
     if (!this.config.entity && this.config.entities && this.config.entities.presence) {
       this.config.entity = this.config.entities.presence.entity;
     }
@@ -465,12 +464,10 @@ class BubbleRoom extends LitElement {
   }
   
   render() {
-    const layout = this._getLayoutStyle(this.config?.layout_mode || '6x3');
-    console.log("BubbleRoom - Layout selezionato:", this.config?.layout_mode, layout);
-    const layoutClass = `layout-${this.config?.layout_mode || '6x3'}`;
+    const layout = this._getLayoutStyle(this.config.layout_mode || "6x3");
     if (!this.config || !this.hass) {
       console.log("bubble-room.js: config or hass not defined yet");
-      return html`<div style="height: ${layout.cardHeight};">Loading...</div>`;
+      return html`<div>Loading...</div>`;
     }
     
     const { entities, colors, name, icon } = this.config;
@@ -648,31 +645,34 @@ class BubbleRoom extends LitElement {
         ]
       },
       '12x4': {
-        cardHeight: '300px',
-        iconSize: '100px',
-        nameFont: '40px',
-        mushroomSize: '45px',
+        cardHeight: '250px',
+        iconSize: '95px',
+        nameFont: '32px',
+        mushroomSize: '40px',
         subButtonPadding: '14px',
         mushroomPositions: [
-          'top: -100px; left: 10px;',
-          'top: -110px; left: 60px;',
-          'top: -80px; left: 120px;',
-          'bottom: 60px; left: 160px;',
-          'bottom: 0px; left: 140px;',
+          'top: -100px; left: 0px;',
+          'top: -105px; left: 55px;',
+          'top: -85px; left: 120px;',
+          'bottom: 55px; left: 160px;',
+          'bottom: 5px; left: 145px;',
           'bottom: 0px; left: 0px;',
-          'top: -180px; left: 15px;',
-          'top: -130px; right: 15px;',
+          'top: -180px; left: 10px;',
+          'top: -135px; right: 10px;',
         ]
       }
     };
     return layoutMap[mode] || layoutMap['6x3'];
   }
-
-  _defaultMushroomStyle(index) {
-    const layout = this._getLayoutStyle(this.config?.layout_mode);
-    return layout.mushroomPositions[index] || '';
-  }
-
 }
 
 customElements.define('bubble-room', BubbleRoom);
+
+window.customCards = window.customCards || [];
+window.customCards.push({
+  type: 'bubble-room',
+  name: 'Bubble Room',
+  description: 'A stylish room control card with environmental sensors',
+  preview: true,
+  documentationURL: 'https://github.com/mon3y78/Lovelace-Bubble-room'
+});

@@ -274,13 +274,13 @@ class BubbleRoomEditor extends LitElement {
           </div>
           <div class="input-group">
             <label>Layout:</label>
-              <select .value="${this._config.layout_mode || '6x3'}" @change="${this._updateLayoutMode}">
-                <option value="6x3">6x3</option>
-                <option value="12x4">12x4</option>
-              </select>
-                <option value="6x3">6x3</option>
-                <option value="12x4">12x4</option>
-              </select>
+            <select
+              .value="${this._config.layout_mode || '6x3'}"
+              @change="${this._updateLayoutMode}"
+            >
+              <option value="6x3">6x3</option>
+              <option value="12x4">12x4</option>
+            </select>
           </div>
           ${this._renderRoomAction()}
           <div class="input-group">
@@ -652,7 +652,12 @@ class BubbleRoomEditor extends LitElement {
     this.requestUpdate();
     this._fireConfigChanged();
   }
-
+  _updateLayoutMode(ev) {
+    const layout_mode = ev.target.value;
+    this._config = { ...this._config, layout_mode };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
   _updateIcon(ev) {
     const newIcon = ev.target.value;
     this._config = { ...this._config, icon: newIcon };
