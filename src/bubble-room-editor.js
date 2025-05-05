@@ -63,7 +63,9 @@ class BubbleRoomEditor extends LitElement {
           {
             type: 'humidity',
             entity: 'sensor.vindstyrka_salotto_humidity'
-          }
+          },
+          {},
+          {}
         ]
       },
       colors: {

@@ -6,6 +6,7 @@ class BubbleRoom extends LitElement {
     return {
       config: { type: Object },
       hass: { type: Object },
+      _sensorTexts: { type: Array, state: true } 
     };
   }
 
@@ -84,46 +85,38 @@ class BubbleRoom extends LitElement {
 
   setConfig(config) {
     if (!config) throw new Error('Invalid configuration');
-  
-    // Create a deep clone of the config to work with
-    const newConfig = JSON.parse(JSON.stringify(config));
-  
+    
     // Migrate old temperature config to new sensors array
-    if (newConfig.entities?.temperature && !newConfig.entities?.sensors) {
-      newConfig.entities.sensors = [];
+    if (config.entities?.temperature && !config.entities?.sensors) {
+      config.entities.sensors = [];
       
-      if (newConfig.entities.temperature.temperature_sensor) {
-        newConfig.entities.sensors.push({
+      if (config.entities.temperature.temperature_sensor) {
+        config.entities.sensors.push({
           type: 'temperature',
-          entity: newConfig.entities.temperature.temperature_sensor,
-          unit: newConfig.entities.temperature.unit || '°C'
+          entity: config.entities.temperature.temperature_sensor,
+          unit: config.entities.temperature.unit || '°C'
         });
       }
       
-      if (newConfig.entities.temperature.humidity_sensor) {
-        newConfig.entities.sensors.push({
+      if (config.entities.temperature.humidity_sensor) {
+        config.entities.sensors.push({
           type: 'humidity',
-          entity: newConfig.entities.temperature.humidity_sensor
+          entity: config.entities.temperature.humidity_sensor
         });
       }
-      
-      // Remove the old temperature config
-      delete newConfig.entities.temperature;
     }
-  
-    // Set defaults while preserving any existing values
+
     this.config = {
-      entities: newConfig.entities || {},
+      entities: config.entities || {},
       colors: {
-        active: newConfig.colors?.active || 'var(--primary-color)',
-        inactive: newConfig.colors?.inactive || 'var(--secondary-text-color)',
-        backgroundActive: newConfig.colors?.backgroundActive || 'color-mix(in srgb, var(--primary-color) 20%, transparent)',
-        backgroundInactive: newConfig.colors?.backgroundInactive || 'color-mix(in srgb, var(--primary-color) 10%, transparent)',
-        ...newConfig.colors
+        active: config.colors?.active || 'var(--primary-color)',
+        inactive: config.colors?.inactive || 'var(--secondary-text-color)',
+        backgroundActive: config.colors?.backgroundActive || 'color-mix(in srgb, var(--primary-color) 20%, transparent)',
+        backgroundInactive: config.colors?.backgroundInactive || 'color-mix(in srgb, var(--primary-color) 10%, transparent)'
       },
-      icon: newConfig.icon || '',
-      name: newConfig.name || 'Room',
-      tap_action: newConfig.tap_action || { action: 'navigate', navigation_path: '' }
+      icon: config.icon || '',
+      name: config.name || 'Room',
+      tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
     };
   }
 
@@ -212,6 +205,14 @@ class BubbleRoom extends LitElement {
     
     return `${icon}${state}${unit}`;
   }
+
+  _getFontSize(text) {
+    const length = text.length;
+    if (length > 15) return '12px';
+    if (length > 10) return '14px';
+    return '16px';
+  }
+
 
   _getSensorIcon(sensorType) {
     const icons = {
@@ -542,7 +543,7 @@ class BubbleRoom extends LitElement {
     ].filter(b => b?.entity);
   
     const mushroomItems = [
-      ...(entities.sensors || []).slice(0, 4),
+      ...(entities.sensors || []).filter(s => s.type && s.entity).slice(0, 4), // Prendiamo solo i primi 4 sensori validi
       entities.climate,
       entities.camera
     ].filter(Boolean).map((item, idx) => {
