@@ -147,8 +147,9 @@ class BubbleRoom extends LitElement {
   }
 
   setConfig(config) {
+    if (!config) throw new Error('Configurazione mancante');
     config = JSON.parse(JSON.stringify(config));
-    if (!config || typeof config !== 'object' || Array.isArray(config))
+    if (typeof config !== 'object' || Array.isArray(config))
       throw new Error('La configurazione deve essere un oggetto valido.');
     if (!config.entities || typeof config.entities !== 'object')
       throw new Error("Devi definire almeno la proprietà 'entities' nella configurazione.");
@@ -163,6 +164,8 @@ class BubbleRoom extends LitElement {
 
     for (const key in config.entities) {
       let value = config.entities[key];
+      if (!value) continue;
+
       // merge numerically indexed entities
       if (
         ['entities1','entities2','entities3','entities4','entities5'].includes(key) &&
@@ -234,15 +237,17 @@ class BubbleRoom extends LitElement {
   }
 
   getConfig() {
-    const copy = JSON.parse(JSON.stringify(this._config));
+    if (!this.config) return {};
+    
+    const copy = JSON.parse(JSON.stringify(this.config));
     const filtered = {};
     Object.entries(copy.entities).forEach(([k,e]) => {
+      if (!e) return;
       if (k.startsWith('sub-button') || (e.entity && e.entity.trim())) {
         filtered[k] = e;
       }
     });
     copy.entities = filtered;
-    this._config = copy;
     return copy;
   }
 
@@ -394,7 +399,7 @@ class BubbleRoom extends LitElement {
   }
 
   _handleHoldAction(item) {
-    if (!item.hold_action) {
+    if (!item?.hold_action) {
       this.dispatchEvent(new CustomEvent('hass-more-info', {
         detail: { entityId: item.entity },
         bubbles: true,
@@ -431,22 +436,28 @@ class BubbleRoom extends LitElement {
   }
 
   _handleMainIconTap() {
-    const { action, service, service_data, navigation_path } = this.config.tap_action || {};
+    if (!this.config?.tap_action) return;
+    const { action, service, service_data, navigation_path } = this.config.tap_action;
     switch (action) {
       case 'toggle':
-        this._toggleEntity(this.config.entity);
+        if (this.config.entity) this._toggleEntity(this.config.entity);
         break;
       case 'more-info':
-        this.dispatchEvent(new CustomEvent('hass-more-info', {
-          detail: { entityId: this.config.entity },
-          bubbles: true,
-          composed: true,
-        }));
+        if (this.config.entity) {
+          this.dispatchEvent(new CustomEvent('hass-more-info', {
+            detail: { entityId: this.config.entity },
+            bubbles: true,
+            composed: true,
+          }));
+        }
         break;
       case 'call-service':
         if (service) {
           const [domain, svc] = service.split('.');
-          const data = { ...service_data, entity_id: service_data?.entity_id || this.config.entity };
+          const data = { 
+            ...service_data, 
+            entity_id: service_data?.entity_id || this.config.entity 
+          };
           this.hass.callService(domain, svc, data);
         }
         break;
@@ -460,27 +471,33 @@ class BubbleRoom extends LitElement {
   }
 
   _toggleEntity(entity) {
-    if (!this.hass) return;
+    if (!this.hass || !entity) return;
     this.hass.callService('homeassistant', 'toggle', { entity_id: entity });
   }
 
   _handleSubButtonTap(item) {
-    const { action, service, service_data, navigation_path } = item.tap_action || {};
+    if (!item?.tap_action) return;
+    const { action, service, service_data, navigation_path } = item.tap_action;
     switch (action) {
       case 'toggle':
-        this._toggleEntity(item.entity);
+        if (item.entity) this._toggleEntity(item.entity);
         break;
       case 'more-info':
-        this.dispatchEvent(new CustomEvent('hass-more-info', {
-          detail: { entityId: item.entity },
-          bubbles: true,
-          composed: true,
-        }));
+        if (item.entity) {
+          this.dispatchEvent(new CustomEvent('hass-more-info', {
+            detail: { entityId: item.entity },
+            bubbles: true,
+            composed: true,
+          }));
+        }
         break;
       case 'call-service':
         if (service) {
           const [domain, svc] = service.split('.');
-          const data = { ...service_data, entity_id: service_data?.entity_id || item.entity };
+          const data = { 
+            ...service_data, 
+            entity_id: service_data?.entity_id || item.entity 
+          };
           this.hass.callService(domain, svc, data);
         }
         break;
@@ -502,11 +519,10 @@ class BubbleRoom extends LitElement {
       return html`<div>Loading…</div>`;
     }
 
-
     const { entities, name, icon, background, border_radius } = this.config;
     const colors = this.config.colors;
     const hass = this.hass;
-    const presenceOn = hass.states[entities.presence.entity]?.state === 'on';
+    const presenceOn = entities.presence?.entity && hass.states[entities.presence.entity]?.state === 'on';
 
     const ACCENT_ICON    = 'var(--primary-color)';
     const INACTIVE_ICON  = 'var(--secondary-text-color)';
@@ -516,8 +532,6 @@ class BubbleRoom extends LitElement {
     const iconOffColor = colors.inactive;
     const bgOnColor = colors.backgroundActive;
     const bgOffColor = colors.backgroundInactive;
-
- 
 
     const bubbleIconColor = presenceOn ? iconOnColor : iconOffColor;
     const bubbleBgColor   = presenceOn ? bgOnColor   : bgOffColor;
@@ -530,7 +544,8 @@ class BubbleRoom extends LitElement {
       `--bubble-room-name-color: ${bubbleIconColor}`
     ].filter(v => v).join(';');
 
-    const mainIcon = icon?.trim() ? icon : this._getFallbackIcon(entities.presence.entity);
+    const mainIcon = icon?.trim() ? icon : 
+                   (entities.presence?.entity ? this._getFallbackIcon(entities.presence.entity) : '');
 
     const subButtons = [
       entities['sub-button1'],
@@ -581,6 +596,7 @@ class BubbleRoom extends LitElement {
             </div>
             <div class="bubble-sub-button-container">
               ${ subButtons.map(btn => {
+                  if (!btn.entity) return nothing;
                   const isOn    = hass.states[btn.entity]?.state === 'on';
                   const btnBg   = isOn ? this.config.colors.backgroundActive   ?? ACCENT_BG : this.config.colors.backgroundInactive ?? INACTIVE_BG;
                   const iconCol = isOn ? this.config.colors.active             ?? ACCENT_ICON : this.config.colors.inactive ?? INACTIVE_ICON;
