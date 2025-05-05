@@ -9,117 +9,180 @@ class BubbleRoom extends LitElement {
     };
   }
 
-  firstUpdated() {
-    const els = this.shadowRoot.querySelectorAll('.mushroom-primary');
-    if (!els.length) return;
-    // installa fitty e poi disattiva i listener interni
-    const controllers = fitty(els, { maxSize: 20, multiLine: false });
-    controllers.forEach(c => c.unsubscribe());
-  }
-
-  static async getConfigElement() {
-    await import('./bubble-room-editor.js');
-    return document.createElement('bubble-room-editor');
-  }
-
   static getStubConfig() {
     return {
       entities: {
         presence: { entity: 'binary_sensor.aqara_fp1_presence' },
-        'sub-button1': { entity: 'light.luce_ventola', icon: '', tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } },
-        'sub-button2': { entity: 'fan.sonoff_1000f6e5c7', icon: '', tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } },
-        'sub-button3': { entity: 'media_player.google_nest_1', icon: '', tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } },
-        'sub-button4': { entity: 'vacuum.slider', icon: '', tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } },
-        climate:       { entity: 'climate.termostato_salotto', icon: '', tap_action: { action: 'more-info' } },
-        camera:        { entity: 'camera.front_door', icon: '', tap_action: { action: 'more-info' }, preview_url: '' },
-        entities1:     { entity: 'sensor.some_sensor1', icon: '' },
-        entities2:     { entity: 'sensor.some_sensor2', icon: '' },
-        entities3:     { entity: 'sensor.some_sensor3', icon: '' },
-        entities4:     { entity: 'sensor.some_sensor4', icon: '' },
-        entities5:     { entity: 'sensor.some_sensor5', icon: '' },
-        temperature:   {
-          temperature_sensor: 'sensor.vindstyrka_salotto_temperature',
-          humidity_sensor:    'sensor.vindstyrka_salotto_humidity',
-          tap_action: { action: 'more-info' }
+        "sub-button1": {
+          entity: 'light.luce_ventola',
+          icon: 'mdi:lightbulb',
+          tap_action: { action: 'toggle' },
+          hold_action: { action: 'more-info' }
         },
+        "sub-button2": {
+          entity: 'fan.sonoff_1000f6e5c7',
+          icon: 'mdi:fan',
+          tap_action: { action: 'toggle' },
+          hold_action: { action: 'more-info' }
+        },
+        "sub-button3": {
+          entity: 'media_player.google_nest_1',
+          icon: 'mdi:speaker',
+          tap_action: { action: 'toggle' },
+          hold_action: { action: 'more-info' }
+        },
+        "sub-button4": {
+          entity: 'vacuum.slider',
+          icon: 'mdi:robot-vacuum',
+          tap_action: { action: 'toggle' },
+          hold_action: { action: 'more-info' }
+        },
+        climate: { 
+          entity: 'climate.termostato_salotto', 
+          icon: 'mdi:thermostat', 
+          tap_action: { action: 'more-info' } 
+        },
+        camera: { 
+          entity: 'camera.front_door', 
+          icon: 'mdi:camera', 
+          tap_action: { action: 'more-info' } 
+        },
+        sensors: [
+          {
+            type: 'temperature',
+            entity: 'sensor.vindstyrka_salotto_temperature',
+            unit: '°C'
+          },
+          {
+            type: 'humidity',
+            entity: 'sensor.vindstyrka_salotto_humidity'
+          }
+        ]
       },
       colors: {
         active: 'var(--primary-color)',
-        inactive: 'color-mix(in srgb, var(--primary-color) 40%, transparent)',
-        backgroundActive: 'color-mix(in srgb, var(--primary-color) 20%, transparent)',
-        backgroundInactive: 'color-mix(in srgb, var(--primary-color) 10%, transparent)'
+        inactive: 'var(--secondary-text-color)',
+        backgroundActive: 'color-mix(in srgb, var(--primary-color) 85%, transparent)',
+        backgroundInactive: 'var(--card-background-color)'
       },
-      icon: '',
       name: 'Salotto',
+      icon: 'mdi:sofa',
       tap_action: { action: 'navigate', navigation_path: '/lovelace/sala' }
     };
   }
 
+  firstUpdated() {
+    const els = this.shadowRoot.querySelectorAll('.fit-text');
+    if (els.length) {
+      fitty(els, { 
+        maxSize: 20,
+        minSize: 10,
+        multiLine: false 
+      });
+    }
+  }
+
+  setConfig(config) {
+    if (!config) throw new Error('Invalid configuration');
+    
+    // Migrate old temperature config to new sensors array
+    if (config.entities?.temperature && !config.entities?.sensors) {
+      config.entities.sensors = [];
+      
+      if (config.entities.temperature.temperature_sensor) {
+        config.entities.sensors.push({
+          type: 'temperature',
+          entity: config.entities.temperature.temperature_sensor,
+          unit: config.entities.temperature.unit || '°C'
+        });
+      }
+      
+      if (config.entities.temperature.humidity_sensor) {
+        config.entities.sensors.push({
+          type: 'humidity',
+          entity: config.entities.temperature.humidity_sensor
+        });
+      }
+    }
+
+    this.config = {
+      entities: config.entities || {},
+      colors: {
+        active: config.colors?.active || 'var(--primary-color)',
+        inactive: config.colors?.inactive || 'var(--secondary-text-color)',
+        backgroundActive: config.colors?.backgroundActive || 'color-mix(in srgb, var(--primary-color) 20%, transparent)',
+        backgroundInactive: config.colors?.backgroundInactive || 'color-mix(in srgb, var(--primary-color) 10%, transparent)'
+      },
+      icon: config.icon || '',
+      name: config.name || 'Room',
+      tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
+    };
+  }
+
   _getFallbackIcon(entityId, explicitIcon) {
-    explicitIcon = typeof explicitIcon === 'string' ? explicitIcon : '';
-    if (explicitIcon.trim()) return explicitIcon;
-    if (this.hass?.entities?.[entityId]?.icon) return this.hass.entities[entityId].icon;
+    if (typeof explicitIcon === 'string' && explicitIcon.trim()) return explicitIcon;
+    if (!entityId) return '';
+    
     const stateObj = this.hass?.states?.[entityId];
     if (stateObj?.attributes?.icon) return stateObj.attributes.icon;
+    
     if (stateObj?.attributes?.device_class) {
       return this._getDeviceClassIcon(stateObj.attributes.device_class, stateObj.state);
     }
-    if (!entityId || typeof entityId !== 'string') return '';
+    
     const domain = entityId.split('.')[0];
-
     return this._getDomainDefaultIcon(domain, stateObj?.state);
   }
 
   _getDeviceClassIcon(deviceClass, state) {
-    switch (deviceClass) {
-      case 'door':        return state === 'on' ? 'mdi:door-open'        : 'mdi:door-closed';
-      case 'window':      return state === 'on' ? 'mdi:window-open'      : 'mdi:window-closed';
-      case 'motion':      return state === 'on' ? 'mdi:motion-sensor'    : 'mdi:motion-sensor-off';
-      case 'moisture':    return state === 'on' ? 'mdi:water-alert'      : 'mdi:water-off';
-      case 'smoke':       return state === 'on' ? 'mdi:smoke'            : 'mdi:smoke-detector-off';
-      case 'gas':         return state === 'on' ? 'mdi:gas-cylinder'     : 'mdi:gas-off';
-      case 'problem':     return 'mdi:alert';
-      case 'connectivity':return 'mdi:connection';
-      case 'occupancy':
-      case 'presence':    return state === 'on' ? 'mdi:account-voice'    : 'mdi:account-voice-off';
-      case 'tamper':      return 'mdi:lock-open-alert';
-      case 'vibration':   return state === 'on' ? 'mdi:vibrate'          : 'mdi:vibrate-off';
-      case 'running':     return state === 'on' ? 'mdi:server-network'   : 'mdi:server-network-off';
-      case 'shutter':     return state === 'on' ? 'mdi:window-shutter-open' : 'mdi:window-shutter';
-      case 'blind':       return state === 'on' ? 'mdi:blinds-horizontal'  : 'mdi:blinds-horizontal-closed';
-      default:            return '';
-    }
+    const icons = {
+      door: state === 'on' ? 'mdi:door-open' : 'mdi:door-closed',
+      window: state === 'on' ? 'mdi:window-open' : 'mdi:window-closed',
+      motion: state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off',
+      moisture: state === 'on' ? 'mdi:water-alert' : 'mdi:water-off',
+      smoke: state === 'on' ? 'mdi:smoke' : 'mdi:smoke-detector-off',
+      gas: state === 'on' ? 'mdi:gas-cylinder' : 'mdi:gas-off',
+      problem: 'mdi:alert',
+      connectivity: 'mdi:connection',
+      presence: state === 'on' ? 'mdi:account-voice' : 'mdi:account-voice-off',
+      tamper: 'mdi:lock-open-alert',
+      vibration: state === 'on' ? 'mdi:vibrate' : 'mdi:vibrate-off'
+    };
+    return icons[deviceClass] || '';
   }
 
   _getDomainDefaultIcon(domain, state) {
-    switch (domain) {
-      case 'light':         return 'mdi:lightbulb';
-      case 'switch':        return 'mdi:toggle-switch';
-      case 'fan':           return 'mdi:fan';
-      case 'climate':       return 'mdi:thermostat';
-      case 'media_player':  return 'mdi:speaker';
-      case 'vacuum':        return 'mdi:robot-vacuum';
-      case 'binary_sensor': return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off';
-      case 'sensor':        return 'mdi:information-outline';
-      case 'input_boolean': return 'mdi:toggle-switch';
-      case 'cover':         return state === 'open' ? 'mdi:blinds-open'   : 'mdi:blinds-closed';
-      case 'lock':          return state === 'locked' ? 'mdi:lock'         : 'mdi:lock-open';
-      case 'door':          return state === 'open'   ? 'mdi:door-open'    : 'mdi:door-closed';
-      case 'window':        return state === 'open'   ? 'mdi:window-open'  : 'mdi:window-closed';
-      default:              return '';
-    }
+    const icons = {
+      light: 'mdi:lightbulb',
+      switch: 'mdi:toggle-switch',
+      fan: 'mdi:fan',
+      climate: 'mdi:thermostat',
+      media_player: 'mdi:speaker',
+      vacuum: 'mdi:robot-vacuum',
+      binary_sensor: state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off',
+      sensor: 'mdi:information-outline',
+      cover: state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed',
+      lock: state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'
+    };
+    return icons[domain] || '';
   }
 
   _renderMushroom(item, idx, color) {
     const style = this._defaultMushroomStyle(idx);
-    if (item.temperature_sensor || item.humidity_sensor) {
-      const text = this._buildTemperatureText(item);
+    
+    if (item.type) { // Sensor item
+      const text = this._buildSensorText(item);
+      if (!text) return nothing;
+      
       return html`
         <div class="mushroom-item" style="${style}">
-          <span class="fit-text" style="color: ${color};">${text}</span>
+          <span class="fit-text" style="color: ${color}; font-size: ${this._getFontSize(text)};">
+            ${text}
+          </span>
         </div>
       `;
     }
+    
     const icon = this._getFallbackIcon(item.entity, item.icon || '');
     return html`
       <div class="mushroom-item" style="${style}"
@@ -131,148 +194,213 @@ class BubbleRoom extends LitElement {
     `;
   }
 
-  _buildTemperatureText(item) {
-    const hass = this.hass;
-    const rawTemp = item.temperature_sensor
-      ? hass.states[item.temperature_sensor]?.state
-      : null;
-    const hum  = item.humidity_sensor   ? hass.states[item.humidity_sensor]?.state    : null;
-    let text = '';
-    if (rawTemp != null && rawTemp !== '') {
-      const unit = this.config.entities.temperature.unit || 'C';
-      text += `🌡️${rawTemp}°${unit}`;
-    }
-    if (hum  != null && hum  !== '') text += (text ? ' ' : '') + `💦${hum}%`;
-    return text;
-  }
-
-  setConfig(config) {
-    if (!config) throw new Error('Configurazione mancante');
-    config = JSON.parse(JSON.stringify(config));
-    if (typeof config !== 'object' || Array.isArray(config))
-      throw new Error('La configurazione deve essere un oggetto valido.');
-    if (!config.entities || typeof config.entities !== 'object')
-      throw new Error("Devi definire almeno la proprietà 'entities' nella configurazione.");
-
-    const keysWithIcon = [
-      'presence','sub-button1','sub-button2','sub-button3','sub-button4',
-      'entities1','entities2','entities3','entities4','entities5',
-      'climate','camera','temperature'
-    ];
-    const defaultAction = { tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } };
-    const entities = {};
-
-    for (const key in config.entities) {
-      let value = config.entities[key];
-      if (!value) continue;
-
-      // merge numerically indexed entities
-      if (
-        ['entities1','entities2','entities3','entities4','entities5'].includes(key) &&
-        typeof value === 'object'
-      ) {
-        const newValue = {};
-        const numericKeys = Object.keys(value).filter(k => /^\d+$/.test(k));
-        Object.entries(value).forEach(([k,v]) => {
-          if (!/^\d+$/.test(k)) newValue[k] = v;
-        });
-        if (numericKeys.length) {
-          newValue.entity = numericKeys
-            .sort((a,b) => a-b)
-            .map(k => value[k])
-            .join('');
-        }
-        value = newValue;
-      }
-
-      if (key === 'climate' && typeof value === 'string') {
-        value = { entity: value, ...defaultAction };
-      }
-
-      if (typeof value === 'string') {
-        entities[key] = keysWithIcon.includes(key)
-          ? (key === 'presence'
-              ? { entity: value }
-              : { entity: value, ...defaultAction })
-          : value;
-      } else if (typeof value === 'object') {
-        if (keysWithIcon.includes(key)) {
-          if (!value.style && key.startsWith('entities')) {
-            const idx = Number(key.replace('entities','')) - 1;
-            value.style = this._defaultMushroomStyle(idx);
-          }
-          entities[key] = key === 'presence'
-            ? { ...value }
-            : { ...defaultAction, ...value };
-        } else {
-          entities[key] = value;
-        }
-      }
-    }
-
-    const userColors = config.colors || {};
-    this.config = {
-      entities,
-      colors: {
-        active: userColors.active ?? 'var(--primary-color)',
-        inactive: userColors.inactive ?? 'var(--primary-color-faded)',
-        backgroundActive: userColors.backgroundActive ?? 'color-mix(in srgb, var(--primary-color) 85%, transparent)',
-        backgroundInactive: userColors.backgroundInactive ?? 'color-mix(in srgb, var(--primary-color) 15%, transparent)',
-      },
-      icon:       config.icon       || '',
-      name:       config.name       || 'Salotto',
-      tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
-    };
-
-    if (
-      this.config.entities.temperature &&
-      !this.config.entities.temperature.unit
-    ) {
-      this.config.entities.temperature.unit = 'C';
-    }
-
-    if (!this.config.entity && this.config.entities.presence) {
-      this.config.entity = this.config.entities.presence.entity;
-    }
-  }
-
-  getConfig() {
-    if (!this.config) return {};
+  _buildSensorText(sensor) {
+    if (!this.hass || !sensor.entity) return '';
+    const state = this.hass.states[sensor.entity]?.state;
+    if (state == null || state === '') return '';
     
-    const copy = JSON.parse(JSON.stringify(this.config));
-    const filtered = {};
-    Object.entries(copy.entities).forEach(([k,e]) => {
-      if (!e) return;
-      if (k.startsWith('sub-button') || (e.entity && e.entity.trim())) {
-        filtered[k] = e;
-      }
-    });
-    copy.entities = filtered;
-    return copy;
+    const icon = sensor.customIcon || this._getSensorIcon(sensor.type);
+    const unit = sensor.unit || this._getDefaultUnit(sensor.type);
+    
+    return `${icon}${state}${unit}`;
+  }
+
+  _getSensorIcon(sensorType) {
+    const icons = {
+      temperature: '🌡️',
+      humidity: '💦',
+      light: '💡',
+      co2: '🌫️',
+      pressure: '⏲️',
+      uv: '☀️',
+      noise: '🔊',
+      pm25: '💨',
+      pm10: '💨',
+      voc: '🌡️'
+    };
+    return icons[sensorType] || '';
+  }
+
+  _getDefaultUnit(sensorType) {
+    const units = {
+      temperature: '°C',
+      humidity: '%',
+      light: 'lx',
+      co2: 'ppm',
+      pressure: 'hPa',
+      uv: '',
+      noise: 'dB',
+      pm25: 'µg/m³',
+      pm10: 'µg/m³',
+      voc: 'ppb'
+    };
+    return units[sensorType] || '';
+  }
+
+  _getFontSize(text) {
+    const length = text.length;
+    if (length > 30) return '12px';
+    if (length > 20) return '14px';
+    if (length > 15) return '16px';
+    return '18px';
+  }
+
+  _defaultMushroomStyle(index) {
+    const positions = [
+      'top: -77px; left: 0px;',      // 0
+      'top: -85px; left: 38px;',      // 1
+      'top: -64px; left: 77px;',      // 2
+      'bottom: 39px; left: 96px;',    // 3
+      'bottom: -1px; left: 85px;',    // 4
+      'bottom: -2px; left: -2px;',    // 5
+      'top: -140px; left: 5px;',      // 6
+      'top: -95px; right: 5px;'       // 7
+    ];
+    return positions[index] || '';
+  }
+
+  _startHold(e, item) {
+    e.stopPropagation();
+    this._holdTriggered = false;
+    this._holdTimeout = setTimeout(() => {
+      this._holdTriggered = true;
+      this._handleHoldAction(item);
+    }, 500);
+  }
+
+  _endHold(e, item, clickCallback) {
+    e.stopPropagation();
+    clearTimeout(this._holdTimeout);
+    if (!this._holdTriggered) clickCallback();
+    this._holdTriggered = false;
+  }
+
+  _cancelHold() {
+    clearTimeout(this._holdTimeout);
+    this._holdTriggered = false;
+  }
+
+  _handleHoldAction(item) {
+    if (!item?.hold_action) {
+      this._showMoreInfo(item.entity);
+      return;
+    }
+    
+    const { action, service, service_data, navigation_path } = item.hold_action;
+    switch (action) {
+      case 'more-info':
+        this._showMoreInfo(item.entity);
+        break;
+      case 'toggle':
+        this._toggleEntity(item.entity);
+        break;
+      case 'call-service':
+        this._callService(service, service_data, item.entity);
+        break;
+      case 'navigate':
+        this._navigate(navigation_path);
+        break;
+    }
+  }
+
+  _handleMainIconTap() {
+    if (!this.config?.tap_action) return;
+    const { action, service, service_data, navigation_path } = this.config.tap_action;
+    
+    switch (action) {
+      case 'toggle':
+        if (this.config.entity) this._toggleEntity(this.config.entity);
+        break;
+      case 'more-info':
+        if (this.config.entity) this._showMoreInfo(this.config.entity);
+        break;
+      case 'call-service':
+        this._callService(service, service_data, this.config.entity);
+        break;
+      case 'navigate':
+        this._navigate(navigation_path);
+        break;
+    }
+  }
+
+  _handleSubButtonTap(item) {
+    if (!item?.tap_action) return;
+    const { action, service, service_data, navigation_path } = item.tap_action;
+    
+    switch (action) {
+      case 'toggle':
+        this._toggleEntity(item.entity);
+        break;
+      case 'more-info':
+        this._showMoreInfo(item.entity);
+        break;
+      case 'call-service':
+        this._callService(service, service_data, item.entity);
+        break;
+      case 'navigate':
+        this._navigate(navigation_path);
+        break;
+    }
+  }
+
+  _handleMushroomTap(item) {
+    this._handleSubButtonTap(item);
+  }
+
+  _toggleEntity(entity) {
+    if (!this.hass || !entity) return;
+    this.hass.callService('homeassistant', 'toggle', { entity_id: entity });
+  }
+
+  _showMoreInfo(entity) {
+    if (!entity) return;
+    this.dispatchEvent(new CustomEvent('hass-more-info', {
+      detail: { entityId: entity },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  _callService(service, service_data, entity) {
+    if (!service || !this.hass) return;
+    const [domain, svc] = service.split('.');
+    const data = { 
+      ...service_data, 
+      entity_id: service_data?.entity_id || entity 
+    };
+    this.hass.callService(domain, svc, data);
+  }
+
+  _navigate(path) {
+    if (!path) return;
+    window.history.pushState({}, '', path);
+    window.dispatchEvent(new Event('location-changed'));
   }
 
   static get styles() {
     return css`
-      *, *::before, *::after { box-sizing: border-box; }
-      :host { display: block; --card-height: 190px; font-family: sans-serif; }
+      :host {
+        display: block;
+        --card-height: 190px;
+        font-family: sans-serif;
+      }
       ha-card {
         display: block;
         margin: 0;
         padding: 0 !important;
-        background: var(--bubble-room-background, var(--card-background-color, var(--ha-card-background, white))) !important;
-        border-radius: var(--bubble-room-border-radius, var(--ha-card-border-radius, 8px)) !important;
+        background: var(--bubble-room-background, var(--card-background-color)) !important;
+        border-radius: var(--bubble-room-border-radius, 8px) !important;
+        overflow: hidden;
       }
       .card {
         position: relative;
         width: 100%;
         height: var(--card-height);
-        overflow: hidden;
-        border-radius: inherit;
       }
       .grid-container {
         display: grid;
-        width:100%;
-        height:100%;
+        width: 100%;
+        height: 100%;
         grid-template-areas:
           ". . . b"
           "n n n b"
@@ -325,6 +453,7 @@ class BubbleRoom extends LitElement {
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        padding: 8px;
       }
       .bubble-sub-button {
         display: flex;
@@ -337,9 +466,10 @@ class BubbleRoom extends LitElement {
         cursor: pointer;
         background-color: var(--bubble-room-sub-bg, var(--card-background-color));
         color: var(--bubble-room-sub-icon-color, var(--primary-color));
+        transition: all 0.3s ease;
       }
-      .bubble-sub-button ha-icon {
-        color: inherit;
+      .bubble-sub-button:hover {
+        filter: brightness(0.9);
       }
       .mushroom-container {
         position: absolute;
@@ -359,272 +489,111 @@ class BubbleRoom extends LitElement {
       .fit-text {
         white-space: nowrap;
         overflow: hidden;
+        text-align: center;
+        display: block;
+        width: 100%;
       }
     `;
   }
 
-  _defaultMushroomStyle(index) {
-    switch (index) {
-      case 0: return 'top: -77px; left: 0px;';
-      case 1: return 'top: -85px; left: 38px;';
-      case 2: return 'top: -64px; left: 77px;';
-      case 3: return 'bottom: 39px; left: 96px;';
-      case 4: return 'bottom: -1px; left: 85px;';
-      case 5: return 'bottom: -2px; left: -2px;';
-      case 6: return 'top: -140px; left: 5px;';
-      case 7: return 'top: -95px; right: 5px;';
-      default: return '';
-    }
-  }
-
-  _startHold(e, item) {
-    e.stopPropagation();
-    this._holdTriggered = false;
-    this._holdTimeout = setTimeout(() => {
-      this._holdTriggered = true;
-      this._handleHoldAction(item);
-    }, 500);
-  }
-
-  _endHold(e, item, clickCallback) {
-    e.stopPropagation();
-    clearTimeout(this._holdTimeout);
-    if (!this._holdTriggered) clickCallback();
-    this._holdTriggered = false;
-  }
-
-  _cancelHold() {
-    clearTimeout(this._holdTimeout);
-    this._holdTriggered = false;
-  }
-
-  _handleHoldAction(item) {
-    if (!item?.hold_action) {
-      this.dispatchEvent(new CustomEvent('hass-more-info', {
-        detail: { entityId: item.entity },
-        bubbles: true,
-        composed: true,
-      }));
-      return;
-    }
-    const { action, service, service_data, navigation_path } = item.hold_action;
-    switch (action) {
-      case 'more-info':
-        this.dispatchEvent(new CustomEvent('hass-more-info', {
-          detail: { entityId: item.entity },
-          bubbles: true,
-          composed: true,
-        }));
-        break;
-      case 'toggle':
-        this._toggleEntity(item.entity);
-        break;
-      case 'call-service':
-        if (service) {
-          const [domain, svc] = service.split('.');
-          const data = { ...service_data, entity_id: service_data?.entity_id || item.entity };
-          this.hass.callService(domain, svc, data);
-        }
-        break;
-      case 'navigate':
-        if (navigation_path) {
-          window.history.pushState({}, '', navigation_path);
-          window.dispatchEvent(new Event('location-changed'));
-        }
-        break;
-    }
-  }
-
-  _handleMainIconTap() {
-    if (!this.config?.tap_action) return;
-    const { action, service, service_data, navigation_path } = this.config.tap_action;
-    switch (action) {
-      case 'toggle':
-        if (this.config.entity) this._toggleEntity(this.config.entity);
-        break;
-      case 'more-info':
-        if (this.config.entity) {
-          this.dispatchEvent(new CustomEvent('hass-more-info', {
-            detail: { entityId: this.config.entity },
-            bubbles: true,
-            composed: true,
-          }));
-        }
-        break;
-      case 'call-service':
-        if (service) {
-          const [domain, svc] = service.split('.');
-          const data = { 
-            ...service_data, 
-            entity_id: service_data?.entity_id || this.config.entity 
-          };
-          this.hass.callService(domain, svc, data);
-        }
-        break;
-      case 'navigate':
-        if (navigation_path) {
-          window.history.pushState({}, '', navigation_path);
-          window.dispatchEvent(new Event('location-changed'));
-        }
-        break;
-    }
-  }
-
-  _toggleEntity(entity) {
-    if (!this.hass || !entity) return;
-    this.hass.callService('homeassistant', 'toggle', { entity_id: entity });
-  }
-
-  _handleSubButtonTap(item) {
-    if (!item?.tap_action) return;
-    const { action, service, service_data, navigation_path } = item.tap_action;
-    switch (action) {
-      case 'toggle':
-        if (item.entity) this._toggleEntity(item.entity);
-        break;
-      case 'more-info':
-        if (item.entity) {
-          this.dispatchEvent(new CustomEvent('hass-more-info', {
-            detail: { entityId: item.entity },
-            bubbles: true,
-            composed: true,
-          }));
-        }
-        break;
-      case 'call-service':
-        if (service) {
-          const [domain, svc] = service.split('.');
-          const data = { 
-            ...service_data, 
-            entity_id: service_data?.entity_id || item.entity 
-          };
-          this.hass.callService(domain, svc, data);
-        }
-        break;
-      case 'navigate':
-        if (navigation_path) {
-          window.history.pushState({}, '', navigation_path);
-          window.dispatchEvent(new Event('location-changed'));
-        }
-        break;
-    }
-  }
-
-  _handleMushroomTap(item) {
-    this._handleSubButtonTap(item);
-  }
-
   render() {
     if (!this.config || !this.hass) {
-      return html`<div>Loading…</div>`;
+      return html`<div>Loading...</div>`;
     }
-
+  
     const { entities, name, icon, background, border_radius } = this.config;
-    const colors = this.config.colors;
-    const hass = this.hass;
-    const presenceOn = entities.presence?.entity && hass.states[entities.presence.entity]?.state === 'on';
-
-    const ACCENT_ICON    = 'var(--primary-color)';
-    const INACTIVE_ICON  = 'var(--secondary-text-color)';
-    const ACCENT_BG      = 'color-mix(in srgb, var(--primary-color) 20%, transparent)';
-    const INACTIVE_BG    = 'var(--card-background-color)';
-    const iconOnColor = colors.active;
-    const iconOffColor = colors.inactive;
-    const bgOnColor = colors.backgroundActive;
-    const bgOffColor = colors.backgroundInactive;
-
-    const bubbleIconColor = presenceOn ? iconOnColor : iconOffColor;
-    const bubbleBgColor   = presenceOn ? bgOnColor   : bgOffColor;
-
+    const presenceOn = entities.presence?.entity && 
+                      this.hass.states[entities.presence.entity]?.state === 'on';
+  
+    const colors = {
+      active: this.config.colors.active,
+      inactive: this.config.colors.inactive,
+      backgroundActive: this.config.colors.backgroundActive,
+      backgroundInactive: this.config.colors.backgroundInactive
+    };
+  
+    const bubbleIconColor = presenceOn ? colors.active : colors.inactive;
+    const bubbleBgColor = presenceOn ? colors.backgroundActive : colors.backgroundInactive;
+  
     const cardVars = [
-      background    ? `--bubble-room-background: ${background}`       : '',
+      background ? `--bubble-room-background: ${background}` : '',
       border_radius ? `--bubble-room-border-radius: ${border_radius}` : '',
       `--bubble-room-icon-bg: ${bubbleBgColor}`,
       `--bubble-room-icon-color: ${bubbleIconColor}`,
       `--bubble-room-name-color: ${bubbleIconColor}`
     ].filter(v => v).join(';');
-
+  
     const mainIcon = icon?.trim() ? icon : 
                    (entities.presence?.entity ? this._getFallbackIcon(entities.presence.entity) : '');
-
+  
     const subButtons = [
       entities['sub-button1'],
       entities['sub-button2'],
       entities['sub-button3'],
       entities['sub-button4']
-    ].filter(b => b && b.entity);
-
-    const mushroomKeys = [
-      'entities1','entities2','entities3','entities4','entities5',
-      'climate','temperature','camera'
-    ];
-    const mushrooms = mushroomKeys.map((key, idx) => {
-      const item = entities[key];
-      if (!item) return { item: null, idx, color: null };
-      if (item.temperature_sensor || item.humidity_sensor) {
+    ].filter(b => b?.entity);
+  
+    const mushroomItems = [
+      ...(entities.sensors || []).slice(0, 4),
+      entities.climate,
+      entities.camera
+    ].filter(Boolean).map((item, idx) => {
+      if (item.type) {
         return { item, idx, color: bubbleIconColor };
       }
+      
       const entityId = item.entity;
-      if (!entityId) return { item: null, idx, color: null };
-      const on = hass.states[entityId]?.state === 'on';
-
-      return { item, idx, color: on ? iconOnColor : iconOffColor };
-    });
-
+      if (!entityId) return null;
+      
+      const state = this.hass.states[entityId]?.state;
+      const isOn = state === 'on' || state === 'open' || state === 'playing';
+      return { item, idx, color: isOn ? colors.active : colors.inactive };
+    }).filter(Boolean);
+  
     return html`
       <ha-card style="${cardVars}">
         <div class="card">
           <div class="grid-container">
-            <div class="name-area" style="color: ${bubbleIconColor};">${name}</div>
+            <div class="name-area">${name}</div>
+            
             <div class="icon-area">
               <div class="bubble-icon-container"
-                   @pointerdown=${e => this._startHold(e, this.config)}
-                   @pointerup=${e => this._endHold(e, this.config, () => this._handleMainIconTap())}
-                   @pointerleave=${() => this._cancelHold()}>
-                ${ mainIcon
-                  ? html`<ha-icon class="bubble-icon" icon="${mainIcon}" style="color: ${bubbleIconColor};"></ha-icon>`
-                  : nothing }
+                  @pointerdown=${e => this._startHold(e, this.config)}
+                  @pointerup=${e => this._endHold(e, this.config, () => this._handleMainIconTap())}
+                  @pointerleave=${this._cancelHold}>
+                ${mainIcon ? html`<ha-icon class="bubble-icon" icon="${mainIcon}"></ha-icon>` : nothing}
               </div>
+              
               <div class="mushroom-container">
-                ${ mushrooms.map(({ item, idx, color }) => {
-                    if (!item) {
-                      return html`<div class="mushroom-item" style="${this._defaultMushroomStyle(idx)}"></div>`;
-                    }
-                    return this._renderMushroom(item, idx, color);
-                  }) }
+                ${mushroomItems.map(({ item, idx, color }) => 
+                  this._renderMushroom(item, idx, color)
+                )}
               </div>
             </div>
+            
             <div class="bubble-sub-button-container">
-              ${ subButtons.map(btn => {
-                  if (!btn.entity) return nothing;
-                  const isOn    = hass.states[btn.entity]?.state === 'on';
-                  const btnBg   = isOn ? this.config.colors.backgroundActive   ?? ACCENT_BG : this.config.colors.backgroundInactive ?? INACTIVE_BG;
-                  const iconCol = isOn ? this.config.colors.active             ?? ACCENT_ICON : this.config.colors.inactive ?? INACTIVE_ICON;
-
-                  const ic      = this._getFallbackIcon(btn.entity, btn.icon || '');
-                  return html`
-                    <div class="bubble-sub-button ${isOn ? 'active' : 'inactive'}"
-                         style="background-color: ${btnBg}; color: ${iconCol};"
-                         @pointerdown=${e => this._startHold(e, btn)}
-                         @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
-                         @pointerleave=${() => this._cancelHold()}>
-                      <ha-icon icon="${ic}" style="color: inherit;"></ha-icon>
-                    </div>
-                  `;
-                }) }
+              ${subButtons.map(btn => {
+                const state = this.hass.states[btn.entity]?.state;
+                const isOn = state === 'on' || state === 'open' || state === 'playing';
+                const btnBg = isOn ? colors.backgroundActive : colors.backgroundInactive;
+                const iconCol = isOn ? colors.active : colors.inactive;
+                const btnIcon = this._getFallbackIcon(btn.entity, btn.icon);
+                
+                return html`
+                  <div class="bubble-sub-button"
+                      style="background-color: ${btnBg}; color: ${iconCol};"
+                      @pointerdown=${e => this._startHold(e, btn)}
+                      @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
+                      @pointerleave=${this._cancelHold}>
+                    <ha-icon icon="${btnIcon}"></ha-icon>
+                  </div>
+                `;
+              })}
             </div>
           </div>
         </div>
       </ha-card>
     `;
-  }
-
-  set hass(hass) {
-    this._hass = hass;
-    this.requestUpdate();
-  }
-  get hass() {
-    return this._hass;
   }
 }
 
@@ -634,7 +603,7 @@ window.customCards = window.customCards || [];
 window.customCards.push({
   type: 'bubble-room',
   name: 'Bubble Room',
-  description: 'Bubble Room',
+  description: 'A stylish room control card with environmental sensors',
   preview: true,
   documentationURL: 'https://github.com/mon3y78/Lovelace-Bubble-room'
 });

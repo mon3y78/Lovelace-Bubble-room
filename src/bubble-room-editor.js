@@ -1,18 +1,27 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, nothing } from 'lit';
 
 class BubbleRoomEditor extends LitElement {
   static get properties() {
     return {
       _config: { type: Object },
       hass: { type: Object },
-      _iconList: { type: Array },
     };
   }
 
-  // Supporto all'editor visivo
-  static async getConfigElement() {
-    await import('./bubble-room-editor.js');
-    return document.createElement('bubble-room-editor');
+  static get SENSOR_TYPES() {
+    return [
+      { id: 'temperature', name: 'Temperature', icon: '🌡️', units: ['°C', '°F'] },
+      { id: 'humidity', name: 'Humidity', icon: '💦', units: ['%'] },
+      { id: 'light', name: 'Light', icon: '💡', units: ['lx'] },
+      { id: 'co2', name: 'CO2', icon: '🌫️', units: ['ppm'] },
+      { id: 'pressure', name: 'Pressure', icon: '⏲️', units: ['hPa', 'mmHg'] },
+      { id: 'uv', name: 'UV Index', icon: '☀️', units: [''] },
+      { id: 'noise', name: 'Noise', icon: '🔊', units: ['dB'] },
+      { id: 'pm25', name: 'PM2.5', icon: '💨', units: ['µg/m³'] },
+      { id: 'pm10', name: 'PM10', icon: '💨', units: ['µg/m³'] },
+      { id: 'voc', name: 'VOC', icon: '🌡️', units: ['ppb'] },
+      { id: 'custom', name: 'Custom', icon: '🔧', units: [] }
+    ];
   }
 
   static getStubConfig() {
@@ -44,17 +53,18 @@ class BubbleRoomEditor extends LitElement {
           hold_action: { action: 'more-info' }
         },
         climate: { entity: 'climate.termostato_salotto', icon: 'mdi:thermostat', tap_action: { action: 'more-info' } },
-        entities1: { entity: 'sensor.some_sensor1', icon: 'mdi:information-outline' },
-        entities2: { entity: 'sensor.some_sensor2', icon: 'mdi:information-outline' },
-        entities3: { entity: 'sensor.some_sensor3', icon: 'mdi:information-outline' },
-        entities4: { entity: 'sensor.some_sensor4', icon: 'mdi:information-outline' },
-        entities5: { entity: 'sensor.some_sensor5', icon: 'mdi:information-outline' },
-        temperature: {
-          temperature_sensor: 'sensor.vindstyrka_salotto_temperature',
-          humidity_sensor: 'sensor.vindstyrka_salotto_humidity',
-          unit:               'C',              
-          tap_action: { action: 'more-info' }
-        }
+        camera: { entity: 'camera.front_door', icon: 'mdi:camera', tap_action: { action: 'more-info' } },
+        sensors: [
+          {
+            type: 'temperature',
+            entity: 'sensor.vindstyrka_salotto_temperature',
+            unit: '°C'
+          },
+          {
+            type: 'humidity',
+            entity: 'sensor.vindstyrka_salotto_humidity'
+          }
+        ]
       },
       colors: {
         active: 'var(--primary-color)',
@@ -65,88 +75,60 @@ class BubbleRoomEditor extends LitElement {
       name: 'Salotto',
       icon: 'mdi:sofa',
       tap_action: { action: 'navigate', navigation_path: '/lovelace/sala' },
-      hold_action: { action: 'more-info', navigation_path: '' }
+      hold_action: { action: 'more-info' }
     };
   }
 
-  constructor() {
-    super();
-    this._iconList = [
-      "mdi:lightbulb",
-      "mdi:fan",
-      "mdi:play-circle",
-      "mdi:robot-vacuum",
-      "mdi:information-outline",
-      "mdi:sofa",
-      "mdi:account",
-      "mdi:bed",
-      "mdi:home",
-      "mdi:weather-sunny",
-      "mdi:weather-cloudy",
-      "mdi:weather-rainy"
-    ];
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-  }
-
   setConfig(config) {
-    if (!config) {
-      config = {};
-    }
-    if (!config.entities) {
-      config.entities = {};
-    }
-    if (!config.colors) {
-      config.colors = {};
+    if (!config) config = {};
+    if (!config.entities) config.entities = {};
+    if (!config.colors) config.colors = {};
+
+    // Migrate old temperature config to new sensors array
+    if (config.entities.temperature && !config.entities.sensors) {
+      config.entities.sensors = [];
+      
+      if (config.entities.temperature.temperature_sensor) {
+        config.entities.sensors.push({
+          type: 'temperature',
+          entity: config.entities.temperature.temperature_sensor,
+          unit: config.entities.temperature.unit || '°C'
+        });
+      }
+      
+      if (config.entities.temperature.humidity_sensor) {
+        config.entities.sensors.push({
+          type: 'humidity',
+          entity: config.entities.temperature.humidity_sensor
+        });
+      }
+      
+      delete config.entities.temperature;
     }
     
-    config.colors.active = config.colors.active || 'var(--primary-color)';
-    config.colors.inactive = config.colors.inactive || 'color-mix(in srgb, var(--primary-color) 40%, transparent)';
-    config.colors.backgroundActive = config.colors.backgroundActive || 'color-mix(in srgb, var(--primary-color) 20%, transparent)';
-    config.colors.backgroundInactive = config.colors.backgroundInactive || 'color-mix(in srgb, var(--primary-color) 10%, transparent)';
-    if (!config.entities.temperature) {
-      config.entities.temperature = {};
-    }
-    config.entities.temperature.unit = config.entities.temperature.unit || 'C';
-    if (!config.hold_action) {
-      config.hold_action = { action: 'more-info', navigation_path: '' };
-    }
-    this._config = config;
-  }
-  _updateTemperatureUnit(ev) {
-    const unit = ev.target.value;                          // 'C' o 'F'
-    const tempCfg = { ...this._config.entities.temperature, unit };
-    const entities = { ...this._config.entities, temperature: tempCfg };
-    this._config = { ...this._config, entities };
-    this.requestUpdate();
-    this._fireConfigChanged();
-  }
-  getConfig() {
-    const configCopy = JSON.parse(JSON.stringify(this._config));
-    const filteredEntities = {};
-    Object.keys(configCopy.entities).forEach((key) => {
-      const entityConfig = configCopy.entities[key];
-      if (entityConfig.entity && entityConfig.entity.trim() !== "") {
-        filteredEntities[key] = entityConfig;
+    // Ensure sensors array exists and has 4 slots
+    if (!config.entities.sensors) {
+      config.entities.sensors = Array(4).fill().map(() => ({}));
+    } else {
+      // Fill up to 4 sensors
+      while (config.entities.sensors.length < 4) {
+        config.entities.sensors.push({});
       }
-    });
-    configCopy.entities = filteredEntities;
-    this._config = configCopy;
-    if (config.colors) {
-      Object.keys(config.colors).forEach(k => {
-        if (config.colors[k].trim() === '') {
-          delete config.colors[k];
-        }
-      });
+      // Trim to 4 sensors if more were configured
+      config.entities.sensors = config.entities.sensors.slice(0, 4);
     }
 
-    return configCopy;
-  }
-
-  _defaultIconList() {
-    return this._iconList;
+    this._config = {
+      ...config,
+      colors: {
+        active: config.colors.active || 'var(--primary-color)',
+        inactive: config.colors.inactive || 'var(--secondary-text-color)',
+        backgroundActive: config.colors.backgroundActive || 'color-mix(in srgb, var(--primary-color) 85%, transparent)',
+        backgroundInactive: config.colors.backgroundInactive || 'var(--card-background-color)'
+      },
+      tap_action: config.tap_action || { action: 'navigate', navigation_path: '' },
+      hold_action: config.hold_action || { action: 'more-info' }
+    };
   }
 
   static get styles() {
@@ -160,101 +142,74 @@ class BubbleRoomEditor extends LitElement {
         text-align: center;
         margin: 1rem 0;
       }
-      /* Stile comune per tutti gli header dei pannelli */
       ha-expansion-panel div[slot="header"] {
         background-color: var(--slider-bar-color);
         color: var(--text-primary-color);
         padding: 8px;
         font-weight: bold;
+        border-radius: 4px;
+        margin-bottom: 4px;
       }
       .section-content {
         padding: 16px;
+        background-color: var(--card-background-color);
+        border-radius: 4px;
+        margin-bottom: 16px;
       }
       .input-group {
         margin-bottom: 16px;
       }
       label {
-        display: inline-block;
+        display: block;
         margin-bottom: 4px;
         font-weight: 600;
+        color: var(--primary-text-color);
       }
       input, textarea, select {
         width: 100%;
         box-sizing: border-box;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid var(--divider-color);
+        background-color: var(--card-background-color);
+        color: var(--primary-text-color);
       }
       .note {
-        margin-top: 1rem;
-        font-size: 0.9rem;
+        margin-top: 4px;
+        font-size: 0.8rem;
         color: var(--secondary-text-color);
+      }
+      .sensor-panel, .subbutton-panel {
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--divider-color);
+      }
+      h4 {
+        margin: 0 0 12px 0;
+        color: var(--primary-text-color);
       }
     `;
   }
-
-  _togglePanel(panelId) {
-    const panel = this.shadowRoot.getElementById(panelId);
-    if (panel) {
-      panel.open = !panel.open;
-    }
-  }
-
-  _renderSubButtonPanel(key) {
-    // Se non c'è ancora una configurazione, assegno un oggetto di default
-    const entityConfig = this._config.entities?.[key] || {
-      entity: "",
-      icon: "",
-      tap_action: { action: "toggle", navigation_path: "" },
-      hold_action: { action: "more-info", navigation_path: "" }
-    };
-  
-    let label;
-    switch(key) {
-      case "sub-button1": label = "Sub-button1"; break;
-      case "sub-button2": label = "Sub-button2"; break;
-      case "sub-button3": label = "Sub-button3"; break;
-      case "sub-button4": label = "Sub-button4"; break;
-      default: label = key;
-    }
-    const panelId = `${key}Panel`;
-    
-    return html`
-      <ha-expansion-panel id="${panelId}">
-        <div slot="header" @click="${() => this._togglePanel(panelId)}">
-          ${label}
-        </div>
-        <div class="section-content">
-          ${this._renderEntityInput("Entities (ID)", key)}
-          ${this._renderIconInput("Icon", key)}
-          ${this._renderSubButtonAction(key)}
-        </div>
-      </ha-expansion-panel>
-    `;
-  }
-  
 
   render() {
     if (!this._config) {
-      return html`<div>Caricamento configurazione...</div>`;
+      return html`<div>Loading configuration...</div>`;
     }
-    const hasEntity = (key) => {
-      const e = this._config.entities?.[key]?.entity;
-      return e && e.trim() !== "";
-    };
+
     return html`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room</h3>
+        <h3>Bubble Room Editor</h3>
       </div>
 
-      <ha-expansion-panel id="roomPanel">
-        <div slot="header" @click="${() => this._togglePanel('roomPanel')}">
-          Room Settings
-        </div>
+      <ha-expansion-panel>
+        <div slot="header">Room Settings</div>
         <div class="section-content">
           <div class="input-group">
             <label>Room name:</label>
             <input
               type="text"
               .value="${this._config.name || ''}"
-              @input="${this._updateName}"
+              @input="${this._updateConfig('name')}"
             />
           </div>
           <div class="input-group">
@@ -262,496 +217,372 @@ class BubbleRoomEditor extends LitElement {
             <input
               type="text"
               .value="${this._config.icon || ''}"
+              @input="${this._updateConfig('icon')}"
               list="icon-list"
-              @input="${this._updateIcon}"
             />
+            <datalist id="icon-list">
+              ${['mdi:sofa', 'mdi:home', 'mdi:bed', 'mdi:office-building', 'mdi:kitchen', 
+                 'mdi:lightbulb', 'mdi:fan', 'mdi:thermostat'].map(icon => 
+                html`<option value="${icon}"></option>`
+              )}
+            </datalist>
           </div>
-          ${this._renderRoomAction()}
-          <div class="input-group">
-            ${this._renderEntityInput("Presence (ID)", "presence")}
-          </div>
+          ${this._renderActionInput('tap_action', 'Tap Action')}
+          ${this._renderActionInput('hold_action', 'Hold Action')}
+          ${this._renderEntityInput('presence', 'Presence Sensor')}
         </div>
       </ha-expansion-panel>
 
-      <ha-expansion-panel id="subButtonMainPanel">
-        <div slot="header" @click="${() => this._togglePanel('subButtonMainPanel')}">
-          SUB-BUTTON
-        </div>
+      <ha-expansion-panel>
+        <div slot="header">Sub Buttons</div>
         <div class="section-content">
-          ${this._renderSubButtonPanel("sub-button1")}
-          ${this._renderSubButtonPanel("sub-button2")}
-          ${this._renderSubButtonPanel("sub-button3")}
-          ${this._renderSubButtonPanel("sub-button4")}
+          ${this._renderSubButtonPanel('sub-button1', 'Sub Button 1')}
+          ${this._renderSubButtonPanel('sub-button2', 'Sub Button 2')}
+          ${this._renderSubButtonPanel('sub-button3', 'Sub Button 3')}
+          ${this._renderSubButtonPanel('sub-button4', 'Sub Button 4')}
         </div>
       </ha-expansion-panel>
 
-      <ha-expansion-panel id="mushroomEntitiesPanel">
-        <div slot="header" @click="${() => this._togglePanel('mushroomEntitiesPanel')}">
-          Mushroom Entities
-        </div>
+      <ha-expansion-panel>
+        <div slot="header">Environmental Sensors</div>
         <div class="section-content">
-          ${this._renderMushroomEntityPanel("entities1", "Entity 1")}
-          ${this._renderMushroomEntityPanel("entities2", "Entity 2")}
-          ${this._renderMushroomEntityPanel("entities3", "Entity 3")}
-          ${this._renderMushroomEntityPanel("entities4", "Entity 4")}
-          ${this._renderMushroomEntityPanel("entities5", "Entity 5")}
+          ${this._config.entities.sensors.map((sensor, index) => 
+            this._renderSensorPanel(sensor, index)
+          )}
         </div>
       </ha-expansion-panel>
 
-      <ha-expansion-panel id="cameraPanel">
-        <div slot="header" @click="${() => this._togglePanel('cameraPanel')}">
-          Camera
-        </div>
+      <ha-expansion-panel>
+        <div slot="header">Other Entities</div>
         <div class="section-content">
-          <div class="input-group">
-            ${this._renderEntityInput("Camera (ID)", "camera")}
-          </div>
-          <div class="input-group">
-            ${this._renderIconInput("Camera Icon", "camera")}
-          </div>
+          ${this._renderEntityInput('climate', 'Climate Entity')}
+          ${this._renderIconInput('climate', 'Climate Icon')}
+          ${this._renderActionInput('climate.tap_action', 'Climate Tap Action')}
+          
+          ${this._renderEntityInput('camera', 'Camera Entity')}
+          ${this._renderIconInput('camera', 'Camera Icon')}
+          ${this._renderActionInput('camera.tap_action', 'Camera Tap Action')}
         </div>
       </ha-expansion-panel>
 
-
-
-      <ha-expansion-panel id="climatePanel">
-        <div slot="header" @click="${() => this._togglePanel('climatePanel')}">
-          Climate
-        </div>
+      <ha-expansion-panel>
+        <div slot="header">Colors</div>
         <div class="section-content">
-          <div class="input-group">
-            ${this._renderEntityInput("Climate (ID)", "climate")}
-          </div>
-          <div class="input-group">
-            <label>Temperature Sensor:</label>
-            <input
-              type="text"
-              .value="${this._config.entities?.temperature?.temperature_sensor || ''}"
-              list="entity-list"
-              @input="${this._updateTemperature('temperature_sensor')}"
-            />
-          </div>
-          <div class="input-group">
-            <label>Unità:</label>
-            <select
-              .value="${this._config.entities?.temperature?.unit || 'C'}"
-              @change="${this._updateTemperatureUnit}"
-            >
-              <option value="C">°C</option>
-              <option value="F">°F</option>
-            </select>
-          </div>
-          <div class="input-group">
-            <label>Humidity Sensor:</label>
-            <input
-              type="text"
-              .value="${this._config.entities?.temperature?.humidity_sensor || ''}"
-              list="entity-list"
-              @input="${this._updateTemperature('humidity_sensor')}"
-            />
-          </div>
+          ${this._renderColorInput('active', 'Active Color')}
+          ${this._renderColorInput('inactive', 'Inactive Color')}
+          ${this._renderColorInput('backgroundActive', 'Active Background')}
+          ${this._renderColorInput('backgroundInactive', 'Inactive Background')}
         </div>
       </ha-expansion-panel>
-
-      <ha-expansion-panel id="colorsPanel">
-        <div slot="header" @click="${() => this._togglePanel('colorsPanel')}">
-          Colors
-        </div>
-        <div class="section-content">
-          <div class="input-group">
-            <label>Active:</label>
-            <input
-              type="text"
-              .value="${(this._config.colors && this._config.colors.active) || ''}"
-              @input="${this._updateColor('active')}"
-            />
-          </div>
-          <div class="input-group">
-            <label>Inactive:</label>
-            <input
-              type="text"
-              .value="${(this._config.colors && this._config.colors.inactive) || ''}"
-              @input="${this._updateColor('inactive')}"
-            />
-          </div>
-          <div class="input-group">
-            <label>Background Active:</label>
-            <input
-              type="text"
-              .value="${(this._config.colors && this._config.colors.backgroundActive) || ''}"
-              @input="${this._updateColor('backgroundActive')}"
-            />
-          </div>
-          <div class="input-group">
-            <label>Background Inactive:</label>
-            <input
-              type="text"
-              .value="${(this._config.colors && this._config.colors.backgroundInactive) || ''}"
-              @input="${this._updateColor('backgroundInactive')}"
-            />
-          </div>
-        </div>
-      </ha-expansion-panel>
-
-      <datalist id="entity-list">
-        ${this.hass
-          ? Object.keys(this.hass.entities).map(
-              entityId => html`<option value="${entityId}"></option>`
-            )
-          : ''}
-      </datalist>
-      <datalist id="icon-list">
-        ${this._defaultIconList().map(icon => html`<option value="${icon}"></option>`)}
-      </datalist>
-
-      <p class="note">
-        For advanced configurations, modify the YAML directly.
-      </p>
     `;
   }
 
-  _renderMushroomEntityPanel(key, label) {
-    const panelId = `${key}Panel`;
+  _renderSensorPanel(sensor, index) {
+    const type = sensor.type || 'none';
+    const sensorType = BubbleRoomEditor.SENSOR_TYPES.find(t => t.id === type);
+    
     return html`
-      <ha-expansion-panel id="${panelId}">
-        <div slot="header" @click="${() => this._togglePanel(panelId)}">
-          ${label}
+      <div class="sensor-panel">
+        <h4>Sensor ${index + 1}</h4>
+        
+        <div class="input-group">
+          <label>Type:</label>
+          <select
+            .value="${type}"
+            @change="${this._updateSensor(index, 'type')}"
+          >
+            <option value="none">Disabled</option>
+            ${BubbleRoomEditor.SENSOR_TYPES.map(t => 
+              html`<option value="${t.id}">${t.icon} ${t.name}</option>`
+            )}
+          </select>
         </div>
-        <div class="section-content">
-          ${this._renderEntityInput(`${label} (ID)`, key)}
-          ${this._renderIconInput(`${label} Icon`, key)}
-        </div>
-      </ha-expansion-panel>
+        
+        ${type !== 'none' ? html`
+          <div class="input-group">
+            <label>Entity:</label>
+            <input
+              type="text"
+              .value="${sensor.entity || ''}"
+              @input="${this._updateSensor(index, 'entity')}"
+              list="entity-list"
+            />
+            <datalist id="entity-list">
+              ${this.hass ? Object.keys(this.hass.states).map(
+                entityId => html`<option value="${entityId}"></option>`
+              ) : nothing}
+            </datalist>
+          </div>
+          
+          ${this._renderUnitSelector(sensor, index)}
+          
+          <div class="input-group">
+            <label>Custom Icon (optional):</label>
+            <input
+              type="text"
+              .value="${sensor.customIcon || ''}"
+              @input="${this._updateSensor(index, 'customIcon')}"
+              placeholder="Leave empty for default"
+              list="icon-list"
+            />
+          </div>
+        ` : nothing}
+      </div>
     `;
   }
 
-  _renderEntityInput(labelText, entityKey, field = 'entity') {
-    const value = (this._config.entities &&
-                   this._config.entities[entityKey] &&
-                   this._config.entities[entityKey][field]) || '';
-    return html`
-      <label>${labelText}:</label>
-      <input
-        type="text"
-        .value="${value}"
-        list="entity-list"
-        @input="${this._updateEntity(entityKey, field)}"
-      />
-    `;
-  }
-
-  _renderIconInput(labelText, entityKey, field = 'icon') {
-    let value = (this._config.entities &&
-                 this._config.entities[entityKey] &&
-                 this._config.entities[entityKey][field]) || '';
-    if (!value && this.hass && this._config.entities && this._config.entities[entityKey]?.entity) {
-      const entityId = this._config.entities[entityKey].entity;
-      value = this.hass.states[entityId]?.attributes?.icon || '';
+  _renderUnitSelector(sensor, index) {
+    const sensorType = BubbleRoomEditor.SENSOR_TYPES.find(t => t.id === sensor.type);
+    if (!sensorType || sensorType.units.length === 0) return nothing;
+    
+    if (sensorType.units.length === 1) {
+      return html`
+        <div class="input-group">
+          <label>Unit:</label>
+          <input type="text" .value="${sensorType.units[0]}" disabled />
+          <input type="hidden"
+            .value="${sensorType.units[0]}"
+            @change="${this._updateSensor(index, 'unit')}"
+          />
+        </div>
+      `;
     }
-    return html`
-      <label>${labelText}:</label>
-      <input
-        type="text"
-        .value="${value}"
-        list="icon-list"
-        @input="${this._updateEntity(entityKey, field)}"
-      />
-    `;
-  }
-
-  _renderRoomAction() {
-    const tapAction = this._config.tap_action || { action: 'navigate', navigation_path: '' };
-    const holdAction = this._config.hold_action || { action: 'more-info', navigation_path: '' };
+    
     return html`
       <div class="input-group">
-        <label>Tap:</label>
-        <select @change="${this._updateTapActionField('action')}" .value="${tapAction.action}">
-          <option value="toggle">Toggle</option>
-          <option value="more-info">More Info</option>
-          <option value="navigate">Navigate</option>
-          <option value="call-service">Call Service</option>
-          <option value="none">None</option>
+        <label>Unit:</label>
+        <select
+          .value="${sensor.unit || sensorType.units[0]}"
+          @change="${this._updateSensor(index, 'unit')}"
+        >
+          ${sensorType.units.map(u => html`<option value="${u}">${u}</option>`)}
         </select>
-        ${tapAction.action === 'navigate'
-          ? html`
-              <label>Navigation Path:</label>
-              <input
-                type="text"
-                .value="${tapAction.navigation_path || ''}"
-                @input="${this._updateTapActionField('navigation_path')}"
-              />
-            `
-          : ''}
-        ${tapAction.action === 'call-service'
-          ? html`
-              <label>Service:</label>
-              <input
-                type="text"
-                .value="${tapAction.service || ''}"
-                @input="${this._updateTapActionField('service')}"
-              />
-              <label>Service Data (JSON):</label>
-              <textarea
-                .value="${tapAction.service_data ? JSON.stringify(tapAction.service_data) : ''}"
-                @input="${this._updateTapActionField('service_data')}"
-              ></textarea>
-            `
-          : ''}
-      </div>
-      <div class="input-group">
-        <label>Hold:</label>
-        <select @change="${this._updateHoldActionField('action')}" .value="${holdAction.action}">
-          <option value="more-info">More Info</option>
-          <option value="toggle">Toggle</option>
-          <option value="call-service">Call Service</option>
-          <option value="navigate">Navigate</option>
-          <option value="none">None</option>
-        </select>
-        ${holdAction.action === 'navigate'
-          ? html`
-              <label>Navigation Path:</label>
-              <input
-                type="text"
-                .value="${holdAction.navigation_path || ''}"
-                @input="${this._updateHoldActionField('navigation_path')}"
-              />
-            `
-          : ''}
-        ${holdAction.action === 'call-service'
-          ? html`
-              <label>Service:</label>
-              <input
-                type="text"
-                .value="${holdAction.service || ''}"
-                @input="${this._updateHoldActionField('service')}"
-              />
-              <label>Service Data (JSON):</label>
-              <textarea
-                .value="${holdAction.service_data ? JSON.stringify(holdAction.service_data) : ''}"
-                @input="${this._updateHoldActionField('service_data')}"
-              ></textarea>
-            `
-          : ''}
       </div>
     `;
   }
 
-  _renderSubButtonAction(key) {
-    const tapAction = this._config.entities[key]?.tap_action || { action: 'toggle', navigation_path: '' };
-    const holdAction = this._config.entities[key]?.hold_action || { action: 'more-info', navigation_path: '' };
+  _renderSubButtonPanel(key, label) {
+    const button = this._config.entities[key] || {};
     return html`
-      <div class="input-group">
-        <label>Tap:</label>
-        <select @change="${this._updateEntityTapAction(key, 'action')}" .value="${tapAction.action}">
-          <option value="toggle">Toggle</option>
-          <option value="more-info">More Info</option>
-          <option value="navigate">Navigate</option>
-          <option value="call-service">Call Service</option>
-          <option value="none">None</option>
-        </select>
-        ${tapAction.action === 'navigate'
-          ? html`
-              <label>Navigation Path:</label>
-              <input
-                type="text"
-                .value="${tapAction.navigation_path || ''}"
-                @input="${this._updateEntityTapAction(key, 'navigation_path')}"
-              />
-            `
-          : ''}
-        ${tapAction.action === 'call-service'
-          ? html`
-              <label>Service:</label>
-              <input
-                type="text"
-                .value="${tapAction.service || ''}"
-                @input="${this._updateEntityTapAction(key, 'service')}"
-              />
-              <label>Service Data (JSON):</label>
-              <textarea
-                .value="${tapAction.service_data ? JSON.stringify(tapAction.service_data) : ''}"
-                @input="${this._updateEntityTapAction(key, 'service_data')}"
-              ></textarea>
-            `
-          : ''}
-      </div>
-      <div class="input-group">
-        <label>Hold:</label>
-        <select @change="${this._updateEntityHoldAction(key, 'action')}" .value="${holdAction.action}">
-          <option value="more-info">More Info</option>
-          <option value="toggle">Toggle</option>
-          <option value="navigate">Navigate</option>
-          <option value="call-service">Call Service</option>
-          <option value="none">None</option>
-        </select>
-        ${holdAction.action === 'navigate'
-          ? html`
-              <label>Navigation Path:</label>
-              <input
-                type="text"
-                .value="${holdAction.navigation_path || ''}"
-                @input="${this._updateEntityHoldAction(key, 'navigation_path')}"
-              />
-            `
-          : ''}
-        ${holdAction.action === 'call-service'
-          ? html`
-              <label>Service:</label>
-              <input
-                type="text"
-                .value="${holdAction.service || ''}"
-                @input="${this._updateEntityHoldAction(key, 'service')}"
-              />
-              <label>Service Data (JSON):</label>
-              <textarea
-                .value="${holdAction.service_data ? JSON.stringify(holdAction.service_data) : ''}"
-                @input="${this._updateEntityHoldAction(key, 'service_data')}"
-              ></textarea>
-            `
-          : ''}
+      <div class="subbutton-panel">
+        <h4>${label}</h4>
+        ${this._renderEntityInput(key, 'Entity')}
+        ${this._renderIconInput(key, 'Icon')}
+        ${this._renderActionInput(`${key}.tap_action`, 'Tap Action')}
+        ${this._renderActionInput(`${key}.hold_action`, 'Hold Action')}
       </div>
     `;
   }
 
-  set hass(hass) {
-    this._hass = hass;
-    this.requestUpdate();
+  _renderEntityInput(key, label) {
+    const path = key.split('.');
+    let value = this._config.entities;
+    for (const p of path) {
+      value = value?.[p];
+      if (value === undefined) break;
+    }
+    
+    return html`
+      <div class="input-group">
+        <label>${label}:</label>
+        <input
+          type="text"
+          .value="${value || ''}"
+          @input="${this._updateEntity(key)}"
+          list="entity-list"
+        />
+      </div>
+    `;
   }
 
-  get hass() {
-    return this._hass;
+  _renderIconInput(key, label) {
+    const path = key.split('.');
+    let value = this._config.entities;
+    for (const p of path) {
+      value = value?.[p];
+      if (value === undefined) break;
+    }
+    
+    return html`
+      <div class="input-group">
+        <label>${label}:</label>
+        <input
+          type="text"
+          .value="${value || ''}"
+          @input="${this._updateEntity(key)}"
+          list="icon-list"
+        />
+      </div>
+    `;
+  }
+
+  _renderColorInput(key, label) {
+    const value = this._config.colors?.[key] || '';
+    return html`
+      <div class="input-group">
+        <label>${label}:</label>
+        <input
+          type="text"
+          .value="${value}"
+          @input="${this._updateColor(key)}"
+          placeholder="CSS color value or variable"
+        />
+      </div>
+    `;
+  }
+
+  _renderActionInput(key, label) {
+    const path = key.split('.');
+    let action = this._config.entities;
+    for (const p of path) {
+      action = action?.[p];
+      if (action === undefined) break;
+    }
+    
+    if (!action) {
+      action = { action: 'none' };
+    }
+
+    return html`
+      <div class="input-group">
+        <label>${label}:</label>
+        <select
+          .value="${action.action || 'none'}"
+          @change="${this._updateAction(key, 'action')}"
+        >
+          <option value="none">None</option>
+          <option value="toggle">Toggle</option>
+          <option value="more-info">More Info</option>
+          <option value="navigate">Navigate</option>
+          <option value="call-service">Call Service</option>
+        </select>
+
+        ${action.action === 'navigate' ? html`
+          <div class="input-group">
+            <label>Navigation Path:</label>
+            <input
+              type="text"
+              .value="${action.navigation_path || ''}"
+              @input="${this._updateAction(key, 'navigation_path')}"
+            />
+          </div>
+        ` : nothing}
+
+        ${action.action === 'call-service' ? html`
+          <div class="input-group">
+            <label>Service:</label>
+            <input
+              type="text"
+              .value="${action.service || ''}"
+              @input="${this._updateAction(key, 'service')}"
+              placeholder="domain.service"
+            />
+          </div>
+          <div class="input-group">
+            <label>Service Data (JSON):</label>
+            <textarea
+              .value="${action.service_data ? JSON.stringify(action.service_data, null, 2) : ''}"
+              @input="${this._updateAction(key, 'service_data')}"
+              rows="3"
+            ></textarea>
+          </div>
+        ` : nothing}
+      </div>
+    `;
+  }
+
+  _updateConfig(field) {
+    return (e) => {
+      this._config = { ...this._config, [field]: e.target.value };
+      this._fireConfigChanged();
+    };
+  }
+
+  _updateColor(key) {
+    return (e) => {
+      const colors = { ...this._config.colors, [key]: e.target.value };
+      this._config = { ...this._config, colors };
+      this._fireConfigChanged();
+    };
+  }
+
+  _updateEntity(key) {
+    return (e) => {
+      const path = key.split('.');
+      const value = e.target.value;
+      let entities = { ...this._config.entities };
+      let current = entities;
+      
+      for (let i = 0; i < path.length - 1; i++) {
+        if (!current[path[i]]) current[path[i]] = {};
+        current = current[path[i]];
+      }
+      
+      current[path[path.length - 1]] = value;
+      this._config = { ...this._config, entities };
+      this._fireConfigChanged();
+    };
+  }
+
+  _updateSensor(index, field) {
+    return (e) => {
+      const sensors = [...this._config.entities.sensors];
+      sensors[index] = { ...sensors[index], [field]: e.target.value };
+      
+      // Reset some fields when type changes
+      if (field === 'type' && e.target.value !== sensors[index].type) {
+        sensors[index] = { type: e.target.value };
+      }
+      
+      const entities = { ...this._config.entities, sensors };
+      this._config = { ...this._config, entities };
+      this._fireConfigChanged();
+    };
+  }
+
+  _updateAction(key, field) {
+    return (e) => {
+      const path = key.split('.');
+      let value = e.target.value;
+      
+      if (field === 'service_data') {
+        try {
+          value = JSON.parse(e.target.value);
+        } catch (e) {
+          console.warn('Invalid JSON for service_data');
+          return;
+        }
+      }
+      
+      let entities = { ...this._config.entities };
+      let current = entities;
+      
+      for (let i = 0; i < path.length - 1; i++) {
+        if (!current[path[i]]) current[path[i]] = {};
+        current = current[path[i]];
+      }
+      
+      if (!current[path[path.length - 1]]) {
+        current[path[path.length - 1]] = {};
+      }
+      
+      current[path[path.length - 1]] = { 
+        ...current[path[path.length - 1]], 
+        [field]: value 
+      };
+      
+      this._config = { ...this._config, entities };
+      this._fireConfigChanged();
+    };
   }
 
   _fireConfigChanged() {
-    this.dispatchEvent(new CustomEvent('config-changed', {
+    const event = new CustomEvent('config-changed', {
       detail: { config: this._config },
       bubbles: true,
-      composed: true,
-    }));
-  }
-
-  _updateName(ev) {
-    const newName = ev.target.value;
-    this._config = { ...this._config, name: newName };
-    this.requestUpdate();
-    this._fireConfigChanged();
-  }
-
-  _updateIcon(ev) {
-    const newIcon = ev.target.value;
-    this._config = { ...this._config, icon: newIcon };
-    this.requestUpdate();
-    this._fireConfigChanged();
-  }
-
-  _updateEntity(entityKey, field = 'entity') {
-    return (ev) => {
-      const value = ev.target.value;
-      let curEntity = this._config.entities[entityKey] || {};
-      curEntity = { ...curEntity, [field]: value };
-      const entities = { ...this._config.entities, [entityKey]: curEntity };
-      this._config = { ...this._config, entities };
-      this.requestUpdate();
-      this._fireConfigChanged();
-    };
-  }
-
-  _updateColor(colorKey) {
-    return (ev) => {
-      const newValue = ev.target.value;
-      const colors = { ...((this._config.colors) || {}), [colorKey]: newValue };
-      this._config = { ...this._config, colors };
-      this.requestUpdate();
-      this._fireConfigChanged();
-    };
-  }
-
-  _updateTemperature(field) {
-    return (e) => {
-      const value = e.target.value;
-      const tempConfig = { ...this._config.entities?.temperature, [field]: value };
-      if (tempConfig.temperature_sensor && tempConfig.humidity_sensor) {
-        tempConfig.primary = `🌡️{{ states("${tempConfig.temperature_sensor}") }}°C 💦{{ states("${tempConfig.humidity_sensor}") }}%`;
-      }
-      const entities = { ...this._config.entities, temperature: tempConfig };
-      this._config = { ...this._config, entities };
-      this.requestUpdate();
-      this._fireConfigChanged();
-    };
-  }
-
-  _updateTapActionField(field) {
-    return (ev) => {
-      let newValue = ev.target.value;
-      if (field === 'service_data') {
-        try {
-          newValue = JSON.parse(newValue);
-        } catch (e) {}
-      }
-      const tap_action = {
-        ...(this._config.tap_action || { action: 'navigate', navigation_path: '' }),
-        [field]: newValue
-      };
-      this._config = { ...this._config, tap_action };
-      this.requestUpdate();
-      this._fireConfigChanged();
-    };
-  }
-
-  _updateHoldActionField(field) {
-    return (ev) => {
-      let newValue = ev.target.value;
-      if (field === 'service_data') {
-        try {
-          newValue = JSON.parse(newValue);
-        } catch (e) {}
-      }
-      const hold_action = {
-        ...(this._config.hold_action || { action: 'more-info', navigation_path: '' }),
-        [field]: newValue
-      };
-      this._config = { ...this._config, hold_action };
-      this.requestUpdate();
-      this._fireConfigChanged();
-    };
-  }
-
-  _updateEntityTapAction(entityKey, field) {
-    return (ev) => {
-      let value = ev.target.value;
-      if (field === 'service_data') {
-        try {
-          value = JSON.parse(value);
-        } catch (e) {}
-      }
-      let entityConf = this._config.entities[entityKey] || {};
-      let tapAction = entityConf.tap_action || { action: 'toggle', navigation_path: '' };
-      tapAction = { ...tapAction, [field]: value };
-      entityConf = { ...entityConf, tap_action: tapAction };
-      const entities = { ...this._config.entities, [entityKey]: entityConf };
-      this._config = { ...this._config, entities };
-      this.requestUpdate();
-      this._fireConfigChanged();
-    };
-  }
-
-  _updateEntityHoldAction(entityKey, field) {
-    return (ev) => {
-      let value = ev.target.value;
-      if (field === 'service_data') {
-        try {
-          value = JSON.parse(value);
-        } catch (e) {}
-      }
-      let entityConf = this._config.entities[entityKey] || {};
-      let holdAction = entityConf.hold_action || { action: 'more-info', navigation_path: '' };
-      holdAction = { ...holdAction, [field]: value };
-      entityConf = { ...entityConf, hold_action: holdAction };
-      const entities = { ...this._config.entities, [entityKey]: entityConf };
-      this._config = { ...this._config, entities };
-      this.requestUpdate();
-      this._fireConfigChanged();
-    };
+      composed: true
+    });
+    this.dispatchEvent(event);
   }
 }
 
