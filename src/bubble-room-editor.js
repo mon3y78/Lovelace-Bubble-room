@@ -141,7 +141,7 @@ class BubbleRoomEditor extends LitElement {
         }
       });
     }
-
+    console.log("Editor - Config finale restituita:", configCopy);
     return configCopy;
   }
 
@@ -258,13 +258,11 @@ class BubbleRoomEditor extends LitElement {
             />
           </div>
           <div class="input-group">
-            <label>Main icon:</label>
-            <input
-              type="text"
-              .value="${this._config.icon || ''}"
-              list="icon-list"
-              @input="${this._updateIcon}"
-            />
+            <label>Layout:</label>
+              <select ...>
+                <option value="6x3">6x3</option>
+                <option value="12x4">12x4</option>
+              </select>
           </div>
           ${this._renderRoomAction()}
           <div class="input-group">

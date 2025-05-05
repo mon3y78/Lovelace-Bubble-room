@@ -196,6 +196,8 @@ class BubbleRoom extends LitElement {
       icon: config.icon || "mdi:sofa",
       tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
     };
+
+    console.log("BubbleRoom - Config ricevuta:", this.config);
     if (!this.config.entity && this.config.entities && this.config.entities.presence) {
       this.config.entity = this.config.entities.presence.entity;
     }
@@ -464,6 +466,7 @@ class BubbleRoom extends LitElement {
   
   render() {
     const layout = this._getLayoutStyle(this.config?.layout_mode || '6x3');
+    console.log("BubbleRoom - Layout selezionato:", this.config?.layout_mode, layout);
     const layoutClass = `layout-${this.config?.layout_mode || '6x3'}`;
     if (!this.config || !this.hass) {
       console.log("bubble-room.js: config or hass not defined yet");
