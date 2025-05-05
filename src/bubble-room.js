@@ -73,13 +73,43 @@ class BubbleRoom extends LitElement {
   }
 
   firstUpdated() {
+    this._fittyInstances = [];
+    this._initFitty();
+  }
+  
+  disconnectedCallback() {
+    this._cleanupFitty();
+    super.disconnectedCallback();
+  }
+  
+  _initFitty() {
+    this._cleanupFitty();
+    
     const els = this.shadowRoot.querySelectorAll('.fit-text');
     if (els.length) {
-      fitty(els, { 
+      this._fittyInstances = fitty(els, { 
         maxSize: 20,
         minSize: 10,
         multiLine: false 
       });
+    }
+  }
+  
+  _cleanupFitty() {
+    if (this._fittyInstances && this._fittyInstances.length) {
+      this._fittyInstances.forEach(instance => {
+        try {
+          instance.unsubscribe();
+        } catch (e) {
+          console.debug('Error cleaning up fitty instance', e);
+        }
+      });
+      this._fittyInstances = [];
+    }
+  }
+  updated(changedProperties) {
+    if (changedProperties.has('hass') || changedProperties.has('config')) {
+      this._initFitty();
     }
   }
 
@@ -196,6 +226,8 @@ class BubbleRoom extends LitElement {
     }
     
     const icon = this._getFallbackIcon(item.entity, item.icon || '');
+    if (!icon) return nothing;
+    
     return html`
       <div class="mushroom-item" style="${style}"
            @pointerdown=${e => this._startHold(e, item)}
