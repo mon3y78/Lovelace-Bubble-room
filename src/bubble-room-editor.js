@@ -96,8 +96,14 @@ class BubbleRoomEditor extends LitElement {
       config = {};
     }
     if (!config.entities) {
-      config.entities = {};
+      config.entities = {}; 
     }
+    for (let i = 1; i <= 4; i++) {
+      const key = `sensor${i}`;
+      if (!config.entities[key]) {
+        config.entities[key] = {};
+      }
+    }    
     if (!config.colors) {
       config.colors = {};
     }

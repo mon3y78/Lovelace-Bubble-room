@@ -551,7 +551,6 @@ class BubbleRoom extends LitElement {
                         text-align: center;
                         line-height: 1.2;
                         text-shadow: 0 0 3px black;
-                        background-color: rgba(0,0,0,0.3);
                         padding: 4px 6px;
                         border-radius: 6px;
                       ">
