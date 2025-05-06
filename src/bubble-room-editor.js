@@ -339,33 +339,17 @@ class BubbleRoomEditor extends LitElement {
             ${this._renderEntityInput("Climate (ID)", "climate")}
           </div>
           <div class="input-group">
-            <label>Temperature Sensor:</label>
-            <input
-              type="text"
-              .value="${this._config.entities?.temperature?.temperature_sensor || ''}"
-              list="entity-list"
-              @input="${this._updateTemperature('temperature_sensor')}"
-            />
+            ${this._renderIconInput("Climate Icon", "climate")}
           </div>
-          <div class="input-group">
-            <label>Unità:</label>
-            <select
-              .value="${this._config.entities?.temperature?.unit || 'C'}"
-              @change="${this._updateTemperatureUnit}"
-            >
-              <option value="C">°C</option>
-              <option value="F">°F</option>
-            </select>
-          </div>
-          <div class="input-group">
-            <label>Humidity Sensor:</label>
-            <input
-              type="text"
-              .value="${this._config.entities?.temperature?.humidity_sensor || ''}"
-              list="entity-list"
-              @input="${this._updateTemperature('humidity_sensor')}"
-            />
-          </div>
+        </div>
+      </ha-expansion-panel>
+
+      <ha-expansion-panel id="sensorPanel">
+        <div slot="header" @click="${() => this._togglePanel('sensorPanel')}">
+          Sensor
+        </div>
+        <div class="section-content">
+          ${[0, 1, 2, 3].map(i => this._renderSensorConfig(i))}
         </div>
       </ha-expansion-panel>
 
@@ -552,6 +536,60 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
 
+
+  _renderSensorConfig(index) {
+    const sensor = this._config.entities?.[`sensor${index+1}`] || {};
+    const types = [
+      { type: 'temperature', label: '🌡️ Temperatura' },
+      { type: 'humidity', label: '💦 Umidità' },
+      { type: 'co2', label: '🟢 CO₂' },
+      { type: 'illuminance', label: '☀️ Luminosità' },
+      { type: 'pm1', label: '🟤 PM1' },
+      { type: 'pm25', label: '⚫️ PM2.5' },
+      { type: 'pm10', label: '⚪️ PM10' },
+      { type: 'uv', label: '🌞 UV Index' },
+      { type: 'noise', label: '🔊 Rumore' },
+      { type: 'pressure', label: '📈 Pressione' },
+      { type: 'voc', label: '🧪 VOC' },
+    ];
+    return html`
+      <div class="input-group">
+        <label>Sensor ${index + 1} Type:</label>
+        <select
+          .value="${sensor.type || ''}"
+          @change="${e => this._updateSensor(index, 'type', e.target.value)}"
+        >
+          <option value="">-- none --</option>
+          ${types.map(t => html`<option value="${t.type}">${t.label}</option>`)}
+        </select>
+      </div>
+      ${sensor.type ? html`
+        <div class="input-group">
+          <label>Entity ID:</label>
+          <input
+            type="text"
+            .value="${sensor.entity || ''}"
+            list="entity-list"
+            @input="${e => this._updateSensor(index, 'entity', e.target.value)}"
+          />
+        </div>
+        ${sensor.type === 'temperature' ? html`
+          <div class="input-group">
+            <label>Unità:</label>
+            <select
+              .value="${sensor.unit || 'C'}"
+              @change="${e => this._updateSensor(index, 'unit', e.target.value)}"
+            >
+              <option value="C">°C</option>
+              <option value="F">°F</option>
+            </select>
+          </div>
+        ` : ''}
+      ` : ''}
+      <hr/>
+    `;
+  }
+  
   _renderSubButtonAction(key) {
     const tapAction = this._config.entities[key]?.tap_action || { action: 'toggle', navigation_path: '' };
     const holdAction = this._config.entities[key]?.hold_action || { action: 'more-info', navigation_path: '' };
@@ -756,6 +794,16 @@ class BubbleRoomEditor extends LitElement {
     };
   }
 
+  _updateSensor(index, field, value) {
+    const key = `sensor${index+1}`;
+    const current = this._config.entities?.[key] || {};
+    const updated = { ...current, [field]: value };
+    const entities = { ...this._config.entities, [key]: updated };
+    this._config = { ...this._config, entities };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
+  
   _updateEntityHoldAction(entityKey, field) {
     return (ev) => {
       let value = ev.target.value;
