@@ -311,11 +311,6 @@ class BubbleRoom extends LitElement {
         pointer-events: auto;
         cursor: pointer;
       }
-      .mushroom-item ha-icon {
-        --mdc-icon-size: 33px;
-        width: 33px;
-        height: 33px;
-      }
     `;
   }
   
@@ -467,21 +462,21 @@ class BubbleRoom extends LitElement {
       console.log("bubble-room.js: config or hass not defined yet");
       return html`<div>Loading...</div>`;
     }
-    
+  
     const { entities, colors, name, icon } = this.config;
     const hass = this.hass;
     const presenceState = hass.states[entities.presence.entity]?.state || 'off';
     const bubbleBg = presenceState === 'on' ? colors.backgroundActive : colors.backgroundInactive;
     const bubbleIconColor = presenceState === 'on' ? colors.active : colors.inactive;
     const nameColor = bubbleIconColor;
-    
+  
     const subButtons = [
       entities["sub-button1"],
       entities["sub-button2"],
       entities["sub-button3"],
       entities["sub-button4"],
     ];
-    
+  
     let mushroomTemplates = [
       entities.entities1,
       entities.entities2,
@@ -491,58 +486,69 @@ class BubbleRoom extends LitElement {
     ];
     if (entities.climate) { mushroomTemplates.push(entities.climate); }
     if (entities.temperatura) { mushroomTemplates.push(entities.temperatura); }
-    
+  
     return html`
-      <div class="card">
+      <div class="card" style="height: ${layout.cardHeight};">
         <div class="grid-container">
-          <!-- Area "n": Nome -->
-          <div class="name-area" style="color: ${nameColor};">
+          <!-- Nome stanza -->
+          <div class="name-area" style="color: ${nameColor}; font-size: ${layout.nameFont};">
             ${name}
           </div>
-          <!-- Area "i": Icona principale e mushroom template -->
+  
+          <!-- Icona principale -->
           <div class="icon-area">
             <div class="bubble-icon-container"
                  style="background-color: ${bubbleBg};"
                  @pointerdown="${(e) => this._startHold(e, this.config)}"
                  @pointerup="${(e) => this._endHold(e, this.config, () => this._handleMainIconTap())}"
                  @pointerleave="${(e) => this._cancelHold(e)}">
-              <ha-icon class="bubble-icon" icon="${icon}" style="color: ${bubbleIconColor};"></ha-icon>
+              <ha-icon class="bubble-icon"
+                       icon="${icon}"
+                       style="color: ${bubbleIconColor}; --mdc-icon-size: ${layout.iconSize}; width: ${layout.iconSize}; height: ${layout.iconSize};">
+              </ha-icon>
             </div>
+  
+            <!-- Mushroom templates -->
             <div class="mushroom-container">
               ${mushroomTemplates.map((item, index) => {
                 if (!item) return html``;
+  
+                const style = layout.mushroomPositions[index] || this._defaultMushroomStyle(index);
+  
                 if (item.sensore_temperatura && item.sensore_umitidà) {
-                  const tempState = hass.states[item.sensore_temperatura]?.state || 'N/A';
-                  const humState = hass.states[item.sensore_umitidà]?.state || 'N/A';
-                  return html`
-                    <div class="mushroom-item"
-                         style="${item.style ? item.style : this._defaultMushroomStyle(index)}"
-                         @pointerdown="${(e) => this._startHold(e, item)}"
-                         @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
-                         @pointerleave="${(e) => this._cancelHold(e)}">
-                      <div class="mushroom-primary">🌡️${tempState}°C 💦${humState}%</div>
-                    </div>
-                  `;
-                } else {
-                  const state = hass.states[item.entity]?.state || 'off';
-                  const iconColor = state === 'on'
-                    ? (item.icon_color && item.icon_color.on ? item.icon_color.on : 'orange')
-                    : (item.icon_color && item.icon_color.off ? item.icon_color.off : '#80808055');
-                  const style = item.style ? item.style : this._defaultMushroomStyle(index);
+                  const temp = hass.states[item.sensore_temperatura]?.state || 'N/A';
+                  const hum = hass.states[item.sensore_umitidà]?.state || 'N/A';
                   return html`
                     <div class="mushroom-item"
                          style="${style}"
                          @pointerdown="${(e) => this._startHold(e, item)}"
                          @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
                          @pointerleave="${(e) => this._cancelHold(e)}">
-                      <ha-icon icon="${item.icon}" style="color: ${iconColor};"></ha-icon>
+                      <div class="mushroom-primary">🌡️${temp}°C 💦${hum}%</div>
+                    </div>
+                  `;
+                } else {
+                  const state = hass.states[item.entity]?.state || 'off';
+                  const iconColor = state === 'on'
+                    ? (item.icon_color?.on || 'orange')
+                    : (item.icon_color?.off || '#80808055');
+                  return html`
+                    <div class="mushroom-item"
+                         style="${style}"
+                         @pointerdown="${(e) => this._startHold(e, item)}"
+                         @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
+                         @pointerleave="${(e) => this._cancelHold(e)}">
+                      <ha-icon icon="${item.icon}"
+                               style="color: ${iconColor}; --mdc-icon-size: ${layout.mushroomSize}; width: ${layout.mushroomSize}; height: ${layout.mushroomSize};">
+                      </ha-icon>
                     </div>
                   `;
                 }
               })}
             </div>
           </div>
-          <!-- Area "b": Sub-button -->
+  
+          <!-- Sub-button -->
           <div class="bubble-sub-button-container">
             ${subButtons.map(btn => {
               if (!btn) return html``;
@@ -550,11 +556,13 @@ class BubbleRoom extends LitElement {
               const btnColor = state === 'on' ? colors.active : colors.inactive;
               return html`
                 <div class="bubble-sub-button"
-                     style="background-color: ${btnColor};"
+                     style="background-color: ${btnColor}; padding: ${layout.subButtonPadding};"
                      @pointerdown="${(e) => this._startHold(e, btn)}"
                      @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
                      @pointerleave="${(e) => this._cancelHold(e)}">
-                  <ha-icon icon="${btn.icon}"></ha-icon>
+                  <ha-icon icon="${btn.icon}"
+                           style="--mdc-icon-size: ${layout.mushroomSize}; width: ${layout.mushroomSize}; height: ${layout.mushroomSize};">
+                  </ha-icon>
                 </div>
               `;
             })}
@@ -563,6 +571,7 @@ class BubbleRoom extends LitElement {
       </div>
     `;
   }
+  
   
   set hass(hass) {
     console.log("Setting hass:", hass);
