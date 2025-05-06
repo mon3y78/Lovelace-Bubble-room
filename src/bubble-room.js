@@ -311,6 +311,9 @@ class BubbleRoom extends LitElement {
         pointer-events: auto;
         cursor: pointer;
       }
+      .mushroom-primary {
+        pointer-events: auto;
+      }
     `;
   }
   
@@ -485,7 +488,7 @@ class BubbleRoom extends LitElement {
       entities.entities5
     ];
     if (entities.climate) { mushroomTemplates.push(entities.climate); }
-    if (entities.temperatura) { mushroomTemplates.push(entities.temperatura); }
+    if (entities.temperature) { mushroomTemplates.push(entities.temperature); }
   
     return html`
       <div class="card" style="height: ${layout.cardHeight};">
@@ -520,11 +523,24 @@ class BubbleRoom extends LitElement {
                   const hum = hass.states[item.sensore_umitidà]?.state || 'N/A';
                   return html`
                     <div class="mushroom-item"
-                         style="${style}"
+                         style="${style}; font-size: ${layout.mushroomSize};"
                          @pointerdown="${(e) => this._startHold(e, item)}"
                          @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
                          @pointerleave="${(e) => this._cancelHold(e)}">
-                      <div class="mushroom-primary">🌡️${temp}°C 💦${hum}%</div>
+                      <div class="mushroom-primary"
+                           style="
+                             font-size: calc(${layout.mushroomSize} * 0.55);
+                             color: white;
+                             font-weight: bold;
+                             text-align: center;
+                             line-height: 1.2;
+                             text-shadow: 0 0 3px black;
+                             background-color: rgba(0,0,0,0.3);
+                             padding: 4px 6px;
+                             border-radius: 6px;
+                           ">
+                        🌡️ ${temp}°C<br/>💦 ${hum}%
+                      </div>
                     </div>
                   `;
                 } else {
@@ -571,6 +587,7 @@ class BubbleRoom extends LitElement {
       </div>
     `;
   }
+  
   
   
   set hass(hass) {
