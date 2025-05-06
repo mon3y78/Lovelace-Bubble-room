@@ -183,9 +183,9 @@ class BubbleRoom extends LitElement {
         }
       }
     }
-        this.config.layout_mode = config.layout_mode || '6x3';
-this.config = {
+    this.config = {
       entities,
+      layout_mode: config.layout_mode || '6x3',
       colors: {
         active: 'rgba(var(--color-green), 1)',
         inactive: 'rgba(var(--color-green), 0.3)',
@@ -197,11 +197,9 @@ this.config = {
       icon: config.icon || "mdi:sofa",
       tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
     };
-    if (!this.config.entity && this.config.entities && this.config.entities.presence) {
-      this.config.entity = this.config.entities.presence.entity;
-    }
-    console.log("bubble-room.js: Processed configuration:", this.config);
-  }
+    
+  };
+
   
   getConfig() {
     return JSON.parse(JSON.stringify(this.config));
