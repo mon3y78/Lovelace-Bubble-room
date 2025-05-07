@@ -17,7 +17,6 @@
     "estree-walker": "^2.0.2",
     "fdir": "^6.4.3",
     "fitty": "^2.4.2",
-    "fsevents": "^2.3.3",
     "function-bind": "^1.1.2",
     "has-flag": "^4.0.0",
     "hasown": "^2.0.2",
@@ -59,5 +58,8 @@
   "bugs": {
     "url": "https://github.com/mon3y78/Lovelace-Bubble-room/issues"
   },
-  "homepage": "https://github.com/mon3y78/Lovelace-Bubble-room#readme"
+  "homepage": "https://github.com/mon3y78/Lovelace-Bubble-room#readme",
+  "optionalDependencies": {
+    "fsevents": "^2.3.3"
+  }
 }
