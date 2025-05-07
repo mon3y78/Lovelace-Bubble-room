@@ -1,4 +1,4 @@
-name: Build Bubble Room Dev
+name: Build and Commit Bubble Room Dev
 
 on:
   workflow_dispatch:
@@ -8,17 +8,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository (branch dev)
+      - name: Checkout dev branch
         uses: actions/checkout@v4
         with:
           ref: dev
+          fetch-depth: 0  # necessario per poter switchare branch più avanti
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install dependencies (no fsevents error)
+      - name: Install dependencies
         run: npm install
         env:
           npm_config_ignore_optional: true
@@ -26,11 +27,16 @@ jobs:
       - name: Run build
         run: npm run build
 
-      - name: Rename output to dev version
-        run: mv dist/lovelace-bubble-room.js dist/bubble-room-dev.js
+      - name: Rename output
+        run: mv dist/lovelace-bubble-room.js bubble-room-dev.js
 
-      - name: Upload dev build
-        uses: actions/upload-artifact@v4
-        with:
-          name: bubble-room-dev
-          path: dist/bubble-room-dev.js
+      - name: Commit to dev-build branch
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin
+          git switch dev-build || git switch -c dev-build
+          cp bubble-room-dev.js ./bubble-room-dev.js
+          git add bubble-room-dev.js
+          git commit -m "Auto-commit dev build from workflow" || echo "Nothing to commit"
+          git push origin dev-build
