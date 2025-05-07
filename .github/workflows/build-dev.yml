@@ -8,16 +8,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (branch dev)
         uses: actions/checkout@v4
+        with:
+          ref: dev
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
+      - name: Install dependencies (no fsevents error)
+        run: npm install
+        env:
+          npm_config_ignore_optional: true
 
       - name: Run build
         run: npm run build
