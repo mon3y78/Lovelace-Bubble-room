@@ -29,6 +29,8 @@ jobs:
 
       - name: Rename output
         run: mv dist/lovelace-bubble-room.js bubble-room-dev.js
+      - name: Check if GH_PAT is available
+        run: echo "GH_PAT is ${{ secrets.GH_PAT }}"
 
       - name: Commit to dev branch
         run: |
