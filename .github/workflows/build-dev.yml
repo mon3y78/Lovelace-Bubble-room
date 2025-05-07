@@ -25,9 +25,10 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install --no-optional
+        run: npm install
         env:
-          npm_config_platform: ''
+          npm_config_ignore_optional: true
+
 
 
 
