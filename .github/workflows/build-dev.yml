@@ -8,10 +8,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code (dev branch)
+      - name: Checkout dev branch
         uses: actions/checkout@v4
         with:
           ref: dev
+          fetch-depth: 0  # necessario per poter switchare branch più avanti
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -29,12 +30,12 @@ jobs:
       - name: Rename output
         run: mv dist/lovelace-bubble-room.js bubble-room-dev.js
 
-      - name: Commit build to dev-build branch
+      - name: Commit to dev-build branch
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git fetch origin
-          git switch --force-create dev-build || git switch dev-build
+          git switch dev-build || git switch -c dev-build
           cp bubble-room-dev.js ./bubble-room-dev.js
           git add bubble-room-dev.js
           git commit -m "Auto-commit dev build from workflow" || echo "Nothing to commit"
