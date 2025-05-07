@@ -32,10 +32,11 @@ jobs:
 
       - name: Commit to dev-build branch
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
           git fetch origin
           git switch dev-build || git switch -c dev-build
+          git pull origin dev-build || true
           git add bubble-room-dev.js
           git commit -m "Auto-commit dev build from workflow" || echo "Nothing to commit"
-          git push origin dev-build
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/mon3y78/Lovelace-Bubble-room.git dev-build
