@@ -2,6 +2,11 @@ name: Build Bubble Room Dev
 
 on:
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch da cui fare build'
+        default: 'dev'
+
 
 jobs:
   build-dev:
@@ -10,6 +15,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
