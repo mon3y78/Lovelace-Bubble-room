@@ -1,4 +1,4 @@
-name: Build Bubble Room Dev
+name: Build Bubble Room Dev main
 
 on:
   workflow_dispatch:
