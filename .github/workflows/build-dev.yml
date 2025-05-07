@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout dev branch
+      - name: Checkout code from dev
         uses: actions/checkout@v4
         with:
           ref: dev
@@ -20,31 +20,17 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         env:
           npm_config_ignore_optional: true
 
-      - name: Run build
+      - name: Run Rollup build
         run: npm run build
 
-      - name: Rename output
-        run: mv dist/lovelace-bubble-room.js bubble-room-dev.js
-
-      - name: Check if GH_PAT is available
-        run: echo "GH_PAT is ${{ secrets.GH_PAT }}"
-      - name: Debug Git Remote
-        run: |
-          git remote -v
-          echo "Token utilizzato: ${{ secrets.GH_PAT }}"
-      - name: Commit to dev branch
+      - name: Commit final JS build to dev branch
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git fetch origin
-          git switch dev
-          git pull origin dev || true
-          git add bubble-room-dev.js
-          git commit -m "Auto-commit dev build from workflow" || echo "Nothing to commit"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/mon3y78/Lovelace-Bubble-room.git
-          git remote -v
-          git push origin dev
+          git add lovelace-bubble-room.js
+          git commit -m "Auto-build from GitHub Action" || echo "Nothing to commit"
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/mon3y78/Lovelace-Bubble-room.git dev
