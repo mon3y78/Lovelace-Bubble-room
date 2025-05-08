@@ -57,11 +57,21 @@ class BubbleRoomEditor extends LitElement {
         }
       },
       colors: {
-        active: 'var(--primary-color)',
-        inactive: 'var(--secondary-text-color)',
-        backgroundActive: 'color-mix(in srgb, var(--primary-color) 85%, transparent)',
-        backgroundInactive: 'var(--card-background-color)'
-      },
+        room: {
+          text_active: '',
+          text_inactive: '',
+          background_active: '',
+          background_inactive: '',
+          icon_on: '',
+          icon_off: ''
+        },
+        subbutton: {
+          background_on: '',
+          background_off: '',
+          icon_on: '',
+          icon_off: ''
+        }
+      }
       name: 'Salotto',
       icon: 'mdi:sofa',
       tap_action: { action: 'navigate', navigation_path: '/lovelace/sala' },
@@ -108,10 +118,20 @@ class BubbleRoomEditor extends LitElement {
       config.colors = {};
     }
     
-    config.colors.active = config.colors.active || 'var(--primary-color)';
-    config.colors.inactive = config.colors.inactive || 'color-mix(in srgb, var(--primary-color) 40%, transparent)';
-    config.colors.backgroundActive = config.colors.backgroundActive || 'color-mix(in srgb, var(--primary-color) 20%, transparent)';
-    config.colors.backgroundInactive = config.colors.backgroundInactive || 'color-mix(in srgb, var(--primary-color) 10%, transparent)';
+    config.colors.room = config.colors.room || {};
+    config.colors.subbutton = config.colors.subbutton || {};
+    
+    // ROOM colors
+    config.colors.room.color_active = config.colors.room.color_active || 'rgba(var(--color-green), 1)';
+    config.colors.room.color_inactive = config.colors.room.color_inactive || 'rgba(var(--color-green), 0.3)';
+    config.colors.room.icon_on = config.colors.room.icon_on || 'orange';
+    config.colors.room.icon_off = config.colors.room.icon_off || '#80808055';
+    
+    // SUBBUTTON colors
+    config.colors.subbutton.color_on = config.colors.subbutton.color_on || 'rgba(var(--color-blue), 1)';
+    config.colors.subbutton.color_off = config.colors.subbutton.color_off || 'rgba(var(--color-blue), 0.3)';
+    config.colors.subbutton.icon_on = config.colors.subbutton.icon_on || 'yellow';
+    config.colors.subbutton.icon_off = config.colors.subbutton.icon_off || '#666';
     if (!config.entities.temperature) {
       config.entities.temperature = {};
     }
