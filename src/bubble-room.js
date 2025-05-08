@@ -592,8 +592,13 @@ class BubbleRoom extends LitElement {
                      @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
                      @pointerleave="${(e) => this._cancelHold(e)}">
                   <ha-icon icon="${btn.icon}"
-                          style="--mdc-icon-size: ${layout.mushroomSize}; width: ${layout.mushroomSize}; height: ${layout.mushroomSize};">
+                          style="
+                            --mdc-icon-size: ${layout.subButtonIconSize};
+                            width: ${layout.subButtonIconSize};
+                            height: ${layout.subButtonIconSize};
+                          ">
                   </ha-icon>
+
                 </div>
               `;
             })}
@@ -668,6 +673,7 @@ class BubbleRoom extends LitElement {
         gridRows: '25% 25% 25% 25%',
         subButtonPadding: '10px',
         subButtonHeight: '48px',
+        subButtonIconSize: '26px',
       },
       '12x4': {
         cardHeight: '250px',
@@ -694,6 +700,7 @@ class BubbleRoom extends LitElement {
         gridRows: '25% 25% 25% 25%',
         subButtonPadding: '14px',
         subButtonHeight: '60px',
+        subButtonIconSize: '55px',
       }
     };
     return layoutMap[mode] || layoutMap['6x3'];
