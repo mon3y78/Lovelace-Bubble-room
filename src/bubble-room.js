@@ -506,7 +506,11 @@ class BubbleRoom extends LitElement {
           <!-- Icona principale -->
           <div class="icon-area">
             <div class="bubble-icon-container"
-                 style="background-color: ${bubbleBg};"
+                style="
+                  background-color: ${bubbleBg};
+                  ${this._getIconShapeStyle(this.config.layout_mode)}
+                "
+
                  @pointerdown="${(e) => this._startHold(e, this.config)}"
                  @pointerup="${(e) => this._endHold(e, this.config, () => this._handleMainIconTap())}"
                  @pointerleave="${(e) => this._cancelHold(e)}">
@@ -662,6 +666,28 @@ class BubbleRoom extends LitElement {
     };
     return layoutMap[mode] || layoutMap['6x3'];
   }
+  _getIconShapeStyle(mode) {
+    if (mode === '12x4') {
+      return `
+        width: 260px;
+        height: 180px;
+        border-top-left-radius: 80%;
+        border-top-right-radius: 30%;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 80%;
+      `;
+    } else {
+      return `
+        width: 240px;
+        height: 180px;
+        border-top-left-radius: 80%;
+        border-top-right-radius: 20%;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 40%;
+      `;
+    }
+  }
+  
 }
 
 customElements.define('bubble-room', BubbleRoom);
