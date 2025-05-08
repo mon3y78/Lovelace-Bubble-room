@@ -1,3 +1,4 @@
+console.log("Build test", new Date());
 import { LitElement, html, css } from 'https://unpkg.com/lit@2.6.1/index.js?module';
 
 class BubbleRoom extends LitElement {
