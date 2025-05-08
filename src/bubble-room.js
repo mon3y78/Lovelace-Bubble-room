@@ -242,7 +242,7 @@ class BubbleRoom extends LitElement {
         display: flex;
         align-items: center;
         padding-left: 5px;
-        margin-top: -65px;
+        margin-top: 5px;
         margin-left: 0;
         font-size: 30px;
         font-weight: bold;
@@ -258,9 +258,7 @@ class BubbleRoom extends LitElement {
       .bubble-icon-container {
         position: absolute;
         cursor: pointer;
-        border-radius: 100% !important;
-        width: 170px !important;
-        height: 170px !important;
+        border-radius: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -283,16 +281,21 @@ class BubbleRoom extends LitElement {
         align-items: center;
         justify-self: stretch;
         align-self: stretch;
+        width: 100%;
       }
       .bubble-sub-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width: 100%;
-        padding: 10px;
+        height: var(--sub-button-height, 48px);
         border-radius: 10px;
-        text-align: center;
-        min-height: 38px;
         margin: 5px 0 0 0;
         cursor: pointer;
+        background-color: var(--sub-button-color);
       }
+
+
       .mushroom-container {
         position: absolute;
         bottom: 0;
@@ -498,7 +501,12 @@ class BubbleRoom extends LitElement {
 
     return html`
       <div class="card" style="height: ${layout.cardHeight};">
-        <div class="grid-container">
+        <div class="grid-container"
+            style="
+              grid-template-areas: ${layout.gridTemplate};
+              grid-template-columns: ${layout.gridColumns};
+              grid-template-rows: ${layout.gridRows};
+            ">
           <!-- Nome stanza -->
           <div class="name-area" style="color: ${nameColor}; font-size: ${layout.nameFont};">
             ${name}
@@ -574,12 +582,17 @@ class BubbleRoom extends LitElement {
               const btnColor = state === 'on' ? colors.active : colors.inactive;
               return html`
                 <div class="bubble-sub-button"
-                     style="background-color: ${btnColor}; padding: ${layout.subButtonPadding};"
+                    style="
+                      --sub-button-color: ${btnColor};
+                      --sub-button-height: ${layout.subButtonHeight};
+                    "
+
+
                      @pointerdown="${(e) => this._startHold(e, btn)}"
                      @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
                      @pointerleave="${(e) => this._cancelHold(e)}">
                   <ha-icon icon="${btn.icon}"
-                           style="--mdc-icon-size: ${layout.mushroomSize}; width: ${layout.mushroomSize}; height: ${layout.mushroomSize};">
+                          style="--mdc-icon-size: ${layout.mushroomSize}; width: ${layout.mushroomSize}; height: ${layout.mushroomSize};">
                   </ha-icon>
                 </div>
               `;
@@ -645,7 +658,16 @@ class BubbleRoom extends LitElement {
           'bottom: -2px; left: -2px;',
           'top: -140px; left: 5px;',
           'top: -95px; right: 5px;',
-        ]
+        ],
+        gridTemplate: `
+          "n n n b"
+          "i i . b"
+          "i i . b"
+          "i i . b"`,
+        gridColumns: '35% 35% 10% 20%',
+        gridRows: '25% 25% 25% 25%',
+        subButtonPadding: '10px',
+        subButtonHeight: '48px',
       },
       '12x4': {
         cardHeight: '250px',
@@ -662,29 +684,37 @@ class BubbleRoom extends LitElement {
           'bottom: 0px; left: 0px;',
           'top: -180px; left: 10px;',
           'top: -135px; right: 10px;',
-        ]
+        ],
+        gridTemplate: `
+          "n n n b"
+          "i i . b"
+          "i i . b"
+          "i i . b"`,
+        gridColumns: '30% 30% 10% 30%',
+        gridRows: '25% 25% 25% 25%',
+        subButtonPadding: '14px',
+        subButtonHeight: '60px',
       }
     };
     return layoutMap[mode] || layoutMap['6x3'];
   }
+  
   _getIconShapeStyle(mode) {
     if (mode === '12x4') {
       return `
-        width: 260px;
-        height: 180px;
-        border-top-left-radius: 80%;
-        border-top-right-radius: 30%;
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 80%;
+        width: 240px;
+        height: 190px;
+        border-radius: 80% 80% 50% 0% / 80% 80% 50% 0%;
+        top: 0px;
+        left: 0px;
       `;
     } else {
       return `
-        width: 240px;
-        height: 180px;
-        border-top-left-radius: 80%;
-        border-top-right-radius: 20%;
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 40%;
+        width: 140px;
+        height: 140px;
+        border-radius: 80% 80% 50% 0% / 80% 80% 50% 0%;
+        top: 0px;
+        left: 0px;
       `;
     }
   }
