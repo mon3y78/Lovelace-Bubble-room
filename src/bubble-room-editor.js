@@ -174,12 +174,16 @@ class BubbleRoomEditor extends LitElement {
     configCopy.entities = filteredEntities;
   
     if (configCopy.colors) {
-      Object.keys(configCopy.colors).forEach(k => {
-        if (configCopy.colors[k].trim() === '') {
-          delete configCopy.colors[k];
-        }
+      ['room', 'subbutton'].forEach(section => {
+        if (!configCopy.colors[section]) return;
+        Object.keys(configCopy.colors[section]).forEach(k => {
+          if (typeof configCopy.colors[section][k] === 'string' && configCopy.colors[section][k].trim() === '') {
+            delete configCopy.colors[section][k];
+          }
+        });
       });
     }
+    
   
     console.log("Editor - Config finale restituita:", configCopy);
     return configCopy;
@@ -776,15 +780,6 @@ class BubbleRoomEditor extends LitElement {
     };
   }
 
-  _updateColor(colorKey) {
-    return (ev) => {
-      const newValue = ev.target.value;
-      const colors = { ...((this._config.colors) || {}), [colorKey]: newValue };
-      this._config = { ...this._config, colors };
-      this.requestUpdate();
-      this._fireConfigChanged();
-    };
-  }
 
   _updateTemperature(field) {
     return (e) => {

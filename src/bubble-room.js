@@ -62,11 +62,20 @@ class BubbleRoom extends LitElement {
 
       },
       colors: {
-        active: 'rgba(var(--color-green), 1)',
-        inactive: 'rgba(var(--color-green), 0.3)',
-        backgroundActive: 'rgba(var(--color-green), 0.4)',
-        backgroundInactive: 'rgba(var(--color-green), 0.1)',
+        room: {
+          color_active: 'rgba(var(--color-green), 1)',
+          color_inactive: 'rgba(var(--color-green), 0.3)',
+          icon_on: 'orange',
+          icon_off: '#80808055'
+        },
+        subbutton: {
+          color_on: 'rgba(var(--color-blue), 1)',
+          color_off: 'rgba(var(--color-blue), 0.3)',
+          icon_on: 'yellow',
+          icon_off: '#666'
+        }
       },
+      
       name: 'Salotto',
       icon: 'mdi:sofa',
       tap_action: { action: 'navigate', navigation_path: '/lovelace/sala' }
@@ -183,12 +192,22 @@ class BubbleRoom extends LitElement {
       entities,
       layout_mode: config.layout_mode || '6x3',
       colors: {
-        active: 'rgba(var(--color-green), 1)',
-        inactive: 'rgba(var(--color-green), 0.3)',
-        backgroundActive: 'rgba(var(--color-green), 0.4)',
-        backgroundInactive: 'rgba(var(--color-green), 0.1)',
-        ...config.colors
+        room: {
+          color_active: 'rgba(var(--color-green), 1)',
+          color_inactive: 'rgba(var(--color-green), 0.3)',
+          icon_on: 'orange',
+          icon_off: '#80808055',
+          ...(config.colors?.room || {})
+        },
+        subbutton: {
+          color_on: 'rgba(var(--color-blue), 1)',
+          color_off: 'rgba(var(--color-blue), 0.3)',
+          icon_on: 'yellow',
+          icon_off: '#666',
+          ...(config.colors?.subbutton || {})
+        }
       },
+      
       name: config.name || "Salotto",
       icon: config.icon || "mdi:sofa",
       tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
