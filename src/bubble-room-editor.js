@@ -71,7 +71,7 @@ class BubbleRoomEditor extends LitElement {
           icon_on: '',
           icon_off: ''
         }
-      }
+      },
       name: 'Salotto',
       icon: 'mdi:sofa',
       tap_action: { action: 'navigate', navigation_path: '/lovelace/sala' },
