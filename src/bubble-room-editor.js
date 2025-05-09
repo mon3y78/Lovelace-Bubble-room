@@ -389,74 +389,19 @@ class BubbleRoomEditor extends LitElement {
         </div>
         <div class="section-content">
           <h4>Room</h4>
-          <div class="input-group">
-            <label>Color Active:</label>
-            <input
-              type="text"
-              .value="${this._config.colors?.room?.color_active || ''}"
-              @input="${this._updateNestedColor('room', 'color_active')}"
-            />
-          </div>
-          <div class="input-group">
-            <label>Color Inactive:</label>
-            <input
-              type="text"
-              .value="${this._config.colors?.room?.color_inactive || ''}"
-              @input="${this._updateNestedColor('room', 'color_inactive')}"
-            />
-          </div>
-          <div class="input-group">
-            <label>Icon On:</label>
-            <input
-              type="text"
-              .value="${this._config.colors?.room?.icon_on || ''}"
-              @input="${this._updateNestedColor('room', 'icon_on')}"
-            />
-          </div>
-          <div class="input-group">
-            <label>Icon Off:</label>
-            <input
-              type="text"
-              .value="${this._config.colors?.room?.icon_off || ''}"
-              @input="${this._updateNestedColor('room', 'icon_off')}"
-            />
-          </div>
-      
+          ${this._renderColorField('room', 'color_active', 'Color Active')}
+          ${this._renderColorField('room', 'color_inactive', 'Color Inactive')}
+          ${this._renderColorField('room', 'icon_on', 'Icon On')}
+          ${this._renderColorField('room', 'icon_off', 'Icon Off')}
+
           <h4>Subbutton</h4>
-          <div class="input-group">
-            <label>Color On:</label>
-            <input
-              type="text"
-              .value="${this._config.colors?.subbutton?.color_on || ''}"
-              @input="${this._updateNestedColor('subbutton', 'color_on')}"
-            />
-          </div>
-          <div class="input-group">
-            <label>Color Off:</label>
-            <input
-              type="text"
-              .value="${this._config.colors?.subbutton?.color_off || ''}"
-              @input="${this._updateNestedColor('subbutton', 'color_off')}"
-            />
-          </div>
-          <div class="input-group">
-            <label>Icon On:</label>
-            <input
-              type="text"
-              .value="${this._config.colors?.subbutton?.icon_on || ''}"
-              @input="${this._updateNestedColor('subbutton', 'icon_on')}"
-            />
-          </div>
-          <div class="input-group">
-            <label>Icon Off:</label>
-            <input
-              type="text"
-              .value="${this._config.colors?.subbutton?.icon_off || ''}"
-              @input="${this._updateNestedColor('subbutton', 'icon_off')}"
-            />
-          </div>
+          ${this._renderColorField('subbutton', 'color_on', 'Color On')}
+          ${this._renderColorField('subbutton', 'color_off', 'Color Off')}
+          ${this._renderColorField('subbutton', 'icon_on', 'Icon On')}
+          ${this._renderColorField('subbutton', 'icon_off', 'Icon Off')}
         </div>
       </ha-expansion-panel>
+
 
       <datalist id="entity-list">
         ${this.hass
@@ -655,6 +600,40 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
   
+  _renderColorField(section, key, label) {
+    const val = this._config.colors?.[section]?.[key] || '';
+    return html`
+      <div class="input-group">
+        <label>${label}:</label>
+        <input
+          type="text"
+          .value="${val}"
+          @input="${this._updateNestedColor(section, key)}"
+        />
+        <input
+          type="color"
+          .value="${this._toHex(val)}"
+          @input="${(e) => this._updateNestedColorDirect(section, key, e.target.value)}"
+        />
+      </div>
+    `;
+  }
+  
+  _toHex(color) {
+    const ctx = document.createElement("canvas").getContext("2d");
+    ctx.fillStyle = color || '#000000';
+    return ctx.fillStyle;
+  }
+  
+  _updateNestedColorDirect(section, key, value) {
+    const colors = { ...this._config.colors };
+    colors[section] = { ...colors[section], [key]: value };
+    this._config = { ...this._config, colors };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
+  
+
   _renderSubButtonAction(key) {
     const tapAction = this._config.entities[key]?.tap_action || { action: 'toggle', navigation_path: '' };
     const holdAction = this._config.entities[key]?.hold_action || { action: 'more-info', navigation_path: '' };
