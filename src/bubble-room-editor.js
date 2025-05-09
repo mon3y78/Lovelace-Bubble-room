@@ -384,36 +384,71 @@ class BubbleRoomEditor extends LitElement {
           Colors
         </div>
         <div class="section-content">
+          <h4>Room</h4>
           <div class="input-group">
-            <label>Active:</label>
+            <label>Color Active:</label>
             <input
               type="text"
-              .value="${(this._config.colors && this._config.colors.active) || ''}"
-              @input="${this._updateColor('active')}"
+              .value="${this._config.colors?.room?.color_active || ''}"
+              @input="${this._updateNestedColor('room', 'color_active')}"
             />
           </div>
           <div class="input-group">
-            <label>Inactive:</label>
+            <label>Color Inactive:</label>
             <input
               type="text"
-              .value="${(this._config.colors && this._config.colors.inactive) || ''}"
-              @input="${this._updateColor('inactive')}"
+              .value="${this._config.colors?.room?.color_inactive || ''}"
+              @input="${this._updateNestedColor('room', 'color_inactive')}"
             />
           </div>
           <div class="input-group">
-            <label>Background Active:</label>
+            <label>Icon On:</label>
             <input
               type="text"
-              .value="${(this._config.colors && this._config.colors.backgroundActive) || ''}"
-              @input="${this._updateColor('backgroundActive')}"
+              .value="${this._config.colors?.room?.icon_on || ''}"
+              @input="${this._updateNestedColor('room', 'icon_on')}"
             />
           </div>
           <div class="input-group">
-            <label>Background Inactive:</label>
+            <label>Icon Off:</label>
             <input
               type="text"
-              .value="${(this._config.colors && this._config.colors.backgroundInactive) || ''}"
-              @input="${this._updateColor('backgroundInactive')}"
+              .value="${this._config.colors?.room?.icon_off || ''}"
+              @input="${this._updateNestedColor('room', 'icon_off')}"
+            />
+          </div>
+      
+          <h4>Subbutton</h4>
+          <div class="input-group">
+            <label>Color On:</label>
+            <input
+              type="text"
+              .value="${this._config.colors?.subbutton?.color_on || ''}"
+              @input="${this._updateNestedColor('subbutton', 'color_on')}"
+            />
+          </div>
+          <div class="input-group">
+            <label>Color Off:</label>
+            <input
+              type="text"
+              .value="${this._config.colors?.subbutton?.color_off || ''}"
+              @input="${this._updateNestedColor('subbutton', 'color_off')}"
+            />
+          </div>
+          <div class="input-group">
+            <label>Icon On:</label>
+            <input
+              type="text"
+              .value="${this._config.colors?.subbutton?.icon_on || ''}"
+              @input="${this._updateNestedColor('subbutton', 'icon_on')}"
+            />
+          </div>
+          <div class="input-group">
+            <label>Icon Off:</label>
+            <input
+              type="text"
+              .value="${this._config.colors?.subbutton?.icon_off || ''}"
+              @input="${this._updateNestedColor('subbutton', 'icon_off')}"
             />
           </div>
         </div>
@@ -828,6 +863,16 @@ class BubbleRoomEditor extends LitElement {
     this._config = { ...this._config, entities };
     this.requestUpdate();
     this._fireConfigChanged();
+  }
+  _updateNestedColor(section, key) {
+    return (ev) => {
+      const value = ev.target.value;
+      const colors = { ...this._config.colors };
+      colors[section] = { ...colors[section], [key]: value };
+      this._config = { ...this._config, colors };
+      this.requestUpdate();
+      this._fireConfigChanged();
+    };
   }
   
   _updateEntityHoldAction(entityKey, field) {
