@@ -466,10 +466,18 @@ class BubbleRoom extends LitElement {
     }
   
     const { entities, colors, name, icon } = this.config;
+    const roomColors = colors?.room || {};
+    const subColors = colors?.subbutton || {};
     const hass = this.hass;
     const presenceState = hass.states[entities.presence.entity]?.state || 'off';
-    const bubbleBg = presenceState === 'on' ? colors.backgroundActive : colors.backgroundInactive;
-    const bubbleIconColor = presenceState === 'on' ? colors.active : colors.inactive;
+    const bubbleBg = presenceState === 'on'
+      ? roomColors.color_active || 'rgba(var(--color-green), 1)'
+      : roomColors.color_inactive || 'rgba(var(--color-green), 0.3)';
+    
+    const bubbleIconColor = presenceState === 'on'
+      ? roomColors.color_active || 'rgba(var(--color-green), 1)'
+      : roomColors.color_inactive || 'rgba(var(--color-green), 0.3)';
+    
     const nameColor = bubbleIconColor;
   
     const subButtons = [
@@ -537,8 +545,8 @@ class BubbleRoom extends LitElement {
                 const style = layout.mushroomPositions[index] || this._defaultMushroomStyle(index);
                 const state = hass.states[item.entity]?.state || 'off';
                 const iconColor = state === 'on'
-                  ? (item.icon_color?.on || 'orange')
-                  : (item.icon_color?.off || '#80808055');
+                  ? (roomColors.icon_on || 'orange')
+                  : (roomColors.icon_off || '#80808055');
                 return html`
                   <div class="mushroom-item"
                       style="${style}"
@@ -579,7 +587,13 @@ class BubbleRoom extends LitElement {
             ${subButtons.map(btn => {
               if (!btn) return html``;
               const state = hass.states[btn.entity]?.state || 'off';
-              const btnColor = state === 'on' ? colors.active : colors.inactive;
+              const btnColor = state === 'on'
+                ? subColors.color_on || 'rgba(var(--color-blue), 1)'
+                : subColors.color_off || 'rgba(var(--color-blue), 0.3)';
+              
+              const iconColor = state === 'on'
+                ? subColors.icon_on || 'yellow'
+                : subColors.icon_off || '#666';
               return html`
                 <div class="bubble-sub-button"
                     style="
@@ -592,11 +606,7 @@ class BubbleRoom extends LitElement {
                      @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
                      @pointerleave="${(e) => this._cancelHold(e)}">
                   <ha-icon icon="${btn.icon}"
-                          style="
-                            --mdc-icon-size: ${layout.subButtonIconSize};
-                            width: ${layout.subButtonIconSize};
-                            height: ${layout.subButtonIconSize};
-                          ">
+                           style="color: ${iconColor}; --mdc-icon-size: ${layout.mushroomSize}; width: ${layout.mushroomSize}; height: ${layout.mushroomSize};">
                   </ha-icon>
 
                 </div>
