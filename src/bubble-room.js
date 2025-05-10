@@ -563,7 +563,7 @@ class BubbleRoom extends LitElement {
                  @pointerleave="${(e) => this._cancelHold(e)}">
               <ha-icon class="bubble-icon"
                        icon="${icon}"
-                       style="color: ${bubbleIconColor}; --mdc-icon-size: ${layout.iconSize}; width: ${layout.iconSize}; height: ${layout.iconSize};"
+                       style="color: ${bubbleIconColor}; --mdc-icon-size: ${layout.iconSize}; width: ${layout.iconSize}; height: ${layout.iconSize};">
               </ha-icon>
             </div>
   
