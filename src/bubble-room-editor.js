@@ -122,16 +122,21 @@ class BubbleRoomEditor extends LitElement {
     config.colors.subbutton = config.colors.subbutton || {};
     
     // ROOM colors
-    config.colors.room.color_active = config.colors.room.color_active || 'rgba(var(--color-green), 1)';
-    config.colors.room.color_inactive = config.colors.room.color_inactive || 'rgba(var(--color-green), 0.3)';
-    config.colors.room.icon_on = config.colors.room.icon_on || 'orange';
-    config.colors.room.icon_off = config.colors.room.icon_off || '#80808055';
-    
-    // SUBBUTTON colors
-    config.colors.subbutton.color_on = config.colors.subbutton.color_on || 'rgba(var(--color-blue), 1)';
-    config.colors.subbutton.color_off = config.colors.subbutton.color_off || 'rgba(var(--color-blue), 0.3)';
-    config.colors.subbutton.icon_on = config.colors.subbutton.icon_on || 'yellow';
-    config.colors.subbutton.icon_off = config.colors.subbutton.icon_off || '#666';
+// Nuovi campi per ROOM
+    config.colors.room.icon_active = config.colors.room.icon_active || 'rgba(255, 255, 255, 1)';
+    config.colors.room.icon_inactive = config.colors.room.icon_inactive || 'rgba(128, 128, 128, 0.3)';
+    config.colors.room.background_active = config.colors.room.background_active || 'rgba(0, 128, 0, 1)';
+    config.colors.room.background_inactive = config.colors.room.background_inactive || 'rgba(0, 128, 0, 0.3)';
+    config.colors.room.mushroom_active = config.colors.room.mushroom_active || 'rgba(255, 255, 255, 1)';
+    config.colors.room.mushroom_inactive = config.colors.room.mushroom_inactive || 'rgba(128, 128, 128, 0.3)';
+
+    // Nuovi campi per SUBBUTTON
+    config.colors.subbutton.background_on = config.colors.subbutton.background_on || 'rgba(0, 0, 255, 1)';
+    config.colors.subbutton.background_off = config.colors.subbutton.background_off || 'rgba(0, 0, 255, 0.3)';
+    config.colors.subbutton.icon_on = config.colors.subbutton.icon_on || 'rgba(255, 255, 0, 1)';
+    config.colors.subbutton.icon_off = config.colors.subbutton.icon_off || 'rgba(102, 102, 102, 1)';
+
+
     if (!config.entities.temperature) {
       config.entities.temperature = {};
     }
@@ -184,8 +189,6 @@ class BubbleRoomEditor extends LitElement {
       });
     }
     
-  
-    console.log("Editor - Config finale restituita:", configCopy);
     return configCopy;
   }
   
@@ -389,18 +392,23 @@ class BubbleRoomEditor extends LitElement {
         </div>
         <div class="section-content">
           <h4>Room</h4>
-          ${this._renderColorField('room', 'color_active', 'Color Active')}
-          ${this._renderColorField('room', 'color_inactive', 'Color Inactive')}
-          ${this._renderColorField('room', 'icon_on', 'Icon On')}
-          ${this._renderColorField('room', 'icon_off', 'Icon Off')}
+          ${this._renderColorField("room", "icon_active", "Icon Active")}
+          ${this._renderColorField("room", "icon_inactive", "Icon Inactive")}
+          ${this._renderColorField("room", "background_active", "Background Active")}
+          ${this._renderColorField("room", "background_inactive", "Background Inactive")}
+          ${this._renderColorField("room", "mushroom_active", "Mushroom Icon Active")}
+          ${this._renderColorField("room", "mushroom_inactive", "Mushroom Icon Inactive")}
 
           <h4>Subbutton</h4>
-          ${this._renderColorField('subbutton', 'color_on', 'Color On')}
-          ${this._renderColorField('subbutton', 'color_off', 'Color Off')}
-          ${this._renderColorField('subbutton', 'icon_on', 'Icon On')}
-          ${this._renderColorField('subbutton', 'icon_off', 'Icon Off')}
+          ${this._renderColorField("subbutton", "background_on", "Background On")}
+          ${this._renderColorField("subbutton", "background_off", "Background Off")}
+          ${this._renderColorField("subbutton", "icon_on", "Icon On")}
+          ${this._renderColorField("subbutton", "icon_off", "Icon Off")}
         </div>
+
       </ha-expansion-panel>
+
+
 
 
       <datalist id="entity-list">
@@ -600,24 +608,65 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
   
+  _parseRGBA(str) {
+    const fallback = [0, 128, 0, 1]; // default verde pieno
+  
+    if (!str || typeof str !== 'string') return fallback;
+  
+    // Se contiene var(), restituiamo il fallback
+    if (str.includes('var(')) return fallback;
+  
+    const match = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(str);
+    if (match) {
+      return [
+        parseInt(match[1]),
+        parseInt(match[2]),
+        parseInt(match[3]),
+        parseFloat(match[4] ?? "1")
+      ];
+    }
+  
+    if (str.startsWith('#') && str.length === 7) {
+      return [
+        parseInt(str.slice(1, 3), 16),
+        parseInt(str.slice(3, 5), 16),
+        parseInt(str.slice(5, 7), 16),
+        1
+      ];
+    }
+  
+    return fallback;
+  }
+  
+  
   _renderColorField(section, key, label) {
-    const val = this._config.colors?.[section]?.[key] || '';
+    const rgba = this._config.colors?.[section]?.[key] || 'rgba(0,0,0,1)';
+    const [r, g, b, a] = this._parseRGBA(rgba);
+    const hex = `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
+  
     return html`
       <div class="input-group">
         <label>${label}:</label>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <input type="color"
+                 .value="${hex}"
+                 @input="${e => this._updateColorField(section, key, e.target.value, a)}" />
+          <input type="range"
+                 min="0" max="1" step="0.01"
+                 .value="${a}"
+                 @input="${e => this._updateColorField(section, key, hex, e.target.value)}" />
+          <span>${Math.round(a * 100)}%</span>
+        </div>
         <input
           type="text"
-          .value="${val}"
-          @input="${this._updateNestedColor(section, key)}"
-        />
-        <input
-          type="color"
-          .value="${this._toHex(val)}"
-          @input="${(e) => this._updateNestedColorDirect(section, key, e.target.value)}"
+          .value="${rgba}"
+          @input="${e => this._updateNestedColorDirect(section, key, e.target.value)}"
         />
       </div>
     `;
   }
+  
+  
   
   _toHex(color) {
     const ctx = document.createElement("canvas").getContext("2d");
@@ -633,7 +682,20 @@ class BubbleRoomEditor extends LitElement {
     this._fireConfigChanged();
   }
   
-
+  _updateColorField(section, key, hex, alpha) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const rgba = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  
+    const colors = { ...this._config.colors };
+    colors[section] = { ...colors[section], [key]: rgba };
+  
+    this._config = { ...this._config, colors };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
+  
   _renderSubButtonAction(key) {
     const tapAction = this._config.entities[key]?.tap_action || { action: 'toggle', navigation_path: '' };
     const holdAction = this._config.entities[key]?.hold_action || { action: 'more-info', navigation_path: '' };

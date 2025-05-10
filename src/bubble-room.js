@@ -1,4 +1,3 @@
-console.log("Build test", new Date());
 import { LitElement, html, css } from 'https://unpkg.com/lit@2.6.1/index.js?module';
 
 class BubbleRoom extends LitElement {
@@ -99,7 +98,6 @@ class BubbleRoom extends LitElement {
   // Normalizzazione delle entità
   setConfig(config) {
     config = JSON.parse(JSON.stringify(config));
-    console.log("bubble-room.js: setConfig() called with:", config);
     if (!config || typeof config !== 'object' || Array.isArray(config)) {
       throw new Error("La configurazione deve essere un oggetto valido.");
     }
@@ -489,15 +487,26 @@ class BubbleRoom extends LitElement {
     const subColors = colors?.subbutton || {};
     const hass = this.hass;
     const presenceState = hass.states[entities.presence.entity]?.state || 'off';
+    const extractAlpha = (rgba) => {
+      const match = rgba?.match(/rgba\([^,]+,[^,]+,[^,]+,\s*([^)]+)\)/);
+      return match ? parseFloat(match[1]) : 1;
+    };
+    
+    const sensorOpacity = presenceState === 'on'
+      ? extractAlpha(roomColors.background_active || 'rgba(0,128,0,1)')
+      : extractAlpha(roomColors.background_inactive || 'rgba(0,128,0,0.3)');
+    
     const bubbleBg = presenceState === 'on'
-      ? roomColors.color_active || 'rgba(var(--color-green), 1)'
-      : roomColors.color_inactive || 'rgba(var(--color-green), 0.3)';
+      ? roomColors.background_active || 'rgba(0,128,0,0.5)'
+      : roomColors.background_inactive || 'rgba(0,128,0,0.3)';
+    const nameColor = bubbleBg;
+
     
     const bubbleIconColor = presenceState === 'on'
-      ? roomColors.color_active || 'rgba(var(--color-green), 1)'
-      : roomColors.color_inactive || 'rgba(var(--color-green), 0.3)';
+      ? roomColors.icon_on || 'orange'
+      : roomColors.icon_off || '#80808055';
     
-    const nameColor = bubbleIconColor;
+    
   
     const subButtons = [
       entities["sub-button1"],
@@ -564,8 +573,9 @@ class BubbleRoom extends LitElement {
                 const style = layout.mushroomPositions[index] || this._defaultMushroomStyle(index);
                 const state = hass.states[item.entity]?.state || 'off';
                 const iconColor = state === 'on'
-                  ? (roomColors.icon_on || 'orange')
-                  : (roomColors.icon_off || '#80808055');
+                  ? (roomColors.mushroom_active || 'orange')
+                  : (roomColors.mushroom_inactive || '#80808055');
+
                 return html`
                   <div class="mushroom-item"
                       style="${style}"
@@ -593,7 +603,9 @@ class BubbleRoom extends LitElement {
                         text-shadow: 0 0 3px black;
                         padding: 4px 6px;
                         border-radius: 6px;
+                        opacity: ${sensorOpacity};
                       ">
+
                     ${sensorStrings.join(' ')}
                   </div>
                 </div>
@@ -607,8 +619,9 @@ class BubbleRoom extends LitElement {
               if (!btn) return html``;
               const state = hass.states[btn.entity]?.state || 'off';
               const btnColor = state === 'on'
-                ? subColors.color_on || 'rgba(var(--color-blue), 1)'
-                : subColors.color_off || 'rgba(var(--color-blue), 0.3)';
+                ? subColors.background_on || 'rgba(0,0,255,1)'
+                : subColors.background_off || 'rgba(0,0,255,0.3)';
+
               
               const iconColor = state === 'on'
                 ? subColors.icon_on || 'yellow'
@@ -640,7 +653,6 @@ class BubbleRoom extends LitElement {
   
   
   set hass(hass) {
-    console.log("Setting hass:", hass);
     this._hass = hass;
     this.requestUpdate();
   }
