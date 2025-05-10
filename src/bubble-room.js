@@ -8,10 +8,10 @@ class BubbleRoom extends LitElement {
     };
   }
   
-  // Supporto all'editor visivo (assicurati che il file bubble-room-editor.js esista)
+  // Supporto all'editor visivo (assicurati che il file bubble-room-editor-dev.js esista)
   static async getConfigElement() {
-    await import('./bubble-room-editor.js');
-    return document.createElement('bubble-room-editor');
+    await import('./bubble-room-editor-dev.js');
+    return document.createElement('bubble-room-editor-dev');
   }
   
   // Configurazione stub di base (default)
@@ -286,9 +286,9 @@ class BubbleRoom extends LitElement {
         position: absolute;
         top: 15%;
         left: 25%;
-        width: 50% !important;
-        --mdc-icon-size: 90px !important;
-        opacity: 0.5 !important;
+        width: 50% 
+        --mdc-icon-size: 90px 
+        opacity: 0.5
       }
       .bubble-sub-button-container {
         grid-area: b;
@@ -505,6 +505,8 @@ class BubbleRoom extends LitElement {
     const bubbleIconColor = presenceState === 'on'
       ? roomColors.icon_on || 'orange'
       : roomColors.icon_off || '#80808055';
+    console.log('bubbleIconColor', bubbleIconColor);
+
     
     
   
@@ -561,7 +563,7 @@ class BubbleRoom extends LitElement {
                  @pointerleave="${(e) => this._cancelHold(e)}">
               <ha-icon class="bubble-icon"
                        icon="${icon}"
-                       style="color: ${bubbleIconColor}; --mdc-icon-size: ${layout.iconSize}; width: ${layout.iconSize}; height: ${layout.iconSize};">
+                       style="color: ${bubbleIconColor}; --mdc-icon-size: ${layout.iconSize}; width: ${layout.iconSize}; height: ${layout.iconSize};"
               </ha-icon>
             </div>
   

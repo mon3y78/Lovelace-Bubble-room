@@ -11,8 +11,8 @@ class BubbleRoomEditor extends LitElement {
 
   // Supporto all'editor visivo
   static async getConfigElement() {
-    await import('./bubble-room-editor.js');
-    return document.createElement('bubble-room-editor');
+    await import('./bubble-room-editor-dev.js');
+    return document.createElement('bubble-room-editor-dev');
   }
 
   static getStubConfig() {
@@ -82,19 +82,38 @@ class BubbleRoomEditor extends LitElement {
   constructor() {
     super();
     this._iconList = [
-      "mdi:lightbulb",
-      "mdi:fan",
-      "mdi:play-circle",
-      "mdi:robot-vacuum",
-      "mdi:information-outline",
       "mdi:sofa",
-      "mdi:account",
       "mdi:bed",
       "mdi:home",
-      "mdi:weather-sunny",
-      "mdi:weather-cloudy",
-      "mdi:weather-rainy"
-    ];
+      "mdi:table-furniture",
+      "mdi:television",
+      "mdi:lightbulb",
+      "mdi:fan",
+      "mdi:air-conditioner",
+      "mdi:robot-vacuum",
+      "mdi:led-strip-variant",
+      "mdi:lamp",
+      "mdi:window-closed",
+      "mdi:window-open",
+      "mdi:door",
+      "mdi:door-closed",
+      "mdi:speaker",
+      "mdi:volume-high",
+      "mdi:volume-off",
+      "mdi:thermostat",
+      "mdi:fire",
+      "mdi:water",
+      "mdi:shower",
+      "mdi:toilet",
+      "mdi:fridge",
+      "mdi:oven",
+      "mdi:coffee-maker",
+      "mdi:washing-machine",
+      "mdi:vacuum",
+      "mdi:garage",
+      "mdi:garage-open",
+      "mdi:cctv"
+    ];    
   }
 
   connectedCallback() {
@@ -306,6 +325,15 @@ class BubbleRoomEditor extends LitElement {
             />
           </div>
           <div class="input-group">
+            <label>Room Icon:</label>
+            <input
+              type="text"
+              .value="${this._config.icon || ''}"
+              list="icon-list"
+              @input="${this._updateIcon}"
+            />
+          </div>
+          <div class="input-group">
             <label>Layout:</label>
             <select
               .value="${this._config.layout_mode || '6x3'}"
@@ -466,16 +494,22 @@ class BubbleRoomEditor extends LitElement {
       const entityId = this._config.entities[entityKey].entity;
       value = this.hass.states[entityId]?.attributes?.icon || '';
     }
+  
     return html`
       <label>${labelText}:</label>
-      <input
-        type="text"
-        .value="${value}"
-        list="icon-list"
-        @input="${this._updateEntity(entityKey, field)}"
-      />
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <input
+          type="text"
+          .value="${value}"
+          list="icon-list"
+          style="flex-grow: 1;"
+          @input="${this._updateEntity(entityKey, field)}"
+        />
+        <ha-icon .icon="${value}" style="color: var(--primary-text-color);"></ha-icon>
+      </div>
     `;
   }
+  
 
   _renderRoomAction() {
     const tapAction = this._config.tap_action || { action: 'navigate', navigation_path: '' };
@@ -931,4 +965,4 @@ class BubbleRoomEditor extends LitElement {
   }
 }
 
-customElements.define('bubble-room-editor', BubbleRoomEditor);
+customElements.define('bubble-room-editor-dev', BubbleRoomEditor);
