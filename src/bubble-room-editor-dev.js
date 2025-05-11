@@ -210,11 +210,27 @@ class BubbleRoomEditor extends LitElement {
     
     return configCopy;
   }
+  _getAvailableIconsFromStates() {
+    if (!this.hass) return [];
+    const icons = new Set();
+    for (const stateObj of Object.values(this.hass.states)) {
+      const icon = stateObj.attributes?.icon;
+      if (icon) {
+        icons.add(icon);
+      }
+    }
+    return Array.from(icons).sort();
+  }
+  
   
 
   _defaultIconList() {
-    return this._iconList;
+    const systemIcons = this._iconList || [];
+    const dynamicIcons = this._getAvailableIconsFromStates();
+    const allIcons = [...new Set([...systemIcons, ...dynamicIcons])];
+    return allIcons.sort();
   }
+  
 
   static get styles() {
     return css`
@@ -317,21 +333,7 @@ class BubbleRoomEditor extends LitElement {
         </div>
         <div class="section-content">
           <div class="input-group">
-            <label>Room name:</label>
-            <input
-              type="text"
-              .value="${this._config.name || ''}"
-              @input="${this._updateName}"
-            />
-          </div>
-          <div class="input-group">
-            <label>Room Icon:</label>
-            <input
-              type="text"
-              .value="${this._config.icon || ''}"
-              list="icon-list"
-              @input="${this._updateIcon}"
-            />
+            ${this._renderMainIconInput()}
           </div>
           <div class="input-group">
             <label>Layout:</label>
@@ -446,9 +448,6 @@ class BubbleRoomEditor extends LitElement {
             )
           : ''}
       </datalist>
-      <datalist id="icon-list">
-        ${this._defaultIconList().map(icon => html`<option value="${icon}"></option>`)}
-      </datalist>
 
       <p class="note">
         For advanced configurations, modify the YAML directly.
@@ -477,38 +476,56 @@ class BubbleRoomEditor extends LitElement {
                    this._config.entities[entityKey][field]) || '';
     return html`
       <label>${labelText}:</label>
-      <input
-        type="text"
+      <ha-entity-picker
+        .hass="${this.hass}"
         .value="${value}"
-        list="entity-list"
-        @input="${this._updateEntity(entityKey, field)}"
-      />
+        @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}"
+        allow-custom-entity
+      ></ha-entity-picker>
     `;
   }
+  
+  
 
   _renderIconInput(labelText, entityKey, field = 'icon') {
-    let value = (this._config.entities &&
-                 this._config.entities[entityKey] &&
-                 this._config.entities[entityKey][field]) || '';
-    if (!value && this.hass && this._config.entities && this._config.entities[entityKey]?.entity) {
-      const entityId = this._config.entities[entityKey].entity;
-      value = this.hass.states[entityId]?.attributes?.icon || '';
-    }
+    const currentIcon = this._config.entities?.[entityKey]?.[field] ?? '';
   
     return html`
       <label>${labelText}:</label>
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <input
-          type="text"
-          .value="${value}"
-          list="icon-list"
-          style="flex-grow: 1;"
-          @input="${this._updateEntity(entityKey, field)}"
-        />
-        <ha-icon .icon="${value}" style="color: var(--primary-text-color);"></ha-icon>
-      </div>
+      <ha-icon-picker
+        .hass="${this.hass}"
+        .value="${currentIcon}"
+        @value-changed="${e => {
+          const value = e.detail.value;
+          let entityConf = this._config.entities[entityKey] || {};
+          entityConf = { ...entityConf, [field]: value };
+          const entities = { ...this._config.entities, [entityKey]: entityConf };
+          this._config = { ...this._config, entities };
+          this.requestUpdate();
+          this._fireConfigChanged();
+        }}">
+      </ha-icon-picker>
     `;
   }
+  
+  _renderMainIconInput() {
+    const currentIcon = this._config.icon ?? '';
+    return html`
+      <label>Room Icon:</label>
+      <ha-icon-picker
+        .hass="${this.hass}"
+        .value="${currentIcon}"
+        @value-changed="${e => {
+          this._config = { ...this._config, icon: e.detail.value };
+          this.requestUpdate();
+          this._fireConfigChanged();
+        }}">
+      </ha-icon-picker>
+    `;
+  }
+    
+  
+  
   
 
   _renderRoomAction() {
@@ -836,12 +853,7 @@ class BubbleRoomEditor extends LitElement {
     this.requestUpdate();
     this._fireConfigChanged();
   }
-  _updateIcon(ev) {
-    const newIcon = ev.target.value;
-    this._config = { ...this._config, icon: newIcon };
-    this.requestUpdate();
-    this._fireConfigChanged();
-  }
+
 
   _updateEntity(entityKey, field = 'entity') {
     return (ev) => {

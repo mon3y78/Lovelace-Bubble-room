@@ -64,8 +64,8 @@ class BubbleRoom extends LitElement {
         room: {
           color_active: 'rgba(var(--color-green), 1)',
           color_inactive: 'rgba(var(--color-green), 0.3)',
-          icon_on: 'orange',
-          icon_off: '#80808055'
+          icon_active: 'orange',
+          icon_inactive: '#80808055',
         },
         subbutton: {
           color_on: 'rgba(var(--color-blue), 1)',
@@ -503,9 +503,9 @@ class BubbleRoom extends LitElement {
 
     
     const bubbleIconColor = presenceState === 'on'
-      ? roomColors.icon_on || 'orange'
-      : roomColors.icon_off || '#80808055';
-    console.log('bubbleIconColor', bubbleIconColor);
+      ? roomColors.icon_active || 'orange'
+      : roomColors.icon_inactive || '#80808055';
+
 
     
     
