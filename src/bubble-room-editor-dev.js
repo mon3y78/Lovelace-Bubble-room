@@ -72,7 +72,7 @@ class BubbleRoomEditor extends LitElement {
           icon_off: ''
         }
       },
-      name: 'Salotto',
+      name: 'Salotto2',
       icon: 'mdi:sofa',
       tap_action: { action: 'navigate', navigation_path: '/lovelace/sala' },
       hold_action: { action: 'more-info', navigation_path: '' }
@@ -345,7 +345,7 @@ class BubbleRoomEditor extends LitElement {
               <option value="12x4">12x4</option>
             </select>
           </div>
-          ${this._renderRoomAction()}
+            ${this._renderRoomAction()}
           <div class="input-group">
             ${this._renderEntityInput("Presence (ID)", "presence")}
           </div>
