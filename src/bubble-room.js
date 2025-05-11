@@ -8,10 +8,10 @@ class BubbleRoom extends LitElement {
     };
   }
   
-  // Supporto all'editor visivo (assicurati che il file bubble-room-editor-dev.js esista)
+  // Supporto all'editor visivo (assicurati che il file bubble-room-editor.js esista)
   static async getConfigElement() {
-    await import('./bubble-room-editor-dev.js');
-    return document.createElement('bubble-room-editor-dev');
+    await import('./bubble-room-editor.js');
+    return document.createElement('bubble-room-editor');
     el.hass = this.hass;  // <-- fondamentale
     console.log("Editor created. HASS:", el.hass);
     return el;
@@ -887,7 +887,7 @@ class BubbleRoom extends LitElement {
       return `
         width: 140px;
         height: 140px;
-        border-radius: 70% 80% 50% 0% / 50% 55% 50% 0%;
+        border-radius: 50% 80% 50% 0% / 50% 55% 50% 0%;
         top: 0px;
         left: 0px;
       `;

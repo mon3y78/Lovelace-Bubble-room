@@ -13,8 +13,8 @@ class BubbleRoomEditor extends LitElement {
 
   // Supporto all'editor visivo
   static async getConfigElement() {
-    await import('./bubble-room-editor-dev.js');
-    return document.createElement('bubble-room-editor-dev');
+    await import('./bubble-room-editor.js');
+    return document.createElement('bubble-room-editor');
   }
 
   static getStubConfig() {
@@ -344,7 +344,7 @@ class BubbleRoomEditor extends LitElement {
     };
     return html`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room <span class="version">v3.2</span></h3>
+        <h3>Visual Editor Bubble Room <span class="version">v3.0</span></h3>
       </div>
 
 
@@ -1160,4 +1160,4 @@ class BubbleRoomEditor extends LitElement {
   
 }
 
-customElements.define('bubble-room-editor-dev', BubbleRoomEditor);
+customElements.define('bubble-room-editor', BubbleRoomEditor);
