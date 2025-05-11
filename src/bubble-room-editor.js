@@ -51,12 +51,6 @@ class BubbleRoomEditor extends LitElement {
         entities3: { entity: 'sensor.some_sensor3', icon: 'mdi:information-outline' },
         entities4: { entity: 'sensor.some_sensor4', icon: 'mdi:information-outline' },
         entities5: { entity: 'sensor.some_sensor5', icon: 'mdi:information-outline' },
-        temperature: {
-          temperature_sensor: 'sensor.vindstyrka_salotto_temperature',
-          humidity_sensor: 'sensor.vindstyrka_salotto_humidity',
-          unit:               'C',              
-          tap_action: { action: 'more-info' }
-        }
       },
       colors: {
         room: {
@@ -154,12 +148,6 @@ class BubbleRoomEditor extends LitElement {
     if (!config.entities) {
       config.entities = {}; 
     }
-    for (let i = 1; i <= 4; i++) {
-      const key = `sensor${i}`;
-      if (!config.entities[key] || typeof config.entities[key] !== 'object') {
-        config.entities[key] = { type: '', entity: '', unit: 'C' };
-      }
-    }
            
     if (!config.colors) {
       config.colors = {};
@@ -170,16 +158,16 @@ class BubbleRoomEditor extends LitElement {
     
     // ROOM colors
 // Nuovi campi per ROOM
-    config.colors.room.icon_active = config.colors.room.icon_active || 'rgba(255, 255, 255, 1)';
-    config.colors.room.icon_inactive = config.colors.room.icon_inactive || 'rgba(128, 128, 128, 0.3)';
+    config.colors.room.icon_active = config.colors.room.icon_active || 'rgba(255, 255, 0, 1)';
+    config.colors.room.icon_inactive = config.colors.room.icon_inactive || 'rgba(102, 102, 102, 1)';
     config.colors.room.background_active = config.colors.room.background_active || 'rgba(0, 128, 0, 1)';
     config.colors.room.background_inactive = config.colors.room.background_inactive || 'rgba(0, 128, 0, 0.3)';
-    config.colors.room.mushroom_active = config.colors.room.mushroom_active || 'rgba(255, 255, 255, 1)';
-    config.colors.room.mushroom_inactive = config.colors.room.mushroom_inactive || 'rgba(128, 128, 128, 0.3)';
+    config.colors.room.mushroom_active = config.colors.room.mushroom_active || 'rgba(255, 255, 0, 1)';
+    config.colors.room.mushroom_inactive = config.colors.room.mushroom_inactive || 'rgba(102, 102, 102, 1)';
 
     // Nuovi campi per SUBBUTTON
-    config.colors.subbutton.background_on = config.colors.subbutton.background_on || 'rgba(0, 0, 255, 1)';
-    config.colors.subbutton.background_off = config.colors.subbutton.background_off || 'rgba(0, 0, 255, 0.3)';
+    config.colors.subbutton.background_on = config.colors.subbutton.background_on || 'rgba(0, 128, 0, 1)';
+    config.colors.subbutton.background_off = config.colors.subbutton.background_off || 'rgba(0, 128, 0, 0.3)';
     config.colors.subbutton.icon_on = config.colors.subbutton.icon_on || 'rgba(255, 255, 0, 1)';
     config.colors.subbutton.icon_off = config.colors.subbutton.icon_off || 'rgba(102, 102, 102, 1)';
 
@@ -241,7 +229,6 @@ class BubbleRoomEditor extends LitElement {
         });
       });
     }
-    console.log("CONFIG DEBUG SENSORI:", configCopy.entities);
     return configCopy;
   }
   
@@ -357,7 +344,7 @@ class BubbleRoomEditor extends LitElement {
     };
     return html`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room <span class="version">v3.3</span></h3>
+        <h3>Visual Editor Bubble Room <span class="version">v3.2</span></h3>
       </div>
 
 
@@ -466,13 +453,12 @@ class BubbleRoomEditor extends LitElement {
           Sensor
         </div>
         <div class="section-content">
-        ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) =>
-          this._renderSensorPanel(key, `Sensor ${i + 1}`)
-        )}
-        
-        
+          ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) =>
+            this._renderSensorPanel(key, `Sensor ${i + 1}`)
+          )}
         </div>
       </ha-expansion-panel>
+
 
       <ha-expansion-panel id="colorsPanel">
         <div slot="header" @click="${() => this._togglePanel('colorsPanel')}">
@@ -677,22 +663,10 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
   
+
   _renderSensorPanel(key, label) {
     const sensor = this._config.entities?.[key] || {};
     const panelId = `${key}Panel`;
-    const types = [
-      { type: 'temperature', label: '🌡️ Temperatura' },
-      { type: 'humidity', label: '💦 Umidità' },
-      { type: 'co2', label: '🟢 CO₂' },
-      { type: 'illuminance', label: '☀️ Luminosità' },
-      { type: 'pm1', label: '🟤 PM1' },
-      { type: 'pm25', label: '⚫️ PM2.5' },
-      { type: 'pm10', label: '⚪️ PM10' },
-      { type: 'uv', label: '🌞 UV Index' },
-      { type: 'noise', label: '🔊 Rumore' },
-      { type: 'pressure', label: '📈 Pressione' },
-      { type: 'voc', label: '🧪 VOC' },
-    ];
   
     return html`
       <ha-expansion-panel id="${panelId}">
@@ -701,94 +675,81 @@ class BubbleRoomEditor extends LitElement {
         </div>
         <div class="section-content">
           <div class="input-group">
-            <label>Sensor Type:</label>
+            <label>Tipo Sensore:</label>
             <select
               .value="${sensor.type || ''}"
-              @change="${e => this._updateSensor(parseInt(key.replace('sensor', '')), 'type', e.target.value)}"
+              @change="${e => this._updateSensor(parseInt(key.replace('sensor', '')) - 1, 'type', e.target.value)}"
             >
-              <option value="">-- none --</option>
-              ${types.map(t => html`<option value="${t.type}">${t.label}</option>`)}
+              <option value="">-- nessuno --</option>
+              ${[
+                { type: 'temperature', label: '🌡️ Temperatura' },
+                { type: 'humidity', label: '💦 Umidità' },
+                { type: 'co2', label: '🟢 CO₂' },
+                { type: 'illuminance', label: '☀️ Luminosità' },
+                { type: 'pm1', label: '🟤 PM1' },
+                { type: 'pm25', label: '⚫️ PM2.5' },
+                { type: 'pm10', label: '⚪️ PM10' },
+                { type: 'uv', label: '🌞 UV Index' },
+                { type: 'noise', label: '🔊 Rumore' },
+                { type: 'pressure', label: '📈 Pressione' },
+                { type: 'voc', label: '🧪 VOC' },
+              ].map(t => html`<option value="${t.type}">${t.label}</option>`)}
             </select>
           </div>
+  
           <div class="input-group">
             ${this._renderEntityInput("Entity ID", key)}
           </div>
+  
           ${sensor.type && this._getUnitsForType(sensor.type).length > 0 ? html`
             <div class="input-group">
               <label>Unità:</label>
               <select
                 .value="${sensor.unit || this._getUnitsForType(sensor.type)[0]}"
-                @change="${e => this._updateSensor(parseInt(key.replace('sensor', '')), 'unit', e.target.value)}"
+                @change="${e => this._updateSensor(parseInt(key.replace('sensor', '')) - 1, 'unit', e.target.value)}"
               >
                 ${this._getUnitsForType(sensor.type).map(u => html`<option value="${u}">${u}</option>`)}
               </select>
             </div>
           ` : ''}
-          
         </div>
       </ha-expansion-panel>
     `;
   }
-  
-  _renderSensorConfig(index) {
+  _updateSensor(index, field, value) {
     const key = `sensor${index + 1}`;
-    const sensor = this._config.entities?.[key] || { type: '', entity: '', unit: 'C' };
-    const types = [
-      { type: 'temperature', label: '🌡️ Temperatura' },
-      { type: 'humidity', label: '💦 Umidità' },
-      { type: 'co2', label: '🟢 CO₂' },
-      { type: 'illuminance', label: '☀️ Luminosità' },
-      { type: 'pm1', label: '🟤 PM1' },
-      { type: 'pm25', label: '⚫️ PM2.5' },
-      { type: 'pm10', label: '⚪️ PM10' },
-      { type: 'uv', label: '🌞 UV Index' },
-      { type: 'noise', label: '🔊 Rumore' },
-      { type: 'pressure', label: '📈 Pressione' },
-      { type: 'voc', label: '🧪 VOC' },
-    ];
-    console.log(`Rendering sensor${index + 1}`, this._config.entities?.[`sensor${index + 1}`]);
-
-    return html`
-      <div class="input-group">
-        <label>Sensor ${index + 1} Type:</label>
-        <select
-          @change="${e => {
-            const index = parseInt(key.replace('sensor', ''));
-            this._updateSensor(index, 'type', e.target.value);
-            this.requestUpdate();  // forza il re-render immediato
-          }}"
-
-        >
-          <option value="">-- none --</option>
-          ${types.map(t => html`<option value="${t.type}">${t.label}</option>`)}
-        </select>
-      </div>
-      <div class="input-group">
-        <label>Entity ID:</label>
-        <ha-entity-picker
-          .hass="${this.hass}"
-          .value="${sensor.entity || ''}"
-          allow-custom-entity
-          @value-changed="${e => this._updateSensor(index, 'entity', e.detail.value)}"
-        ></ha-entity-picker>
-      </div>
+    const current = this._config.entities?.[key] || {};
+    const updated = { ...current, [field]: value };
   
-      ${sensor.type === 'temperature' ? html`
-        <div class="input-group">
-          <label>Unità:</label>
-          <select
-            .value="${sensor.unit || 'C'}"
-            @change="${e => this._updateSensor(index, 'unit', e.target.value)}"
-          >
-            <option value="C">°C</option>
-            <option value="F">°F</option>
-          </select>
-        </div>
-      ` : ''}
+    // Imposta l'unità predefinita quando cambia tipo
+    if (field === 'type') {
+      updated.unit = this._getUnitsForType(value)[0] || '';
+    }
   
-      <hr/>
-    `;
+    const entities = { ...this._config.entities, [key]: updated };
+    this._config = { ...this._config, entities };
+  
+    this.requestUpdate();
+    this._fireConfigChanged();
   }
+
+  _getUnitsForType(type) {
+      switch (type) {
+        case 'temperature': return ['C', 'F'];
+        case 'humidity': return ['%'];
+        case 'pressure': return ['hPa'];
+        case 'co2': return ['ppm'];
+        case 'illuminance': return ['lx'];
+        case 'pm1':
+        case 'pm25':
+        case 'pm10': return ['µg/m³'];
+        case 'uv': return ['UV'];
+        case 'noise': return ['dB'];
+        case 'voc': return ['ppb'];
+        default: return [];
+      }
+  }
+
   
   
   _parseRGBA(str) {
@@ -1071,19 +1032,6 @@ class BubbleRoomEditor extends LitElement {
   
 
 
-  _updateTemperature(field) {
-    return (e) => {
-      const value = e.target.value;
-      const tempConfig = { ...this._config.entities?.temperature, [field]: value };
-      if (tempConfig.temperature_sensor && tempConfig.humidity_sensor) {
-        tempConfig.primary = `🌡️{{ states("${tempConfig.temperature_sensor}") }}°C 💦{{ states("${tempConfig.humidity_sensor}") }}%`;
-      }
-      const entities = { ...this._config.entities, temperature: tempConfig };
-      this._config = { ...this._config, entities };
-      this.requestUpdate();
-      this._fireConfigChanged();
-    };
-  }
 
   _updateTapActionField(field) {
     return (ev) => {
@@ -1140,25 +1088,6 @@ class BubbleRoomEditor extends LitElement {
     };
   }
 
-  _updateSensor(index, field, value) {
-    const key = `sensor${index + 1}`;
-    const current = this._config.entities?.[key] || {};
-    const updated = { ...current, [field]: value };
-    if (field === 'type') {
-      updated.unit = this._getUnitsForType(value)[0] || '';
-    }
-    
-
-    const entities = { ...this._config.entities, [key]: updated };
-  
-    this._config = { ...this._config, entities };
-  
-    this.requestUpdate();         // forza il re-render
-    this._fireConfigChanged();    // aggiorna Home Assistant
-    console.log(`Aggiornamento sensor${index + 1}`, field, value);
-    console.log("Configurazione aggiornata:", this._config.entities);
-
-  }
   
   _updateNestedColor(section, key) {
     return (ev) => {

@@ -470,6 +470,25 @@ class BubbleRoom extends LitElement {
       }
     }
   }
+  _getSensorEmojiAndUnit(sensorType, unit = 'C') {
+    const map = {
+      temperature: { emoji: '🌡️', unitC: '°C', unitF: '°F' },
+      humidity: { emoji: '💦', unit: '%' },
+      co2: { emoji: '🟢', unit: 'ppm' },
+      illuminance: { emoji: '☀️', unit: 'lx' },
+      pm1: { emoji: '🟤', unit: 'µg/m³' },
+      pm25: { emoji: '⚫️', unit: 'µg/m³' },
+      pm10: { emoji: '⚪️', unit: 'µg/m³' },
+      uv: { emoji: '🌞', unit: 'UV' },
+      noise: { emoji: '🔊', unit: 'dB' },
+      pressure: { emoji: '📈', unit: 'hPa' },
+      voc: { emoji: '🧪', unit: 'ppb' }
+    };
+    const data = map[sensorType];
+    if (!data) return { emoji: '❓', unit: '' };
+    const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit;
+    return { emoji: data.emoji, unit: unitFinal };
+  }
   
   render() {
     const layout = this._getLayoutStyle(this.config.layout_mode || "6x3");
@@ -477,8 +496,26 @@ class BubbleRoom extends LitElement {
       console.log("bubble-room.js: config or hass not defined yet");
       return html`<div>Loading...</div>`;
     }
-  
-    const { entities, colors, name, icon } = this.config;
+    const { entities } = this.config;
+    const sensorStrings = [];
+
+    for (let i = 1; i <= 4; i++) {
+        const sensorKey = `sensor${i}`;
+        const sensor = this.config.entities[sensorKey];
+        if (!sensor || !sensor.type) continue;
+
+        const entityId = sensor.entity;
+        let state = entityId ? (this.hass.states[entityId]?.state || 'N/A') : '?';
+        
+        // Tronca i decimali se il valore è numerico
+        if (!isNaN(parseFloat(state))) {
+            state = Math.floor(parseFloat(state)).toString(); // Arrotonda per difetto
+        }
+        
+        const { emoji, unit } = this._getSensorEmojiAndUnit(sensor.type, sensor.unit);
+        sensorStrings.push(`${emoji} ${state}${unit}`);
+    }
+    const { colors, name, icon } = this.config;
     const roomColors = colors?.room || {};
     const subColors = colors?.subbutton || {};
     const hass = this.hass;
@@ -530,19 +567,7 @@ class BubbleRoom extends LitElement {
       mushroomTemplates.push(entities.camera); // index 6
     }
 
-    // Sensori ambientali (sensor box), render separato (index 7)
-    const sensorStrings = [];
-    [1, 2, 3, 4].forEach(i => {
-      const sensor = entities[`sensor${i}`];
-      console.log(`Sensor ${i}`, sensor); // nuovo log
-    
-      if (!sensor || !sensor.type) return;
-    
-      const entityId = sensor.entity;
-      const value = entityId ? (hass.states[entityId]?.state || 'N/A') : '?';
-      const { emoji, unit } = this._getSensorEmojiAndUnit(sensor.type, sensor.unit);
-      sensorStrings.push(`${emoji} ${value}${unit}`);
-    });
+    // Sensori ambientali (sensor box), render separato (index
     
 
 
@@ -793,13 +818,13 @@ class BubbleRoom extends LitElement {
         mushroomSize: '33px',
         subButtonPadding: '10px',
         mushroomPositions: [
-          'top: -45px; left: 2px;',
-          'top: -65px; left: 40px;',
-          'top: -55px; left: 85px;',
-          'bottom: 50px; left: 105px;',
-          'bottom: 5px; left: 90px;',
+          'top: -50px; left: 5px;',
+          'top: -70px; left: 45px;',
+          'top: -60px; left: 90px;',
+          'bottom: 55px; left: 107px;',
+          'bottom: 10px; left: 95px;',
           'bottom: 3px; left: 3px;',
-          'top: -75px; right: 10px;',
+          'top: -80px; right: 10px;',
           'top: -120px; left: 0px;',
         ],
         sensorFontSize: '12px',
@@ -862,7 +887,7 @@ class BubbleRoom extends LitElement {
       return `
         width: 140px;
         height: 140px;
-        border-radius: 80% 80% 50% 0% / 80% 80% 50% 0%;
+        border-radius: 70% 80% 50% 0% / 50% 55% 50% 0%;
         top: 0px;
         left: 0px;
       `;
