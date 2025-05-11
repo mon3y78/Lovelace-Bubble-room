@@ -241,7 +241,7 @@ class BubbleRoomEditor extends LitElement {
         });
       });
     }
-  
+    console.log("CONFIG DEBUG SENSORI:", configCopy.entities);
     return configCopy;
   }
   
@@ -357,7 +357,7 @@ class BubbleRoomEditor extends LitElement {
     };
     return html`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room <span class="version">v3.5</span></h3>
+        <h3>Visual Editor Bubble Room <span class="version">v3.3</span></h3>
       </div>
 
 
@@ -713,18 +713,18 @@ class BubbleRoomEditor extends LitElement {
           <div class="input-group">
             ${this._renderEntityInput("Entity ID", key)}
           </div>
-          ${sensor.type === 'temperature' ? html`
+          ${sensor.type && this._getUnitsForType(sensor.type).length > 0 ? html`
             <div class="input-group">
               <label>Unità:</label>
               <select
-                .value="${sensor.unit || 'C'}"
+                .value="${sensor.unit || this._getUnitsForType(sensor.type)[0]}"
                 @change="${e => this._updateSensor(parseInt(key.replace('sensor', '')), 'unit', e.target.value)}"
               >
-                <option value="C">°C</option>
-                <option value="F">°F</option>
+                ${this._getUnitsForType(sensor.type).map(u => html`<option value="${u}">${u}</option>`)}
               </select>
             </div>
           ` : ''}
+          
         </div>
       </ha-expansion-panel>
     `;
@@ -752,8 +752,12 @@ class BubbleRoomEditor extends LitElement {
       <div class="input-group">
         <label>Sensor ${index + 1} Type:</label>
         <select
-          .value="${sensor.type || ''}"
-          @change="${e => this._updateSensor(index, 'type', e.target.value)}"
+          @change="${e => {
+            const index = parseInt(key.replace('sensor', ''));
+            this._updateSensor(index, 'type', e.target.value);
+            this.requestUpdate();  // forza il re-render immediato
+          }}"
+
         >
           <option value="">-- none --</option>
           ${types.map(t => html`<option value="${t.type}">${t.label}</option>`)}
@@ -881,6 +885,32 @@ class BubbleRoomEditor extends LitElement {
     return domainIconMap[domain] || 'mdi:bookmark-outline';
   }
   
+  _getUnitsForType(type) {
+    switch (type) {
+      case 'temperature': return ['C', 'F'];
+      case 'humidity': return ['%'];
+      case 'pressure': return ['hPa'];
+      case 'co2': return ['ppm'];
+      case 'illuminance': return ['lx'];
+      case 'pm1':
+      case 'pm25':
+      case 'pm10': return ['µg/m³'];
+      case 'uv': return ['UV'];
+      case 'noise': return ['dB'];
+      case 'voc': return ['ppb'];
+      default: return [];
+    }
+  }
+  
+  
+  _getDefaultUnitForType(type) {
+    const defaults = {
+      temperature: '°C',
+      humidity: '%',
+      pressure: 'hPa',
+    };
+    return defaults[type] || '';
+  }
   
   _updateNestedColorDirect(section, key, value) {
     const colors = { ...this._config.colors };
@@ -1111,14 +1141,25 @@ class BubbleRoomEditor extends LitElement {
   }
 
   _updateSensor(index, field, value) {
-    const key = `sensor${index+1}`;
+    const key = `sensor${index + 1}`;
     const current = this._config.entities?.[key] || {};
     const updated = { ...current, [field]: value };
+    if (field === 'type') {
+      updated.unit = this._getUnitsForType(value)[0] || '';
+    }
+    
+
     const entities = { ...this._config.entities, [key]: updated };
+  
     this._config = { ...this._config, entities };
-    this.requestUpdate();
-    this._fireConfigChanged();
+  
+    this.requestUpdate();         // forza il re-render
+    this._fireConfigChanged();    // aggiorna Home Assistant
+    console.log(`Aggiornamento sensor${index + 1}`, field, value);
+    console.log("Configurazione aggiornata:", this._config.entities);
+
   }
+  
   _updateNestedColor(section, key) {
     return (ev) => {
       const value = ev.target.value;

@@ -258,15 +258,8 @@ class BubbleRoom extends LitElement {
         grid-template-rows: 25% 25% 25% 25%;
       }
       .name-area {
-        grid-area: n;
-        display: flex;
-        align-items: center;
-        padding-left: 5px;
-        margin-top: 5px;
-        margin-left: 0;
-        font-size: 30px;
+        position: absolute;
         font-weight: bold;
-        color: inherit;
       }
       .icon-area {
         grid-area: i;
@@ -519,7 +512,8 @@ class BubbleRoom extends LitElement {
       entities["sub-button3"],
       entities["sub-button4"],
     ];
-  
+    
+    // Mushroom: entity1–5 + climate
     let mushroomTemplates = [
       entities.entities1,
       entities.entities2,
@@ -527,18 +521,30 @@ class BubbleRoom extends LitElement {
       entities.entities4,
       entities.entities5
     ];
-    if (entities.climate) { mushroomTemplates.push(entities.climate); }
-    // Sensori ambientali
+
+    if (entities.climate) {
+      mushroomTemplates.push(entities.climate); // index 5
+    }
+
+    if (entities.camera) {
+      mushroomTemplates.push(entities.camera); // index 6
+    }
+
+    // Sensori ambientali (sensor box), render separato (index 7)
     const sensorStrings = [];
     [1, 2, 3, 4].forEach(i => {
       const sensor = entities[`sensor${i}`];
-      if (!sensor || !sensor.entity || !sensor.type) return;
-      const value = hass.states[sensor.entity]?.state || 'N/A';
+      console.log(`Sensor ${i}`, sensor); // nuovo log
+    
+      if (!sensor || !sensor.type) return;
+    
+      const entityId = sensor.entity;
+      const value = entityId ? (hass.states[entityId]?.state || 'N/A') : '?';
       const { emoji, unit } = this._getSensorEmojiAndUnit(sensor.type, sensor.unit);
       sensorStrings.push(`${emoji} ${value}${unit}`);
     });
+    
 
-    if (entities.camera) mushroomTemplates.push(entities.camera);
 
     return html`
       <div class="card" style="height: ${layout.cardHeight};">
@@ -549,7 +555,15 @@ class BubbleRoom extends LitElement {
               grid-template-rows: ${layout.gridRows};
             ">
           <!-- Nome stanza -->
-          <div class="name-area" style="color: ${nameColor}; font-size: ${layout.nameFont};">
+          <div class="name-area"
+              style="
+                color: ${nameColor};
+                font-size: ${layout.nameFont};
+                position: absolute;
+                top: ${layout.nameTop};
+                left: ${layout.nameLeft};
+              ">
+
             ${name}
           </div>
   
@@ -566,57 +580,65 @@ class BubbleRoom extends LitElement {
                  @pointerleave="${(e) => this._cancelHold(e)}">
               <ha-icon class="bubble-icon"
                       icon="${this._getBestIcon(this.config.entities.presence?.entity, { icon: icon })}"
-                      style="color: ${bubbleIconColor}; --mdc-icon-size: ${layout.iconSize}; width: ${layout.iconSize}; height: ${layout.iconSize};">
+                      style="
+                        color: ${bubbleIconColor};
+                        --mdc-icon-size: ${layout.iconSize};
+                        width: ${layout.iconSize};
+                        height: ${layout.iconSize};
+                        position: absolute;
+                        top: ${layout.iconTop || '15%'};
+                        left: ${layout.iconLeft || '25%'};
+                      ">
               </ha-icon>
 
             </div>
   
             <!-- Mushroom templates -->
             <div class="mushroom-container">
-              ${mushroomTemplates.map((item, index) => {
-                if (!item) return html``;
-              
-                const style = layout.mushroomPositions[index] || this._defaultMushroomStyle(index);
-                const state = hass.states[item.entity]?.state || 'off';
-                const iconColor = state === 'on'
-                  ? (roomColors.mushroom_active || 'orange')
-                  : (roomColors.mushroom_inactive || '#80808055');
-
-                return html`
-                  <div class="mushroom-item"
-                      style="${style}"
-                      @pointerdown="${(e) => this._startHold(e, item)}"
-                      @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
-                      @pointerleave="${(e) => this._cancelHold(e)}">
-                    <ha-icon icon="${this._getBestIcon(item.entity, item)}"
-                            style="color: ${iconColor}; --mdc-icon-size: ${layout.mushroomSize}; width: ${layout.mushroomSize}; height: ${layout.mushroomSize};">
-                    </ha-icon>
-
-                  </div>
-                `;
-              })}
+            ${mushroomTemplates.map((item, index) => {
+              if (!item) return html``;
             
-              ${sensorStrings.length > 0 ? html`
+              const style = layout.mushroomPositions[index] || this._defaultMushroomStyle(index);
+              const state = hass.states[item.entity]?.state || 'off';
+              const iconColor = state === 'on'
+                ? (roomColors.mushroom_active || 'orange')
+                : (roomColors.mushroom_inactive || '#80808055');
+            
+              return html`
                 <div class="mushroom-item"
-                    style="${layout.mushroomPositions[6]}; font-size: ${layout.mushroomSize};"
-                    title="Environmental Sensors">
-                  <div class="mushroom-primary"
-                      style="
-                        font-size: calc(${layout.mushroomSize} * 0.55);
-                        color: white;
-                        font-weight: bold;
-                        text-align: center;
-                        line-height: 1.2;
-                        text-shadow: 0 0 3px black;
-                        padding: 4px 6px;
-                        border-radius: 6px;
-                        opacity: ${sensorOpacity};
-                      ">
-
-                    ${sensorStrings.join(' ')}
-                  </div>
+                    style="${style}"
+                    @pointerdown="${(e) => this._startHold(e, item)}"
+                    @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
+                    @pointerleave="${(e) => this._cancelHold(e)}">
+                  <ha-icon icon="${this._getBestIcon(item.entity, item)}"
+                          style="color: ${iconColor}; --mdc-icon-size: ${layout.mushroomSize}; width: ${layout.mushroomSize}; height: ${layout.mushroomSize};">
+                  </ha-icon>
                 </div>
-              ` : ''}
+              `;
+            })}
+            
+            ${sensorStrings.length > 0 ? html`
+              <div class="mushroom-item"
+                  style="${layout.mushroomPositions[7]}; font-size: ${layout.sensorFontSize};"
+                  title="Environmental Sensors">
+                <div class="mushroom-primary"
+                    style="
+                      font-size: ${layout.sensorFontSize};
+                      color: white;
+                      font-weight: bold;
+                      text-align: center;
+                      line-height: 1.2;
+                      text-shadow: 0 0 3px black;
+                      padding: 4px 6px;
+                      border-radius: 6px;
+                      opacity: ${sensorOpacity};
+                    ">
+                  ${sensorStrings.join(' ')}
+                </div>
+              </div>
+            ` : ''}
+            
+            
             </div>
           </div>
   
@@ -763,19 +785,24 @@ class BubbleRoom extends LitElement {
       '6x3': {
         cardHeight: '190px',
         iconSize: '75px',
+        iconTop: '25%',
+        iconLeft: '20%',
         nameFont: '28px',
+        nameTop: '10px',
+        nameLeft: '5px',
         mushroomSize: '33px',
         subButtonPadding: '10px',
         mushroomPositions: [
-          'top: -77px; left: 0px;',
-          'top: -85px; left: 38px;',
-          'top: -64px; left: 77px;',
-          'bottom: 39px; left: 96px;',
-          'bottom: -1px; left: 85px;',
-          'bottom: -2px; left: -2px;',
-          'top: -140px; left: 5px;',
-          'top: -95px; right: 5px;',
+          'top: -45px; left: 2px;',
+          'top: -65px; left: 40px;',
+          'top: -55px; left: 85px;',
+          'bottom: 50px; left: 105px;',
+          'bottom: 5px; left: 90px;',
+          'bottom: 3px; left: 3px;',
+          'top: -75px; right: 10px;',
+          'top: -120px; left: 0px;',
         ],
+        sensorFontSize: '12px',
         gridTemplate: `
           "n n n b"
           "i i . b"
@@ -790,18 +817,25 @@ class BubbleRoom extends LitElement {
       '12x4': {
         cardHeight: '250px',
         iconSize: '95px',
+        iconTop: '28%',
+        iconLeft: '18%',
         nameFont: '32px',
+        nameTop: '12px',
+        nameLeft: '8px',
         mushroomSize: '40px',
+        sensorFontSize: '16px',
         subButtonPadding: '14px',
+        subButtonHeight: '60px',
+        subButtonIconSize: '32px',
         mushroomPositions: [
-          'top: -100px; left: 0px;',
-          'top: -105px; left: 55px;',
-          'top: -85px; left: 120px;',
-          'bottom: 55px; left: 160px;',
-          'bottom: 5px; left: 145px;',
-          'bottom: 0px; left: 0px;',
-          'top: -180px; left: 10px;',
-          'top: -135px; right: 10px;',
+          'top: -60px; left: 5px;',     // entities1
+          'top: -78px; left: 55px;',    // entities2
+          'top: -60px; left: 115px;',   // entities3
+          'bottom: 60px; left: 150px;', // entities4
+          'bottom: 5px; left: 130px;',  // entities5
+          'bottom: 3px; left: 3px;',    // climate
+          'top: -85px; right: 5px;',    // camera
+          'top: -135px; left: 0px;',    // sensori ambientali
         ],
         gridTemplate: `
           "n n n b"
@@ -810,9 +844,6 @@ class BubbleRoom extends LitElement {
           "i i . b"`,
         gridColumns: '30% 30% 10% 30%',
         gridRows: '25% 25% 25% 25%',
-        subButtonPadding: '14px',
-        subButtonHeight: '60px',
-        subButtonIconSize: '55px',
       }
     };
     return layoutMap[mode] || layoutMap['6x3'];
