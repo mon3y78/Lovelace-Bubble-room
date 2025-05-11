@@ -8,10 +8,13 @@ class BubbleRoom extends LitElement {
     };
   }
   
-  // Supporto all'editor visivo (assicurati che il file bubble-room-editor-dev.js esista)
+  // Supporto all'editor visivo (assicurati che il file bubble-room-editor.js esista)
   static async getConfigElement() {
-    await import('./bubble-room-editor-dev.js');
-    return document.createElement('bubble-room-editor-dev');
+    await import('./bubble-room-editor.js');
+    return document.createElement('bubble-room-editor');
+    el.hass = this.hass;  // <-- fondamentale
+    console.log("Editor created. HASS:", el.hass);
+    return el;
   }
   
   // Configurazione stub di base (default)
@@ -562,9 +565,10 @@ class BubbleRoom extends LitElement {
                  @pointerup="${(e) => this._endHold(e, this.config, () => this._handleMainIconTap())}"
                  @pointerleave="${(e) => this._cancelHold(e)}">
               <ha-icon class="bubble-icon"
-                       icon="${icon}"
-                       style="color: ${bubbleIconColor}; --mdc-icon-size: ${layout.iconSize}; width: ${layout.iconSize}; height: ${layout.iconSize};">
+                      icon="${this._getBestIcon(this.config.entities.presence?.entity, { icon: icon })}"
+                      style="color: ${bubbleIconColor}; --mdc-icon-size: ${layout.iconSize}; width: ${layout.iconSize}; height: ${layout.iconSize};">
               </ha-icon>
+
             </div>
   
             <!-- Mushroom templates -->
@@ -584,9 +588,10 @@ class BubbleRoom extends LitElement {
                       @pointerdown="${(e) => this._startHold(e, item)}"
                       @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
                       @pointerleave="${(e) => this._cancelHold(e)}">
-                    <ha-icon icon="${item.icon}"
+                    <ha-icon icon="${this._getBestIcon(item.entity, item)}"
                             style="color: ${iconColor}; --mdc-icon-size: ${layout.mushroomSize}; width: ${layout.mushroomSize}; height: ${layout.mushroomSize};">
                     </ha-icon>
+
                   </div>
                 `;
               })}
@@ -639,9 +644,10 @@ class BubbleRoom extends LitElement {
                      @pointerdown="${(e) => this._startHold(e, btn)}"
                      @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
                      @pointerleave="${(e) => this._cancelHold(e)}">
-                  <ha-icon icon="${btn.icon}"
-                           style="color: ${iconColor}; --mdc-icon-size: ${layout.mushroomSize}; width: ${layout.mushroomSize}; height: ${layout.mushroomSize};">
+                  <ha-icon icon="${this._getBestIcon(btn.entity, btn)}"
+                          style="color: ${iconColor}; --mdc-icon-size: ${layout.mushroomSize}; width: ${layout.mushroomSize}; height: ${layout.mushroomSize};">
                   </ha-icon>
+
 
                 </div>
               `;
@@ -668,7 +674,70 @@ class BubbleRoom extends LitElement {
   
   
   // Funzione per gestire il tap dei mushroom template (già esistente)
+  _getBestIcon(entityId, entityConf) {
+    if (entityConf.icon) return entityConf.icon;
 
+    const stateObj = this.hass?.states?.[entityId];
+    if (!stateObj) return '';
+
+    if (stateObj.attributes?.icon) return stateObj.attributes.icon;
+
+    const deviceClass = stateObj.attributes?.device_class;
+    const domain = entityId.split('.')[0];
+    const state = stateObj.state;
+
+    if (deviceClass) {
+      const dcIcon = this._getDeviceClassIcon(deviceClass, state);
+      if (dcIcon) return dcIcon;
+    }
+
+    return this._getDomainDefaultIcon(domain, state) || '';
+  }
+
+  _getDeviceClassIcon(deviceClass, state) {
+    switch (deviceClass) {
+      case 'door':        return state === 'on' ? 'mdi:door-open'        : 'mdi:door-closed';
+      case 'window':      return state === 'on' ? 'mdi:window-open'      : 'mdi:window-closed';
+      case 'motion':      return state === 'on' ? 'mdi:motion-sensor'    : 'mdi:motion-sensor-off';
+      case 'moisture':    return state === 'on' ? 'mdi:water-alert'      : 'mdi:water-off';
+      case 'smoke':       return state === 'on' ? 'mdi:smoke'            : 'mdi:smoke-detector-off';
+      case 'gas':         return state === 'on' ? 'mdi:gas-cylinder'     : 'mdi:gas-off';
+      case 'problem':     return 'mdi:alert';
+      case 'connectivity':return 'mdi:connection';
+      case 'occupancy':
+      case 'presence':    return state === 'on' ? 'mdi:account-voice'    : 'mdi:account-voice-off';
+      case 'tamper':      return 'mdi:lock-open-alert';
+      case 'vibration':   return state === 'on' ? 'mdi:vibrate'          : 'mdi:vibrate-off';
+      case 'running':     return state === 'on' ? 'mdi:server-network'   : 'mdi:server-network-off';
+      case 'shutter':     return state === 'on' ? 'mdi:window-shutter-open' : 'mdi:window-shutter';
+      case 'blind':       return state === 'on' ? 'mdi:blinds-horizontal'  : 'mdi:blinds-horizontal-closed';
+      default:            return '';
+    }
+  }
+
+  _getDomainDefaultIcon(domain, state) {
+    switch (domain) {
+      case 'light':         return 'mdi:lightbulb';
+      case 'switch':        return 'mdi:toggle-switch';
+      case 'fan':           return 'mdi:fan';
+      case 'climate':       return 'mdi:thermostat';
+      case 'media_player':  return 'mdi:speaker';
+      case 'vacuum':        return 'mdi:robot-vacuum';
+      case 'binary_sensor': return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off';
+      case 'sensor':        return 'mdi:information-outline';
+      case 'input_boolean': return 'mdi:toggle-switch';
+      case 'cover':         return state === 'open' ? 'mdi:blinds-open'   : 'mdi:blinds-closed';
+      case 'lock':          return state === 'locked' ? 'mdi:lock'         : 'mdi:lock-open';
+      case 'door':          return state === 'open'   ? 'mdi:door-open'    : 'mdi:door-closed';
+      case 'window':        return state === 'open'   ? 'mdi:window-open'  : 'mdi:window-closed';
+      case 'alarm_control_panel': return 'mdi:shield-home';
+      case 'scene':         return 'mdi:palette';
+      case 'script':        return 'mdi:script-text';
+      case 'input_number':  return 'mdi:ray-vertex';
+      case 'input_select':  return 'mdi:format-list-bulleted';
+      default:              return '';
+    }
+  }
   _getSensorEmojiAndUnit(sensorType, unit = 'C') {
     const map = {
       temperature: { emoji: '🌡️', unitC: '°C', unitF: '°F' },

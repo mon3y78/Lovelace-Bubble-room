@@ -1,5 +1,7 @@
 import { LitElement, html, css } from 'lit';
 
+
+
 class BubbleRoomEditor extends LitElement {
   static get properties() {
     return {
@@ -11,8 +13,8 @@ class BubbleRoomEditor extends LitElement {
 
   // Supporto all'editor visivo
   static async getConfigElement() {
-    await import('./bubble-room-editor-dev.js');
-    return document.createElement('bubble-room-editor-dev');
+    await import('./bubble-room-editor.js');
+    return document.createElement('bubble-room-editor');
   }
 
   static getStubConfig() {
@@ -118,7 +120,27 @@ class BubbleRoomEditor extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+  
+    // Forza il preload di ha-entity-picker
+    if (!customElements.get("ha-entity-picker")) {
+      const preload = document.createElement("ha-entity-picker");
+      preload.hass = this.hass;
+      preload.style.display = "none";
+      document.body.appendChild(preload);
+      setTimeout(() => {
+        document.body.removeChild(preload);
+        console.log("ENTITY PICKER LOADED:", customElements.get("ha-entity-picker"));
+        this.requestUpdate();
+      }, 1000);
+    } else {
+      console.log("ENTITY PICKER ALREADY REGISTERED");
+    }
   }
+  
+  
+  
+  
+  
 
   setConfig(config) {
     if (!config) {
@@ -189,13 +211,20 @@ class BubbleRoomEditor extends LitElement {
     }
   
     const filteredEntities = {};
-    Object.keys(configCopy.entities).forEach((key) => {
-      const entityConfig = configCopy.entities[key];
+    for (const [key, entityConfig] of Object.entries(configCopy.entities)) {
       if (entityConfig.entity && entityConfig.entity.trim() !== "") {
-        filteredEntities[key] = entityConfig;
+        const updatedConfig = { ...entityConfig };
+        if (!updatedConfig.icon && this.hass?.states?.[updatedConfig.entity]?.attributes?.icon) {
+          updatedConfig.icon = this.hass.states[updatedConfig.entity].attributes.icon;
+        }
+        filteredEntities[key] = updatedConfig;
       }
-    });
+    }
     configCopy.entities = filteredEntities;
+    console.log("[CONFIG EXPORT DEBUG]", configCopy.entities);
+
+
+
   
     if (configCopy.colors) {
       ['room', 'subbutton'].forEach(section => {
@@ -210,27 +239,8 @@ class BubbleRoomEditor extends LitElement {
     
     return configCopy;
   }
-  _getAvailableIconsFromStates() {
-    if (!this.hass) return [];
-    const icons = new Set();
-    for (const stateObj of Object.values(this.hass.states)) {
-      const icon = stateObj.attributes?.icon;
-      if (icon) {
-        icons.add(icon);
-      }
-    }
-    return Array.from(icons).sort();
-  }
-  
   
 
-  _defaultIconList() {
-    const systemIcons = this._iconList || [];
-    const dynamicIcons = this._getAvailableIconsFromStates();
-    const allIcons = [...new Set([...systemIcons, ...dynamicIcons])];
-    return allIcons.sort();
-  }
-  
 
   static get styles() {
     return css`
@@ -243,6 +253,13 @@ class BubbleRoomEditor extends LitElement {
         text-align: center;
         margin: 1rem 0;
       }
+      .version {
+        font-size: 0.8rem;
+        font-weight: normal;
+        margin-left: 8px;
+        color: var(--secondary-text-color);
+      }
+  
       /* Stile comune per tutti gli header dei pannelli */
       ha-expansion-panel div[slot="header"] {
         background-color: var(--slider-bar-color);
@@ -318,14 +335,25 @@ class BubbleRoomEditor extends LitElement {
     if (!this._config) {
       return html`<div>Caricamento configurazione...</div>`;
     }
+    if (!customElements.get("ha-entity-picker")) {
+      const preload = document.createElement("ha-entity-picker");
+      preload.hass = this.hass;
+      document.body.appendChild(preload);
+      setTimeout(() => document.body.removeChild(preload), 1500);
+    }
+    
+
+    console.log("ENTITY PICKER DEBUG", customElements.get("ha-entity-picker")); // <== QUI VA BENE
+
     const hasEntity = (key) => {
       const e = this._config.entities?.[key]?.entity;
       return e && e.trim() !== "";
     };
     return html`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room</h3>
+        <h3>Visual Editor Bubble Room <span class="version">v3.3</span></h3>
       </div>
+
 
       <ha-expansion-panel id="roomPanel">
         <div slot="header" @click="${() => this._togglePanel('roomPanel')}">
@@ -333,7 +361,27 @@ class BubbleRoomEditor extends LitElement {
         </div>
         <div class="section-content">
           <div class="input-group">
-            ${this._renderMainIconInput()}
+            <label>Room name:</label>
+            <input
+              type="text"
+              .value="${this._config.name || ''}"
+              @input="${this._updateName}"
+            />
+          </div>
+          <div class="input-group">
+           <label>Room Icon:</label>
+            <ha-icon-picker
+              .hass="${this.hass}"
+              .value="${this._config.icon || ''}"
+              allow-custom-icon
+              @value-changed="${e => {
+                this._config = { ...this._config, icon: e.detail.value };
+                this.requestUpdate();
+                this._fireConfigChanged();
+              }}"
+            ></ha-icon-picker>
+
+
           </div>
           <div class="input-group">
             <label>Layout:</label>
@@ -438,16 +486,16 @@ class BubbleRoomEditor extends LitElement {
 
       </ha-expansion-panel>
 
-
-
-
       <datalist id="entity-list">
         ${this.hass
-          ? Object.keys(this.hass.entities).map(
+          ? Object.keys(this.hass.states).map(
               entityId => html`<option value="${entityId}"></option>`
             )
           : ''}
       </datalist>
+
+
+
 
       <p class="note">
         For advanced configurations, modify the YAML directly.
@@ -474,56 +522,72 @@ class BubbleRoomEditor extends LitElement {
     const value = (this._config.entities &&
                    this._config.entities[entityKey] &&
                    this._config.entities[entityKey][field]) || '';
+  
+    const hasEntityPicker = customElements.get("ha-entity-picker");
+  
     return html`
       <label>${labelText}:</label>
-      <ha-entity-picker
-        .hass="${this.hass}"
-        .value="${value}"
-        @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}"
-        allow-custom-entity
-      ></ha-entity-picker>
+      ${hasEntityPicker ? html`
+        <ha-entity-picker
+          .hass="${this.hass}"
+          .value="${value}"
+          allow-custom-entity
+          @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}"
+        ></ha-entity-picker>
+      ` : html`
+        <input
+          type="text"
+          .value="${value}"
+          list="entity-list"
+          placeholder="Seleziona o scrivi un'entità"
+          @focus="${(e) => { if (e.target.value === value) e.target.value = ''; }}"
+          @blur="${(e) => {
+            if (!e.target.value && value) e.target.value = value;
+          }}"
+          @change="${this._updateEntity(entityKey, field)}"
+        />
+      `}
     `;
   }
+  
+  
+  
+  
+  
+  
   
   
 
   _renderIconInput(labelText, entityKey, field = 'icon') {
-    const currentIcon = this._config.entities?.[entityKey]?.[field] ?? '';
+    let value = this._config.entities?.[entityKey]?.[field] ?? '';
+
+    if (!value && this.hass && this._config.entities?.[entityKey]?.entity) {
+      const entityId = this._config.entities[entityKey].entity;
+      value =
+        this.hass.states[entityId]?.attributes?.icon ||
+        this._getDefaultIconForEntity(entityId);
+    }
+
   
     return html`
       <label>${labelText}:</label>
       <ha-icon-picker
         .hass="${this.hass}"
-        .value="${currentIcon}"
+        .value="${value}"
+        allow-custom-icon
         @value-changed="${e => {
-          const value = e.detail.value;
+          const newValue = e.detail.value;
           let entityConf = this._config.entities[entityKey] || {};
-          entityConf = { ...entityConf, [field]: value };
+          entityConf = { ...entityConf, [field]: newValue };
           const entities = { ...this._config.entities, [entityKey]: entityConf };
           this._config = { ...this._config, entities };
           this.requestUpdate();
           this._fireConfigChanged();
-        }}">
-      </ha-icon-picker>
+        }}"
+      ></ha-icon-picker>
     `;
   }
   
-  _renderMainIconInput() {
-    const currentIcon = this._config.icon ?? '';
-    return html`
-      <label>Room Icon:</label>
-      <ha-icon-picker
-        .hass="${this.hass}"
-        .value="${currentIcon}"
-        @value-changed="${e => {
-          this._config = { ...this._config, icon: e.detail.value };
-          this.requestUpdate();
-          this._fireConfigChanged();
-        }}">
-      </ha-icon-picker>
-    `;
-  }
-    
   
   
   
@@ -635,13 +699,14 @@ class BubbleRoomEditor extends LitElement {
       ${sensor.type ? html`
         <div class="input-group">
           <label>Entity ID:</label>
-          <input
-            type="text"
+          <ha-entity-picker
+            .hass="${this.hass}"
             .value="${sensor.entity || ''}"
-            list="entity-list"
-            @input="${e => this._updateSensor(index, 'entity', e.target.value)}"
-          />
+            allow-custom-entity
+            @value-changed="${e => this._updateSensor(index, 'entity', e.detail.value)}"
+          ></ha-entity-picker>
         </div>
+
         ${sensor.type === 'temperature' ? html`
           <div class="input-group">
             <label>Unità:</label>
@@ -724,6 +789,35 @@ class BubbleRoomEditor extends LitElement {
     ctx.fillStyle = color || '#000000';
     return ctx.fillStyle;
   }
+  _getDefaultIconForEntity(entityId) {
+    if (!entityId || typeof entityId !== 'string') return 'mdi:help-circle';
+  
+    const domain = entityId.split('.')[0];
+    const domainIconMap = {
+      light: 'mdi:lightbulb',
+      fan: 'mdi:fan',
+      climate: 'mdi:thermostat',
+      media_player: 'mdi:speaker',
+      vacuum: 'mdi:robot-vacuum',
+      binary_sensor: 'mdi:motion-sensor',
+      sensor: 'mdi:information-outline',
+      switch: 'mdi:toggle-switch',
+      cover: 'mdi:window-shutter',
+      lock: 'mdi:lock',
+      camera: 'mdi:cctv',
+      humidifier: 'mdi:air-humidifier',
+      weather: 'mdi:weather-partly-cloudy',
+      device_tracker: 'mdi:map-marker',
+      person: 'mdi:account',
+      input_boolean: 'mdi:toggle-switch',
+      input_number: 'mdi:ray-vertex',
+      input_select: 'mdi:format-list-bulleted',
+      input_text: 'mdi:text-box-outline'
+    };
+  
+    return domainIconMap[domain] || 'mdi:bookmark-outline';
+  }
+  
   
   _updateNestedColorDirect(section, key, value) {
     const colors = { ...this._config.colors };
@@ -853,19 +947,31 @@ class BubbleRoomEditor extends LitElement {
     this.requestUpdate();
     this._fireConfigChanged();
   }
-
+  _updateIcon(ev) {
+    const newIcon = ev.target.value;
+    this._config = { ...this._config, icon: newIcon };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
 
   _updateEntity(entityKey, field = 'entity') {
     return (ev) => {
       const value = ev.target.value;
       let curEntity = this._config.entities[entityKey] || {};
       curEntity = { ...curEntity, [field]: value };
+  
+      // Se l'icona non è stata impostata manualmente, ma è presente nello stato dell'entità, copiala
+      if (field === 'entity' && this.hass?.states?.[value]?.attributes?.icon && !curEntity.icon) {
+        curEntity.icon = this.hass.states[value].attributes.icon;
+      }
+  
       const entities = { ...this._config.entities, [entityKey]: curEntity };
       this._config = { ...this._config, entities };
       this.requestUpdate();
       this._fireConfigChanged();
     };
   }
+  
 
 
   _updateTemperature(field) {
@@ -975,6 +1081,46 @@ class BubbleRoomEditor extends LitElement {
       this._fireConfigChanged();
     };
   }
+  _getDeviceClassIcon(deviceClass, state) {
+    switch (deviceClass) {
+      case 'door':        return state === 'on' ? 'mdi:door-open'        : 'mdi:door-closed';
+      case 'window':      return state === 'on' ? 'mdi:window-open'      : 'mdi:window-closed';
+      case 'motion':      return state === 'on' ? 'mdi:motion-sensor'    : 'mdi:motion-sensor-off';
+      case 'moisture':    return state === 'on' ? 'mdi:water-alert'      : 'mdi:water-off';
+      case 'smoke':       return state === 'on' ? 'mdi:smoke'            : 'mdi:smoke-detector-off';
+      case 'gas':         return state === 'on' ? 'mdi:gas-cylinder'     : 'mdi:gas-off';
+      case 'problem':     return 'mdi:alert';
+      case 'connectivity':return 'mdi:connection';
+      case 'occupancy':
+      case 'presence':    return state === 'on' ? 'mdi:account-voice'    : 'mdi:account-voice-off';
+      case 'tamper':      return 'mdi:lock-open-alert';
+      case 'vibration':   return state === 'on' ? 'mdi:vibrate'          : 'mdi:vibrate-off';
+      case 'running':     return state === 'on' ? 'mdi:server-network'   : 'mdi:server-network-off';
+      case 'shutter':     return state === 'on' ? 'mdi:window-shutter-open' : 'mdi:window-shutter';
+      case 'blind':       return state === 'on' ? 'mdi:blinds-horizontal'  : 'mdi:blinds-horizontal-closed';
+      default:            return '';
+    }
+  }
+  
+  _getDomainDefaultIcon(domain, state) {
+    switch (domain) {
+      case 'light':         return 'mdi:lightbulb';
+      case 'switch':        return 'mdi:toggle-switch';
+      case 'fan':           return 'mdi:fan';
+      case 'climate':       return 'mdi:thermostat';
+      case 'media_player':  return 'mdi:speaker';
+      case 'vacuum':        return 'mdi:robot-vacuum';
+      case 'binary_sensor': return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off';
+      case 'sensor':        return 'mdi:information-outline';
+      case 'input_boolean': return 'mdi:toggle-switch';
+      case 'cover':         return state === 'open' ? 'mdi:blinds-open'   : 'mdi:blinds-closed';
+      case 'lock':          return state === 'locked' ? 'mdi:lock'         : 'mdi:lock-open';
+      case 'door':          return state === 'open'   ? 'mdi:door-open'    : 'mdi:door-closed';
+      case 'window':        return state === 'open'   ? 'mdi:window-open'  : 'mdi:window-closed';
+      default:              return '';
+    }
+  }
+  
 }
 
-customElements.define('bubble-room-editor-dev', BubbleRoomEditor);
+customElements.define('bubble-room-editor', BubbleRoomEditor);
