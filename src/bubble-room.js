@@ -827,7 +827,7 @@ class BubbleRoom extends LitElement {
           'top: -80px; right: 10px;',
           'top: -120px; left: 0px;',
         ],
-        sensorFontSize: '12px',
+        sensorFontSize: '10px',
         gridTemplate: `
           "n n n b"
           "i i . b"
