@@ -8,10 +8,10 @@ class BubbleRoom extends LitElement {
     };
   }
   
-  // Supporto all'editor visivo (assicurati che il file bubble-room-editor.js esista)
+  // Supporto all'editor visivo (assicurati che il file bubble-room-editor-dev.js esista)
   static async getConfigElement() {
-    await import('./bubble-room-editor.js');
-    return document.createElement('bubble-room-editor');
+    await import('./bubble-room-editor-dev.js');
+    return document.createElement('bubble-room-editor-dev');
     el.hass = this.hass;  // <-- fondamentale
     console.log("Editor created. HASS:", el.hass);
     return el;

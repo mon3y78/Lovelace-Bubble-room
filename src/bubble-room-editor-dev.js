@@ -13,8 +13,8 @@ class BubbleRoomEditor extends LitElement {
 
   // Supporto all'editor visivo
   static async getConfigElement() {
-    await import('./bubble-room-editor.js');
-    return document.createElement('bubble-room-editor');
+    await import('./bubble-room-editor-dev.js');
+    return document.createElement('bubble-room-editor-dev');
   }
 
   static getStubConfig() {
@@ -116,6 +116,11 @@ class BubbleRoomEditor extends LitElement {
       "mdi:garage-open",
       "mdi:cctv"
     ];    
+    if (!customElements.get("ha-entity-picker")) {
+      import("custom-card-helpers").then(module => {
+        module.loadHaComponents();
+      }).catch(() => {});
+    }
   }
 
   connectedCallback() {
@@ -151,10 +156,11 @@ class BubbleRoomEditor extends LitElement {
     }
     for (let i = 1; i <= 4; i++) {
       const key = `sensor${i}`;
-      if (!config.entities[key]) {
-        config.entities[key] = {};
+      if (!config.entities[key] || typeof config.entities[key] !== 'object') {
+        config.entities[key] = { type: '', entity: '', unit: 'C' };
       }
-    }    
+    }
+           
     if (!config.colors) {
       config.colors = {};
     }
@@ -204,7 +210,7 @@ class BubbleRoomEditor extends LitElement {
   
   getConfig() {
     const configCopy = JSON.parse(JSON.stringify(this._config));
-    
+  
     // Mantieni layout_mode
     if (!configCopy.layout_mode) {
       configCopy.layout_mode = this._config.layout_mode || '6x3';
@@ -212,20 +218,19 @@ class BubbleRoomEditor extends LitElement {
   
     const filteredEntities = {};
     for (const [key, entityConfig] of Object.entries(configCopy.entities)) {
-      if (entityConfig.entity && entityConfig.entity.trim() !== "") {
-        const updatedConfig = { ...entityConfig };
-        if (!updatedConfig.icon && this.hass?.states?.[updatedConfig.entity]?.attributes?.icon) {
-          updatedConfig.icon = this.hass.states[updatedConfig.entity].attributes.icon;
-        }
-        filteredEntities[key] = updatedConfig;
-      }
-    }
-    configCopy.entities = filteredEntities;
-    console.log("[CONFIG EXPORT DEBUG]", configCopy.entities);
-
-
-
+      const updatedConfig = { ...entityConfig };
   
+      // Copia l'icona se non definita ma disponibile nello stato dell'entità
+      if (!updatedConfig.icon && this.hass?.states?.[updatedConfig.entity]?.attributes?.icon) {
+        updatedConfig.icon = this.hass.states[updatedConfig.entity].attributes.icon;
+      }
+  
+      filteredEntities[key] = updatedConfig;  // <-- non filtriamo più entità vuote
+    }
+  
+    configCopy.entities = filteredEntities;
+  
+    // Pulizia colori vuoti
     if (configCopy.colors) {
       ['room', 'subbutton'].forEach(section => {
         if (!configCopy.colors[section]) return;
@@ -236,9 +241,10 @@ class BubbleRoomEditor extends LitElement {
         });
       });
     }
-    
+  
     return configCopy;
   }
+  
   
 
 
@@ -351,7 +357,7 @@ class BubbleRoomEditor extends LitElement {
     };
     return html`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room <span class="version">v3.3</span></h3>
+        <h3>Visual Editor Bubble Room <span class="version">v3.5</span></h3>
       </div>
 
 
@@ -460,7 +466,11 @@ class BubbleRoomEditor extends LitElement {
           Sensor
         </div>
         <div class="section-content">
-          ${[0, 1, 2, 3].map(i => this._renderSensorConfig(i))}
+        ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) =>
+          this._renderSensorPanel(key, `Sensor ${i + 1}`)
+        )}
+        
+        
         </div>
       </ha-expansion-panel>
 
@@ -503,21 +513,6 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
 
-  _renderMushroomEntityPanel(key, label) {
-    const panelId = `${key}Panel`;
-    return html`
-      <ha-expansion-panel id="${panelId}">
-        <div slot="header" @click="${() => this._togglePanel(panelId)}">
-          ${label}
-        </div>
-        <div class="section-content">
-          ${this._renderEntityInput(`${label} (ID)`, key)}
-          ${this._renderIconInput(`${label} Icon`, key)}
-        </div>
-      </ha-expansion-panel>
-    `;
-  }
-
   _renderEntityInput(labelText, entityKey, field = 'entity') {
     const value = (this._config.entities &&
                    this._config.entities[entityKey] &&
@@ -539,16 +534,15 @@ class BubbleRoomEditor extends LitElement {
           type="text"
           .value="${value}"
           list="entity-list"
-          placeholder="Seleziona o scrivi un'entità"
-          @focus="${(e) => { if (e.target.value === value) e.target.value = ''; }}"
-          @blur="${(e) => {
-            if (!e.target.value && value) e.target.value = value;
-          }}"
-          @change="${this._updateEntity(entityKey, field)}"
+          placeholder="Inserisci entity_id"
+          @input="${this._updateEntity(entityKey, field)}"
         />
       `}
     `;
   }
+  
+  
+  
   
   
   
@@ -668,10 +662,24 @@ class BubbleRoomEditor extends LitElement {
       </div>
     `;
   }
-
-
-  _renderSensorConfig(index) {
-    const sensor = this._config.entities?.[`sensor${index+1}`] || {};
+  _renderMushroomEntityPanel(key, label) {
+    const panelId = `${key}Panel`;
+    return html`
+      <ha-expansion-panel id="${panelId}">
+        <div slot="header" @click="${() => this._togglePanel(panelId)}">
+          ${label}
+        </div>
+        <div class="section-content">
+          ${this._renderEntityInput(`${label} (ID)`, key)}
+          ${this._renderIconInput(`${label} Icon`, key)}
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+  
+  _renderSensorPanel(key, label) {
+    const sensor = this._config.entities?.[key] || {};
+    const panelId = `${key}Panel`;
     const types = [
       { type: 'temperature', label: '🌡️ Temperatura' },
       { type: 'humidity', label: '💦 Umidità' },
@@ -685,6 +693,61 @@ class BubbleRoomEditor extends LitElement {
       { type: 'pressure', label: '📈 Pressione' },
       { type: 'voc', label: '🧪 VOC' },
     ];
+  
+    return html`
+      <ha-expansion-panel id="${panelId}">
+        <div slot="header" @click="${() => this._togglePanel(panelId)}">
+          ${label}
+        </div>
+        <div class="section-content">
+          <div class="input-group">
+            <label>Sensor Type:</label>
+            <select
+              .value="${sensor.type || ''}"
+              @change="${e => this._updateSensor(parseInt(key.replace('sensor', '')), 'type', e.target.value)}"
+            >
+              <option value="">-- none --</option>
+              ${types.map(t => html`<option value="${t.type}">${t.label}</option>`)}
+            </select>
+          </div>
+          <div class="input-group">
+            ${this._renderEntityInput("Entity ID", key)}
+          </div>
+          ${sensor.type === 'temperature' ? html`
+            <div class="input-group">
+              <label>Unità:</label>
+              <select
+                .value="${sensor.unit || 'C'}"
+                @change="${e => this._updateSensor(parseInt(key.replace('sensor', '')), 'unit', e.target.value)}"
+              >
+                <option value="C">°C</option>
+                <option value="F">°F</option>
+              </select>
+            </div>
+          ` : ''}
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+  
+  _renderSensorConfig(index) {
+    const key = `sensor${index + 1}`;
+    const sensor = this._config.entities?.[key] || { type: '', entity: '', unit: 'C' };
+    const types = [
+      { type: 'temperature', label: '🌡️ Temperatura' },
+      { type: 'humidity', label: '💦 Umidità' },
+      { type: 'co2', label: '🟢 CO₂' },
+      { type: 'illuminance', label: '☀️ Luminosità' },
+      { type: 'pm1', label: '🟤 PM1' },
+      { type: 'pm25', label: '⚫️ PM2.5' },
+      { type: 'pm10', label: '⚪️ PM10' },
+      { type: 'uv', label: '🌞 UV Index' },
+      { type: 'noise', label: '🔊 Rumore' },
+      { type: 'pressure', label: '📈 Pressione' },
+      { type: 'voc', label: '🧪 VOC' },
+    ];
+    console.log(`Rendering sensor${index + 1}`, this._config.entities?.[`sensor${index + 1}`]);
+
     return html`
       <div class="input-group">
         <label>Sensor ${index + 1} Type:</label>
@@ -696,33 +759,33 @@ class BubbleRoomEditor extends LitElement {
           ${types.map(t => html`<option value="${t.type}">${t.label}</option>`)}
         </select>
       </div>
-      ${sensor.type ? html`
+      <div class="input-group">
+        <label>Entity ID:</label>
+        <ha-entity-picker
+          .hass="${this.hass}"
+          .value="${sensor.entity || ''}"
+          allow-custom-entity
+          @value-changed="${e => this._updateSensor(index, 'entity', e.detail.value)}"
+        ></ha-entity-picker>
+      </div>
+  
+      ${sensor.type === 'temperature' ? html`
         <div class="input-group">
-          <label>Entity ID:</label>
-          <ha-entity-picker
-            .hass="${this.hass}"
-            .value="${sensor.entity || ''}"
-            allow-custom-entity
-            @value-changed="${e => this._updateSensor(index, 'entity', e.detail.value)}"
-          ></ha-entity-picker>
+          <label>Unità:</label>
+          <select
+            .value="${sensor.unit || 'C'}"
+            @change="${e => this._updateSensor(index, 'unit', e.target.value)}"
+          >
+            <option value="C">°C</option>
+            <option value="F">°F</option>
+          </select>
         </div>
-
-        ${sensor.type === 'temperature' ? html`
-          <div class="input-group">
-            <label>Unità:</label>
-            <select
-              .value="${sensor.unit || 'C'}"
-              @change="${e => this._updateSensor(index, 'unit', e.target.value)}"
-            >
-              <option value="C">°C</option>
-              <option value="F">°F</option>
-            </select>
-          </div>
-        ` : ''}
       ` : ''}
+  
       <hr/>
     `;
   }
+  
   
   _parseRGBA(str) {
     const fallback = [0, 128, 0, 1]; // default verde pieno
@@ -961,9 +1024,13 @@ class BubbleRoomEditor extends LitElement {
       curEntity = { ...curEntity, [field]: value };
   
       // Se l'icona non è stata impostata manualmente, ma è presente nello stato dell'entità, copiala
-      if (field === 'entity' && this.hass?.states?.[value]?.attributes?.icon && !curEntity.icon) {
-        curEntity.icon = this.hass.states[value].attributes.icon;
+      if (field === 'entity' && this.hass?.states?.[value]?.attributes?.icon) {
+        // Solo se non è stata impostata un'icona personalizzata
+        if (!curEntity.icon || curEntity.icon === this._getDefaultIconForEntity(value)) {
+          curEntity.icon = this.hass.states[value].attributes.icon;
+        }
       }
+      
   
       const entities = { ...this._config.entities, [entityKey]: curEntity };
       this._config = { ...this._config, entities };
@@ -1123,4 +1190,4 @@ class BubbleRoomEditor extends LitElement {
   
 }
 
-customElements.define('bubble-room-editor', BubbleRoomEditor);
+customElements.define('bubble-room-editor-dev', BubbleRoomEditor);
