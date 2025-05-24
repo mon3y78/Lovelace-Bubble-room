@@ -1,5 +1,64 @@
-import { LitElement, html, css, nothing } from 'lit';
-import fitty from 'fitty';
+import { LitElement, html, css } from 'https://unpkg.com/lit@2.6.1/index.js?module';
+
+// --- MAPPE DI MAPPING CENTRALIZZATE ---
+const DEVICE_CLASS_ICON_MAP = {
+  door:        { on: 'mdi:door-open', off: 'mdi:door-closed' },
+  window:      { on: 'mdi:window-open', off: 'mdi:window-closed' },
+  motion:      { on: 'mdi:motion-sensor', off: 'mdi:motion-sensor-off' },
+  moisture:    { on: 'mdi:water-alert', off: 'mdi:water-off' },
+  smoke:       { on: 'mdi:smoke', off: 'mdi:smoke-detector-off' },
+  gas:         { on: 'mdi:gas-cylinder', off: 'mdi:gas-off' },
+  problem:     { on: 'mdi:alert', off: 'mdi:alert' },
+  connectivity:{ on: 'mdi:connection', off: 'mdi:connection' },
+  occupancy:   { on: 'mdi:account-voice', off: 'mdi:account-voice-off' },
+  presence:    { on: 'mdi:account-voice', off: 'mdi:account-voice-off' },
+  tamper:      { on: 'mdi:lock-open-alert', off: 'mdi:lock-open-alert' },
+  vibration:   { on: 'mdi:vibrate', off: 'mdi:vibrate-off' },
+  running:     { on: 'mdi:server-network', off: 'mdi:server-network-off' },
+  shutter:     { on: 'mdi:window-shutter-open', off: 'mdi:window-shutter' },
+  blind:       { on: 'mdi:blinds-horizontal', off: 'mdi:blinds-horizontal-closed' }
+};
+
+const DOMAIN_ICON_MAP = {
+  light:           'mdi:lightbulb',
+  switch:          'mdi:toggle-switch',
+  input_boolean:   'mdi:toggle-switch',
+  fan:             'mdi:fan',
+  climate:         'mdi:thermostat',
+  media_player:    'mdi:speaker',
+  vacuum:          'mdi:robot-vacuum',
+  binary_sensor:   'mdi:motion-sensor',
+  sensor:          'mdi:information-outline',
+  cover:           'mdi:window-shutter',
+  lock:            'mdi:lock',
+  door:            'mdi:door-closed',
+  window:          'mdi:window-closed',
+  alarm_control_panel: 'mdi:shield-home',
+  scene:           'mdi:palette',
+  script:          'mdi:script-text',
+  input_number:    'mdi:ray-vertex',
+  input_select:    'mdi:format-list-bulleted',
+  camera:          'mdi:cctv',
+  humidifier:      'mdi:air-humidifier',
+  weather:         'mdi:weather-partly-cloudy',
+  device_tracker:  'mdi:map-marker',
+  person:          'mdi:account',
+  input_text:      'mdi:text-box-outline'
+};
+
+const SENSOR_TYPE_MAP = {
+  temperature: { emoji: '🌡️', unitC: '°C', unitF: '°F' },
+  humidity:    { emoji: '💦', unit: '%' },
+  co2:         { emoji: '🟢', unit: 'ppm' },
+  illuminance: { emoji: '☀️', unit: 'lx' },
+  pm1:         { emoji: '🟤', unit: 'µg/m³' },
+  pm25:        { emoji: '⚫️', unit: 'µg/m³' },
+  pm10:        { emoji: '⚪️', unit: 'µg/m³' },
+  uv:          { emoji: '🌞', unit: 'UV' },
+  noise:       { emoji: '🔊', unit: 'dB' },
+  pressure:    { emoji: '📈', unit: 'hPa' },
+  voc:         { emoji: '🧪', unit: 'ppb' }
+};
 
 class BubbleRoom extends LitElement {
   static get properties() {
@@ -8,288 +67,200 @@ class BubbleRoom extends LitElement {
       hass: { type: Object },
     };
   }
-
-  firstUpdated() {
-    const els = this.shadowRoot.querySelectorAll('.mushroom-primary');
-    if (!els.length) return;
-    // installa fitty e poi disattiva i listener interni
-    const controllers = fitty(els, { maxSize: 20, multiLine: false });
-    controllers.forEach(c => c.unsubscribe());
-  }
-
+  // Supporto all'editor visivo
   static async getConfigElement() {
     await import('./bubble-room-editor.js');
     return document.createElement('bubble-room-editor');
   }
-
   static getStubConfig() {
     return {
       entities: {
         presence: { entity: 'binary_sensor.aqara_fp1_presence' },
-        'sub-button1': { entity: 'light.luce_ventola', icon: '', tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } },
-        'sub-button2': { entity: 'fan.sonoff_1000f6e5c7', icon: '', tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } },
-        'sub-button3': { entity: 'media_player.google_nest_1', icon: '', tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } },
-        'sub-button4': { entity: 'vacuum.slider', icon: '', tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } },
-        climate:       { entity: 'climate.termostato_salotto', icon: '', tap_action: { action: 'more-info' } },
-        camera:        { entity: 'camera.front_door', icon: '', tap_action: { action: 'more-info' }, preview_url: '' },
-        entities1:     { entity: 'sensor.some_sensor1', icon: '' },
-        entities2:     { entity: 'sensor.some_sensor2', icon: '' },
-        entities3:     { entity: 'sensor.some_sensor3', icon: '' },
-        entities4:     { entity: 'sensor.some_sensor4', icon: '' },
-        entities5:     { entity: 'sensor.some_sensor5', icon: '' },
-        temperature:   {
-          temperature_sensor: 'sensor.vindstyrka_salotto_temperature',
-          humidity_sensor:    'sensor.vindstyrka_salotto_humidity',
-          tap_action: { action: 'more-info' }
+        "sub-button1": {
+          entity: 'light.luce_ventola',
+          icon: 'mdi:lightbulb',
+          tap_action: { action: 'toggle' },
+          hold_action: { action: 'more-info' }
         },
+        "sub-button2": {
+          entity: 'fan.sonoff_1000f6e5c7',
+          icon: 'mdi:fan',
+          tap_action: { action: 'toggle' },
+          hold_action: { action: 'more-info' }
+        },
+        "sub-button3": {
+          entity: 'media_player.google_nest_1',
+          icon: 'mdi:play-circle',
+          tap_action: { action: 'toggle' },
+          hold_action: { action: 'more-info' }
+        },
+        "sub-button4": {
+          entity: 'vacuum.slider',
+          icon: 'mdi:robot-vacuum',
+          tap_action: { action: 'toggle' },
+          hold_action: { action: 'more-info' }
+        },
+        climate: { entity: 'climate.termostato_salotto', icon: 'mdi:thermostat', tap_action: { action: 'more-info' } },
+        entities1: { entity: 'sensor.some_sensor1', icon: 'mdi:information-outline' },
+        entities2: { entity: 'sensor.some_sensor2', icon: 'mdi:information-outline' },
+        entities3: { entity: 'sensor.some_sensor3', icon: 'mdi:information-outline' },
+        entities4: { entity: 'sensor.some_sensor4', icon: 'mdi:information-outline' },
+        entities5: { entity: 'sensor.some_sensor5', icon: 'mdi:information-outline' },
       },
       colors: {
-        active: 'var(--primary-color)',
-        inactive: 'color-mix(in srgb, var(--primary-color) 40%, transparent)',
-        backgroundActive: 'color-mix(in srgb, var(--primary-color) 20%, transparent)',
-        backgroundInactive: 'color-mix(in srgb, var(--primary-color) 10%, transparent)'
+        room: {
+          color_active: 'rgba(var(--color-green), 1)',
+          color_inactive: 'rgba(var(--color-green), 0.3)',
+          icon_active: 'orange',
+          icon_inactive: '#80808055',
+        },
+        subbutton: {
+          color_on: 'rgba(var(--color-blue), 1)',
+          color_off: 'rgba(var(--color-blue), 0.3)',
+          icon_on: 'yellow',
+          icon_off: '#666'
+        }
       },
-      icon: '',
       name: 'Salotto',
+      icon: 'mdi:sofa',
       tap_action: { action: 'navigate', navigation_path: '/lovelace/sala' }
     };
   }
 
-  _getFallbackIcon(entityId, explicitIcon) {
-    explicitIcon = typeof explicitIcon === 'string' ? explicitIcon : '';
-    if (explicitIcon.trim()) return explicitIcon;
-    if (this.hass?.entities?.[entityId]?.icon) return this.hass.entities[entityId].icon;
-    const stateObj = this.hass?.states?.[entityId];
-    if (stateObj?.attributes?.icon) return stateObj.attributes.icon;
-    if (stateObj?.attributes?.device_class) {
-      return this._getDeviceClassIcon(stateObj.attributes.device_class, stateObj.state);
-    }
-    if (!entityId || typeof entityId !== 'string') return '';
-    const domain = entityId.split('.')[0];
-
-    return this._getDomainDefaultIcon(domain, stateObj?.state);
-  }
-
-  _getDeviceClassIcon(deviceClass, state) {
-    switch (deviceClass) {
-      case 'door':        return state === 'on' ? 'mdi:door-open'        : 'mdi:door-closed';
-      case 'window':      return state === 'on' ? 'mdi:window-open'      : 'mdi:window-closed';
-      case 'motion':      return state === 'on' ? 'mdi:motion-sensor'    : 'mdi:motion-sensor-off';
-      case 'moisture':    return state === 'on' ? 'mdi:water-alert'      : 'mdi:water-off';
-      case 'smoke':       return state === 'on' ? 'mdi:smoke'            : 'mdi:smoke-detector-off';
-      case 'gas':         return state === 'on' ? 'mdi:gas-cylinder'     : 'mdi:gas-off';
-      case 'problem':     return 'mdi:alert';
-      case 'connectivity':return 'mdi:connection';
-      case 'occupancy':
-      case 'presence':    return state === 'on' ? 'mdi:account-voice'    : 'mdi:account-voice-off';
-      case 'tamper':      return 'mdi:lock-open-alert';
-      case 'vibration':   return state === 'on' ? 'mdi:vibrate'          : 'mdi:vibrate-off';
-      case 'running':     return state === 'on' ? 'mdi:server-network'   : 'mdi:server-network-off';
-      case 'shutter':     return state === 'on' ? 'mdi:window-shutter-open' : 'mdi:window-shutter';
-      case 'blind':       return state === 'on' ? 'mdi:blinds-horizontal'  : 'mdi:blinds-horizontal-closed';
-      default:            return '';
-    }
-  }
-
-  _getDomainDefaultIcon(domain, state) {
-    switch (domain) {
-      case 'light':         return 'mdi:lightbulb';
-      case 'switch':        return 'mdi:toggle-switch';
-      case 'fan':           return 'mdi:fan';
-      case 'climate':       return 'mdi:thermostat';
-      case 'media_player':  return 'mdi:speaker';
-      case 'vacuum':        return 'mdi:robot-vacuum';
-      case 'binary_sensor': return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off';
-      case 'sensor':        return 'mdi:information-outline';
-      case 'input_boolean': return 'mdi:toggle-switch';
-      case 'cover':         return state === 'open' ? 'mdi:blinds-open'   : 'mdi:blinds-closed';
-      case 'lock':          return state === 'locked' ? 'mdi:lock'         : 'mdi:lock-open';
-      case 'door':          return state === 'open'   ? 'mdi:door-open'    : 'mdi:door-closed';
-      case 'window':        return state === 'open'   ? 'mdi:window-open'  : 'mdi:window-closed';
-      default:              return '';
-    }
-  }
-
-  _renderMushroom(item, idx, color) {
-    const style = this._defaultMushroomStyle(idx);
-    if (item.temperature_sensor || item.humidity_sensor) {
-      const text = this._buildTemperatureText(item);
-      return html`
-        <div class="mushroom-item" style="${style}">
-          <span class="fit-text" style="color: ${color};">${text}</span>
-        </div>
-      `;
-    }
-    const icon = this._getFallbackIcon(item.entity, item.icon || '');
-    return html`
-      <div class="mushroom-item" style="${style}"
-           @pointerdown=${e => this._startHold(e, item)}
-           @pointerup=${e => this._endHold(e, item, () => this._handleMushroomTap(item))}
-           @pointerleave=${() => this._cancelHold()}>
-        <ha-icon icon="${icon}" style="color: ${color};"></ha-icon>
-      </div>
-    `;
-  }
-
-  _buildTemperatureText(item) {
-    const hass = this.hass;
-    const rawTemp = item.temperature_sensor
-      ? hass.states[item.temperature_sensor]?.state
-      : null;
-    const hum  = item.humidity_sensor   ? hass.states[item.humidity_sensor]?.state    : null;
-    let text = '';
-    if (rawTemp != null && rawTemp !== '') {
-      const unit = this.config.entities.temperature.unit || 'C';
-      text += `🌡️${rawTemp}°${unit}`;
-    }
-    if (hum  != null && hum  !== '') text += (text ? ' ' : '') + `💦${hum}%`;
-    return text;
-  }
-
   setConfig(config) {
-    if (!config) throw new Error('Configurazione mancante');
     config = JSON.parse(JSON.stringify(config));
-    if (typeof config !== 'object' || Array.isArray(config))
-      throw new Error('La configurazione deve essere un oggetto valido.');
-    if (!config.entities || typeof config.entities !== 'object')
-      throw new Error("Devi definire almeno la proprietà 'entities' nella configurazione.");
+    if (!config || typeof config !== 'object' || Array.isArray(config)) throw new Error("La configurazione deve essere un oggetto valido.");
+    if (!config.entities || typeof config.entities !== 'object') throw new Error("Devi definire almeno la proprietà 'entities' nella configurazione.");
 
     const keysWithIcon = [
-      'presence','sub-button1','sub-button2','sub-button3','sub-button4',
-      'entities1','entities2','entities3','entities4','entities5',
-      'climate','camera','temperature'
+      'presence', 'sub-button1', 'sub-button2', 'sub-button3', 'sub-button4',
+      'entities1', 'entities2', 'entities3', 'entities4', 'entities5', 'climate'
     ];
     const defaultAction = { tap_action: { action: 'toggle' }, hold_action: { action: 'more-info' } };
-    const entities = {};
-
-    for (const key in config.entities) {
-      let value = config.entities[key];
-      if (!value) continue;
-
-      // merge numerically indexed entities
-      if (
-        ['entities1','entities2','entities3','entities4','entities5'].includes(key) &&
-        typeof value === 'object'
-      ) {
-        const newValue = {};
-        const numericKeys = Object.keys(value).filter(k => /^\d+$/.test(k));
-        Object.entries(value).forEach(([k,v]) => {
-          if (!/^\d+$/.test(k)) newValue[k] = v;
-        });
-        if (numericKeys.length) {
-          newValue.entity = numericKeys
-            .sort((a,b) => a-b)
-            .map(k => value[k])
-            .join('');
-        }
-        value = newValue;
-      }
-
-      if (key === 'climate' && typeof value === 'string') {
-        value = { entity: value, ...defaultAction };
-      }
-
-      if (typeof value === 'string') {
-        entities[key] = keysWithIcon.includes(key)
-          ? (key === 'presence'
-              ? { entity: value }
-              : { entity: value, ...defaultAction })
-          : value;
-      } else if (typeof value === 'object') {
-        if (keysWithIcon.includes(key)) {
-          if (!value.style && key.startsWith('entities')) {
-            const idx = Number(key.replace('entities','')) - 1;
-            value.style = this._defaultMushroomStyle(idx);
-          }
-          entities[key] = key === 'presence'
-            ? { ...value }
-            : { ...defaultAction, ...value };
-        } else {
-          entities[key] = value;
-        }
-      }
-    }
-
-    const userColors = config.colors || {};
-    this.config = {
-      entities,
-      colors: {
-        active: userColors.active ?? 'var(--primary-color)',
-        inactive: userColors.inactive ?? 'var(--primary-color-faded)',
-        backgroundActive: userColors.backgroundActive ?? 'color-mix(in srgb, var(--primary-color) 85%, transparent)',
-        backgroundInactive: userColors.backgroundInactive ?? 'color-mix(in srgb, var(--primary-color) 15%, transparent)',
-      },
-      icon:       config.icon       || '',
-      name:       config.name       || 'Salotto',
-      tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
+    const defaultIcons = {
+      'sub-button1': 'mdi:lightbulb',
+      'sub-button2': 'mdi:fan',
+      'sub-button3': 'mdi:play-circle',
+      'sub-button4': 'mdi:robot-vacuum',
+      'entities1': 'mdi:information-outline',
+      'entities2': 'mdi:information-outline',
+      'entities3': 'mdi:information-outline',
+      'entities4': 'mdi:information-outline',
+      'entities5': 'mdi:information-outline',
+      'presence': 'mdi:account',
+      'climate': 'mdi:thermostat',
+      'camera': 'mdi:cctv',
     };
 
-    if (
-      this.config.entities.temperature &&
-      !this.config.entities.temperature.unit
-    ) {
-      this.config.entities.temperature.unit = 'C';
+    const entities = {};
+    for (const key in config.entities) {
+      let value = config.entities[key];
+      if (['entities1','entities2','entities3','entities4','entities5'].includes(key)) {
+        if (value && typeof value === 'object' && Object.keys(value).some(k => /^\d+$/.test(k))) {
+          let newValue = {};
+          for (const prop in value) if (!/^\d+$/.test(prop)) newValue[prop] = value[prop];
+          const numericKeys = Object.keys(value).filter(k => /^\d+$/.test(k));
+          if (numericKeys.length > 0) {
+            newValue.entity = numericKeys.sort((a, b) => Number(a) - Number(b)).map(k => value[k]).join("");
+          }
+          value = newValue;
+        }
+      }
+      if (key === 'climate' && typeof value === 'string') value = { entity: value, icon: defaultIcons['climate'], ...defaultAction };
+      if (typeof value === 'string') {
+        if (keysWithIcon.includes(key)) {
+          if (key === 'presence') entities[key] = { entity: value, icon: defaultIcons[key] };
+          else entities[key] = { entity: value, icon: defaultIcons[key], ...defaultAction };
+        } else entities[key] = value;
+      } else if (typeof value === 'object') {
+        if (keysWithIcon.includes(key)) {
+          if (!value.icon) value.icon = defaultIcons[key];
+          if (['entities1','entities2','entities3','entities4','entities5','camera'].includes(key) && !value.style) {
+            let index = key === 'camera' ? 6 : parseInt(key.replace('entities','')) - 1;
+            value.style = this._defaultMushroomStyle(index);
+          }
+          if (key === 'presence') entities[key] = { ...value };
+          else entities[key] = { ...defaultAction, ...value };
+        } else entities[key] = value;
+      }
     }
-
-    if (!this.config.entity && this.config.entities.presence) {
-      this.config.entity = this.config.entities.presence.entity;
-    }
+    this.config = {
+      entities,
+      layout_mode: config.layout_mode || '6x3',
+      colors: {
+        room: {
+          color_active: 'rgba(var(--color-green), 1)',
+          color_inactive: 'rgba(var(--color-green), 0.3)',
+          icon_on: 'orange',
+          icon_off: '#80808055',
+          ...(config.colors?.room || {})
+        },
+        subbutton: {
+          color_on: 'rgba(var(--color-blue), 1)',
+          color_off: 'rgba(var(--color-blue), 0.3)',
+          icon_on: 'yellow',
+          icon_off: '#666',
+          ...(config.colors?.subbutton || {})
+        }
+      },
+      name: config.name || "Salotto",
+      icon: config.icon || "mdi:sofa",
+      tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
+    };
   }
 
-  getConfig() {
-    if (!this.config) return {};
-    
-    const copy = JSON.parse(JSON.stringify(this.config));
-    const filtered = {};
-    Object.entries(copy.entities).forEach(([k,e]) => {
-      if (!e) return;
-      if (k.startsWith('sub-button') || (e.entity && e.entity.trim())) {
-        filtered[k] = e;
-      }
-    });
-    copy.entities = filtered;
-    return copy;
+  getConfig() { return JSON.parse(JSON.stringify(this.config)); }
+
+  _defaultMushroomStyle(index) {
+    switch (index) {
+      case 0: return "top: -82px; left: 0px;";
+      case 1: return "top: -87px; left: 43px;";
+      case 2: return "top: -67px; left: 80px;";
+      case 3: return "bottom: 42px; left: 98px;";
+      case 4: return "bottom: 0px; left: 90px;";
+      case 5: return "bottom: -2px; left: -2px;";
+      case 6: return "top: -140px; left: 15px;";
+      default: return "";
+    }
   }
 
   static get styles() {
     return css`
       *, *::before, *::after { box-sizing: border-box; }
-      :host { display: block; --card-height: 190px; font-family: sans-serif; }
+      :host {
+        display: block;
+        --card-height: 190px;
+        --card-background: black;
+        --bubble-bg: gray;
+        font-family: sans-serif;
+      }
       ha-card {
         display: block;
         margin: 0;
         padding: 0 !important;
-        background: var(--bubble-room-background, var(--card-background-color, var(--ha-card-background, white))) !important;
-        border-radius: var(--bubble-room-border-radius, var(--ha-card-border-radius, 8px)) !important;
+        background: transparent !important;
+        height: var(--card-height);
       }
       .card {
         position: relative;
         width: 100%;
-        height: var(--card-height);
+        height: 190px;
+        border-radius: 8px;
         overflow: hidden;
-        border-radius: inherit;
       }
       .grid-container {
         display: grid;
-        width:100%;
-        height:100%;
+        width: 100%;
+        height: 100%;
         grid-template-areas:
           ". . . b"
           "n n n b"
           "i i . b"
           "i i . b";
-        grid-template-columns: 35% 35% 10% 20%;
-        grid-template-rows: 25% 25% 25% 25%;
       }
       .name-area {
-        grid-area: n;
-        display: flex;
-        align-items: center;
-        padding-left: 2px;
-        margin-top: -67px;
-        font-size: 30px;
+        position: absolute;
         font-weight: bold;
-        color: var(--bubble-room-name-color);
       }
       .icon-area {
         grid-area: i;
@@ -301,23 +272,20 @@ class BubbleRoom extends LitElement {
       .bubble-icon-container {
         position: absolute;
         cursor: pointer;
-        border-radius: 50%;
-        width: 170px;
-        height: 170px;
+        border-radius: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
         top: -39px;
         left: -40px;
-        background-color: var(--bubble-room-icon-bg);
       }
       .bubble-icon {
         position: absolute;
-        top: 20%;
-        left: 30%;
-        --mdc-icon-size: 75px;
-        opacity: 0.5;
-        color: var(--bubble-room-icon-color);
+        top: 15%;
+        left: 25%;
+        width: 50% 
+        --mdc-icon-size: 90px 
+        opacity: 0.5
       }
       .bubble-sub-button-container {
         grid-area: b;
@@ -325,21 +293,31 @@ class BubbleRoom extends LitElement {
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        justify-self: stretch;
+        align-self: stretch;
+        width: 100%;
       }
       .bubble-sub-button {
         display: flex;
-        align-items: center;
         justify-content: center;
+        align-items: center;
         width: 100%;
-        padding: 10px;
+        min-width: 38px;
+        max-width: 100%;
+        height: var(--sub-button-height, 48px);
         border-radius: 10px;
-        margin: 3px;
+        margin: 5px 0 0 0;
         cursor: pointer;
-        background-color: var(--bubble-room-sub-bg, var(--card-background-color));
-        color: var(--bubble-room-sub-icon-color, var(--primary-color));
+        background-color: var(--sub-button-color);
+        transition: width 0.2s;
       }
-      .bubble-sub-button ha-icon {
-        color: inherit;
+      @media (max-width: 480px) {
+        .bubble-sub-button {
+          min-width: 32px;
+          max-width: 44px;
+          border-radius: 12px;
+          padding: 0;
+        }
       }
       .mushroom-container {
         position: absolute;
@@ -348,283 +326,347 @@ class BubbleRoom extends LitElement {
         width: 100%;
         height: 50%;
         pointer-events: none;
+        z-index: 2;
       }
       .mushroom-item {
         position: absolute;
         pointer-events: auto;
+        cursor: pointer;
       }
-      .mushroom-item ha-icon {
-        --mdc-icon-size: 33px;
-      }
-      .fit-text {
-        white-space: nowrap;
-        overflow: hidden;
+      .mushroom-primary {
+        pointer-events: auto;
       }
     `;
-  }
-
-  _defaultMushroomStyle(index) {
-    switch (index) {
-      case 0: return 'top: -77px; left: 0px;';
-      case 1: return 'top: -85px; left: 38px;';
-      case 2: return 'top: -64px; left: 77px;';
-      case 3: return 'bottom: 39px; left: 96px;';
-      case 4: return 'bottom: -1px; left: 85px;';
-      case 5: return 'bottom: -2px; left: -2px;';
-      case 6: return 'top: -140px; left: 5px;';
-      case 7: return 'top: -95px; right: 5px;';
-      default: return '';
-    }
-  }
-
-  _startHold(e, item) {
-    e.stopPropagation();
-    this._holdTriggered = false;
-    this._holdTimeout = setTimeout(() => {
-      this._holdTriggered = true;
-      this._handleHoldAction(item);
-    }, 500);
-  }
-
-  _endHold(e, item, clickCallback) {
-    e.stopPropagation();
-    clearTimeout(this._holdTimeout);
-    if (!this._holdTriggered) clickCallback();
-    this._holdTriggered = false;
-  }
-
-  _cancelHold() {
-    clearTimeout(this._holdTimeout);
-    this._holdTriggered = false;
-  }
-
-  _handleHoldAction(item) {
-    if (!item?.hold_action) {
-      this.dispatchEvent(new CustomEvent('hass-more-info', {
-        detail: { entityId: item.entity },
-        bubbles: true,
-        composed: true,
-      }));
-      return;
-    }
-    const { action, service, service_data, navigation_path } = item.hold_action;
-    switch (action) {
-      case 'more-info':
-        this.dispatchEvent(new CustomEvent('hass-more-info', {
-          detail: { entityId: item.entity },
-          bubbles: true,
-          composed: true,
-        }));
-        break;
-      case 'toggle':
-        this._toggleEntity(item.entity);
-        break;
-      case 'call-service':
-        if (service) {
-          const [domain, svc] = service.split('.');
-          const data = { ...service_data, entity_id: service_data?.entity_id || item.entity };
-          this.hass.callService(domain, svc, data);
-        }
-        break;
-      case 'navigate':
-        if (navigation_path) {
-          window.history.pushState({}, '', navigation_path);
-          window.dispatchEvent(new Event('location-changed'));
-        }
-        break;
-    }
-  }
-
-  _handleMainIconTap() {
-    if (!this.config?.tap_action) return;
-    const { action, service, service_data, navigation_path } = this.config.tap_action;
-    switch (action) {
-      case 'toggle':
-        if (this.config.entity) this._toggleEntity(this.config.entity);
-        break;
-      case 'more-info':
-        if (this.config.entity) {
-          this.dispatchEvent(new CustomEvent('hass-more-info', {
-            detail: { entityId: this.config.entity },
-            bubbles: true,
-            composed: true,
-          }));
-        }
-        break;
-      case 'call-service':
-        if (service) {
-          const [domain, svc] = service.split('.');
-          const data = { 
-            ...service_data, 
-            entity_id: service_data?.entity_id || this.config.entity 
-          };
-          this.hass.callService(domain, svc, data);
-        }
-        break;
-      case 'navigate':
-        if (navigation_path) {
-          window.history.pushState({}, '', navigation_path);
-          window.dispatchEvent(new Event('location-changed'));
-        }
-        break;
-    }
-  }
-
-  _toggleEntity(entity) {
-    if (!this.hass || !entity) return;
-    this.hass.callService('homeassistant', 'toggle', { entity_id: entity });
-  }
-
-  _handleSubButtonTap(item) {
-    if (!item?.tap_action) return;
-    const { action, service, service_data, navigation_path } = item.tap_action;
-    switch (action) {
-      case 'toggle':
-        if (item.entity) this._toggleEntity(item.entity);
-        break;
-      case 'more-info':
-        if (item.entity) {
-          this.dispatchEvent(new CustomEvent('hass-more-info', {
-            detail: { entityId: item.entity },
-            bubbles: true,
-            composed: true,
-          }));
-        }
-        break;
-      case 'call-service':
-        if (service) {
-          const [domain, svc] = service.split('.');
-          const data = { 
-            ...service_data, 
-            entity_id: service_data?.entity_id || item.entity 
-          };
-          this.hass.callService(domain, svc, data);
-        }
-        break;
-      case 'navigate':
-        if (navigation_path) {
-          window.history.pushState({}, '', navigation_path);
-          window.dispatchEvent(new Event('location-changed'));
-        }
-        break;
-    }
-  }
-
-  _handleMushroomTap(item) {
-    this._handleSubButtonTap(item);
   }
 
   render() {
+    console.log('DEBUG RENDER - entities:', this.config?.entities);
+    console.log('DEBUG RENDER - climate:', this.config?.entities?.climate);
+    console.log('DEBUG RENDER - camera:', this.config?.entities?.camera);
+
+    const layout = this._getLayoutStyle(this.config.layout_mode || "6x3");
     if (!this.config || !this.hass) {
-      return html`<div>Loading…</div>`;
+      return html`<div>Loading...</div>`;
     }
+    const { entities } = this.config;
+    const sensorStrings = [];
 
-    const { entities, name, icon, background, border_radius } = this.config;
-    const colors = this.config.colors;
+    for (let i = 1; i <= 4; i++) {
+      const sensorKey = `sensor${i}`;
+      const sensor = this.config.entities[sensorKey];
+      if (!sensor || !sensor.type) continue;
+      const entityId = sensor.entity;
+      let state = entityId ? (this.hass.states[entityId]?.state || 'N/A') : '?';
+      if (!isNaN(parseFloat(state))) state = Math.floor(parseFloat(state)).toString();
+      const { emoji, unit } = this._getSensorEmojiAndUnit(sensor.type, sensor.unit);
+      sensorStrings.push(`${emoji} ${state}${unit}`);
+    }
+    const { colors, name, icon } = this.config;
+    const roomColors = colors?.room || {};
+    const subColors = colors?.subbutton || {};
     const hass = this.hass;
-    const presenceOn = entities.presence?.entity && hass.states[entities.presence.entity]?.state === 'on';
-
-    const ACCENT_ICON    = 'var(--primary-color)';
-    const INACTIVE_ICON  = 'var(--secondary-text-color)';
-    const ACCENT_BG      = 'color-mix(in srgb, var(--primary-color) 20%, transparent)';
-    const INACTIVE_BG    = 'var(--card-background-color)';
-    const iconOnColor = colors.active;
-    const iconOffColor = colors.inactive;
-    const bgOnColor = colors.backgroundActive;
-    const bgOffColor = colors.backgroundInactive;
-
-    const bubbleIconColor = presenceOn ? iconOnColor : iconOffColor;
-    const bubbleBgColor   = presenceOn ? bgOnColor   : bgOffColor;
-
-    const cardVars = [
-      background    ? `--bubble-room-background: ${background}`       : '',
-      border_radius ? `--bubble-room-border-radius: ${border_radius}` : '',
-      `--bubble-room-icon-bg: ${bubbleBgColor}`,
-      `--bubble-room-icon-color: ${bubbleIconColor}`,
-      `--bubble-room-name-color: ${bubbleIconColor}`
-    ].filter(v => v).join(';');
-
-    const mainIcon = icon?.trim() ? icon : 
-                   (entities.presence?.entity ? this._getFallbackIcon(entities.presence.entity) : '');
+    const presenceState = hass.states[entities.presence.entity]?.state || 'off';
+    const extractAlpha = (rgba) => {
+      const match = rgba?.match(/rgba\([^,]+,[^,]+,[^,]+,\s*([^)]+)\)/);
+      return match ? parseFloat(match[1]) : 1;
+    };
+    const sensorOpacity = presenceState === 'on'
+      ? extractAlpha(roomColors.background_active || 'rgba(0,128,0,1)')
+      : extractAlpha(roomColors.background_inactive || 'rgba(0,128,0,0.3)');
+    const bubbleBg = presenceState === 'on'
+      ? roomColors.background_active || 'rgba(0,128,0,0.5)'
+      : roomColors.background_inactive || 'rgba(0,128,0,0.3)';
+    const nameColor = bubbleBg;
+    const bubbleIconColor = presenceState === 'on'
+      ? roomColors.icon_active || 'orange'
+      : roomColors.icon_inactive || '#80808055';
 
     const subButtons = [
-      entities['sub-button1'],
-      entities['sub-button2'],
-      entities['sub-button3'],
-      entities['sub-button4']
-    ].filter(b => b && b.entity);
-
-    const mushroomKeys = [
-      'entities1','entities2','entities3','entities4','entities5',
-      'climate','temperature','camera'
+      entities["sub-button1"],
+      entities["sub-button2"],
+      entities["sub-button3"],
+      entities["sub-button4"],
     ];
-    const mushrooms = mushroomKeys.map((key, idx) => {
-      const item = entities[key];
-      if (!item) return { item: null, idx, color: null };
-      if (item.temperature_sensor || item.humidity_sensor) {
-        return { item, idx, color: bubbleIconColor };
-      }
-      const entityId = item.entity;
-      if (!entityId) return { item: null, idx, color: null };
-      const on = hass.states[entityId]?.state === 'on';
 
-      return { item, idx, color: on ? iconOnColor : iconOffColor };
-    });
+    let mushroomTemplates = [
+      entities.entities1,
+      entities.entities2,
+      entities.entities3,
+      entities.entities4,
+      entities.entities5
+    ];
+    if (entities.climate) mushroomTemplates.push(entities.climate);
+    if (entities.camera) mushroomTemplates.push(entities.camera);
 
     return html`
-      <ha-card style="${cardVars}">
-        <div class="card">
-          <div class="grid-container">
-            <div class="name-area" style="color: ${bubbleIconColor};">${name}</div>
-            <div class="icon-area">
-              <div class="bubble-icon-container"
-                   @pointerdown=${e => this._startHold(e, this.config)}
-                   @pointerup=${e => this._endHold(e, this.config, () => this._handleMainIconTap())}
-                   @pointerleave=${() => this._cancelHold()}>
-                ${ mainIcon
-                  ? html`<ha-icon class="bubble-icon" icon="${mainIcon}" style="color: ${bubbleIconColor};"></ha-icon>`
-                  : nothing }
-              </div>
-              <div class="mushroom-container">
-                ${ mushrooms.map(({ item, idx, color }) => {
-                    if (!item) {
-                      return html`<div class="mushroom-item" style="${this._defaultMushroomStyle(idx)}"></div>`;
-                    }
-                    return this._renderMushroom(item, idx, color);
-                  }) }
-              </div>
+      <div class="card" style="height: ${layout.cardHeight};">
+        <div class="grid-container"
+            style="
+              grid-template-areas: ${layout.gridTemplate};
+              grid-template-columns: ${layout.gridColumns};
+              grid-template-rows: ${layout.gridRows};
+            ">
+          <!-- Nome stanza -->
+          <div class="name-area"
+              style="
+                color: ${nameColor};
+                font-size: ${layout.nameFont};
+                position: absolute;
+                top: ${layout.nameTop};
+                left: ${layout.nameLeft};
+              ">
+            ${name}
+          </div>
+  
+          <!-- Icona principale -->
+          <div class="icon-area">
+            <div class="bubble-icon-container"
+                style="
+                  background-color: ${bubbleBg};
+                  ${this._getIconShapeStyle(this.config.layout_mode)}
+                "
+                 @pointerdown="${(e) => this._startHold(e, this.config)}"
+                 @pointerup="${(e) => this._endHold(e, this.config, () => this._handleMainIconTap())}"
+                 @pointerleave="${(e) => this._cancelHold(e)}">
+              <ha-icon class="bubble-icon"
+                      icon="${this._getBestIcon(this.config.entities.presence?.entity, { icon: icon })}"
+                      style="
+                        color: ${bubbleIconColor};
+                        --mdc-icon-size: ${layout.iconSize};
+                        width: ${layout.iconSize};
+                        height: ${layout.iconSize};
+                        position: absolute;
+                        top: ${layout.iconTop || '15%'};
+                        left: ${layout.iconLeft || '25%'};
+                      ">
+              </ha-icon>
             </div>
-            <div class="bubble-sub-button-container">
-              ${ subButtons.map(btn => {
-                  if (!btn.entity) return nothing;
-                  const isOn    = hass.states[btn.entity]?.state === 'on';
-                  const btnBg   = isOn ? this.config.colors.backgroundActive   ?? ACCENT_BG : this.config.colors.backgroundInactive ?? INACTIVE_BG;
-                  const iconCol = isOn ? this.config.colors.active             ?? ACCENT_ICON : this.config.colors.inactive ?? INACTIVE_ICON;
-
-                  const ic      = this._getFallbackIcon(btn.entity, btn.icon || '');
-                  return html`
-                    <div class="bubble-sub-button ${isOn ? 'active' : 'inactive'}"
-                         style="background-color: ${btnBg}; color: ${iconCol};"
-                         @pointerdown=${e => this._startHold(e, btn)}
-                         @pointerup=${e => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}
-                         @pointerleave=${() => this._cancelHold()}>
-                      <ha-icon icon="${ic}" style="color: inherit;"></ha-icon>
-                    </div>
-                  `;
-                }) }
+  
+            <!-- Mushroom templates -->
+            <div class="mushroom-container">
+            console.log('DEBUG mushroomTemplates array:', mushroomTemplates);
+            ${mushroomTemplates.map((item, index) => {
+              if (!item) return html``;
+              const style = layout.mushroomPositions[index] || this._defaultMushroomStyle(index);
+            
+              let mushroomSize = layout.mushroomSize;
+              let label = 'altro';
+            
+              // Penultimo = climate, ultimo = camera (se presenti)
+              if (entities.climate && index === mushroomTemplates.length - (entities.camera ? 2 : 1)) {
+                mushroomSize = layout.mushroomSizeSmall;
+                label = 'climate';
+              }
+              if (entities.camera && index === mushroomTemplates.length - 1) {
+                mushroomSize = layout.mushroomSizeSmall;
+                label = 'camera';
+              }
+            
+              // DEBUG!
+              console.log('mushroomTemplates', {index, entity: item.entity, label, mushroomSize});
+            
+              const state = hass.states[item.entity]?.state || 'off';
+              const iconColor = state === 'on'
+                ? (roomColors.mushroom_active || 'orange')
+                : (roomColors.mushroom_inactive || '#80808055');
+            
+              return html`
+                <div class="mushroom-item"
+                    style="${style}"
+                    @pointerdown="${(e) => this._startHold(e, item)}"
+                    @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
+                    @pointerleave="${(e) => this._cancelHold(e)}">
+                  <ha-icon icon="${this._getBestIcon(item.entity, item)}"
+                          style="color: ${iconColor}; --mdc-icon-size: ${mushroomSize}; width: ${mushroomSize}; height: ${mushroomSize};">
+                  </ha-icon>
+                </div>
+              `;
+            })}
+            
+            
+            
+            ${sensorStrings.length > 0 ? html`
+              <div class="mushroom-item"
+                  style="${layout.mushroomPositions[7]}; font-size: ${layout.sensorFontSize};"
+                  title="Environmental Sensors">
+                <div class="mushroom-primary"
+                    style="
+                      font-size: ${layout.sensorFontSize};
+                      color: white;
+                      font-weight: bold;
+                      text-align: center;
+                      line-height: 1.2;
+                      text-shadow: 0 0 3px black;
+                      padding: 4px 6px;
+                      border-radius: 6px;
+                      opacity: ${sensorOpacity};
+                    ">
+                  ${sensorStrings.join(' ')}
+                </div>
+              </div>
+            ` : ''}
             </div>
           </div>
+  
+          <!-- Sub-button -->
+          <div class="bubble-sub-button-container">
+            ${subButtons.map(btn => {
+              if (!btn) return html``;
+              const state = hass.states[btn.entity]?.state || 'off';
+              const btnColor = state === 'on'
+                ? subColors.background_on || 'rgba(0,0,255,1)'
+                : subColors.background_off || 'rgba(0,0,255,0.3)';
+              const iconColor = state === 'on'
+                ? subColors.icon_on || 'yellow'
+                : subColors.icon_off || '#666';
+              return html`
+                <div class="bubble-sub-button"
+                    style="
+                      --sub-button-color: ${btnColor};
+                      --sub-button-height: ${layout.subButtonHeight};
+                    "
+                     @pointerdown="${(e) => this._startHold(e, btn)}"
+                     @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
+                     @pointerleave="${(e) => this._cancelHold(e)}">
+                  <ha-icon icon="${this._getBestIcon(btn.entity, btn)}"
+                          style="color: ${iconColor}; --mdc-icon-size: ${layout.mushroomSize}; width: ${layout.mushroomSize}; height: ${layout.mushroomSize};">
+                  </ha-icon>
+                </div>
+              `;
+            })}
+          </div>
         </div>
-      </ha-card>
+      </div>
     `;
   }
 
-  set hass(hass) {
-    this._hass = hass;
-    this.requestUpdate();
+  // ... (resta invariato: funzioni hold/tap, getIcon, _getDeviceClassIcon, ecc.)
+
+  _startHold(e, item) { e.stopPropagation(); this._holdTriggered = false; this._holdTimeout = setTimeout(() => { this._holdTriggered = true; this._handleHoldAction(item); }, 500);}
+  _endHold(e, item, clickCallback) { e.stopPropagation(); clearTimeout(this._holdTimeout); if (!this._holdTriggered) clickCallback(); this._holdTriggered = false; }
+  _cancelHold(e) { clearTimeout(this._holdTimeout); this._holdTriggered = false; }
+  _handleMainIconTap() { if (!this.config.tap_action) return; const action = this.config.tap_action.action; if (action === 'toggle') this._toggleEntity(this.config.entity); else if (action === 'more-info') this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: this.config.entity }, bubbles: true, composed: true, })); else if (action === 'navigate') { if (this.config.tap_action.navigation_path) { window.history.pushState({}, '', this.config.tap_action.navigation_path); window.dispatchEvent(new Event('location-changed')); } } }
+  _toggleEntity(entity) { if (!this.hass) return; this.hass.callService('homeassistant', 'toggle', { entity_id: entity }); }
+  _handleHoldAction(item) { if (!item.hold_action) { this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: item.entity }, bubbles: true, composed: true, })); return; } const action = item.hold_action.action; switch (action) { case 'more-info': this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: item.entity }, bubbles: true, composed: true, })); break; case 'toggle': this._toggleEntity(item.entity); break; case 'call-service': if (item.hold_action.service) { const [domain, serviceName] = item.hold_action.service.split('.'); const serviceData = item.hold_action.service_data || {}; if (!serviceData.entity_id) { serviceData.entity_id = item.entity; } this.hass.callService(domain, serviceName, serviceData); } break; case 'navigate': if (item.hold_action.navigation_path) { window.history.pushState({}, '', item.hold_action.navigation_path); window.dispatchEvent(new Event('location-changed')); } break; default: }}
+  _handleSubButtonTap(item) { if (!item.tap_action || item.tap_action.action === 'none') return; const action = item.tap_action.action; if (action === 'toggle') this._toggleEntity(item.entity); else if (action === 'more-info') this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: item.entity }, bubbles: true, composed: true, })); else if (action === 'navigate') { if (item.tap_action.navigation_path) { window.history.pushState({}, '', item.tap_action.navigation_path); window.dispatchEvent(new Event('location-changed')); } } }
+  _handleMushroomTap(item) { if (!item.tap_action || item.tap_action.action === 'none') return; const action = item.tap_action.action; if (action === 'toggle') this._toggleEntity(item.entity); else if (action === 'more-info') this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: item.entity }, bubbles: true, composed: true, })); else if (action === 'navigate') { if (item.tap_action.navigation_path) { window.history.pushState({}, '', item.tap_action.navigation_path); window.dispatchEvent(new Event('location-changed')); } } }
+  _getBestIcon(entityId, entityConf) {
+    // 1. Se la config ha una icona, usala!
+    if (entityConf.icon) return entityConf.icon;
+  
+    // 2. Se lo stato dell’entità esiste e ha una icona, usala!
+    const stateObj = this.hass?.states?.[entityId];
+    if (stateObj && stateObj.attributes && stateObj.attributes.icon) {
+      return stateObj.attributes.icon;
+    }
+  
+    // 3. Prova con device_class (tipo sensore specifico)
+    const deviceClass = stateObj?.attributes?.device_class;
+    const domain = entityId ? entityId.split('.')[0] : '';
+    const state = stateObj?.state;
+  
+    if (deviceClass) {
+      const dcIcon = this._getDeviceClassIcon(deviceClass, state);
+      if (dcIcon) return dcIcon;
+    }
+  
+    // 4. Fallback per dominio
+    return this._getDomainDefaultIcon(domain, state) || 'mdi:information-outline';
+  }  
+  _getDeviceClassIcon(deviceClass, state) { const icons = DEVICE_CLASS_ICON_MAP[deviceClass]; if (!icons) return ''; if (icons.on && icons.off) { return state === 'on' ? icons.on : icons.off; } return icons.on || ''; }
+  _getDomainDefaultIcon(domain, state) { if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP[domain] || ''; }
+  _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP[sensorType]; if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
+
+  _getLayoutStyle(mode) {
+    const layoutMap = {
+      '6x3': {
+        cardHeight: '190px',
+        iconSize: '75px',
+        iconTop: '25%',
+        iconLeft: '5%',
+        nameFont: '28px',
+        nameTop: '10px',
+        nameLeft: '5px',
+        mushroomSize: '35px',
+        mushroomSizeSmall: '20px', 
+        subButtonPadding: '10px',
+        mushroomPositions: [
+          'top: -70px; left: 0px;',//entities1
+          'top: -70px; left: 50px;',//entities2
+          'top: -40px; left: 85px;',//entities3
+          'bottom: 30px; left: 85px;',//entities4
+          'bottom: 0px; left: 50px;',//entities5
+          'bottom: 0px; left: 0px;',//climate
+          'top: -80px; left: 102px;',//camera
+          'top: -120px; left: 0px;',//sensor
+        ],
+        sensorFontSize: '12px',
+        gridTemplate: `
+          "n n n b"
+          "i i . b"
+          "i i . b"
+          "i i . b"`,
+        gridColumns: '25% 25% 10% minmax(64px, 2fr)',
+        gridRows: '25% 25% 25% 25%',
+        subButtonPadding: '10px',
+        subButtonHeight: '48px',
+        subButtonIconSize: '26px',
+      },
+      '12x4': {
+        cardHeight: '250px',
+        iconSize: '95px',
+        iconTop: '28%',
+        iconLeft: '18%',
+        nameFont: '32px',
+        nameTop: '12px',
+        nameLeft: '8px',
+        mushroomSize: '40px',
+        sensorFontSize: '16px',
+        subButtonPadding: '14px',
+        subButtonHeight: '60px',
+        subButtonIconSize: '32px',
+        mushroomSizeSmall: '20px', 
+        mushroomPositions: [
+          'top: -60px; left: 5px;',     // entities1
+          'top: -78px; left: 55px;',    // entities2
+          'top: -60px; left: 115px;',   // entities3
+          'bottom: 60px; left: 150px;', // entities4
+          'bottom: 5px; left: 130px;',  // entities5
+          'bottom: 3px; left: 3px;',    // climate
+          'top: -85px; right: 5px;',    // camera
+          'top: -135px; left: 0px;',    // sensori ambientali
+        ],
+        gridTemplate: `
+          "n n n b"
+          "i i . b"
+          "i i . b"
+          "i i . b"`,
+        gridColumns: '25% 25% 10% minmax(64px, 2fr)',
+          // ELASTICO solo in 12x4!
+        gridRows: '25% 25% 25% 25%',
+      }
+    };
+    return layoutMap[mode] || layoutMap['6x3'];
   }
-  get hass() {
-    return this._hass;
+
+  _getIconShapeStyle(mode) {
+    if (mode === '12x4') {
+      return `
+        width: 240px;
+        height: 190px;
+        border-radius: 0% 70% 70% 0%;
+        top: 0px;
+        left: 0px;
+      `;
+    } else {
+      return `
+        width: 130px;
+        height: 140px;
+        border-radius: 0% 70% 70% 0%;
+        top: 0px;
+        left: 0px;
+      `;
+    }
   }
 }
 
@@ -634,7 +676,7 @@ window.customCards = window.customCards || [];
 window.customCards.push({
   type: 'bubble-room',
   name: 'Bubble Room',
-  description: 'Bubble Room',
+  description: 'A stylish room control card with environmental sensors',
   preview: true,
   documentationURL: 'https://github.com/mon3y78/Lovelace-Bubble-room'
 });
