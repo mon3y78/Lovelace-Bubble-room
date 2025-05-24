@@ -1,3 +1,4 @@
+![Bubble Room](img/bubble-room-v3.png)
 # ✨ Bubble Room Card – v3.0 for Home Assistant
 The Ultimate Visual Room Controller Card
 Customizable, responsive, and made for Home Assistant power users!
@@ -7,7 +8,7 @@ Zero YAML required – everything is visual!
 Visual Editor Experience 🎨
 Everything is configurable via a modern visual editor – no YAML needed! All options are split into intuitive sections:
 Room Settings, Sub-Button, Mushroom Entities, Camera, Climate, Sensor, Colors.
-
+![Bubble Room](img/bubble-room-v3b.png)
 ### Room Settings 🏠
 
 Set room name & main icon (icon-picker)
