@@ -447,20 +447,15 @@ class BubbleRoom extends LitElement {
               const style = layout.mushroomPositions[index] || this._defaultMushroomStyle(index);
             
               let mushroomSize = layout.mushroomSize;
-              let label = 'altro';
             
               // Penultimo = climate, ultimo = camera (se presenti)
               if (entities.climate && index === mushroomTemplates.length - (entities.camera ? 2 : 1)) {
                 mushroomSize = layout.mushroomSizeSmall;
-                label = 'climate';
               }
               if (entities.camera && index === mushroomTemplates.length - 1) {
                 mushroomSize = layout.mushroomSizeSmall;
-                label = 'camera';
               }
-            
-              // DEBUG!
-              console.log('mushroomTemplates', {index, entity: item.entity, label, mushroomSize});
+      
             
               const state = hass.states[item.entity]?.state || 'off';
               const iconColor = state === 'on'

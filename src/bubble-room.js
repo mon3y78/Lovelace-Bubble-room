@@ -458,9 +458,7 @@ class BubbleRoom extends LitElement {
                 mushroomSize = layout.mushroomSizeSmall;
                 label = 'camera';
               }
-            
-              // DEBUG!
-              console.log('mushroomTemplates', {index, entity: item.entity, label, mushroomSize});
+      
             
               const state = hass.states[item.entity]?.state || 'off';
               const iconColor = state === 'on'
