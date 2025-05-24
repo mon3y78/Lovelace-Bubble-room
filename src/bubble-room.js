@@ -335,6 +335,8 @@ class BubbleRoom extends LitElement {
       }
       .mushroom-primary {
         pointer-events: auto;
+        white-space: nowrap;
+
       }
     `;
   }
@@ -583,7 +585,7 @@ class BubbleRoom extends LitElement {
         nameTop: '10px',
         nameLeft: '5px',
         mushroomSize: '35px',
-        mushroomSizeSmall: '20px', 
+        mushroomSizeSmall: '30px', 
         subButtonPadding: '10px',
         mushroomPositions: [
           'top: -70px; left: 0px;',//entities1
@@ -609,7 +611,7 @@ class BubbleRoom extends LitElement {
       },
       '12x4': {
         cardHeight: '250px',
-        iconSize: '95px',
+        iconSize: '110px',
         iconTop: '28%',
         iconLeft: '18%',
         nameFont: '32px',
@@ -619,8 +621,8 @@ class BubbleRoom extends LitElement {
         sensorFontSize: '16px',
         subButtonPadding: '14px',
         subButtonHeight: '60px',
-        subButtonIconSize: '32px',
-        mushroomSizeSmall: '20px', 
+        subButtonIconSize: '40px',
+        mushroomSizeSmall: '30px', 
         mushroomPositions: [
           'top: -60px; left: 5px;',     // entities1
           'top: -78px; left: 55px;',    // entities2
