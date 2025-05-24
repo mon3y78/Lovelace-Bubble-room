@@ -576,11 +576,11 @@ class BubbleRoom extends LitElement {
         iconSize: '75px',
         iconTop: '25%',
         iconLeft: '5%',
-        nameFont: '26px',
+        nameFont: '28px',
         nameTop: '10px',
         nameLeft: '5px',
         mushroomSize: '35px',
-        mushroomSizeSmall: '30px', 
+        mushroomSizeSmall: '27px', 
         subButtonPadding: '10px',
         mushroomPositions: [
           'top: -70px; left: 0px;',//entities1
@@ -592,7 +592,7 @@ class BubbleRoom extends LitElement {
           'top: -80px; left: 102px;',//camera
           'top: -120px; left: 0px;',//sensor
         ],
-        sensorFontSize: '12px',
+        sensorFontSize: '10px',
         gridTemplate: `
           "n n n b"
           "i i . b"
@@ -607,24 +607,24 @@ class BubbleRoom extends LitElement {
       '12x4': {
         cardHeight: '250px',
         iconSize: '130px',
-        iconTop: '28%',
-        iconLeft: '18%',
+        iconTop: '35%',
+        iconLeft: '2%',
         nameFont: '32px',
         nameTop: '12px',
         nameLeft: '8px',
-        mushroomSize: '60px',
+        mushroomSize: '50px',
         sensorFontSize: '16px',
         subButtonPadding: '14px',
         subButtonHeight: '60px',
-        subButtonIconSize: '60px',
+        subButtonIconSize: '50px',
         mushroomSizeSmall: '30px', 
         mushroomPositions: [
-          'top: -60px; left: 5px;',     // entities1
-          'top: -78px; left: 55px;',    // entities2
-          'top: -60px; left: 115px;',   // entities3
-          'bottom: 60px; left: 150px;', // entities4
-          'bottom: 5px; left: 130px;',  // entities5
-          'bottom: 3px; left: 3px;',    // climate
+          'top: -90px; left: 0px;',     // entities1
+          'top: -90px; left: 100px;',    // entities2
+          'top: -60px; left: 170px;',   // entities3
+          'bottom: 60px; left: 170px;', // entities4
+          'bottom: 5px; left: 100px;',  // entities5
+          'bottom: 3px; left: 0px;',    // climate
           'top: -85px; right: 5px;',    // camera
           'top: -135px; left: 0px;',    // sensori ambientali
         ],
@@ -921,7 +921,7 @@ class BubbleRoomEditor extends r {
     if (!this._config) return x`<div>Caricamento configurazione...</div>`;
     return x`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room V3.w<span class="version">v3.0</span></h3>
+        <h3>Visual Editor Bubble Room V3.1<span class="version">v3.0</span></h3>
       </div>
       <ha-expansion-panel id="roomPanel">
         <div slot="header" @click="${() => this._togglePanel('roomPanel')}">Room Settings</div>
