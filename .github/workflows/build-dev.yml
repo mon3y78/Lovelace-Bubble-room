@@ -27,7 +27,7 @@ jobs:
       - name: Run Rollup build
         run: npm run build
       - name: Duplicate build to bubble-room.js
-        run: cp lovelace-bubble-room.js
+        run: cp lovelace-bubble-room.js bubble-room.js
 
       - name: Commit JS build files
         run: |
