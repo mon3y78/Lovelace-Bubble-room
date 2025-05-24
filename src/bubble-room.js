@@ -610,7 +610,7 @@ class BubbleRoom extends LitElement {
       '12x4': {
         cardHeight: '250px',
         iconSize: '130px',
-        iconTop: '-20%',
+        iconTop: '0%',
         iconLeft: '2%',
         nameFont: '32px',
         nameTop: '12px',
