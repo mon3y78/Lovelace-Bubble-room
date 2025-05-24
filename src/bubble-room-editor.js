@@ -195,21 +195,17 @@ class BubbleRoomEditor extends LitElement {
       const updatedConfig = { ...entityConfig };
       const entityId = updatedConfig.entity;
   
-      // LOGICA ICONA: Forza la scrittura dell’icona effettiva
+      // Se non c’è icon, la forziamo comunque qui come fallback
       if (!updatedConfig.icon || updatedConfig.icon === "") {
-        // 1. Se l'entità ha icon negli attributi, usa quella
         if (entityId && this.hass?.states?.[entityId]?.attributes?.icon) {
           updatedConfig.icon = this.hass.states[entityId].attributes.icon;
         } else if (entityId) {
-          // 2. Se c’è device_class, usa mapping classe
           const stateObj = this.hass?.states?.[entityId];
           const deviceClass = stateObj?.attributes?.device_class;
           if (deviceClass) {
-            // Usa il mapping della card!
             updatedConfig.icon = this._getDeviceClassIcon(deviceClass, stateObj.state)
               || this._getDefaultIconForEntity(entityId);
           } else {
-            // 3. Altrimenti mapping dominio
             updatedConfig.icon = this._getDefaultIconForEntity(entityId);
           }
         }
@@ -780,17 +776,32 @@ class BubbleRoomEditor extends LitElement {
       const value = ev.target.value;
       let curEntity = this._config.entities[entityKey] || {};
       curEntity = { ...curEntity, [field]: value };
-      if (field === 'entity' && this.hass?.states?.[value]?.attributes?.icon) {
-        if (!curEntity.icon || curEntity.icon === this._getDefaultIconForEntity(value)) {
+  
+      // AGGIUNTA: forza l’icona di dominio/device_class appena cambi entità!
+      if (field === 'entity') {
+        // Preferisce attributo icon
+        if (this.hass?.states?.[value]?.attributes?.icon) {
           curEntity.icon = this.hass.states[value].attributes.icon;
+        } else {
+          // device_class?
+          const stateObj = this.hass?.states?.[value];
+          const deviceClass = stateObj?.attributes?.device_class;
+          if (deviceClass) {
+            curEntity.icon = this._getDeviceClassIcon(deviceClass, stateObj.state)
+              || this._getDefaultIconForEntity(value);
+          } else {
+            curEntity.icon = this._getDefaultIconForEntity(value);
+          }
         }
       }
+  
       const entities = { ...this._config.entities, [entityKey]: curEntity };
       this._config = { ...this._config, entities };
       this.requestUpdate();
       this._fireConfigChanged();
     };
   }
+  
   _updateTapActionField(field) {
     return (ev) => {
       let newValue = ev.target.value;
