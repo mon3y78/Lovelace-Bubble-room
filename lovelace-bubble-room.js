@@ -524,7 +524,29 @@ class BubbleRoom extends LitElement {
   _handleHoldAction(item) { if (!item.hold_action) { this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: item.entity }, bubbles: true, composed: true, })); return; } const action = item.hold_action.action; switch (action) { case 'more-info': this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: item.entity }, bubbles: true, composed: true, })); break; case 'toggle': this._toggleEntity(item.entity); break; case 'call-service': if (item.hold_action.service) { const [domain, serviceName] = item.hold_action.service.split('.'); const serviceData = item.hold_action.service_data || {}; if (!serviceData.entity_id) { serviceData.entity_id = item.entity; } this.hass.callService(domain, serviceName, serviceData); } break; case 'navigate': if (item.hold_action.navigation_path) { window.history.pushState({}, '', item.hold_action.navigation_path); window.dispatchEvent(new Event('location-changed')); } break; }}
   _handleSubButtonTap(item) { if (!item.tap_action || item.tap_action.action === 'none') return; const action = item.tap_action.action; if (action === 'toggle') this._toggleEntity(item.entity); else if (action === 'more-info') this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: item.entity }, bubbles: true, composed: true, })); else if (action === 'navigate') { if (item.tap_action.navigation_path) { window.history.pushState({}, '', item.tap_action.navigation_path); window.dispatchEvent(new Event('location-changed')); } } }
   _handleMushroomTap(item) { if (!item.tap_action || item.tap_action.action === 'none') return; const action = item.tap_action.action; if (action === 'toggle') this._toggleEntity(item.entity); else if (action === 'more-info') this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: item.entity }, bubbles: true, composed: true, })); else if (action === 'navigate') { if (item.tap_action.navigation_path) { window.history.pushState({}, '', item.tap_action.navigation_path); window.dispatchEvent(new Event('location-changed')); } } }
-  _getBestIcon(entityId, entityConf) { if (entityConf.icon) return entityConf.icon; const stateObj = this.hass?.states?.[entityId]; if (!stateObj) return ''; if (stateObj.attributes?.icon) return stateObj.attributes.icon; const deviceClass = stateObj.attributes?.device_class; const domain = entityId.split('.')[0]; const state = stateObj.state; if (deviceClass) { const dcIcon = this._getDeviceClassIcon(deviceClass, state); if (dcIcon) return dcIcon; } return this._getDomainDefaultIcon(domain, state) || ''; }
+  _getBestIcon(entityId, entityConf) {
+    // 1. Se la config ha una icona, usala!
+    if (entityConf.icon) return entityConf.icon;
+  
+    // 2. Se lo stato dell’entità esiste e ha una icona, usala!
+    const stateObj = this.hass?.states?.[entityId];
+    if (stateObj && stateObj.attributes && stateObj.attributes.icon) {
+      return stateObj.attributes.icon;
+    }
+  
+    // 3. Prova con device_class (tipo sensore specifico)
+    const deviceClass = stateObj?.attributes?.device_class;
+    const domain = entityId ? entityId.split('.')[0] : '';
+    const state = stateObj?.state;
+  
+    if (deviceClass) {
+      const dcIcon = this._getDeviceClassIcon(deviceClass, state);
+      if (dcIcon) return dcIcon;
+    }
+  
+    // 4. Fallback per dominio
+    return this._getDomainDefaultIcon(domain, state) || 'mdi:information-outline';
+  }  
   _getDeviceClassIcon(deviceClass, state) { const icons = DEVICE_CLASS_ICON_MAP[deviceClass]; if (!icons) return ''; if (icons.on && icons.off) { return state === 'on' ? icons.on : icons.off; } return icons.on || ''; }
   _getDomainDefaultIcon(domain, state) { if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP[domain] || ''; }
   _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP[sensorType]; if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
