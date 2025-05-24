@@ -282,7 +282,7 @@ class BubbleRoomEditor extends LitElement {
     if (!this._config) return html`<div>Caricamento configurazione...</div>`;
     return html`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room V3.0<span class="version">v3.0</span></h3>
+        <h3>Visual Editor Bubble Room V3.1<span class="version">v3.0</span></h3>
       </div>
       <ha-expansion-panel id="roomPanel">
         <div slot="header" @click="${() => this._togglePanel('roomPanel')}">Room Settings</div>
