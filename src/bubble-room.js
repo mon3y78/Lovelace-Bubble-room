@@ -340,10 +340,6 @@ class BubbleRoom extends LitElement {
   }
 
   render() {
-    console.log('DEBUG RENDER - entities:', this.config?.entities);
-    console.log('DEBUG RENDER - climate:', this.config?.entities?.climate);
-    console.log('DEBUG RENDER - camera:', this.config?.entities?.camera);
-
     const layout = this._getLayoutStyle(this.config.layout_mode || "6x3");
     if (!this.config || !this.hass) {
       return html`<div>Loading...</div>`;
@@ -444,7 +440,6 @@ class BubbleRoom extends LitElement {
   
             <!-- Mushroom templates -->
             <div class="mushroom-container">
-            console.log('DEBUG mushroomTemplates array:', mushroomTemplates);
             ${mushroomTemplates.map((item, index) => {
               if (!item) return html``;
               const style = layout.mushroomPositions[index] || this._defaultMushroomStyle(index);
