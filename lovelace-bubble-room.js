@@ -804,17 +804,30 @@ class BubbleRoomEditor extends r {
 
   getConfig() {
     const configCopy = JSON.parse(JSON.stringify(this._config));
-    if (!configCopy.layout_mode) configCopy.layout_mode = this._config.layout_mode || '6x3';
-
+    if (!configCopy.layout_mode) {
+      configCopy.layout_mode = this._config.layout_mode || '6x3';
+    }
+  
     const filteredEntities = {};
     for (const [key, entityConfig] of Object.entries(configCopy.entities)) {
       const updatedConfig = { ...entityConfig };
-      if (!updatedConfig.icon && this.hass?.states?.[updatedConfig.entity]?.attributes?.icon) {
-        updatedConfig.icon = this.hass.states[updatedConfig.entity].attributes.icon;
+      const entityId = updatedConfig.entity;
+  
+      // LOGICA ICONA: come in bubble-room.js!
+      if (!updatedConfig.icon) {
+        // 1. Se l'entità ha icon negli attributi, usa quella
+        if (entityId && this.hass?.states?.[entityId]?.attributes?.icon) {
+          updatedConfig.icon = this.hass.states[entityId].attributes.icon;
+        } else if (entityId) {
+          // 2. Altrimenti icona di default dominio
+          updatedConfig.icon = this._getDefaultIconForEntity(entityId);
+        }
       }
+  
       filteredEntities[key] = updatedConfig;
     }
     configCopy.entities = filteredEntities;
+
 
     // Pulizia colori vuoti
     if (configCopy.colors) {
