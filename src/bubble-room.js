@@ -610,7 +610,7 @@ class BubbleRoom extends LitElement {
       '12x4': {
         cardHeight: '250px',
         iconSize: '130px',
-        iconTop: '50%',
+        iconTop: '10%',
         iconLeft: '2%',
         nameFont: '32px',
         nameTop: '12px',
@@ -624,8 +624,8 @@ class BubbleRoom extends LitElement {
         mushroomPositions: [
           'top: -90px; left: 0px;',     // entities1
           'top: -90px; left: 100px;',    // entities2
-          'top: -70px; left: 170px;',   // entities3
-          'bottom: 70px; left: 170px;', // entities4
+          'top: -50px; left: 170px;',   // entities3
+          'bottom: 50px; left: 170px;', // entities4
           'bottom: 5px; left: 100px;',  // entities5
           'bottom: 3px; left: 0px;',    // climate
           'top: -85px; right: 5px;',    // camera
