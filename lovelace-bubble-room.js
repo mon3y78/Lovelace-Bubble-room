@@ -612,7 +612,7 @@ class BubbleRoom extends LitElement {
         nameFont: '32px',
         nameTop: '12px',
         nameLeft: '8px',
-        mushroomSize: '50px',
+        mushroomSize: '-20px',
         sensorFontSize: '16px',
         subButtonPadding: '14px',
         subButtonHeight: '60px',
