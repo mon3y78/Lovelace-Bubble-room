@@ -1,4 +1,4 @@
-#✨ Bubble Room Card – v3.0 for Home Assistant
+✨ Bubble Room Card – v3.0 for Home Assistant
 The Ultimate Visual Room Controller Card
 Customizable, responsive, and made for Home Assistant power users!
 Zero YAML required – everything is visual!
