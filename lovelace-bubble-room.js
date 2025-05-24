@@ -576,7 +576,7 @@ class BubbleRoom extends LitElement {
         iconSize: '75px',
         iconTop: '25%',
         iconLeft: '5%',
-        nameFont: '28px',
+        nameFont: '26px',
         nameTop: '10px',
         nameLeft: '5px',
         mushroomSize: '35px',
@@ -606,17 +606,17 @@ class BubbleRoom extends LitElement {
       },
       '12x4': {
         cardHeight: '250px',
-        iconSize: '110px',
+        iconSize: '130px',
         iconTop: '28%',
         iconLeft: '18%',
         nameFont: '32px',
         nameTop: '12px',
         nameLeft: '8px',
-        mushroomSize: '40px',
+        mushroomSize: '60px',
         sensorFontSize: '16px',
         subButtonPadding: '14px',
         subButtonHeight: '60px',
-        subButtonIconSize: '40px',
+        subButtonIconSize: '60px',
         mushroomSizeSmall: '30px', 
         mushroomPositions: [
           'top: -60px; left: 5px;',     // entities1
@@ -921,7 +921,7 @@ class BubbleRoomEditor extends r {
     if (!this._config) return x`<div>Caricamento configurazione...</div>`;
     return x`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room V3.1<span class="version">v3.0</span></h3>
+        <h3>Visual Editor Bubble Room V3.w<span class="version">v3.0</span></h3>
       </div>
       <ha-expansion-panel id="roomPanel">
         <div slot="header" @click="${() => this._togglePanel('roomPanel')}">Room Settings</div>
