@@ -67,7 +67,11 @@ class BubbleRoom extends LitElement {
       hass: { type: Object },
     };
   }
-
+  // Supporto all'editor visivo
+  static async getConfigElement() {
+    await import('./bubble-room-editor.js');
+    return document.createElement('bubble-room-editor');
+  }
   static getStubConfig() {
     return {
       entities: {
