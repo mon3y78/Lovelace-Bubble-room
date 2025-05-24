@@ -340,6 +340,10 @@ class BubbleRoom extends LitElement {
   }
 
   render() {
+    console.log('DEBUG RENDER - entities:', this.config?.entities);
+    console.log('DEBUG RENDER - climate:', this.config?.entities?.climate);
+    console.log('DEBUG RENDER - camera:', this.config?.entities?.camera);
+
     const layout = this._getLayoutStyle(this.config.layout_mode || "6x3");
     if (!this.config || !this.hass) {
       return html`<div>Loading...</div>`;
@@ -440,13 +444,32 @@ class BubbleRoom extends LitElement {
   
             <!-- Mushroom templates -->
             <div class="mushroom-container">
+            console.log('DEBUG mushroomTemplates array:', mushroomTemplates);
             ${mushroomTemplates.map((item, index) => {
               if (!item) return html``;
               const style = layout.mushroomPositions[index] || this._defaultMushroomStyle(index);
+            
+              let mushroomSize = layout.mushroomSize;
+              let label = 'altro';
+            
+              // Penultimo = climate, ultimo = camera (se presenti)
+              if (entities.climate && index === mushroomTemplates.length - (entities.camera ? 2 : 1)) {
+                mushroomSize = layout.mushroomSizeSmall;
+                label = 'climate';
+              }
+              if (entities.camera && index === mushroomTemplates.length - 1) {
+                mushroomSize = layout.mushroomSizeSmall;
+                label = 'camera';
+              }
+            
+              // DEBUG!
+              console.log('mushroomTemplates', {index, entity: item.entity, label, mushroomSize});
+            
               const state = hass.states[item.entity]?.state || 'off';
               const iconColor = state === 'on'
                 ? (roomColors.mushroom_active || 'orange')
                 : (roomColors.mushroom_inactive || '#80808055');
+            
               return html`
                 <div class="mushroom-item"
                     style="${style}"
@@ -454,11 +477,14 @@ class BubbleRoom extends LitElement {
                     @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
                     @pointerleave="${(e) => this._cancelHold(e)}">
                   <ha-icon icon="${this._getBestIcon(item.entity, item)}"
-                          style="color: ${iconColor}; --mdc-icon-size: ${layout.mushroomSize}; width: ${layout.mushroomSize}; height: ${layout.mushroomSize};">
+                          style="color: ${iconColor}; --mdc-icon-size: ${mushroomSize}; width: ${mushroomSize}; height: ${mushroomSize};">
                   </ha-icon>
                 </div>
               `;
             })}
+            
+            
+            
             ${sensorStrings.length > 0 ? html`
               <div class="mushroom-item"
                   style="${layout.mushroomPositions[7]}; font-size: ${layout.sensorFontSize};"
@@ -562,6 +588,7 @@ class BubbleRoom extends LitElement {
         nameTop: '10px',
         nameLeft: '5px',
         mushroomSize: '35px',
+        mushroomSizeSmall: '20px', 
         subButtonPadding: '10px',
         mushroomPositions: [
           'top: -70px; left: 0px;',//entities1
@@ -579,7 +606,7 @@ class BubbleRoom extends LitElement {
           "i i . b"
           "i i . b"
           "i i . b"`,
-        gridColumns: '35% 35% 10% 20%',    // FISSO per layout 6x3!
+        gridColumns: '25% 25% 10% minmax(64px, 2fr)',
         gridRows: '25% 25% 25% 25%',
         subButtonPadding: '10px',
         subButtonHeight: '48px',
@@ -598,6 +625,7 @@ class BubbleRoom extends LitElement {
         subButtonPadding: '14px',
         subButtonHeight: '60px',
         subButtonIconSize: '32px',
+        mushroomSizeSmall: '20px', 
         mushroomPositions: [
           'top: -60px; left: 5px;',     // entities1
           'top: -78px; left: 55px;',    // entities2
@@ -613,7 +641,8 @@ class BubbleRoom extends LitElement {
           "i i . b"
           "i i . b"
           "i i . b"`,
-        gridColumns: '30% 30% 10% minmax(38px, 1fr)', // ELASTICO solo in 12x4!
+        gridColumns: '25% 25% 10% minmax(64px, 2fr)',
+          // ELASTICO solo in 12x4!
         gridRows: '25% 25% 25% 25%',
       }
     };
