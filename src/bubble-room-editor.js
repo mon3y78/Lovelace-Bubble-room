@@ -195,17 +195,25 @@ class BubbleRoomEditor extends LitElement {
       const updatedConfig = { ...entityConfig };
       const entityId = updatedConfig.entity;
   
-      // LOGICA ICONA: come in bubble-room.js!
-      if (!updatedConfig.icon) {
+      // LOGICA ICONA: Forza la scrittura dell’icona effettiva
+      if (!updatedConfig.icon || updatedConfig.icon === "") {
         // 1. Se l'entità ha icon negli attributi, usa quella
         if (entityId && this.hass?.states?.[entityId]?.attributes?.icon) {
           updatedConfig.icon = this.hass.states[entityId].attributes.icon;
         } else if (entityId) {
-          // 2. Altrimenti icona di default dominio
-          updatedConfig.icon = this._getDefaultIconForEntity(entityId);
+          // 2. Se c’è device_class, usa mapping classe
+          const stateObj = this.hass?.states?.[entityId];
+          const deviceClass = stateObj?.attributes?.device_class;
+          if (deviceClass) {
+            // Usa il mapping della card!
+            updatedConfig.icon = this._getDeviceClassIcon(deviceClass, stateObj.state)
+              || this._getDefaultIconForEntity(entityId);
+          } else {
+            // 3. Altrimenti mapping dominio
+            updatedConfig.icon = this._getDefaultIconForEntity(entityId);
+          }
         }
       }
-  
       filteredEntities[key] = updatedConfig;
     }
     configCopy.entities = filteredEntities;
@@ -612,6 +620,30 @@ class BubbleRoomEditor extends LitElement {
     return ctx.fillStyle;
   }
 
+
+
+  
+  _getDeviceClassIcon(deviceClass, state) {
+    switch (deviceClass) {
+      case 'door':        return state === 'on' ? 'mdi:door-open'        : 'mdi:door-closed';
+      case 'window':      return state === 'on' ? 'mdi:window-open'      : 'mdi:window-closed';
+      case 'motion':      return state === 'on' ? 'mdi:motion-sensor'    : 'mdi:motion-sensor-off';
+      case 'moisture':    return state === 'on' ? 'mdi:water-alert'      : 'mdi:water-off';
+      case 'smoke':       return state === 'on' ? 'mdi:smoke'            : 'mdi:smoke-detector-off';
+      case 'gas':         return state === 'on' ? 'mdi:gas-cylinder'     : 'mdi:gas-off';
+      case 'problem':     return 'mdi:alert';
+      case 'connectivity':return 'mdi:connection';
+      case 'occupancy':
+      case 'presence':    return state === 'on' ? 'mdi:account-voice'    : 'mdi:account-voice-off';
+      case 'tamper':      return 'mdi:lock-open-alert';
+      case 'vibration':   return state === 'on' ? 'mdi:vibrate'          : 'mdi:vibrate-off';
+      case 'running':     return state === 'on' ? 'mdi:server-network'   : 'mdi:server-network-off';
+      case 'shutter':     return state === 'on' ? 'mdi:window-shutter-open' : 'mdi:window-shutter';
+      case 'blind':       return state === 'on' ? 'mdi:blinds-horizontal'  : 'mdi:blinds-horizontal-closed';
+      default:            return '';
+    }
+  }
+  
   _getDefaultIconForEntity(entityId) {
     if (!entityId || typeof entityId !== 'string') return 'mdi:help-circle';
     const domain = entityId.split('.')[0];
@@ -638,7 +670,7 @@ class BubbleRoomEditor extends LitElement {
     };
     return domainIconMap[domain] || 'mdi:bookmark-outline';
   }
-
+  
   _updateNestedColorDirect(section, key, value) {
     const colors = { ...this._config.colors };
     colors[section] = { ...colors[section], [key]: value };
