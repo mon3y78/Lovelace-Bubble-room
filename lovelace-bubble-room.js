@@ -598,7 +598,7 @@ class BubbleRoom extends LitElement {
           "i i . b"
           "i i . b"
           "i i . b"`,
-        gridColumns: '25% 25% 5% minmax(64px, 2fr)',
+        gridColumns: '25% 25% 5% minmax(32px, 2fr)',
         gridRows: '25% 25% 25% 25%',
         subButtonPadding: '10px',
         subButtonHeight: '48px',
@@ -921,7 +921,7 @@ class BubbleRoomEditor extends r {
     if (!this._config) return x`<div>Caricamento configurazione...</div>`;
     return x`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room V3.1<span class="version">v3.0</span></h3>
+        <h3>Visual Editor Bubble Room V3.3<span class="version">v3.0</span></h3>
       </div>
       <ha-expansion-panel id="roomPanel">
         <div slot="header" @click="${() => this._togglePanel('roomPanel')}">Room Settings</div>
