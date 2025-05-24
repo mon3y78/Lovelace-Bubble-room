@@ -598,7 +598,7 @@ class BubbleRoom extends LitElement {
           "i i . b"
           "i i . b"
           "i i . b"`,
-        gridColumns: '25% 25% 10% minmax(64px, 2fr)',
+        gridColumns: '25% 25% 5% minmax(64px, 2fr)',
         gridRows: '25% 25% 25% 25%',
         subButtonPadding: '10px',
         subButtonHeight: '48px',
@@ -633,7 +633,7 @@ class BubbleRoom extends LitElement {
           "i i . b"
           "i i . b"
           "i i . b"`,
-        gridColumns: '25% 25% 10% minmax(64px, 2fr)',
+        gridColumns: '25% 25% 5% minmax(64px, 2fr)',
           // ELASTICO solo in 12x4!
         gridRows: '25% 25% 25% 25%',
       }
