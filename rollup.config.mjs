@@ -23,6 +23,6 @@ export default {
     // converte eventuali CommonJS (per es. fitty)
     commonjs(),
     // minimizza
-    terser(),
+    //terser(),
   ],
 };
