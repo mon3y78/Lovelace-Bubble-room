@@ -1,3 +1,4 @@
+[![Install with HACS](https://img.shields.io/badge/HACS-Install-blue?style=for-the-badge&logo=home-assistant)](https://github.com/mon3y78/Lovelace-Bubble-room)
 ![Bubble Room](img/bubble-room-v3.png)
 # ✨ Bubble Room Card – v3.1 for Home Assistant
 The Ultimate Visual Room Controller Card
