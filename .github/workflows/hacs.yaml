@@ -1,19 +1,19 @@
-name: "Validate with HACS"
+name: Validate with HACS
 
 on:
   push:
     branches:
       - main
-      - master
   pull_request:
 
 jobs:
   validate:
     runs-on: ubuntu-latest
-    name: HACS Validation
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Run HACS validation
         uses: hacs/action@main
+        with:
+          category: plugin
