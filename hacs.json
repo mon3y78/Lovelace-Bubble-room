@@ -2,8 +2,7 @@
   "name": "Lovelace Bubble Room",
   "content_in_root": true,
   "render_readme": true,
-  "type": "module",
-  "domains": ["lovelace"],
+  "type": "lovelace",
   "filename": "lovelace-bubble-room.js"
   "description": "A stylish room control card with environmental sensors",
   "authors": ["mon3y78"]
