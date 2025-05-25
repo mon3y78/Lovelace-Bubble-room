@@ -10,48 +10,31 @@ Everything is configurable via a modern visual editor – no YAML needed! All op
 Room Settings, Sub-Button, Mushroom Entities, Camera, Climate, Sensor, Colors.
 ![Bubble Room](img/bubble-room-v3b.png)
 ### Room Settings 🏠
-
 Set room name & main icon (icon-picker)
 Configure tap/hold actions: navigate, toggle, more-info, call-service
 Pick your presence entity (entity-picker)
-
 ### Sub-Buttons 🎛️
-
 Up to 4 customizable sub-buttons per room
 Each with independent entity (entity-picker), icon (icon-picker), and tap/hold actions
 Complete color customization: active/inactive backgrounds & icons (with RGBA color pickers)
-
 ### Mushroom Entities 🍄
-
 Up to 5 “bubble” entities around the main icon
 Each can be assigned its own entity and icon
 Perfect for quick-access devices, scenes, or extra info
-
 ### Camera Support 🎥
-
 Add a camera entity with a dedicated icon and “mushroom” position
-
 ### Climate Control 🌡️
-
 Native support for a climate/thermostat entity, with icon and actions
-
 ### Sensor Section 📊
-
 Up to 4 sensors (temperature, humidity, CO₂, illuminance, PM, UV, noise, pressure, VOC, etc.)
 Pick type, entity, and unit for each sensor
-
 ### Full Color Customization 🖌️
-
 Visual color pickers for every color field (Room & Subbutton sections)
 RGBA + transparency sliders for backgrounds, icons, mushroom states, and more
-
 ### Responsive & Adaptive Layouts 📱💻
-
 Two layouts: 6x3 (compact) and 12x4 (expanded) for perfect display on tablets, dashboards, Nest Hub, and phones
 Sub-buttons automatically expand to fit available space
-
 ### All via GUI Components 🧩
-
 Uses ha-entity-picker for entities (with dynamic Home Assistant suggestions)
 Uses ha-icon-picker for icons (MDI & custom icons)
 No need to type YAML, ever!
