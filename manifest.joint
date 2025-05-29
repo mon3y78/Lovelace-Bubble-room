@@ -1,0 +1,11 @@
+{
+  "name": "Bubble Room Card",
+  "domain": "bubble_room",
+  "version": "1.0.0",
+  "documentation": "https://github.com/mon3y78/Lovelace-Bubble-room",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": ["@mon3y78"],
+  "config_flow": false,
+  "homeassistant": "2023.5.0"
+}
