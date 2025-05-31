@@ -26,14 +26,16 @@ jobs:
 
       - name: Run Rollup build
         run: npm run build
-      - name: Duplicate build to bubble-room.js
-        run: cp lovelace-bubble-room.js bubble-room.js
+
+      - name: Create dist folder and move build
+        run: |
+          mkdir -p dist
+          cp lovelace-bubble-room.js dist/lovelace-bubble-room.js
 
       - name: Commit JS build files
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git add lovelace-bubble-room.js bubble-room-dev.js
-          git commit -m "Auto-build and duplicate from GitHub Action" || echo "Nothing to commit"
-
+          git add dist/lovelace-bubble-room.js
+          git commit -m "Auto-build: build and move file to dist for HACS compliance" || echo "Nothing to commit"
           git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/mon3y78/Lovelace-Bubble-room.git main
