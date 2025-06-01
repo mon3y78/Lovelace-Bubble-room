@@ -1,4 +1,7 @@
 [![Install with HACS](https://img.shields.io/badge/HACS-Install-blue?style=for-the-badge&logo=home-assistant)](https://github.com/mon3y78/Lovelace-Bubble-room)
+[![GitHub stars](https://img.shields.io/github/stars/mon3y78/Lovelace-Bubble-room?style=social)](https://github.com/mon3y78/Lovelace-Bubble-room/stargazers)
+[![Community Forum](https://img.shields.io/badge/Forum-Home%20Assistant-blue?logo=home-assistant)](https://community.home-assistant.io/t/bubble-room/856230?u=ipilla)
+[![Reddit](https://img.shields.io/badge/Reddit-Discussion-orange?logo=reddit)](https://www.reddit.com/r/homeassistant/s/Qgz9acN7Mr)
 ![Bubble Room](img/bubble-room-v3.png)
 # ✨ Bubble Room Card – v3.1 for Home Assistant
 The Ultimate Visual Room Controller Card
