@@ -1,7 +1,7 @@
 {
   "name": "Bubble Room Card",
   "domain": "bubble_room",
-  "version": "1.0.0",
+  "version": "3.1.2",
   "documentation": "https://github.com/mon3y78/Lovelace-Bubble-room",
   "requirements": [],
   "dependencies": [],
