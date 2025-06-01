@@ -3,4 +3,10 @@
   "content_in_root": false,
   "render_readme": true,
   "filename": "dist/lovelace-bubble-room.js"
+  "description": "A stylish room control card with environmental sensors",
+  "documentation": "https://github.com/mon3y78/Lovelace-Bubble-room",
+  "issue_tracker": "https://github.com/mon3y78/Lovelace-Bubble-room/issues",
+  "repository": "https://github.com/mon3y78/Lovelace-Bubble-room",
+  "authors": ["@mon3y78"],
+  "version": "3.1.2"
 }
