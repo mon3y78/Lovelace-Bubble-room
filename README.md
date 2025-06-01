@@ -45,6 +45,12 @@ Modern, modular, and highly flexible
 Perfect for touch interfaces, tablets, and dashboards
 Super fast to configure, fun to personalize
 
+## Community & Support
+
+For discussions, feedback and support, visit the official thread on the Home Assistant Community Forum:
+
+🔗 [Bubble Room - Home Assistant Community](https://community.home-assistant.io/t/bubble-room/856230?u=ipilla)
+
 # Installation
 ## Via HACS
 1. Go to HACS > Frontend.
