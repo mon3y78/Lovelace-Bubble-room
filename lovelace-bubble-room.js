@@ -346,15 +346,22 @@ class BubbleRoom extends LitElement {
       }
 
 
+      .sensor-row-wrapper {
+        min-width: 0;
+        max-width: 100%;
+        width: 100%;
+        flex-shrink: 1;
+      }
+
       .sensor-row {
         font-weight: bold;
         font-size: clamp(8px, 2vw, 14px);
         white-space: nowrap;
         overflow: hidden;
-        max-width: 100%;
         color: white;
         text-shadow: 0 0 3px black;
       }
+
 
 
       .subbutton-column {
@@ -430,8 +437,10 @@ class BubbleRoom extends LitElement {
             <div class="header">
               <!-- Riga sensori -->
               ${sensorStrings.length > 0 ? html`
-                <div class="sensor-row">
-                  ${sensorStrings.join(' ')}
+                <div class="sensor-row-wrapper">
+                  <div class="sensor-row">
+                    ${sensorStrings.join(' ')}
+                  </div>
                 </div>
               ` : ''}
 
