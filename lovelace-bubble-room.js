@@ -245,20 +245,22 @@ class BubbleRoom extends LitElement {
       .card {
         position: relative;
         width: 100%;
-        min-height: 190px;
+        min-height: 200px;
         height: auto;
         border-radius: 8px;
-        overflow: hidden;
+        overflow: visible;
         display: grid;
       }
+
 
       .grid-container {
         display: grid;
         grid-template-columns: 2fr 1fr;
         align-items: stretch;
         width: 100%;
-        min-height: 190px;
+        min-height: 200px;
       }
+
 
       .name-area {
         font-weight: bold;
@@ -394,7 +396,7 @@ class BubbleRoom extends LitElement {
       }
       .subbutton-column {
         display: grid;
-        grid-template-rows: repeat(4, 1fr);
+        grid-template-rows: repeat(4, minmax(0, 1fr));
         gap: 4px;
         width: 100%;
       }
