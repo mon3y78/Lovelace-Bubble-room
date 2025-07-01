@@ -368,7 +368,7 @@ class BubbleRoom extends LitElement {
       }
 
 
-      ..sensor-row {
+      .sensor-row {
         font-weight: bold;
         font-size: clamp(7px, 1.6vw, 10px);
         white-space: nowrap;
