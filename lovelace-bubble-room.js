@@ -312,7 +312,8 @@ class BubbleRoom extends LitElement {
         justify-content: center;
         align-items: center;
         width: 100%;
-        height: 100%;
+        height: calc(100% - 4px);
+        margin: 2px 0;
         border-radius: 10px;
         cursor: pointer;
         background-color: var(--sub-button-color);
@@ -392,7 +393,6 @@ class BubbleRoom extends LitElement {
       .subbutton-column {
         display: grid;
         grid-template-rows: repeat(4, 1fr);
-        gap: 4px;
         height: 100%;
         width: 100%;
       }
