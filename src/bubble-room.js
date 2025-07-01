@@ -360,9 +360,13 @@ class BubbleRoom extends LitElement {
         font-size: clamp(8px, 2vw, 14px);
         white-space: nowrap;
         overflow: hidden;
+        width: 100%;
+        min-width: 0;
+        flex-shrink: 1;
         color: white;
         text-shadow: 0 0 3px black;
       }
+
 
 
 
