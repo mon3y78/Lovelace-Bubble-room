@@ -257,7 +257,6 @@ class BubbleRoom extends LitElement {
       }
 
       .name-area {
-        position: absolute;
         font-weight: bold;
       }
       .icon-area {
@@ -336,13 +335,18 @@ class BubbleRoom extends LitElement {
         white-space: nowrap;
       }
       .left-content {
-        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
         height: 100%;
         width: 100%;
+        position: relative;
+        gap: 4px; /* Spazio tra sensori, nome e icona */
       }
 
+
       .sensor-row {
-        position: absolute;
         top: 4px;
         left: 8px;
         font-weight: bold;
