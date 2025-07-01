@@ -311,14 +311,13 @@ class BubbleRoom extends LitElement {
         display: flex;
         justify-content: center;
         align-items: center;
-        flex: 1 1 0;
         width: 100%;
-        min-height: 0;
+        height: 100%;
         border-radius: 10px;
-        margin: 2px 0;
         cursor: pointer;
         background-color: var(--sub-button-color);
       }
+
 
 
       @media (max-width:480px) {
@@ -391,10 +390,9 @@ class BubbleRoom extends LitElement {
         overflow: hidden;
       }
       .subbutton-column {
-        display: flex;
-        flex-direction: column;
-        justify-content: stretch;
-        align-items: stretch;
+        display: grid;
+        grid-template-rows: repeat(4, 1fr);
+        gap: 4px;
         height: 100%;
         width: 100%;
       }
