@@ -347,16 +347,15 @@ class BubbleRoom extends LitElement {
 
 
       .sensor-row {
-        top: 4px;
-        left: 8px;
         font-weight: bold;
-        font-size: clamp(10px, 2vw, 14px);
+        font-size: clamp(8px, 2vw, 14px);
         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
+        max-width: 100%;
         color: white;
         text-shadow: 0 0 3px black;
       }
+
 
       .subbutton-column {
         display: flex;
