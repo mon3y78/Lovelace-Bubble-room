@@ -318,9 +318,6 @@ class BubbleRoom extends LitElement {
         .bubble-icon {
           --mdc-icon-size: 50px;
         }
-        .sensor-row {
-          font-size: 10px;
-        }
       }
       .mushroom-container {
         position: absolute;
@@ -351,27 +348,19 @@ class BubbleRoom extends LitElement {
         position: relative;
       }
 
-
-
-      .sensor-row-wrapper {
-        min-width: 0;
-        max-width: 100%;
-        width: 100%;
-        flex-shrink: 1;
-      }
-
       .sensor-row {
         font-weight: bold;
         font-size: 14px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        white-space: normal;
+        word-break: break-word;
         width: 100%;
         min-width: 0;
         flex-shrink: 1;
         color: white;
         text-shadow: 0 0 3px black;
       }
+
+
 
 
 
@@ -408,18 +397,6 @@ class BubbleRoom extends LitElement {
       if (!isNaN(parseFloat(state))) state = Math.floor(parseFloat(state)).toString();
       const { emoji, unit } = this._getSensorEmojiAndUnit(sensor.type, sensor.unit);
       sensorStrings.push(`${emoji} ${state}${unit}`);
-    }
-    // Calcola la lunghezza totale del testo sensori
-    const sensorTextLength = sensorStrings.join(' ').length;
-
-    // Font size dinamico
-    let sensorFontSize = '14px';
-    if (sensorTextLength > 35) {
-      sensorFontSize = '8px';
-    } else if (sensorTextLength > 25) {
-      sensorFontSize = '10px';
-    } else if (sensorTextLength > 15) {
-      sensorFontSize = '12px';
     }
 
     const { colors, name, icon } = this.config;
@@ -467,11 +444,10 @@ class BubbleRoom extends LitElement {
             <div class="header">
               <!-- Riga sensori -->
               ${sensorStrings.length > 0 ? html`
-                <div class="sensor-row-wrapper">
-                  <div class="sensor-row" style="font-size:${sensorFontSize};">
-                    ${sensorStrings.join(' ')}
-                  </div>
+                <div class="sensor-row">
+                  ${sensorStrings.join(' ')}
                 </div>
+
               ` : ''}
 
               <!-- Nome stanza -->
