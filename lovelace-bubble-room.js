@@ -230,6 +230,7 @@ class BubbleRoom extends LitElement {
       :host {
         display: block;
         width: 100%;
+        height: 100%;
         --card-height: 190px;
         --card-background: black;
         --bubble-bg: gray;
@@ -240,7 +241,7 @@ class BubbleRoom extends LitElement {
         margin: 0;
         padding: 0 !important;
         background: transparent !important;
-        height: auto;
+        height: 100%;
       }
 
       .card {
