@@ -298,15 +298,17 @@ class BubbleRoom extends LitElement {
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 100%;
+        width: 80px;
+        max-width: 80px;
         height: auto;
         min-height: 36px;
         border-radius: 10px;
-        margin: 4px 0;
+        margin: 2px 0;
         cursor: pointer;
         background-color: var(--sub-button-color);
         transition: width 0.2s;
       }
+
 
       @media (max-width:480px) {
         .bubble-sub-button {
@@ -350,7 +352,7 @@ class BubbleRoom extends LitElement {
 
       .sensor-row {
         font-weight: bold;
-        font-size: 8px;
+        font-size: 9px;
         white-space: nowrap;
         overflow-x: auto;
         overflow-y: hidden;
