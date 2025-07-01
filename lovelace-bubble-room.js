@@ -270,21 +270,22 @@ class BubbleRoom extends LitElement {
       }
       .bubble-icon-container {
         position: relative;
-        width: 60%;
-        aspect-ratio: 1/1;
-        background-color: var(--bubble-bg);
-        border-radius: 50%;
+        width: 100%;
+        aspect-ratio: 1 / 1;
         cursor: pointer;
+        border-radius: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
-        transform: scale(0.8);
-        margin-right: 8%;
       }
+
       .bubble-icon {
-        width: 60%;
-        height: 60%;
+        width: 70%;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
       }
+
       .bubble-sub-button-container {
         grid-area: b;
         display: flex;
@@ -331,9 +332,11 @@ class BubbleRoom extends LitElement {
         position: absolute;
         pointer-events: auto;
         cursor: pointer;
-        width: 20%;
+        width: 15%;
         height: auto;
+        transform: translate(-50%, -50%);
       }
+
       .mushroom-primary {
         pointer-events: auto;
         white-space: nowrap;
@@ -342,7 +345,7 @@ class BubbleRoom extends LitElement {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        align-items: flex-start;
+        align-items: center;
         height: 100%;
         width: 100%;
         min-width: 0;
@@ -351,14 +354,16 @@ class BubbleRoom extends LitElement {
 
       .sensor-row {
         font-weight: bold;
-        font-size: 1.4vw;
+        font-size: clamp(10px, 2vw, 16px);
         white-space: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
+        overflow: hidden;
+        text-overflow: ellipsis;
         width: 100%;
         color: white;
+        text-align: center;
         text-shadow: 0 0 3px black;
       }
+
 
 
       .mushroom-container {
