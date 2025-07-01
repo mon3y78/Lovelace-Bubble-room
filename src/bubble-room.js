@@ -373,9 +373,16 @@ class BubbleRoom extends LitElement {
       .subbutton-column {
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 4px;
+        padding-top: 4px;
+        padding-bottom: 4px;
         height: 100%;
+        box-sizing: border-box;
       }
+
+
 
     `;
   }
@@ -645,9 +652,8 @@ class BubbleRoom extends LitElement {
 
   _getIconShapeStyle(mode) {
     return `
-      width: 100%;
-      height: auto;
-      aspect-ratio: 4/3;
+      width: 130px;
+      height: 140px;
       border-radius: 0% 70% 70% 0%;
       top: 0;
       left: 0;
