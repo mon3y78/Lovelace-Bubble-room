@@ -421,101 +421,96 @@ class BubbleRoom extends LitElement {
 
     return html`
       <div class="card" style="height: ${layout.cardHeight};">
-                <!-- Colonna sinistra -->
-        <div class="left-content">
-          <!-- Riga sensori -->
-          ${sensorStrings.length > 0 ? html`
-            <div class="sensor-row">
-              ${sensorStrings.join(' ')}
-            </div>
-          ` : ''}
+        <div class="grid-container">
+          <!-- Colonna sinistra -->
+          <div class="left-content">
+            <div class="header">
+              <!-- Riga sensori -->
+              ${sensorStrings.length > 0 ? html`
+                <div class="sensor-row">
+                  ${sensorStrings.join(' ')}
+                </div>
+              ` : ''}
 
-          <!-- Nome stanza -->
-          <div class="name-area"
-              style="
-                color: ${nameColor};
-                font-size: ${layout.nameFont};
-                position: absolute;
-                top: ${layout.nameTop};
-                left: ${layout.nameLeft};
-              ">
-            ${name}
-          </div>
-
-          <!-- Icona principale -->
-          <div class="icon-area">
-            <div class="bubble-icon-container"
-                style="
-                  background-color: ${bubbleBg};
-                  ${this._getIconShapeStyle(this.config.layout_mode)}
-                "
-                @pointerdown="${(e) => this._startHold(e, this.config)}"
-                @pointerup="${(e) => this._endHold(e, this.config, () => this._handleMainIconTap())}"
-                @pointerleave="${(e) => this._cancelHold(e)}">
-              <ha-icon class="bubble-icon"
-                      icon="${this._getBestIcon(this.config.entities.presence?.entity, { icon: icon })}"
-                      style="
-                        color: ${bubbleIconColor};
-                        --mdc-icon-size: ${layout.iconSize};
-                        width: ${layout.iconSize};
-                        height: ${layout.iconSize};
-                        position: absolute;
-                        top: ${layout.iconTop || '15%'};
-                        left: ${layout.iconLeft || '25%'};
-                      ">
-              </ha-icon>
+              <!-- Nome stanza -->
+              <div class="name-area" style="color:${nameColor}; font-size:${layout.nameFont};">
+                ${name}
+              </div>
             </div>
 
-            <!-- Mushroom entities -->
-            <div class="mushroom-container">
-              ${mushroomTemplates.map((item, index) => {
-                if (!item) return html``;
-                const style = layout.mushroomPositions[index] || this._defaultMushroomStyle(index);
-                const mushroomSize = layout.mushroomSize;
-                const state = hass.states[item.entity]?.state || 'off';
-                const iconColor = state === 'on'
-                  ? (roomColors.mushroom_active || 'orange')
-                  : (roomColors.mushroom_inactive || '#80808055');
-                return html`
-                  <div class="mushroom-item"
-                      style="${style}"
-                      @pointerdown="${(e) => this._startHold(e, item)}"
-                      @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
-                      @pointerleave="${(e) => this._cancelHold(e)}">
-                    <ha-icon icon="${this._getBestIcon(item.entity, item)}"
-                            style="color: ${iconColor}; --mdc-icon-size: ${mushroomSize}; width: ${mushroomSize}; height: ${mushroomSize};">
-                    </ha-icon>
-                  </div>
-                `;
-              })}
-            </div>
-          </div>
-        </div>
-
-        <!-- Colonna destra: Sub-buttons -->
-        <div class="subbutton-column">
-          ${subButtons.map(btn => {
-            if (!btn) return html``;
-            const state = hass.states[btn.entity]?.state || 'off';
-            const btnColor = state === 'on'
-              ? subColors.background_on || 'rgba(0,0,255,1)'
-              : subColors.background_off || 'rgba(0,0,255,0.3)';
-            const iconColor = state === 'on'
-              ? subColors.icon_on || 'yellow'
-              : subColors.icon_off || '#666';
-            return html`
-              <div class="bubble-sub-button"
-                  style="--sub-button-color: ${btnColor}; --sub-button-height: ${layout.subButtonHeight};"
-                  @pointerdown="${(e) => this._startHold(e, btn)}"
-                  @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
+            <!-- Icona principale -->
+            <div class="icon-area">
+              <div class="bubble-icon-container"
+                  style="
+                    background-color: ${bubbleBg};
+                    ${this._getIconShapeStyle(this.config.layout_mode)}
+                  "
+                  @pointerdown="${(e) => this._startHold(e, this.config)}"
+                  @pointerup="${(e) => this._endHold(e, this.config, () => this._handleMainIconTap())}"
                   @pointerleave="${(e) => this._cancelHold(e)}">
-                <ha-icon icon="${this._getBestIcon(btn.entity, btn)}"
-                        style="color: ${iconColor}; --mdc-icon-size: ${layout.mushroomSize}; width: ${layout.mushroomSize}; height: ${layout.mushroomSize};">
+                <ha-icon class="bubble-icon"
+                        icon="${this._getBestIcon(this.config.entities.presence?.entity, { icon: icon })}"
+                        style="
+                          color: ${bubbleIconColor};
+                          --mdc-icon-size: ${layout.iconSize};
+                          width: ${layout.iconSize};
+                          height: ${layout.iconSize};
+                        ">
                 </ha-icon>
               </div>
-            `;
-          })}
+
+              <!-- Mushroom entities -->
+              <div class="mushroom-container">
+                ${mushroomTemplates.map((item, index) => {
+                  if (!item) return html``;
+                  const style = layout.mushroomPositions[index] || this._defaultMushroomStyle(index);
+                  const mushroomSize = layout.mushroomSize;
+                  const state = hass.states[item.entity]?.state || 'off';
+                  const iconColor = state === 'on'
+                    ? (roomColors.mushroom_active || 'orange')
+                    : (roomColors.mushroom_inactive || '#80808055');
+                  return html`
+                    <div class="mushroom-item"
+                        style="${style}"
+                        @pointerdown="${(e) => this._startHold(e, item)}"
+                        @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
+                        @pointerleave="${(e) => this._cancelHold(e)}">
+                      <ha-icon icon="${this._getBestIcon(item.entity, item)}"
+                              style="color: ${iconColor}; --mdc-icon-size: ${mushroomSize}; width: ${mushroomSize}; height: ${mushroomSize};">
+                      </ha-icon>
+                    </div>
+                  `;
+                })}
+              </div>
+            </div>
+          </div>
+
+          <!-- Colonna Sub-buttons -->
+          <div class="subbutton-column">
+            ${subButtons.map(btn => {
+              if (!btn) return html``;
+              const state = hass.states[btn.entity]?.state || 'off';
+              const btnColor = state === 'on'
+                ? subColors.background_on || 'rgba(0,0,255,1)'
+                : subColors.background_off || 'rgba(0,0,255,0.3)';
+              const iconColor = state === 'on'
+                ? subColors.icon_on || 'yellow'
+                : subColors.icon_off || '#666';
+              return html`
+                <div class="bubble-sub-button"
+                    style="--sub-button-color:${btnColor}; --sub-button-height:${layout.subButtonHeight};"
+                    @pointerdown="${(e) => this._startHold(e, btn)}"
+                    @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
+                    @pointerleave="${(e) => this._cancelHold(e)}">
+                  <ha-icon icon="${this._getBestIcon(btn.entity, btn)}"
+                          style="color: ${iconColor}; --mdc-icon-size:${layout.mushroomSize}; width:${layout.mushroomSize}; height:${layout.mushroomSize};">
+                  </ha-icon>
+                </div>
+              `;
+            })}
+          </div>
         </div>
+
 
       </div>
     `;
