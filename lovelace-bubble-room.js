@@ -229,6 +229,7 @@ class BubbleRoom extends LitElement {
       *, *::before, *::after { box-sizing: border-box; }
       :host {
         display: block;
+        width: 100%;
         --card-height: 190px;
         --card-background: black;
         --bubble-bg: gray;
@@ -250,8 +251,7 @@ class BubbleRoom extends LitElement {
       }
       .grid-container {
         display: grid;
-        grid-template-columns: 1fr 80px;
-        grid-template-rows: 100%;
+        grid-template-columns: auto 80px;
         width: 100%;
         height: 100%;
         min-width: 0;
@@ -278,12 +278,10 @@ class BubbleRoom extends LitElement {
         left: -40px;
       }
       .bubble-icon {
-        position: absolute;
-        top: 15%;
-        left: 25%;
-        width: 50% 
-        --mdc-icon-size: 90px 
-        opacity: 0.5
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
       }
       .bubble-sub-button-container {
         grid-area: b;
@@ -309,12 +307,18 @@ class BubbleRoom extends LitElement {
         background-color: var(--sub-button-color);
         transition: width 0.2s;
       }
-      @media (max-width: 480px) {
+      @media (max-width:480px) {
         .bubble-sub-button {
           min-width: 32px;
           max-width: 44px;
           border-radius: 12px;
           padding: 0;
+        }
+        .bubble-icon {
+          --mdc-icon-size: 50px;
+        }
+        .sensor-row {
+          font-size: 10px;
         }
       }
       .mushroom-container {
@@ -367,7 +371,10 @@ class BubbleRoom extends LitElement {
       }
 
 
-
+      .mushroom-container {
+        max-width: 100%;
+        overflow: hidden;
+      }
 
 
       .subbutton-column {
