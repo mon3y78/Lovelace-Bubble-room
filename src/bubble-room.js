@@ -357,7 +357,6 @@ class BubbleRoom extends LitElement {
 
       .sensor-row {
         font-weight: bold;
-        font-size: clamp(8px, 2vw, 14px);
         white-space: nowrap;
         overflow: hidden;
         width: 100%;
@@ -366,6 +365,7 @@ class BubbleRoom extends LitElement {
         color: white;
         text-shadow: 0 0 3px black;
       }
+
 
 
 
@@ -398,6 +398,19 @@ class BubbleRoom extends LitElement {
       const { emoji, unit } = this._getSensorEmojiAndUnit(sensor.type, sensor.unit);
       sensorStrings.push(`${emoji} ${state}${unit}`);
     }
+    // Calcola la lunghezza totale del testo sensori
+    const sensorTextLength = sensorStrings.join(' ').length;
+
+    // Font size dinamico
+    let sensorFontSize = '14px';
+    if (sensorTextLength > 35) {
+      sensorFontSize = '8px';
+    } else if (sensorTextLength > 25) {
+      sensorFontSize = '10px';
+    } else if (sensorTextLength > 15) {
+      sensorFontSize = '12px';
+    }
+
     const { colors, name, icon } = this.config;
     const roomColors = colors?.room || {};
     const subColors = colors?.subbutton || {};
@@ -444,7 +457,7 @@ class BubbleRoom extends LitElement {
               <!-- Riga sensori -->
               ${sensorStrings.length > 0 ? html`
                 <div class="sensor-row-wrapper">
-                  <div class="sensor-row">
+                  <div class="sensor-row" style="font-size:${sensorFontSize};">
                     ${sensorStrings.join(' ')}
                   </div>
                 </div>
