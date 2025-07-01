@@ -240,18 +240,17 @@ class BubbleRoom extends LitElement {
         margin: 0;
         padding: 0 !important;
         background: transparent !important;
-        height: var(--card-height);
+        height: auto;
+        min-height: 250px; /* Altezze inferiori possono tagliare */
       }
       .card {
         position: relative;
         width: 100%;
-        min-height: 200px;
         height: auto;
+        min-height: 250px;
         border-radius: 8px;
-        overflow: visible;
-        display: grid;
+        overflow: hidden;
       }
-
 
       .grid-container {
         display: grid;
