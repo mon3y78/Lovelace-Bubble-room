@@ -318,6 +318,9 @@ class BubbleRoom extends LitElement {
         .bubble-icon {
           --mdc-icon-size: 50px;
         }
+        .sensor-row {
+          font-size: 10px;
+        }
       }
       .mushroom-container {
         position: absolute;
@@ -350,19 +353,16 @@ class BubbleRoom extends LitElement {
 
       .sensor-row {
         font-weight: bold;
-        font-size: 14px;
-        white-space: normal;
-        word-break: break-word;
+        font-size: 12px;
+        white-space: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
         width: 100%;
         min-width: 0;
         flex-shrink: 1;
         color: white;
         text-shadow: 0 0 3px black;
       }
-
-
-
-
 
       .mushroom-container {
         max-width: 100%;
@@ -373,14 +373,13 @@ class BubbleRoom extends LitElement {
       .subbutton-column {
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
+        justify-content: space-evenly;
         align-items: center;
-        gap: 4px;
-        padding-top: 4px;
-        padding-bottom: 4px;
         height: 100%;
         box-sizing: border-box;
+        padding: 4px 0;
       }
+
 
 
 
