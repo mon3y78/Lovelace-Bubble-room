@@ -250,10 +250,11 @@ class BubbleRoom extends LitElement {
       }
       .grid-container {
         display: grid;
-        grid-template-columns: 1fr 80px; /* colonna sinistra e colonna Sub-buttons */
+        grid-template-columns: 1fr 80px;
         grid-template-rows: 100%;
         width: 100%;
         height: 100%;
+        min-width: 0;
       }
 
       .name-area {
@@ -341,9 +342,10 @@ class BubbleRoom extends LitElement {
         align-items: flex-start;
         height: 100%;
         width: 100%;
+        min-width: 0;
         position: relative;
-        gap: 4px; /* Spazio tra sensori, nome e icona */
       }
+
 
 
       .sensor-row-wrapper {
