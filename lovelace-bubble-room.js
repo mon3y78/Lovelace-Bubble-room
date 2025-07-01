@@ -307,6 +307,7 @@ class BubbleRoom extends LitElement {
         cursor: pointer;
         background-color: var(--sub-button-color);
         transition: width 0.2s;
+        flex: 1 1 0;
       }
 
 
