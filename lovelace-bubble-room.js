@@ -251,10 +251,11 @@ class BubbleRoom extends LitElement {
       }
       .grid-container {
         display: grid;
-        grid-template-columns: auto 80px;
+        grid-template-columns: minmax(140px, 1fr) 80px;
         width: 100%;
         height: 100%;
         min-width: 0;
+        max-width: 100%;
       }
 
       .name-area {
@@ -278,10 +279,10 @@ class BubbleRoom extends LitElement {
         left: -40px;
       }
       .bubble-icon {
-        max-width: 100%;
-        max-height: 100%;
-        width: auto;
+        width: 50%;
         height: auto;
+        max-width: 80px;
+        max-height: 80px;
       }
       .bubble-sub-button-container {
         grid-area: b;
@@ -361,14 +362,17 @@ class BubbleRoom extends LitElement {
 
       .sensor-row {
         font-weight: bold;
+        font-size: 14px;
         white-space: nowrap;
         overflow: hidden;
+        text-overflow: ellipsis;
         width: 100%;
         min-width: 0;
         flex-shrink: 1;
         color: white;
         text-shadow: 0 0 3px black;
       }
+
 
 
       .mushroom-container {
@@ -664,24 +668,16 @@ class BubbleRoom extends LitElement {
   }
 
   _getIconShapeStyle(mode) {
-    if (mode === '12x4') {
-      return `
-        width: 240px;
-        height: 190px;
-        border-radius: 0% 70% 70% 0%;
-        top: 0px;
-        left: 0px;
-      `;
-    } else {
-      return `
-        width: 130px;
-        height: 140px;
-        border-radius: 0% 70% 70% 0%;
-        top: 0px;
-        left: 0px;
-      `;
-    }
+    return `
+      width: 100%;
+      height: auto;
+      aspect-ratio: 4/3;
+      border-radius: 0% 70% 70% 0%;
+      top: 0;
+      left: 0;
+    `;
   }
+  
 }
 
 customElements.define('bubble-room', BubbleRoom);
