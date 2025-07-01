@@ -254,6 +254,7 @@ class BubbleRoom extends LitElement {
         grid-template-columns: 2fr 1fr;
         width: 100%;
         height: 100%;
+        align-items: center;
       }
       .name-area {
         font-weight: bold;
@@ -277,6 +278,8 @@ class BubbleRoom extends LitElement {
         display: flex;
         justify-content: center;
         align-items: center;
+        transform: scale(0.8);
+        margin-right: 8%;
       }
       .bubble-icon {
         width: 60%;
@@ -348,7 +351,7 @@ class BubbleRoom extends LitElement {
 
       .sensor-row {
         font-weight: bold;
-        font-size: 1.8vw;
+        font-size: 1.4vw;
         white-space: nowrap;
         overflow-x: auto;
         overflow-y: hidden;
@@ -356,6 +359,7 @@ class BubbleRoom extends LitElement {
         color: white;
         text-shadow: 0 0 3px black;
       }
+
 
       .mushroom-container {
         max-width: 100%;
