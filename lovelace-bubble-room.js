@@ -311,13 +311,15 @@ class BubbleRoom extends LitElement {
         display: flex;
         justify-content: center;
         align-items: center;
+        flex: 1 1 0;
         width: 100%;
-        height: 100%;
+        min-height: 0;
         border-radius: 10px;
+        margin: 2px 0;
         cursor: pointer;
         background-color: var(--sub-button-color);
-        transition: width 0.2s;
       }
+
 
       @media (max-width:480px) {
         .bubble-sub-button {
@@ -366,18 +368,20 @@ class BubbleRoom extends LitElement {
       }
 
 
-      .sensor-row {
+      ..sensor-row {
         font-weight: bold;
-        font-size: 10px; /* font più piccolo */
+        font-size: clamp(7px, 1.6vw, 10px);
         white-space: nowrap;
-        overflow-x: auto; /* barra di scorrimento se necessario */
+        overflow-x: auto;
         overflow-y: hidden;
         width: 100%;
         max-width: 100%;
         min-width: 0;
         color: white;
+        text-align: left;
         text-shadow: 0 0 3px black;
       }
+
 
 
 
@@ -387,12 +391,14 @@ class BubbleRoom extends LitElement {
         overflow: hidden;
       }
       .subbutton-column {
-        display: grid;
-        grid-template-rows: repeat(4, 1fr);
-        gap: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: stretch;
+        align-items: stretch;
         height: 100%;
         width: 100%;
       }
+
 
     `;
   }
