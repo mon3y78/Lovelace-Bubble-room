@@ -258,8 +258,18 @@ class BubbleRoom extends LitElement {
       }
       .name-area {
         font-weight: bold;
-        font-size: 2.5vw;
-        line-height: 1.2;
+        padding-left: 0;
+        margin-left: 0;
+        text-align: left;
+      }
+      .header {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 2px 0;
+        gap: 2px;
+        width: 100%;
       }
       .icon-area {
         grid-area: i;
@@ -270,14 +280,15 @@ class BubbleRoom extends LitElement {
       }
       .bubble-icon-container {
         position: relative;
-        width: 100%;
+        width: 85%;
         aspect-ratio: 1 / 1;
         cursor: pointer;
         border-radius: 100%;
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
       }
+
 
       .bubble-icon {
         width: 70%;
@@ -345,24 +356,29 @@ class BubbleRoom extends LitElement {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        align-items: center;
+        align-items: flex-start;
         height: 100%;
         width: 100%;
         min-width: 0;
         position: relative;
+        padding-left: 0;
+        margin-left: 0;
       }
+
 
       .sensor-row {
         font-weight: bold;
-        font-size: clamp(10px, 2vw, 16px);
+        font-size: 10px; /* font più piccolo */
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        overflow-x: auto; /* barra di scorrimento se necessario */
+        overflow-y: hidden;
         width: 100%;
+        max-width: 100%;
+        min-width: 0;
         color: white;
-        text-align: center;
         text-shadow: 0 0 3px black;
       }
+
 
 
 
