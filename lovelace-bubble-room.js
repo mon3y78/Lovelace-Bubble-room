@@ -227,15 +227,16 @@ class BubbleRoom extends LitElement {
   static get styles() {
     return css`
       *, *::before, *::after { box-sizing: border-box; }
-      :host {
-        display: block;
-        width: 100%;
+      :host,
+      ha-card,
+      .card,
+      .grid-container,
+      .left-content,
+      .subbutton-column {
         height: 100%;
-        --card-height: 190px;
-        --card-background: black;
-        --bubble-bg: gray;
-        font-family: sans-serif;
+        min-height: 0;
       }
+
       ha-card {
         display: block;
         margin: 0;
@@ -248,6 +249,7 @@ class BubbleRoom extends LitElement {
         position: relative;
         width: 100%;
         height: 100%; /* <<--- aggiungi */
+        min-height: 0;
         border-radius: 8px;
         overflow: hidden;
       }
@@ -259,7 +261,7 @@ class BubbleRoom extends LitElement {
         align-items: stretch; /* fa crescere anche la colonna subbutton */
         width: 100%;
         height: 100%; /* <<--- aggiungi */
-        min-height: unset; /* <<--- togli min-height */
+        min-height: 0;
       }
 
 
@@ -404,10 +406,16 @@ class BubbleRoom extends LitElement {
         width: 100%;
         height: 100%; /* <<--- aggiungi */
       }
-
+      :host,
+      ha-card,
+      .card {
+        height: 100%;
+        min-height: 0;
+      }
 
 
     `;
+
   }
 
   render() {
