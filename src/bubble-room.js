@@ -303,7 +303,7 @@ class BubbleRoom extends LitElement {
         height: auto;
         min-height: 36px;
         border-radius: 10px;
-        margin: 1px 0;
+        margin: 2px 0;
         cursor: pointer;
         background-color: var(--sub-button-color);
         transition: width 0.2s;
@@ -372,7 +372,7 @@ class BubbleRoom extends LitElement {
       .subbutton-column {
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: stretch;
         height: 100%;
         box-sizing: border-box;
