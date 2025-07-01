@@ -307,6 +307,7 @@ class BubbleRoom extends LitElement {
         cursor: pointer;
         background-color: var(--sub-button-color);
         transition: width 0.2s;
+        flex: 1 1 auto;
       }
       @media (max-width:480px) {
         .bubble-sub-button {
@@ -319,7 +320,14 @@ class BubbleRoom extends LitElement {
           --mdc-icon-size: 50px;
         }
         .sensor-row {
-          font-size: 10px;
+          font-weight: bold;
+          font-size: 8px;
+          width: 100%;
+          color: white;
+          text-shadow: 0 0 3px black;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
         }
       }
       .mushroom-container {
@@ -371,12 +379,13 @@ class BubbleRoom extends LitElement {
       .subbutton-column {
         display: flex;
         flex-direction: column;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
         height: 100%;
         box-sizing: border-box;
         padding: 4px 0;
       }
+
 
     `;
   }
@@ -398,6 +407,11 @@ class BubbleRoom extends LitElement {
       if (!isNaN(parseFloat(state))) state = Math.floor(parseFloat(state)).toString();
       const { emoji, unit } = this._getSensorEmojiAndUnit(sensor.type, sensor.unit);
       sensorStrings.push(`${emoji} ${state}${unit}`);
+    }
+    // Raggruppa sensori in righe da massimo 3
+    const sensorLines = [];
+    for (let i = 0; i < sensorStrings.length; i += 3) {
+      sensorLines.push(sensorStrings.slice(i, i + 3).join(' '));
     }
 
     const { colors, name, icon } = this.config;
@@ -446,9 +460,8 @@ class BubbleRoom extends LitElement {
               <!-- Riga sensori -->
               ${sensorStrings.length > 0 ? html`
                 <div class="sensor-row">
-                  ${sensorStrings.join(' ')}
+                  ${sensorLines.map(line => html`<div>${line}</div>`)}
                 </div>
-
               ` : ''}
 
               <!-- Nome stanza -->
