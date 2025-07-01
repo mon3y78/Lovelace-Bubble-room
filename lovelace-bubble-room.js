@@ -251,15 +251,14 @@ class BubbleRoom extends LitElement {
       }
       .grid-container {
         display: grid;
-        grid-template-columns: minmax(140px,65%) 1fr;
+        grid-template-columns: 2fr 1fr;
         width: 100%;
         height: 100%;
-        min-width: 0;
-        max-width: 100%;
       }
-
       .name-area {
         font-weight: bold;
+        font-size: 2.5vw;
+        line-height: 1.2;
       }
       .icon-area {
         grid-area: i;
@@ -269,20 +268,19 @@ class BubbleRoom extends LitElement {
         align-items: center;
       }
       .bubble-icon-container {
-        position: absolute;
+        position: relative;
+        width: 60%;
+        aspect-ratio: 1/1;
+        background-color: var(--bubble-bg);
+        border-radius: 50%;
         cursor: pointer;
-        border-radius: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
-        top: -39px;
-        left: -40px;
       }
       .bubble-icon {
-        width: 50%;
-        height: auto;
-        max-width: 80px;
-        max-height: 80px;
+        width: 60%;
+        height: 60%;
       }
       .bubble-sub-button-container {
         grid-area: b;
@@ -298,18 +296,13 @@ class BubbleRoom extends LitElement {
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 80px;
-        max-width: 80px;
-        height: auto;
-        min-height: 36px;
+        width: 100%;
+        height: 100%;
         border-radius: 10px;
-        margin: 2px 0;
         cursor: pointer;
         background-color: var(--sub-button-color);
         transition: width 0.2s;
-        flex: 1 1 0;
       }
-
 
       @media (max-width:480px) {
         .bubble-sub-button {
@@ -335,6 +328,8 @@ class BubbleRoom extends LitElement {
         position: absolute;
         pointer-events: auto;
         cursor: pointer;
+        width: 20%;
+        height: auto;
       }
       .mushroom-primary {
         pointer-events: auto;
@@ -353,7 +348,7 @@ class BubbleRoom extends LitElement {
 
       .sensor-row {
         font-weight: bold;
-        font-size: 9px;
+        font-size: 1.8vw;
         white-space: nowrap;
         overflow-x: auto;
         overflow-y: hidden;
@@ -362,25 +357,17 @@ class BubbleRoom extends LitElement {
         text-shadow: 0 0 3px black;
       }
 
-
-
       .mushroom-container {
         max-width: 100%;
         overflow: hidden;
       }
-
-
       .subbutton-column {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: stretch;
+        display: grid;
+        grid-template-rows: repeat(4, 1fr);
+        gap: 4px;
         height: 100%;
-        box-sizing: border-box;
-        padding: 4px 0;
+        width: 100%;
       }
-
-
 
     `;
   }
@@ -485,7 +472,16 @@ class BubbleRoom extends LitElement {
               <div class="mushroom-container">
                 ${mushroomTemplates.map((item, index) => {
                   if (!item) return html``;
-                  const style = layout.mushroomPositions[index] || this._defaultMushroomStyle(index);
+                  const positions = [
+                    "top: -20%; left: 40%;",
+                    "top: 0%; left: 85%;",
+                    "top: 50%; left: 90%;",
+                    "bottom: 0%; left: 60%;",
+                    "bottom: -20%; left: 30%;",
+                    "top: 80%; left: 10%;",
+                    "top: -30%; left: 70%;"
+                  ];
+                  const style = positions[index] || "";                  
                   const mushroomSize = layout.mushroomSize;
                   const state = hass.states[item.entity]?.state || 'off';
                   const iconColor = state === 'on'
