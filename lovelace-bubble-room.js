@@ -226,129 +226,107 @@ class BubbleRoom extends LitElement {
 
   static get styles() {
     return css`
-      /* Imposta tutti i contenitori principali per riempire l'altezza disponibile */
-      : host,
-      ha - card,
-        .card,
-        .grid - container {
-        height: 100% !important; /* Questo è il cambiamento chiave */
-        min-height: 0 !important;
-        max-height: 100% !important; /* Anche qui, da vh a % */
-        }
-        .left - content,
-        .subbutton - column {
-          width: 100% !important;
-          height: 100% !important;
-          min - height: 0 !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          box - sizing: border - box !important;
-        }
-  
-      *, *::before, *::after { 
-        box-sizing: border-box; 
-      }
-  
-      ha-card {
-        display: block;
+      /* Contenitori principali full-height */
+      :host,
+      ha-card,
+      .card,
+      .grid-container {
         margin: 0;
-        padding: 0 !important;
-        background: transparent !important;
-        height: 100% !important;
-      }
-  
-      .card {
-        background: rgba(0, 255, 0, 0.1); 
-        position: relative;
+        padding: 0;
+        height: 100%;
         width: 100%;
-        height: 100% !important;
-        border-radius: 8px;
-        overflow: hidden;
+        min-height: 0;
+        box-sizing: border-box;
       }
   
+      /* Card wrapper */
+      .card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+        background: transparent;
+      }
+  
+      /* Layout a due colonne: sinistra = 2fr, destra = 1fr */
       .grid-container {
         display: grid;
         grid-template-columns: 2fr 1fr;
-        align-items: stretch; /* Assicura che le colonne si estendano per tutta l'altezza della griglia */
-        width: 100%;
-        height: 100% !important;
+        grid-template-rows: 1fr;
+        align-items: stretch;
       }
   
+      /* Colonna sinistra: header + icona */
       .left-content {
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        width: 100%;
-        min-width: 0;
-        position: relative;
-        padding-left: 0;
-        margin-left: 0;
-      }
-  
-      .subbutton-column {
-        display: grid;
-        grid-template-rows: repeat(4, 1fr);
-        gap: 4px;
-        width: 100%;
         height: 100%;
-        min-height: 0;
       }
   
       .header {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        padding: 2px 0;
-        gap: 2px;
-        width: 100%;
+        padding: 0.5% 2%;
       }
   
       .name-area {
         font-weight: bold;
-        padding-left: 0;
-        margin-left: 0;
-        text-align: left;
+        font-size: 1.2em;
+      }
+  
+      .sensor-row {
+        font-size: 0.8em;
+        white-space: nowrap;
+        overflow-x: auto;
       }
   
       .icon-area {
-        grid-area: i;
+        flex: 1;
         position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
-        flex-grow: 1; /* Permette a quest'area di occupare lo spazio rimanente */
-        width: 100%;
       }
   
+      /* Cerchio principale */
       .bubble-icon-container {
-        position: relative;
-        width: 85%;
-        aspect-ratio: 1 / 1;
-        cursor: pointer;
-        border-radius: 100%;
+        width: 50%;           /* ora in percentuale */
+        aspect-ratio: 1 / 1;  /* mantiene il cerchio sempre proporzionato */
+        border-radius: 50%;
         display: flex;
-        justify-content: flex-start;
+        justify-content: center;
         align-items: center;
+        background-color: var(--bubble-bg, rgba(0, 128, 0, 0.3));
       }
   
       .bubble-icon {
-        width: 70%;
+        width: 70%;           /* dimensione interna in % */
         height: auto;
-        max-width: 100%;
         max-height: 100%;
       }
   
-      .bubble-sub-button-container {
-        grid-area: b;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        justify-self: stretch;
-        align-self: stretch;
+      /* Mushroom entities: su tutto il container dell’icona */
+      .mushroom-container {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+  
+      .mushroom-item {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        pointer-events: auto;
+        cursor: pointer;
+        /* width e height verranno gestiti via inline style o layoutMap */
+      }
+  
+      /* Colonna sub-button */
+      .subbutton-column {
+        display: grid;
+        grid-template-rows: repeat(4, 1fr);
+        gap: 2%;
+        height: 100%;
+        padding: 2%;
       }
   
       .bubble-sub-button {
@@ -359,57 +337,12 @@ class BubbleRoom extends LitElement {
         height: 100%;
         border-radius: 10px;
         cursor: pointer;
-        background-color: var(--sub-button-color);
+        background-color: var(--sub-button-color, rgba(0,0,255,0.3));
       }
   
-      @media (max-width:480px) {
-        .bubble-sub-button {
-          border-radius: 12px;
-          padding: 0;
-        }
-        .bubble-icon {
-          --mdc-icon-size: 50px;
-        }
-      }
-  
-      .mushroom-container {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 50%;
-        pointer-events: none;
-        z-index: 2;
-        max-width: 100%;
-        overflow: hidden;
-      }
-  
-      .mushroom-item {
-        position: absolute;
-        pointer-events: auto;
-        cursor: pointer;
-        width: 15%;
-        height: auto;
-        transform: translate(-50%, -50%);
-      }
-  
-      .mushroom-primary {
-        pointer-events: auto;
-        white-space: nowrap;
-      }
-  
-      .sensor-row {
-        font-weight: bold;
-        font-size: clamp(7px, 1.6vw, 10px);
-        white-space: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
-        width: 100%;
-        max-width: 100%;
-        min-width: 0;
-        color: white;
-        text-align: left;
-        text-shadow: 0 0 3px black;
+      @media (max-width: 480px) {
+        .bubble-icon-container { width: 70%; }
+        .bubble-icon { width: 80%; }
       }
     `;
   }
