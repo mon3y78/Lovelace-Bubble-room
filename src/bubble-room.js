@@ -355,8 +355,6 @@ class BubbleRoom extends LitElement {
   
       @media (max-width:480px) {
         .bubble-sub-button {
-          min-width: 32px;
-          max-width: 44px;
           border-radius: 12px;
           padding: 0;
         }
