@@ -230,7 +230,11 @@ class BubbleRoom extends LitElement {
       : host,
       ha - card,
         .card,
-        .grid - container,
+        .grid - container {
+          height: 100vh !important;
+          min-height: 0 !important;
+          max-height: 100vh !important;
+        }
         .left - content,
         .subbutton - column {
           width: 100 % !important;
@@ -284,6 +288,8 @@ class BubbleRoom extends LitElement {
         grid-template-rows: repeat(4, 1fr);
         gap: 4px;
         width: 100%;
+        height: 100%;
+        min-height: 0;
       }
   
       .header {
