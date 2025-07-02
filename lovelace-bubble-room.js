@@ -231,18 +231,18 @@ class BubbleRoom extends LitElement {
       ha - card,
         .card,
         .grid - container {
-          height: 100vh !important;
-          min-height: 0 !important;
-          max-height: 100vh !important;
+        height: 100% !important; /* Questo è il cambiamento chiave */
+        min-height: 0 !important;
+        max-height: 100% !important; /* Anche qui, da vh a % */
         }
         .left - content,
         .subbutton - column {
-          width: 100 % !important;
-          height: 100 % !important;
-          min - height: 0!important;
-          margin: 0!important;
-          padding: 0!important;
-          box - sizing: border - box!important;
+          width: 100% !important;
+          height: 100% !important;
+          min - height: 0 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          box - sizing: border - box !important;
         }
   
       *, *::before, *::after { 
