@@ -472,7 +472,6 @@ class BubbleRoom extends LitElement {
                     "top: -30%; left: 70%;"
                   ];
                   const style = positions[index] || "";                  
-                  layout.mushroomSize;
                   const state = hass.states[item.entity]?.state || 'off';
                   const iconColor = state === 'on'
                     ? (roomColors.mushroom_active || 'orange')
@@ -509,16 +508,16 @@ class BubbleRoom extends LitElement {
                 : subColors.icon_off || '#666';
               return html`
                 <div class="bubble-sub-button"
-                    style="--sub-button-color:${btnColor}; --sub-button-height:${layout.subButtonHeight};"
+                    style="--sub-button-color: ${btnColor};"
                     @pointerdown="${(e) => this._startHold(e, btn)}"
                     @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
                     @pointerleave="${(e) => this._cancelHold(e)}">
-                  <ha-icon icon="${this._getBestIcon(btn.entity, btn)}"
-                          style="color: ${iconColor}; --mdc-icon-size:${layout.mushroomSize}; width:${layout.mushroomSize}; height:${layout.mushroomSize};">
+                  <ha-icon
+                    class="subbutton-icon"
+                    icon="${this._getBestIcon(btn.entity, btn)}"
+                    style="color: ${iconColor};">
                   </ha-icon>
                 </div>
-
-
               `;
             })}
           </div>
