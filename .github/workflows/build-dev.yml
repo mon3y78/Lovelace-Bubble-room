@@ -25,11 +25,7 @@ jobs:
           npm_config_ignore_optional: true
 
       - name: Run Rollup build
-        run: npm run build
-
-      - name: muovi ti root
-        run: |
-          cp -f lovelace-bubble-room.js lovelace-bubble-room.js
+        run: npm run build        
 
       - name: Commit JS build files
         run: |
