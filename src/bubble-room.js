@@ -226,7 +226,7 @@ class BubbleRoom extends LitElement {
 
   static get styles() {
     return css`
-      *, *::before, *::after { box-sizing: border-box; }
+      /* Imposta tutti i contenitori principali per riempire l'altezza disponibile */
       :host,
       ha-card,
       .card,
@@ -234,44 +234,53 @@ class BubbleRoom extends LitElement {
       .left-content,
       .subbutton-column {
         height: 100%;
-        min-height: 0;
+        min-height: 0; /* Evita problemi di overflow nei contenitori flex/grid */
       }
-
+  
+      *, *::before, *::after { 
+        box-sizing: border-box; 
+      }
+  
       ha-card {
         display: block;
         margin: 0;
         padding: 0 !important;
         background: transparent !important;
-        height: 100%;
       }
-
+  
       .card {
         position: relative;
         width: 100%;
-        height: 100%; /* <<--- aggiungi */
-        min-height: 0;
         border-radius: 8px;
         overflow: hidden;
       }
-
-
+  
       .grid-container {
         display: grid;
         grid-template-columns: 2fr 1fr;
-        align-items: stretch; /* fa crescere anche la colonna subbutton */
+        align-items: stretch; /* Assicura che le colonne si estendano per tutta l'altezza della griglia */
         width: 100%;
-        height: 100%; /* <<--- aggiungi */
-        min-height: 0;
       }
-
-
-
-      .name-area {
-        font-weight: bold;
+  
+      .left-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        width: 100%;
+        min-width: 0;
+        position: relative;
         padding-left: 0;
         margin-left: 0;
-        text-align: left;
       }
+  
+      .subbutton-column {
+        display: grid;
+        grid-template-rows: repeat(4, 1fr);
+        gap: 4px;
+        width: 100%;
+      }
+  
       .header {
         display: flex;
         flex-direction: column;
@@ -281,13 +290,24 @@ class BubbleRoom extends LitElement {
         gap: 2px;
         width: 100%;
       }
+  
+      .name-area {
+        font-weight: bold;
+        padding-left: 0;
+        margin-left: 0;
+        text-align: left;
+      }
+  
       .icon-area {
         grid-area: i;
         position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-grow: 1; /* Permette a quest'area di occupare lo spazio rimanente */
+        width: 100%;
       }
+  
       .bubble-icon-container {
         position: relative;
         width: 85%;
@@ -298,15 +318,14 @@ class BubbleRoom extends LitElement {
         justify-content: flex-start;
         align-items: center;
       }
-
-
+  
       .bubble-icon {
         width: 70%;
         height: auto;
         max-width: 100%;
         max-height: 100%;
       }
-
+  
       .bubble-sub-button-container {
         grid-area: b;
         display: flex;
@@ -317,19 +336,18 @@ class BubbleRoom extends LitElement {
         align-self: stretch;
         width: 100%;
       }
+  
       .bubble-sub-button {
         display: flex;
         justify-content: center;
         align-items: center;
         width: 100%;
-        height: 100%; /* <<--- mantieni */
+        height: 100%;
         border-radius: 10px;
         cursor: pointer;
         background-color: var(--sub-button-color);
       }
-
-
-
+  
       @media (max-width:480px) {
         .bubble-sub-button {
           min-width: 32px;
@@ -341,6 +359,7 @@ class BubbleRoom extends LitElement {
           --mdc-icon-size: 50px;
         }
       }
+  
       .mushroom-container {
         position: absolute;
         bottom: 0;
@@ -349,7 +368,10 @@ class BubbleRoom extends LitElement {
         height: 50%;
         pointer-events: none;
         z-index: 2;
+        max-width: 100%;
+        overflow: hidden;
       }
+  
       .mushroom-item {
         position: absolute;
         pointer-events: auto;
@@ -358,25 +380,12 @@ class BubbleRoom extends LitElement {
         height: auto;
         transform: translate(-50%, -50%);
       }
-
+  
       .mushroom-primary {
         pointer-events: auto;
         white-space: nowrap;
       }
-      .left-content {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        height: 100%;
-        width: 100%;
-        min-width: 0;
-        position: relative;
-        padding-left: 0;
-        margin-left: 0;
-      }
-
-
+  
       .sensor-row {
         font-weight: bold;
         font-size: clamp(7px, 1.6vw, 10px);
@@ -390,33 +399,10 @@ class BubbleRoom extends LitElement {
         text-align: left;
         text-shadow: 0 0 3px black;
       }
-
-
-
-
-
-      .mushroom-container {
-        max-width: 100%;
-        overflow: hidden;
-      }
-      .subbutton-column {
-        display: grid;
-        grid-template-rows: repeat(4, 1fr);
-        gap: 4px;
-        width: 100%;
-        height: 100%; /* <<--- aggiungi */
-      }
-      :host,
-      ha-card,
-      .card {
-        height: 100%;
-        min-height: 0;
-      }
-
-
     `;
-
   }
+  
+
 
   render() {
     const layout = this._getLayoutStyle(this.config.layout_mode || "6x3");
