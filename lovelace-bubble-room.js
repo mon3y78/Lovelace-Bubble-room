@@ -254,12 +254,14 @@ class BubbleRoom extends LitElement {
         margin: 0;
         padding: 0 !important;
         background: transparent !important;
+        height: 100% !important;
       }
   
       .card {
         background: rgba(0, 255, 0, 0.1); 
         position: relative;
         width: 100%;
+        height: 100% !important;
         border-radius: 8px;
         overflow: hidden;
       }
@@ -269,6 +271,7 @@ class BubbleRoom extends LitElement {
         grid-template-columns: 2fr 1fr;
         align-items: stretch; /* Assicura che le colonne si estendano per tutta l'altezza della griglia */
         width: 100%;
+        height: 100% !important;
       }
   
       .left-content {
