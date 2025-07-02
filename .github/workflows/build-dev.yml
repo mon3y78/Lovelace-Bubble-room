@@ -27,10 +27,9 @@ jobs:
       - name: Run Rollup build
         run: npm run build
 
-      - name: Create dist folder and move build
+      - name: muovi ti root
         run: |
-          mkdir -p dist
-          cp lovelace-bubble-room.js dist/lovelace-bubble-room.js
+          cp -f lovelace-bubble-room.js lovelace-bubble-room.js
 
       - name: Commit JS build files
         run: |
