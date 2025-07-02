@@ -346,11 +346,12 @@ class BubbleRoom extends LitElement {
         background-color: var(--sub-button-color, rgba(0,0,255,0.3));
       }
       .subbutton-icon {
-        width: 80%; /* <-- diemnsione icona*/
+        width: 140%; /* <-- diemnsione icona*/
         height: auto;
         max-width: 100%;
         max-height: 100%;
-        margin: auto;
+        display: block;       /* da inline a block */
+        margin: auto;  
       }  
       .mushroom-icon {
         width: 70%;
