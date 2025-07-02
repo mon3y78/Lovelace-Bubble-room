@@ -461,7 +461,7 @@ class BubbleRoom extends LitElement {
     if (entities.camera) mushroomTemplates.push(entities.camera);
 
     return html`
-      <div class="card" style="height: ${layout.cardHeight};">
+      <div class="card">
         <div class="grid-container">
           <!-- Colonna sinistra -->
           <div class="left-content">
@@ -606,7 +606,6 @@ class BubbleRoom extends LitElement {
   _getLayoutStyle(mode) {
     const layoutMap = {
       '6x3': {
-        cardHeight: '190px',
         iconSize: '75px',
         iconTop: '25%',
         iconLeft: '5%',
@@ -639,7 +638,6 @@ class BubbleRoom extends LitElement {
         subButtonIconSize: '26px',
       },
       '12x4': {
-        cardHeight: '250px',
         iconSize: '130px',
         iconTop: '0%',
         iconLeft: '2%',
