@@ -290,6 +290,7 @@ class BubbleRoom extends LitElement {
         justify-content: flex-start;
         align-items: center;
         padding-left: 0%
+        border: 1px solid red;
       }
   
       /* Cerchio principale */
@@ -299,7 +300,9 @@ class BubbleRoom extends LitElement {
         display: flex;
         justify-content: center;
         align-items: center;
-        background - color: var (--bubble - bg, rgba(0, 128, 0, 0.3));
+        flex-grow: 1;
+        flex-basic: 0;
+        background-color: var(--bubble-bg, rgba(0, 128, 0, 0.3));
         border-radius: 0; /* o 50% se vuoi un cerchio */
       }
   
