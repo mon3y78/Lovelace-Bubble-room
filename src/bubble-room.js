@@ -244,6 +244,7 @@ class BubbleRoom extends LitElement {
         overflow: hidden;
         border-radius: 8px;
         background: transparent;
+        height: 100%;
       }
   
       /* Layout a due colonne: sinistra = 2fr, destra = 1fr */
