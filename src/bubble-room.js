@@ -256,10 +256,10 @@ class BubbleRoom extends LitElement {
       }
   
       /* Colonna sinistra: header + icona */
-      .left-content {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
+      .left - content {
+        display: grid;
+        grid - template - rows: 1 fr 2 fr 7 fr;
+        height: 100 % ;
       }
   
       .header {
@@ -415,22 +415,19 @@ class BubbleRoom extends LitElement {
         <div class="grid-container">
           <!-- Colonna sinistra -->
           <div class="left-content">
-            <div class="header">
-              <!-- Riga sensori -->
-              ${sensorStrings.length > 0 ? html`
-                <div class="sensor-row">
-                  ${sensorStrings.join(' ')}
-                </div>
-              ` : ''}              
-
-              <!-- Nome stanza -->
-              <div class="name-area" style="color:${nameColor}; font-size:${layout.nameFont};">
-                ${name}
-              </div>
+            <!-- Riga sensori -->
+            <div class="sensor-row">
+              ${sensorStrings.length > 0 ? html`${sensorStrings.join(' ')}` : ''}
             </div>
-
-            <!-- Icona principale -->
+          
+            <!-- Riga nome stanza -->
+            <div class="name-area" style="color:${nameColor}; font-size:${layout.nameFont};">
+              ${name}
+            </div>
+          
+            <!-- Riga icona principale + mushroom entities -->
             <div class="icon-area">
+              <!-- Bubble principale -->
               <div class="bubble-icon-container"
                   style="
                     background-color: ${bubbleBg};
@@ -449,7 +446,7 @@ class BubbleRoom extends LitElement {
                         ">
                 </ha-icon>
               </div>
-
+          
               <!-- Mushroom entities -->
               <div class="mushroom-container">
                 ${mushroomTemplates.map((item, index) => {
