@@ -280,7 +280,7 @@ class BubbleRoom extends LitElement {
         align-items: center;
         padding: 0 6%;
         font-weight: bold;
-        font-size: 1.6em;
+        font-size: 2.0em;
       }
   
       /* Riga icona principale */
@@ -307,9 +307,9 @@ class BubbleRoom extends LitElement {
       }
   
       .bubble-icon {
-        width: 70%;
-        height: 70%;
-        max-height: 70%;
+        width: 130%;
+        height: 130%;
+        max-height: 130%;
       }
   
       /* Mushroom entities */
@@ -329,7 +329,7 @@ class BubbleRoom extends LitElement {
         cursor: pointer;
       }
       .mushroom-icon {
-        width: 50%;
+        width: 80%;
         height: auto;
         max-height: 80%;
       }  
@@ -352,7 +352,11 @@ class BubbleRoom extends LitElement {
         cursor: pointer;
         background-color: var(--sub-button-color, rgba(0,0,255,0.3));
       }
-  
+      .subbutton-icon {
+        width: 80%;
+        height: auto;
+        max-height: 90%;
+      }  
       @media (max-width: 480px) {
         .bubble-icon-container { width: 70%; }
         .bubble-icon { width: 80%; }
@@ -505,8 +509,9 @@ class BubbleRoom extends LitElement {
                       @pointerdown="${(e) => this._startHold(e, btn)}"
                       @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
                       @pointerleave="${(e) => this._cancelHold(e)}" >
-                  <ha-icon icon="${this._getBestIcon(btn.entity, btn)}"
-                          style="color: ${iconColor};">
+                  <ha-icon class="subbutton-icon"
+                           icon="${this._getBestIcon(btn.entity, btn)}"
+                           style="color: ${iconColor};">
                   </ha-icon>
                 </div>
               `;
