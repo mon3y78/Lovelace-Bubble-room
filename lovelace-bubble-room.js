@@ -291,14 +291,14 @@ class BubbleRoom extends LitElement {
       }
   
       /* Cerchio principale */
-      .bubble - icon - container {
-        width: 100 % ;
-        height: 100 % ;
+      .bubble-icon-container {
+        width: 100%;
+        height: 100%;
         display: flex;
-        justify - content: center;
-        align - items: center;
+        justify-content: center;
+        align-items: center;
         background - color: var (--bubble - bg, rgba(0, 128, 0, 0.3));
-        border - radius: 0; /* o 50% se vuoi un cerchio */
+        border-radius: 0; /* o 50% se vuoi un cerchio */
       }
   
       .bubble-icon {
