@@ -328,10 +328,10 @@ class BubbleRoom extends LitElement {
         pointer-events: auto;
         cursor: pointer;
       }
-      .mushroom - icon {
-        width: 50 % ;
+      .mushroom-icon {
+        width: 50%;
         height: auto;
-        max - height: 80 % ;
+        max-height: 80%;
       }  
       /* Colonna sub-button */
       .subbutton-column {
@@ -472,8 +472,9 @@ class BubbleRoom extends LitElement {
                         @pointerdown="${(e) => this._startHold(e, item)}"
                         @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
                         @pointerleave="${(e) => this._cancelHold(e)}">
-                      <ha-icon icon="${this._getBestIcon(item.entity, item)}"
-                              style="color: ${iconColor}; --mdc-icon-size: ${mushroomSize}; width: ${mushroomSize}; height: ${mushroomSize};">
+                      <ha-icon class="mushroom-icon"
+                               icon="${this._getBestIcon(item.entity, item)}"
+                               style="color: ${iconColor};">
                       </ha-icon>
                     </div>
                   `;
@@ -494,11 +495,11 @@ class BubbleRoom extends LitElement {
                 ? subColors.icon_on || 'yellow'
                 : subColors.icon_off || '#666';
               return html`
-                < div class = "bubble-sub-button"
-                      style = "--sub-button-color:${btnColor};"
-                      @pointerdown = "${(e) => this._startHold(e, btn)}"
-                      @pointerup = "${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
-                      @pointerleave = "${(e) => this._cancelHold(e)}" >
+                <div class="bubble-sub-button"
+                      style="--sub-button-color:${btnColor};"
+                      @pointerdown="${(e) => this._startHold(e, btn)}"
+                      @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
+                      @pointerleave="${(e) => this._cancelHold(e)}" >
                   <ha-icon icon="${this._getBestIcon(btn.entity, btn)}"
                           style="color: ${iconColor};">
                   </ha-icon>
