@@ -289,7 +289,7 @@ class BubbleRoom extends LitElement {
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        padding-left: 0%
+        padding-left: 0%;
         border: 1px solid red;
       }
   
@@ -307,9 +307,9 @@ class BubbleRoom extends LitElement {
       }
   
       .bubble-icon {
-        width: 130%;
-        height: 130%;
-        max-height: 130%;
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
       }
   
       /* Mushroom entities */
@@ -348,6 +348,7 @@ class BubbleRoom extends LitElement {
         align-items: center;
         width: 100%;
         height: 100%;
+        justify-content: center;
         border-radius: 10px;
         cursor: pointer;
         background-color: var(--sub-button-color, rgba(0,0,255,0.3));
