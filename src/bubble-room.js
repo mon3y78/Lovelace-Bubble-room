@@ -628,8 +628,8 @@ class BubbleRoom extends LitElement {
 
   _getIconShapeStyle(mode) {
     return `
-      width: 130px;
-      height: 140px;
+      width: 100%;
+      height: 100%;
       border-radius: 0% 70% 70% 0%;
       top: 0;
       left: 0;
