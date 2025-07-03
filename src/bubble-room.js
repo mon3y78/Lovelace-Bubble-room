@@ -258,7 +258,7 @@ class BubbleRoom extends LitElement {
       /* Colonna sinistra: header + icona */
       .left - content {
         display: grid;
-        grid - template - rows: 1 fr 2 fr 7 fr;
+        grid - template - rows: 2 fr 3 fr 5 fr;
         height: 100 % ;
       }
   
