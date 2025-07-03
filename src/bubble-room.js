@@ -223,7 +223,7 @@ class BubbleRoom extends LitElement {
       default: return "";
     }
   }
-
+  
   static get styles() {
     return css`
       /* Contenitori principali full-height */
@@ -233,7 +233,6 @@ class BubbleRoom extends LitElement {
       .grid-container {
         margin: 0;
         padding: 0;
-        height: 100%;
         width: 100%;
         min-height: 0;
         box-sizing: border-box;
@@ -255,30 +254,35 @@ class BubbleRoom extends LitElement {
         align-items: stretch;
       }
   
-      /* Colonna sinistra: header + icona */
-      .left - content {
+      /* Colonna sinistra con 3 righe: sensori, nome, icona */
+      .left-content {
         display: grid;
-        grid - template - rows: 2 fr 3 fr 5 fr;
-        height: 100 % ;
+        grid-template-rows: 1fr 2fr 7fr;
+        height: 100%;
       }
   
-      .header {
-        padding: 0.5% 2%;
+      /* Riga sensori */
+      .sensor-row {
+        display: flex;
+        align-items: center;
+        padding: 0 6%;
+        font-size: 0.85em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
   
+      /* Riga nome stanza */
       .name-area {
+        display: flex;
+        align-items: center;
+        padding: 0 6%;
         font-weight: bold;
         font-size: 1.2em;
       }
   
-      .sensor-row {
-        font-size: 0.8em;
-        white-space: nowrap;
-        overflow-x: auto;
-      }
-  
+      /* Riga icona principale */
       .icon-area {
-        flex: 1;
         position: relative;
         display: flex;
         justify-content: center;
@@ -287,8 +291,8 @@ class BubbleRoom extends LitElement {
   
       /* Cerchio principale */
       .bubble-icon-container {
-        width: 50%;           /* ora in percentuale */
-        aspect-ratio: 1 / 1;  /* mantiene il cerchio sempre proporzionato */
+        width: 50%;
+        aspect-ratio: 1 / 1;
         border-radius: 50%;
         display: flex;
         justify-content: center;
@@ -297,12 +301,12 @@ class BubbleRoom extends LitElement {
       }
   
       .bubble-icon {
-        width: 70%;           /* dimensione interna in % */
+        width: 70%;
         height: auto;
         max-height: 100%;
       }
   
-      /* Mushroom entities: su tutto il container dell’icona */
+      /* Mushroom entities */
       .mushroom-container {
         position: absolute;
         top: 0;
@@ -317,7 +321,6 @@ class BubbleRoom extends LitElement {
         transform: translate(-50%, -50%);
         pointer-events: auto;
         cursor: pointer;
-        /* width e height verranno gestiti via inline style o layoutMap */
       }
   
       /* Colonna sub-button */
@@ -346,9 +349,6 @@ class BubbleRoom extends LitElement {
       }
     `;
   }
-  
-
-
   render() {
     const layout = this._getLayoutStyle(this.config.layout_mode || "6x3");
     if (!this.config || !this.hass) {
