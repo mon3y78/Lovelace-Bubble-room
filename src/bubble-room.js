@@ -236,6 +236,8 @@ class BubbleRoom extends LitElement {
         width: 100%;
         min-height: 0;
         box-sizing: border-box;
+        height: 100%;
+        width: 100%;
       }
   
       /* Card wrapper */
@@ -244,7 +246,6 @@ class BubbleRoom extends LitElement {
         overflow: hidden;
         border-radius: 8px;
         background: transparent;
-        height: 100%;
       }
   
       /* Layout a due colonne: sinistra = 2fr, destra = 1fr */
