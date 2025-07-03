@@ -285,8 +285,9 @@ class BubbleRoom extends LitElement {
       .icon-area {
         position: relative;
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
+        padding-left: 0%
       }
   
       /* Cerchio principale */
