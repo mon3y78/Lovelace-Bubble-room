@@ -291,20 +291,20 @@ class BubbleRoom extends LitElement {
       }
   
       /* Cerchio principale */
-      .bubble-icon-container {
-        width: 50%;
-        aspect-ratio: 1 / 1;
-        border-radius: 50%;
+      .bubble - icon - container {
+        width: 100 % ;
+        height: 100 % ;
         display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: var(--bubble-bg, rgba(0, 128, 0, 0.3));
+        justify - content: center;
+        align - items: center;
+        background - color: var (--bubble - bg, rgba(0, 128, 0, 0.3));
+        border - radius: 0; /* o 50% se vuoi un cerchio */
       }
   
       .bubble-icon {
         width: 70%;
-        height: auto;
-        max-height: 100%;
+        height: 70%;
+        max-height: 70%;
       }
   
       /* Mushroom entities */
