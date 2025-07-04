@@ -490,15 +490,21 @@ class BubbleRoom extends LitElement {
           
               <!-- Mushroom entities -->
               <div class="mushroom-container">
-                ${mushroomTemplates.map((item, index) => {
+                ${mushroomTemplates.map((item, i) => {
                   if (!item) return html``;
                 
-                  const angles = [-90, -45, 0, +45, +90, +135, -135];
-                  const angle = angles[index] || 0;
-                  const radius = this._iconAreaSize.w * 0.4;
-                  const rad = angle * Math.PI / 180;
-                  const offsetX = Math.cos(rad) * radius;
-                  const offsetY = Math.sin(rad) * radius;
+                  const ratios = [
+                    { x: 0.0, y: 0.0 },   // 1: angolo alto sinistro
+                    { x: 1.0, y: 0.0 },   // 2: angolo alto destro
+                    { x: 1.0, y: 0.35 },  // 3: 1/3 altezza lato destro
+                    { x: 1.0, y: 0.70 },  // 4: 2/3 altezza lato destro
+                    { x: 1.0, y: 1.0 },   // 5: angolo basso destro
+                  ];
+                
+                  const ratio = ratios[i] || { x: 0.5, y: 0.5 };
+                
+                  const x = this._bubbleContainerSize.w * ratio.x;
+                  const y = this._bubbleContainerSize.h * ratio.y;
                 
                   const state = hass.states[item.entity]?.state || 'off';
                   const iconColor = state === 'on'
@@ -508,7 +514,10 @@ class BubbleRoom extends LitElement {
                   return html`
                     <div class="mushroom-item"
                         style="
-                          transform: translate(${offsetX}px, ${offsetY}px);
+                          position: absolute;
+                          left: ${x}px;
+                          top: ${y}px;
+                          transform: translate(-50%, -50%);
                         "
                         @pointerdown="${(e) => this._startHold(e, item)}"
                         @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
@@ -525,6 +534,7 @@ class BubbleRoom extends LitElement {
                     </div>
                   `;
                 })}
+              
               
               </div>
             </div>
