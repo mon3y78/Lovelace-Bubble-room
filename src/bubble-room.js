@@ -60,14 +60,6 @@ const SENSOR_TYPE_MAP = {
   voc:         { emoji: '🧪', unit: 'ppb' }
 };
 
-export function getSensorEmojiAndUnit(sensorType, unit = 'C') {
-  const data = SENSOR_TYPE_MAP[sensorType];
-  if (!data) return { emoji: '❓', unit: '' };
-  const unitFinal =
-    sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit;
-  return { emoji: data.emoji, unit: unitFinal };
-}
-
 class BubbleRoom extends LitElement {
   static get properties() {
     return {
@@ -309,7 +301,7 @@ class BubbleRoom extends LitElement {
         justify-content: center;
         align-items: center;
         flex-grow: 1;
-        flex-basis: 0;
+        flex-basic: 0;
         background-color: var(--bubble-bg, rgba(0, 128, 0, 0.3));
         border-radius: 0; /* o 50% se vuoi un cerchio */
       }
@@ -540,52 +532,7 @@ class BubbleRoom extends LitElement {
   _cancelHold(e) { clearTimeout(this._holdTimeout); this._holdTriggered = false; }
   _handleMainIconTap() { if (!this.config.tap_action) return; const action = this.config.tap_action.action; if (action === 'toggle') this._toggleEntity(this.config.entity); else if (action === 'more-info') this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: this.config.entity }, bubbles: true, composed: true, })); else if (action === 'navigate') { if (this.config.tap_action.navigation_path) { window.history.pushState({}, '', this.config.tap_action.navigation_path); window.dispatchEvent(new Event('location-changed')); } } }
   _toggleEntity(entity) { if (!this.hass) return; this.hass.callService('homeassistant', 'toggle', { entity_id: entity }); }
-  _handleHoldAction(item) {
-    if (!item.hold_action) {
-      this.dispatchEvent(
-        new CustomEvent('hass-more-info', {
-          detail: { entityId: item.entity },
-          bubbles: true,
-          composed: true,
-        })
-      );
-      return;
-    }
-
-    const action = item.hold_action.action;
-    switch (action) {
-      case 'more-info':
-        this.dispatchEvent(
-          new CustomEvent('hass-more-info', {
-            detail: { entityId: item.entity },
-            bubbles: true,
-            composed: true,
-          })
-        );
-        break;
-      case 'toggle':
-        this._toggleEntity(item.entity);
-        break;
-      case 'call-service':
-        if (item.hold_action.service) {
-          const [domain, serviceName] = item.hold_action.service.split('.');
-          const serviceData = item.hold_action.service_data || {};
-          if (!serviceData.entity_id) {
-            serviceData.entity_id = item.entity;
-          }
-          this.hass.callService(domain, serviceName, serviceData);
-        }
-        break;
-      case 'navigate':
-        if (item.hold_action.navigation_path) {
-          window.history.pushState({}, '', item.hold_action.navigation_path);
-          window.dispatchEvent(new Event('location-changed'));
-        }
-        break;
-      default:
-        break;
-    }
-  }
+  _handleHoldAction(item) { if (!item.hold_action) { this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: item.entity }, bubbles: true, composed: true, })); return; } const action = item.hold_action.action; switch (action) { case 'more-info': this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: item.entity }, bubbles: true, composed: true, })); break; case 'toggle': this._toggleEntity(item.entity); break; case 'call-service': if (item.hold_action.service) { const [domain, serviceName] = item.hold_action.service.split('.'); const serviceData = item.hold_action.service_data || {}; if (!serviceData.entity_id) { serviceData.entity_id = item.entity; } this.hass.callService(domain, serviceName, serviceData); } break; case 'navigate': if (item.hold_action.navigation_path) { window.history.pushState({}, '', item.hold_action.navigation_path); window.dispatchEvent(new Event('location-changed')); } break; default: }}
   _handleSubButtonTap(item) { if (!item.tap_action || item.tap_action.action === 'none') return; const action = item.tap_action.action; if (action === 'toggle') this._toggleEntity(item.entity); else if (action === 'more-info') this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: item.entity }, bubbles: true, composed: true, })); else if (action === 'navigate') { if (item.tap_action.navigation_path) { window.history.pushState({}, '', item.tap_action.navigation_path); window.dispatchEvent(new Event('location-changed')); } } }
   _handleMushroomTap(item) { if (!item.tap_action || item.tap_action.action === 'none') return; const action = item.tap_action.action; if (action === 'toggle') this._toggleEntity(item.entity); else if (action === 'more-info') this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: item.entity }, bubbles: true, composed: true, })); else if (action === 'navigate') { if (item.tap_action.navigation_path) { window.history.pushState({}, '', item.tap_action.navigation_path); window.dispatchEvent(new Event('location-changed')); } } }
   _getBestIcon(entityId, entityConf) {
@@ -613,9 +560,7 @@ class BubbleRoom extends LitElement {
   }  
   _getDeviceClassIcon(deviceClass, state) { const icons = DEVICE_CLASS_ICON_MAP[deviceClass]; if (!icons) return ''; if (icons.on && icons.off) { return state === 'on' ? icons.on : icons.off; } return icons.on || ''; }
   _getDomainDefaultIcon(domain, state) { if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP[domain] || ''; }
-  _getSensorEmojiAndUnit(sensorType, unit = 'C') {
-    return getSensorEmojiAndUnit(sensorType, unit);
-  }
+  _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP[sensorType]; if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
 
  
 
@@ -641,4 +586,3 @@ window.customCards.push({
   preview: true,
   documentationURL: 'https://github.com/mon3y78/Lovelace-Bubble-room'
 });
-export { BubbleRoom };
