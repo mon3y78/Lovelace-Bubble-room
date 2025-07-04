@@ -518,11 +518,11 @@ class BubbleRoom extends LitElement {
                   const ratios = [
                     { x: 0.15, y: 0.13 },
                     { x: 0.55, y: 0.13 },
-                    { x: 0.81, y: 0.30 },
+                    { x: 0.81, y: 0.33 },
                     { x: 0.82, y: 0.65 },
-                    { x: 0.55, y: 0.83 },
-                    { x: 0.15, y: 0.81 }, // CLIMATE
-                    { x: 0.10, y: 1.2 }, // CAMERA
+                    { x: 0.55, y: 0.80 },
+                    { x: 0.15, y: 0.80 }, // CLIMATE
+                    { x: 0.10, y: 0.99 }, // CAMERA
                   ];
 
                   const sizes = [
