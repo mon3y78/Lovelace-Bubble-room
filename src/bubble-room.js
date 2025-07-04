@@ -450,7 +450,9 @@ class BubbleRoom extends LitElement {
       entities.entities2,
       entities.entities3,
       entities.entities4,
-      entities.entities5
+      entities.entities5,
+      entities.climate,
+      entities.camera
     ];
     if (entities.climate) mushroomTemplates.push(entities.climate);
     if (entities.camera) mushroomTemplates.push(entities.camera);
@@ -500,28 +502,39 @@ class BubbleRoom extends LitElement {
               <div class="mushroom-container">
                 ${mushroomTemplates.map((item, i) => {
                   if (!item) return html``;
-                
-                  const containerSize = this._bubbleContainerSize;
-                  if (!containerSize) return html``;
-                
+                  if (!this._bubbleContainerSize) return html``;
+
                   const ratios = [
                     { x: 0.15, y: 0.13 },
                     { x: 0.55, y: 0.13 },
                     { x: 0.80, y: 0.25 },
                     { x: 0.80, y: 0.65 },
-                    { x: 0.55, y: 0.9 },
+                    { x: 0.55, y: 0.90 },
+                    { x: 0.20, y: 0.60 }, // CLIMATE
+                    { x: 0.80, y: 0.80 }, // CAMERA
                   ];
-                
+
+                  const sizes = [
+                    mushroomSize, // 1
+                    mushroomSize, // 2
+                    mushroomSize, // 3
+                    mushroomSize, // 4
+                    mushroomSize, // 5
+                    Math.round(this._bubbleContainerSize.w * 0.20), // CLIMATE
+                    Math.round(this._bubbleContainerSize.w * 0.20), // CAMERA
+                  ];
+
                   const ratio = ratios[i] || { x: 0.5, y: 0.5 };
-                
-                  const x = containerSize.w * ratio.x;
-                  const y = containerSize.h * ratio.y;
-                
+                  const size = sizes[i] || mushroomSize;
+
+                  const x = this._bubbleContainerSize.w * ratio.x;
+                  const y = this._bubbleContainerSize.h * ratio.y;
+
                   const state = hass.states[item.entity]?.state || 'off';
                   const iconColor = state === 'on'
                     ? (roomColors.mushroom_active || 'orange')
                     : (roomColors.mushroom_inactive || '#80808055');
-                
+
                   return html`
                     <div class="mushroom-item"
                         style="
@@ -533,22 +546,21 @@ class BubbleRoom extends LitElement {
                         @pointerdown="${(e) => this._startHold(e, item)}"
                         @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
                         @pointerleave="${(e) => this._cancelHold(e)}">
-                      <ha-icon class="mushroom-icon"
-                              icon="${this._getBestIcon(item.entity, item)}"
-                              style="
-                                color: ${iconColor};
-                                --mdc-icon-size: ${mushroomSize}px;
-                                width: ${mushroomSize}px;
-                                height: ${mushroomSize}px;
-                              ">
+                      <ha-icon
+                        class="mushroom-icon"
+                        icon="${this._getBestIcon(item.entity, item)}"
+                        style="
+                          color: ${iconColor};
+                          --mdc-icon-size: ${size}px;
+                          width: ${size}px;
+                          height: ${size}px;
+                        ">
                       </ha-icon>
                     </div>
                   `;
                 })}
-              
-              
-              
               </div>
+
             </div>
           </div>
 
