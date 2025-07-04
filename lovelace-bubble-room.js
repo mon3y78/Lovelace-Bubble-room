@@ -487,23 +487,24 @@ class BubbleRoom extends LitElement {
               <div class="mushroom-container">
                 ${mushroomTemplates.map((item, index) => {
                   if (!item) return html``;
-                  const positions = [
-                    "top: 0%; right: 0%;",
-                    "top: 0%; right: 20%;",
-                    "top: -25%; right: 60%;",
-                    "bottom: 0%; left: 60%;",
-                    "bottom: -20%; left: 30%;",
-                    "top: 80%; left: 10%;",
-                    "top: -30%; left: 70%;"
-                  ];
-                  const style = positions[index] || "";   
+                
+                  const angles = [-90, -45, 0, +45, +90, +135, -135];
+                  const angle = angles[index] || 0;
+                  const radius = this._iconAreaSize.w * 0.4;
+                  const rad = angle * Math.PI / 180;
+                  const offsetX = Math.cos(rad) * radius;
+                  const offsetY = Math.sin(rad) * radius;
+                
                   const state = hass.states[item.entity]?.state || 'off';
                   const iconColor = state === 'on'
                     ? (roomColors.mushroom_active || 'orange')
                     : (roomColors.mushroom_inactive || '#80808055');
+                
                   return html`
                     <div class="mushroom-item"
-                        style="${style}"
+                        style="
+                          transform: translate(${offsetX}px, ${offsetY}px);
+                        "
                         @pointerdown="${(e) => this._startHold(e, item)}"
                         @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
                         @pointerleave="${(e) => this._cancelHold(e)}">
@@ -519,6 +520,7 @@ class BubbleRoom extends LitElement {
                     </div>
                   `;
                 })}
+              
               </div>
             </div>
           </div>
