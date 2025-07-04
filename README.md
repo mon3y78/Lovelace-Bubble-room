@@ -59,7 +59,6 @@ For discussions, feedback and support, visit the official thread on the Home Ass
 1. Go to HACS > Frontend.
 2. Click on "Explore & Add Repositories" and add the Bubble Room GitHub repository.
 3. Install the card and add the following resource in Lovelace:
-    ```yaml
-url: https://github.com/mon3y78/Lovelace-Bubble-room
-type: dashboard
-    ```
+     ```yaml
+   url: https://github.com/mon3y78/Lovelace-Bubble-room
+   type: dashboard
