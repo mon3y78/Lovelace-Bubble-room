@@ -317,7 +317,6 @@ class BubbleRoom extends LitElement {
         justify-content: flex-start;
         align-items: center;
         padding-left: 0%;
-        border: 1px solid red;
       }
   
       /* Cerchio principale */
@@ -377,7 +376,7 @@ class BubbleRoom extends LitElement {
       }
 
       .mushroom-icon {
-        transform: scale(0.8);
+        transform: scale(0.7);
         transform-origin: center center;
       }
 
@@ -506,11 +505,11 @@ class BubbleRoom extends LitElement {
                   if (!containerSize) return html``;
                 
                   const ratios = [
-                    { x: 0.1, y: 0.1 },
-                    { x: 0.6, y: 0.1 },
-                    { x: 0.75, y: 0.25 },
-                    { x: 0.75, y: 0.65 },
-                    { x: 0.6, y: 0.9 },
+                    { x: 0.15, y: 0.13 },
+                    { x: 0.55, y: 0.13 },
+                    { x: 0.80, y: 0.25 },
+                    { x: 0.80, y: 0.65 },
+                    { x: 0.55, y: 0.9 },
                   ];
                 
                   const ratio = ratios[i] || { x: 0.5, y: 0.5 };
