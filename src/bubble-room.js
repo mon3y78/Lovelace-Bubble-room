@@ -502,18 +502,21 @@ class BubbleRoom extends LitElement {
                 ${mushroomTemplates.map((item, i) => {
                   if (!item) return html``;
                 
+                  const containerSize = this._bubbleContainerSize;
+                  if (!containerSize) return html``;
+                
                   const ratios = [
-                    { x: 0.0, y: 0.0 },   // 1: angolo alto sinistro
-                    { x: 1.0, y: 0.0 },   // 2: angolo alto destro
-                    { x: 1.0, y: 0.35 },  // 3: 1/3 altezza lato destro
-                    { x: 1.0, y: 0.70 },  // 4: 2/3 altezza lato destro
-                    { x: 1.0, y: 1.0 },   // 5: angolo basso destro
+                    { x: 0.0, y: 0.0 },
+                    { x: 0.95, y: 0.0 },
+                    { x: 0.95, y: 0.35 },
+                    { x: 0.95, y: 0.70 },
+                    { x: 0.95, y: 1.0 },
                   ];
                 
                   const ratio = ratios[i] || { x: 0.5, y: 0.5 };
                 
-                  const x = this._bubbleContainerSize.w * ratio.x;
-                  const y = this._bubbleContainerSize.h * ratio.y;
+                  const x = containerSize.w * ratio.x;
+                  const y = containerSize.h * ratio.y;
                 
                   const state = hass.states[item.entity]?.state || 'off';
                   const iconColor = state === 'on'
@@ -543,6 +546,7 @@ class BubbleRoom extends LitElement {
                     </div>
                   `;
                 })}
+              
               
               
               </div>
