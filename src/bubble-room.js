@@ -363,17 +363,17 @@ class BubbleRoom extends LitElement {
         background-color: var(--sub-button-color, rgba(0,0,255,0.3));
       }
       .bubble-icon {
-        transform: scale(1.2);
+        transform: scale(1.0);
         transform-origin: center center;
       }
 
       .mushroom-icon {
-        transform: scale(0.6);
+        transform: scale(0.2);
         transform-origin: center center;
       }
 
       .subbutton-icon {
-        transform: scale(0.9);
+        transform: scale(1.2);
         transform-origin: center center;
       }
 
