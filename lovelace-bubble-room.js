@@ -66,6 +66,16 @@ class BubbleRoom extends LitElement {
     this._iconAreaSize = { w: 130, h: 140 };   // area icona principale/mushroom
     this._subButtonSize = { w: 48, h: 48 };    // area di una cella subbutton
   }
+  connectedCallback() {
+    super.connectedCallback();
+    if (!document.getElementById('bubble-room-bebas-font')) {
+      const link = document.createElement('link');
+      link.id = 'bubble-room-bebas-font';
+      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap';
+      document.head.appendChild(link);
+    }
+  }
   updated() {
     const iconArea = this.renderRoot?.querySelector('.icon-area');
     if (iconArea) {
@@ -306,9 +316,17 @@ class BubbleRoom extends LitElement {
         display: flex;
         align-items: center;
         padding: 0 6%;
-        font-weight: bold;
-        font-size: 2.0em;
+        font-weight: normal;
+        font-size: clamp(1.2em, 4vw, 2.4em);
+        font-family: "Bebas Neue", "Arial Narrow", sans-serif;
+        letter-spacing: 0;
+        text-transform: uppercase;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
+
+
   
       /* Riga icona principale */
       .icon-area {
@@ -500,10 +518,10 @@ class BubbleRoom extends LitElement {
                   const ratios = [
                     { x: 0.15, y: 0.13 },
                     { x: 0.55, y: 0.13 },
-                    { x: 0.82, y: 0.30 },
+                    { x: 0.81, y: 0.30 },
                     { x: 0.82, y: 0.65 },
-                    { x: 0.55, y: 0.80 },
-                    { x: 0.15, y: 0.75 }, // CLIMATE
+                    { x: 0.55, y: 0.83 },
+                    { x: 0.15, y: 0.81 }, // CLIMATE
                     { x: 0.10, y: 1.2 }, // CAMERA
                   ];
 
