@@ -373,7 +373,7 @@ class BubbleRoom extends LitElement {
       }
 
       .subbutton-icon {
-        transform: scale(1.9);
+        transform: scale(1.5);
         transform-origin: center center;
       }
 
@@ -480,8 +480,10 @@ class BubbleRoom extends LitElement {
                           --mdc-icon-size: ${mainSize}px;
                           width: ${mainSize}px;
                           height: ${mainSize}px;
+                          transform: translateX(-20%);
                         ">
                 </ha-icon>
+
 
 
               </div>
