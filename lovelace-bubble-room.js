@@ -488,9 +488,9 @@ class BubbleRoom extends LitElement {
                 ${mushroomTemplates.map((item, index) => {
                   if (!item) return html``;
                   const positions = [
-                    "top: 0%; left: 0%;",
-                    "top: 10%; left: 10%;",
-                    "top: 50%; left: 90%;",
+                    "top: 0%; right: 0%;",
+                    "top: 0%; right: 20%;",
+                    "top: -25%; right: 60%;",
                     "bottom: 0%; left: 60%;",
                     "bottom: -20%; left: 30%;",
                     "top: 80%; left: 10%;",
