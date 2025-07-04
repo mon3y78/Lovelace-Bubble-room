@@ -368,12 +368,12 @@ class BubbleRoom extends LitElement {
       }
 
       .mushroom-icon {
-        transform: scale(0.2);
+        transform: scale(1.2);
         transform-origin: center center;
       }
 
       .subbutton-icon {
-        transform: scale(1.2);
+        transform: scale(1.9);
         transform-origin: center center;
       }
 
