@@ -61,6 +61,24 @@ const SENSOR_TYPE_MAP = {
 };
 
 class BubbleRoom extends LitElement {
+  constructor() {
+    super();
+    this._iconAreaSize = { w: 130, h: 140 };   // area icona principale/mushroom
+    this._subButtonSize = { w: 48, h: 48 };    // area di una cella subbutton
+  }
+  updated() {
+    const iconArea = this.renderRoot?.querySelector('.icon-area');
+    if (iconArea) {
+      const rect = iconArea.getBoundingClientRect();
+      this._iconAreaSize = { w: rect.width, h: rect.height };
+    }
+    const subbuttonCol = this.renderRoot?.querySelector('.subbutton-column');
+    if (subbuttonCol) {
+      const rect = subbuttonCol.getBoundingClientRect();
+      this._subButtonSize = { w: rect.width, h: rect.height / 4 }; // supponendo 4 subbutton
+    }
+  }
+  
   static get properties() {
     return {
       config: { type: Object },
@@ -306,11 +324,6 @@ class BubbleRoom extends LitElement {
         border-radius: 0; /* o 50% se vuoi un cerchio */
       }
   
-      .bubble-icon {
-        width: 100%;
-        height: 100%;
-        max-height: 100%;
-      }
   
       /* Mushroom entities */
       .mushroom-container {
@@ -328,11 +341,7 @@ class BubbleRoom extends LitElement {
         pointer-events: auto;
         cursor: pointer;
       }
-      .mushroom-icon {
-        width: 80%;
-        height: auto;
-        max-height: 80%;
-      }  
+
       /* Colonna sub-button */
       .subbutton-column {
         display: grid;
@@ -353,18 +362,20 @@ class BubbleRoom extends LitElement {
         cursor: pointer;
         background-color: var(--sub-button-color, rgba(0,0,255,0.3));
       }
-      .subbutton-icon {
-        width: 80%;
-        height: auto;
-        max-height: 90%;
-      }  
+      .bubble-icon, .mushroom-icon, .subbutton-icon {
+        display: block;
+      }
+ 
       @media (max-width: 480px) {
         .bubble-icon-container { width: 70%; }
-        .bubble-icon { width: 80%; }
       }
     `;
   }
   render() {
+    const mainSize = this._getMainIconSize();
+    const mushroomSize = this._getMushroomIconSize();
+    const subBtnSize = this._getSubButtonIconSize();
+
     if (!this.config || !this.hass) {
       return html`<div>Loading...</div>`;
     }
@@ -449,8 +460,13 @@ class BubbleRoom extends LitElement {
                         icon="${this._getBestIcon(this.config.entities.presence?.entity, { icon: icon })}"
                         style="
                           color: ${bubbleIconColor};
+                          --mdc-icon-size: ${mainSize}px;
+                          width: ${mainSize}px;
+                          height: ${mainSize}px;
                         ">
                 </ha-icon>
+
+
               </div>
           
               <!-- Mushroom entities -->
@@ -478,8 +494,13 @@ class BubbleRoom extends LitElement {
                         @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
                         @pointerleave="${(e) => this._cancelHold(e)}">
                       <ha-icon class="mushroom-icon"
-                               icon="${this._getBestIcon(item.entity, item)}"
-                               style="color: ${iconColor};">
+                              icon="${this._getBestIcon(item.entity, item)}"
+                              style="
+                                color: ${iconColor};
+                                --mdc-icon-size: ${mushroomSize}px;
+                                width: ${mushroomSize}px;
+                                height: ${mushroomSize}px;
+                              ">
                       </ha-icon>
                     </div>
                   `;
@@ -506,9 +527,15 @@ class BubbleRoom extends LitElement {
                       @pointerup="${(e) => this._endHold(e, btn, () => this._handleSubButtonTap(btn))}"
                       @pointerleave="${(e) => this._cancelHold(e)}" >
                   <ha-icon class="subbutton-icon"
-                           icon="${this._getBestIcon(btn.entity, btn)}"
-                           style="color: ${iconColor};">
+                          icon="${this._getBestIcon(btn.entity, btn)}"
+                          style="
+                            color: ${iconColor};
+                            --mdc-icon-size: ${subBtnSize}px;
+                            width: ${subBtnSize}px;
+                            height: ${subBtnSize}px;
+                          ">
                   </ha-icon>
+
                 </div>
               `;
             })}
@@ -568,6 +595,16 @@ class BubbleRoom extends LitElement {
       left: 0;
     `;
   }
+  _getMainIconSize() {
+    return Math.round(Math.min(this._iconAreaSize.w, this._iconAreaSize.h) * 0.65); // 65% dell'area icona
+  }
+  _getMushroomIconSize() {
+    return Math.round(Math.min(this._iconAreaSize.w, this._iconAreaSize.h) * 0.34); // 34%
+  }
+  _getSubButtonIconSize() {
+    return Math.round(Math.min(this._subButtonSize.w, this._subButtonSize.h) * 0.6); // 60% della cella subbutton
+  }
+  
   
 }
 
