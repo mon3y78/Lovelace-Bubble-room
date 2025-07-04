@@ -301,7 +301,7 @@ class BubbleRoom extends LitElement {
         justify-content: center;
         align-items: center;
         flex-grow: 1;
-        flex-basic: 0;
+        flex-basis: 0;
         background-color: var(--bubble-bg, rgba(0, 128, 0, 0.3));
         border-radius: 0; /* o 50% se vuoi un cerchio */
       }
