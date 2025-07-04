@@ -448,9 +448,7 @@ class BubbleRoom extends LitElement {
       entities.entities5,
       entities.climate,
       entities.camera
-    ];
-    if (entities.climate) mushroomTemplates.push(entities.climate);
-    if (entities.camera) mushroomTemplates.push(entities.camera);
+    ].filter(Boolean);
 
     return html`
       <div class="card">
