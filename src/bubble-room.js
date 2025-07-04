@@ -368,12 +368,12 @@ class BubbleRoom extends LitElement {
       }
 
       .mushroom-icon {
-        transform: scale(1.2);
+        transform: scale(1.0);
         transform-origin: center center;
       }
 
       .subbutton-icon {
-        transform: scale(1.5);
+        transform: scale(1.4);
         transform-origin: center center;
       }
 
@@ -493,8 +493,8 @@ class BubbleRoom extends LitElement {
                 ${mushroomTemplates.map((item, index) => {
                   if (!item) return html``;
                   const positions = [
-                    "top: -20%; left: 40%;",
-                    "top: 0%; left: 85%;",
+                    "top: 0%; left: 0%;",
+                    "top: 10%; left: 10%;",
                     "top: 50%; left: 90%;",
                     "bottom: 0%; left: 60%;",
                     "bottom: -20%; left: 30%;",
@@ -618,7 +618,7 @@ class BubbleRoom extends LitElement {
     return Math.round(Math.min(this._iconAreaSize.w, this._iconAreaSize.h) * 0.65); // 65% dell'area icona
   }
   _getMushroomIconSize() {
-    return Math.round(Math.min(this._iconAreaSize.w, this._iconAreaSize.h) * 0.2); // 34%
+    return Math.round(Math.min(this._iconAreaSize.w, this._iconAreaSize.h) * 0.3); // 34%
   }
   _getSubButtonIconSize() {
     return Math.round(Math.min(this._subButtonSize.w, this._subButtonSize.h) * 0.6); // 60% della cella subbutton
