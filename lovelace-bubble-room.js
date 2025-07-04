@@ -72,12 +72,21 @@ class BubbleRoom extends LitElement {
       const rect = iconArea.getBoundingClientRect();
       this._iconAreaSize = { w: rect.width, h: rect.height };
     }
+    
+    // AGGIUNGI QUESTO
+    const bubbleContainer = this.renderRoot?.querySelector('.bubble-icon-container');
+    if (bubbleContainer) {
+      const rect = bubbleContainer.getBoundingClientRect();
+      this._bubbleContainerSize = { w: rect.width, h: rect.height };
+    }
+  
     const subbuttonCol = this.renderRoot?.querySelector('.subbutton-column');
     if (subbuttonCol) {
       const rect = subbuttonCol.getBoundingClientRect();
-      this._subButtonSize = { w: rect.width, h: rect.height / 4 }; // supponendo 4 subbutton
+      this._subButtonSize = { w: rect.width, h: rect.height / 4 };
     }
   }
+  
   
   static get properties() {
     return {
