@@ -377,7 +377,7 @@ class BubbleRoom extends LitElement {
       }
 
       .mushroom-icon {
-        transform: scale(1.0);
+        transform: scale(0.8);
         transform-origin: center center;
       }
 
@@ -506,11 +506,11 @@ class BubbleRoom extends LitElement {
                   if (!containerSize) return html``;
                 
                   const ratios = [
-                    { x: 0.2, y: 0.2 },
-                    { x: 0.4, y: 0.2 },
-                    { x: 0.9, y: 0.30 },
-                    { x: 0.9, y: 0.60 },
-                    { x: 0.4, y: 0.9 },
+                    { x: 0.1, y: 0.1 },
+                    { x: 0.6, y: 0.1 },
+                    { x: 0.75, y: 0.25 },
+                    { x: 0.75, y: 0.65 },
+                    { x: 0.6, y: 0.9 },
                   ];
                 
                   const ratio = ratios[i] || { x: 0.5, y: 0.5 };
