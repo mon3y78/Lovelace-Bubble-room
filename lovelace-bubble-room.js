@@ -611,7 +611,7 @@ class BubbleRoom extends LitElement {
     return Math.round(Math.min(this._iconAreaSize.w, this._iconAreaSize.h) * 0.65); // 65% dell'area icona
   }
   _getMushroomIconSize() {
-    return Math.round(Math.min(this._iconAreaSize.w, this._iconAreaSize.h) * 0.34); // 34%
+    return Math.round(Math.min(this._iconAreaSize.w, this._iconAreaSize.h) * 0.2); // 34%
   }
   _getSubButtonIconSize() {
     return Math.round(Math.min(this._subButtonSize.w, this._subButtonSize.h) * 0.6); // 60% della cella subbutton
