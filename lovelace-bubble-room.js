@@ -511,7 +511,7 @@ class BubbleRoom extends LitElement {
                     { x: 0.82, y: 0.65 },
                     { x: 0.55, y: 0.87 },
                     { x: 0.15, y: 0.87 }, // CLIMATE
-                    { x: 0.9, y: 0.13 }, // CAMERA
+                    { x: 0.9, y: 0.1 }, // CAMERA
                   ];
 
                   const sizes = [
