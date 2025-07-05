@@ -263,44 +263,47 @@ class BubbleRoom extends LitElement {
   
   static get styles() {
     return css`
-      /* Contenitori principali full-height */
       :host,
       ha-card,
       .card,
       .grid-container {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        min-height: 0;
-        box-sizing: border-box;
         height: 100%;
         width: 100%;
+        min-height: 0;
+        min-width: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box;
+        /* flex: 1 1 auto;  // SOLO se il parent è flex, qui puoi toglierlo */
       }
   
-      /* Card wrapper */
       .card {
         position: relative;
         overflow: hidden;
         border-radius: 8px;
         background: transparent;
+        margin: 0 !important;
+        padding: 0 !important;
       }
   
-      /* Layout a due colonne: sinistra = 2fr, destra = 1fr */
       .grid-container {
         display: grid;
         grid-template-columns: 2fr 1fr;
         grid-template-rows: 1fr;
         align-items: stretch;
+        height: 100%;
+        min-height: 0;
+        min-width: 0;
       }
   
-      /* Colonna sinistra con 3 righe: sensori, nome, icona */
       .left-content {
         display: grid;
         grid-template-rows: 1fr 2fr 7fr;
         height: 100%;
+        min-height: 0;
+        min-width: 0;
       }
   
-      /* Riga sensori */
       .sensor-row {
         display: flex;
         align-items: center;
@@ -311,7 +314,6 @@ class BubbleRoom extends LitElement {
         text-overflow: ellipsis;
       }
   
-      /* Riga nome stanza */
       .name-area {
         display: flex;
         align-items: center;
@@ -325,22 +327,23 @@ class BubbleRoom extends LitElement {
         overflow: hidden;
         text-overflow: ellipsis;
       }
-
-
   
-      /* Riga icona principale */
       .icon-area {
         position: relative;
         display: flex;
         justify-content: flex-start;
         align-items: center;
         padding-left: 0%;
+        min-height: 0;
+        min-width: 0;
+        height: 100%;
       }
   
-      /* Cerchio principale */
       .bubble-icon-container {
         width: 100%;
         height: 100%;
+        min-height: 0;
+        min-width: 0;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -348,11 +351,8 @@ class BubbleRoom extends LitElement {
         flex-basis: 0;
         background-color: var(--bubble-bg, rgba(0, 128, 0, 0.3));
         border-radius: 0; /* o 50% se vuoi un cerchio */
-        aspect-ratio: 1/1;
       }
   
-  
-      /* Mushroom entities */
       .mushroom-container {
         position: absolute;
         top: 0;
@@ -368,13 +368,14 @@ class BubbleRoom extends LitElement {
         pointer-events: auto;
         cursor: pointer;
       }
-
-      /* Colonna sub-button */
+  
       .subbutton-column {
         display: grid;
         grid-template-rows: repeat(4, 1fr);
         gap: 2%;
         height: 100%;
+        min-height: 0;
+        min-width: 0;
         padding: 2%;
       }
   
@@ -384,35 +385,34 @@ class BubbleRoom extends LitElement {
         align-items: center;
         width: 100%;
         height: 100%;
-        justify-content: center;
         border-radius: 10px;
         cursor: pointer;
         background-color: var(--sub-button-color, rgba(0,0,255,0.3));
+        min-height: 0;
+        min-width: 0;
       }
+  
       .bubble-icon {
         transform: scale(1.0);
         transform-origin: center center;
-        aspect-ratio: 1/1;
       }
-
+  
       .mushroom-icon {
         transform: scale(0.7);
         transform-origin: center center;
-        aspect-ratio: 1/1;
       }
-
+  
       .subbutton-icon {
         transform: scale(1.4);
         transform-origin: center center;
-        aspect-ratio: 1/1;
       }
-
- 
+  
       @media (max-width: 480px) {
         .bubble-icon-container { width: 70%; }
       }
     `;
   }
+  
   render() {
     const mainSize = this._getMainIconSize();
     const mushroomSize = this._getMushroomIconSize();
