@@ -309,6 +309,7 @@ class BubbleRoom extends LitElement {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        aspect-ratio: 1/1;
       }
   
       /* Riga nome stanza */
@@ -324,6 +325,7 @@ class BubbleRoom extends LitElement {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        aspect-ratio: 1/1;
       }
 
 
@@ -348,6 +350,7 @@ class BubbleRoom extends LitElement {
         flex-basis: 0;
         background-color: var(--bubble-bg, rgba(0, 128, 0, 0.3));
         border-radius: 0; /* o 50% se vuoi un cerchio */
+        aspect-ratio: 1/1;
       }
   
   
@@ -359,6 +362,7 @@ class BubbleRoom extends LitElement {
         width: 100%;
         height: 100%;
         pointer-events: none;
+        aspect-ratio: 1/1;
       }
   
       .mushroom-item {
@@ -366,6 +370,7 @@ class BubbleRoom extends LitElement {
         transform: translate(-50%, -50%);
         pointer-events: auto;
         cursor: pointer;
+        aspect-ratio: 1/1;
       }
 
       /* Colonna sub-button */
@@ -375,6 +380,7 @@ class BubbleRoom extends LitElement {
         gap: 2%;
         height: 100%;
         padding: 2%;
+        aspect-ratio: 1/1;
       }
   
       .bubble-sub-button {
@@ -387,20 +393,24 @@ class BubbleRoom extends LitElement {
         border-radius: 10px;
         cursor: pointer;
         background-color: var(--sub-button-color, rgba(0,0,255,0.3));
+        aspect-ratio: 1/1;
       }
       .bubble-icon {
         transform: scale(1.0);
         transform-origin: center center;
+        aspect-ratio: 1/1;
       }
 
       .mushroom-icon {
         transform: scale(0.7);
         transform-origin: center center;
+        aspect-ratio: 1/1;
       }
 
       .subbutton-icon {
         transform: scale(1.4);
         transform-origin: center center;
+        aspect-ratio: 1/1;
       }
 
  
