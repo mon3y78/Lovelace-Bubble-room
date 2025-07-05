@@ -212,10 +212,6 @@ class BubbleRoom extends LitElement {
       } else if (typeof value === 'object') {
         if (keysWithIcon.includes(key)) {
           if (!value.icon) value.icon = defaultIcons[key];
-          if (['entities1','entities2','entities3','entities4','entities5','camera'].includes(key) && !value.style) {
-            let index = key === 'camera' ? 6 : parseInt(key.replace('entities','')) - 1;
-            value.style = this._defaultMushroomStyle(index);
-          }
           if (key === 'presence') entities[key] = { ...value };
           else entities[key] = { ...defaultAction, ...value };
         } else entities[key] = value;
@@ -248,18 +244,7 @@ class BubbleRoom extends LitElement {
 
   getConfig() { return JSON.parse(JSON.stringify(this.config)); }
 
-  _defaultMushroomStyle(index) {
-    switch (index) {
-      case 0: return "top: -82px; left: 0px;";
-      case 1: return "top: -87px; left: 43px;";
-      case 2: return "top: -67px; left: 80px;";
-      case 3: return "bottom: 42px; left: 98px;";
-      case 4: return "bottom: 0px; left: 90px;";
-      case 5: return "bottom: -2px; left: -2px;";
-      case 6: return "top: -140px; left: 15px;";
-      default: return "";
-    }
-  }
+
   
   static get styles() {
     return css`
@@ -529,9 +514,9 @@ class BubbleRoom extends LitElement {
                     { x: 0.55, y: 0.13 },
                     { x: 0.81, y: 0.33 },
                     { x: 0.82, y: 0.65 },
-                    { x: 0.55, y: 0.80 },
-                    { x: 0.15, y: 0.80 }, // CLIMATE
-                    { x: 0.10, y: 0.99 }, // CAMERA
+                    { x: 0.55, y: 0.87 },
+                    { x: 0.15, y: 0.87 }, // CLIMATE
+                    { x: 1.2, y: 0.13 }, // CAMERA
                   ];
 
                   const sizes = [
