@@ -1142,7 +1142,7 @@ class BubbleRoomEditor extends r {
     `;
   }
 
-  _renderSensorPanel(key, label) {
+  _renderSingleSensorPanel(key, label) {
     const sensor = this._config.entities?.[key] || {};
     const panelId = `${key}Panel`;
     return x`
@@ -1190,10 +1190,11 @@ class BubbleRoomEditor extends r {
     const key = `sensor${index + 1}`;
     const current = this._config.entities?.[key] || {};
     const updated = { ...current, [field]: value };
-    if (field === 'type') updated.unit = (SENSOR_TYPE_MAP[value]?.units || [])[0] || '';
+    if (field === 'type') {
+      updated.unit = (SENSOR_TYPE_MAP[value]?.units || [])[0] || '';
+    }
     const entities = { ...this._config.entities, [key]: updated };
     this._config = { ...this._config, entities };
-    this.requestUpdate();
     this._fireConfigChanged();
   }
 
@@ -1701,7 +1702,7 @@ class BubbleRoomEditor extends r {
         <div slot="header" @click="${() => this._togglePanel('sensorPanel')}">Sensor</div>
         <div class="section-content">
           ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) =>
-            this._renderSensorPanel(key, `Sensor ${i + 1}`)
+            this._renderSingleSensorPanel(key, `Sensor ${i + 1}`)
           )}
           <div style="margin-top:1em;">
             <button @click="${this._resetSensorConfig}">🔄 Reset Sensors</button>
