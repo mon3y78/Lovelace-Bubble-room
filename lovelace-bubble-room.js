@@ -824,13 +824,8 @@ class BubbleRoomEditor extends r {
       "mdi:toilet", "mdi:fridge", "mdi:oven", "mdi:coffee-maker", "mdi:washing-machine",
       "mdi:vacuum", "mdi:garage", "mdi:garage-open", "mdi:cctv"
     ];
-    this._haComponentsLoaded = false;
-    import('custom-card-helpers').then(m => {
-      m.loadHaComponents().then(() => {
-        this._haComponentsLoaded = true;
-        this.requestUpdate();
-      });
-    });
+    // Imposta come già caricato
+    this._haComponentsLoaded = true;
   }
 
   set hass(hass) {
@@ -999,9 +994,6 @@ class BubbleRoomEditor extends r {
   }
 
   render() {
-    if (!this._haComponentsLoaded) {
-      return x`<div>Loading components...</div>`;
-    }
     if (!this._config) {
       return x`<div>Caricamento configurazione...</div>`;
     }
