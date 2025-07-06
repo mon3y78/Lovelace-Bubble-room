@@ -65,7 +65,6 @@ class BubbleRoomEditor extends LitElement {
   static get properties() {
     return {
       _config: { type: Object },
-      hass: { type: Object },
       _iconList: { type: Array },
       _jsonError: { type: Boolean }
     };
