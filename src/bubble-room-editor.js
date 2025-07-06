@@ -143,8 +143,6 @@ class BubbleRoomEditor extends LitElement {
       "mdi:toilet", "mdi:fridge", "mdi:oven", "mdi:coffee-maker", "mdi:washing-machine",
       "mdi:vacuum", "mdi:garage", "mdi:garage-open", "mdi:cctv"
     ];
-    // Imposta come già caricato
-    this._haComponentsLoaded = true;
   }
 
   set hass(hass) {
@@ -333,8 +331,9 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
 
+
   _renderEntityInput(labelText, entityKey, field = 'entity') {
-    const value = (this._config.entities?.[entityKey]?.[field]) || '';
+    const value = (this._config.entities && this._config.entities[entityKey] && this._config.entities[entityKey][field]) || '';
     return html`
       <label>${labelText}:</label>
       <ha-entity-picker
@@ -346,6 +345,8 @@ class BubbleRoomEditor extends LitElement {
       </ha-entity-picker>
     `;
   }
+
+
 
   _renderIconInput(labelText, entityKey, field = 'icon') {
     const value = this._config.entities?.[entityKey]?.[field] || '';
