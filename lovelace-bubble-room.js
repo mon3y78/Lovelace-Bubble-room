@@ -1372,9 +1372,6 @@ class BubbleRoomEditor extends r {
     `;
   }
 
-  set hass(hass) { this._hass = hass; this.requestUpdate(); }
-  get hass() { return this._hass; }
-
   _fireConfigChanged() {
     this.dispatchEvent(new CustomEvent('config-changed', {
       detail: { config: this._config },
