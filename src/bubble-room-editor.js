@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+import "@ha/components/ha-entity-picker";
 
 // --- MAPPE DI MAPPING CENTRALIZZATE ---
 const DEVICE_CLASS_ICON_MAP = {
@@ -333,9 +334,17 @@ class BubbleRoomEditor extends LitElement {
 
 
   _renderEntityInput(labelText, entityKey, field = 'entity') {
-    const value = (this._config.entities && this._config.entities[entityKey] && this._config.entities[entityKey][field]) || '';
-    return html`
-      <label>${labelText}:</label>
+  const value = (
+    this._config.entities &&
+    this._config.entities[entityKey] &&
+    this._config.entities[entityKey][field]
+  ) || '';
+
+  const hasEntityPicker = customElements.get("ha-entity-picker");
+
+  return html`
+    <label>${labelText}:</label>
+    ${hasEntityPicker ? html`
       <ha-entity-picker
         .hass="${this._hass}"
         .value="${value}"
@@ -343,8 +352,44 @@ class BubbleRoomEditor extends LitElement {
         allow-custom-entity
         @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
       </ha-entity-picker>
-    `;
-  }
+    ` : html`
+      <input
+        type="text"
+        .value="${value}"
+        placeholder="Inserisci entity_id"
+        @input="${this._updateEntity(entityKey, field)}" />
+    `}
+  `;
+}
+_renderEntityInput(labelText, entityKey, field = 'entity') {
+  const value = (
+    this._config.entities &&
+    this._config.entities[entityKey] &&
+    this._config.entities[entityKey][field]
+  ) || '';
+
+  const hasEntityPicker = customElements.get("ha-entity-picker");
+
+  return html`
+    <label>${labelText}:</label>
+    ${hasEntityPicker ? html`
+      <ha-entity-picker
+        .hass="${this._hass}"
+        .value="${value}"
+        .area="${this._config.area || ''}"
+        allow-custom-entity
+        @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
+      </ha-entity-picker>
+    ` : html`
+      <input
+        type="text"
+        .value="${value}"
+        placeholder="Inserisci entity_id"
+        @input="${this._updateEntity(entityKey, field)}" />
+    `}
+  `;
+}
+
 
 
 
