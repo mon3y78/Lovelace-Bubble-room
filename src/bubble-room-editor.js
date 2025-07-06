@@ -461,7 +461,7 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
 
-  _renderSensorPanel(key, label) {
+  _renderSingleSensorPanel(key, label) {
     const sensor = this._config.entities?.[key] || {};
     const panelId = `${key}Panel`;
     return html`
@@ -1021,7 +1021,7 @@ class BubbleRoomEditor extends LitElement {
         <div slot="header" @click="${() => this._togglePanel('sensorPanel')}">Sensor</div>
         <div class="section-content">
           ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) =>
-            this._renderSensorPanel(key, `Sensor ${i + 1}`)
+            this._renderSingleSensorPanel(key, `Sensor ${i + 1}`)
           )}
           <div style="margin-top:1em;">
             <button @click="${this._resetSensorConfig}">🔄 Reset Sensors</button>
