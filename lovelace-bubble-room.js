@@ -19,7 +19,7 @@ const DEVICE_CLASS_ICON_MAP = {
   blind:       { on: 'mdi:blinds-horizontal', off: 'mdi:blinds-horizontal-closed' }
 };
 
-const DOMAIN_ICON_MAP = {
+const DOMAIN_ICON_MAP$1 = {
   light:           'mdi:lightbulb',
   switch:          'mdi:toggle-switch',
   input_boolean:   'mdi:toggle-switch',
@@ -46,7 +46,7 @@ const DOMAIN_ICON_MAP = {
   input_text:      'mdi:text-box-outline'
 };
 
-const SENSOR_TYPE_MAP = {
+const SENSOR_TYPE_MAP$1 = {
   temperature: { emoji: '🌡️', unitC: '°C', unitF: '°F' },
   humidity:    { emoji: '💦', unit: '%' },
   co2:         { emoji: '🟢', unit: 'ppm' },
@@ -636,8 +636,8 @@ class BubbleRoom extends LitElement {
     return this._getDomainDefaultIcon(domain, state) || 'mdi:information-outline';
   }  
   _getDeviceClassIcon(deviceClass, state) { const icons = DEVICE_CLASS_ICON_MAP[deviceClass]; if (!icons) return ''; if (icons.on && icons.off) { return state === 'on' ? icons.on : icons.off; } return icons.on || ''; }
-  _getDomainDefaultIcon(domain, state) { if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP[domain] || ''; }
-  _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP[sensorType]; if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
+  _getDomainDefaultIcon(domain, state) { if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP$1[domain] || ''; }
+  _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP$1[sensorType]; if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
 
  
 
@@ -700,12 +700,55 @@ const t=globalThis,i$1=t.trustedTypes,s=i$1?i$1.createPolicy("lit-html",{createH
  * SPDX-License-Identifier: BSD-3-Clause
  */class r extends b{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0;}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const s=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=B(s,this.renderRoot,this.renderOptions);}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0);}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1);}render(){return T}}r._$litElement$=!0,r["finalized"]=!0,globalThis.litElementHydrateSupport?.({LitElement:r});const i=globalThis.litElementPolyfillSupport;i?.({LitElement:r});(globalThis.litElementVersions??=[]).push("4.1.1");
 
+const DOMAIN_ICON_MAP = {
+  light:           'mdi:lightbulb',
+  switch:          'mdi:toggle-switch',
+  input_boolean:   'mdi:toggle-switch',
+  fan:             'mdi:fan',
+  climate:         'mdi:thermostat',
+  media_player:    'mdi:speaker',
+  vacuum:          'mdi:robot-vacuum',
+  binary_sensor:   'mdi:motion-sensor',
+  sensor:          'mdi:information-outline',
+  cover:           'mdi:window-shutter',
+  lock:            'mdi:lock',
+  door:            'mdi:door-closed',
+  window:          'mdi:window-closed',
+  alarm_control_panel: 'mdi:shield-home',
+  scene:           'mdi:palette',
+  script:          'mdi:script-text',
+  input_number:    'mdi:ray-vertex',
+  input_select:    'mdi:format-list-bulleted',
+  camera:          'mdi:cctv',
+  humidifier:      'mdi:air-humidifier',
+  weather:         'mdi:weather-partly-cloudy',
+  device_tracker:  'mdi:map-marker',
+  person:          'mdi:account',
+  input_text:      'mdi:text-box-outline'
+};
+
+const SENSOR_TYPE_MAP = {
+  temperature: { emoji: '🌡️', units: ['°C', '°F'] },
+  humidity:    { emoji: '💦', units: ['%'] },
+  co2:         { emoji: '🟢', units: ['ppm'] },
+  illuminance: { emoji: '☀️', units: ['lx'] },
+  pm1:         { emoji: '🟤', units: ['µg/m³'] },
+  pm25:        { emoji: '⚫️', units: ['µg/m³'] },
+  pm10:        { emoji: '⚪️', units: ['µg/m³'] },
+  uv:          { emoji: '🌞', units: ['UV'] },
+  noise:       { emoji: '🔊', units: ['dB'] },
+  pressure:    { emoji: '📈', units: ['hPa'] },
+  voc:         { emoji: '🧪', units: ['ppb'] }
+};
+
+
 class BubbleRoomEditor extends r {
   static get properties() {
     return {
       _config: { type: Object },
       hass: { type: Object },
       _iconList: { type: Array },
+      _jsonError: { type: Boolean }
     };
   }
 
@@ -826,10 +869,6 @@ class BubbleRoomEditor extends r {
 
   getConfig() {
     const configCopy = JSON.parse(JSON.stringify(this._config));
-    if (!configCopy.layout_mode) {
-      configCopy.layout_mode = this._config.layout_mode || '6x3';
-    }
-  
     const filteredEntities = {};
     for (const [key, entityConfig] of Object.entries(configCopy.entities)) {
       const updatedConfig = { ...entityConfig };
@@ -875,18 +914,43 @@ class BubbleRoomEditor extends r {
       .editor-header { text-align: center; margin: 1rem 0; }
       .version { font-size: 0.8rem; font-weight: normal; margin-left: 8px; color: var(--secondary-text-color); }
       ha-expansion-panel div[slot="header"] {
-        background-color: var(--slider-bar-color);
-        color: var(--text-primary-color);
-        padding: 8px;
-        font-weight: bold;
+        background-color: var(--card-background-color, #f5f5f5);
+        color: var(--primary-text-color, #333);
+        padding: 12px;
+        font-weight: 600;
+        border-bottom: 1px solid var(--divider-color, #ddd);
       }
-      .section-content { padding: 16px; }
-      .input-group { margin-bottom: 16px; }
-      label { display: inline-block; margin-bottom: 4px; font-weight: 600; }
-      input, textarea, select { width: 100%; box-sizing: border-box; }
+      .section-content {
+        padding: 20px;
+      }
+      .section-content h4 {
+        margin-top: 1.5em;
+        margin-bottom: 0.5em;
+        font-size: 1.1em;
+        font-weight: 600;
+      }
+      .input-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: inline-block;
+        margin-bottom: 4px;
+        font-weight: 600;
+      }
+      input, textarea, select {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid var(--divider-color, #ccc);
+        border-radius: 4px;
+        padding: 6px;
+      }
       .note { margin-top: 1rem; font-size: 0.9rem; color: var(--secondary-text-color); }
+      .error {
+        border: 1px solid red;
+      }
     `;
   }
+  
 
   _togglePanel(panelId) {
     const panel = this.shadowRoot.getElementById(panelId);
@@ -924,35 +988,7 @@ class BubbleRoomEditor extends r {
       <div class="editor-header">
         <h3>Visual Editor Bubble Room V3.1<span class="version">v3.0</span></h3>
       </div>
-      <ha-expansion-panel id="roomPanel">
-        <div slot="header" @click="${() => this._togglePanel('roomPanel')}">Room Settings</div>
-        <div class="section-content">
-          <div class="input-group">
-            <label>Room name:</label>
-            <input type="text" .value="${this._config.name || ''}" @input="${this._updateName}" />
-          </div>
-          <div class="input-group">
-            <label>Room Icon:</label>
-            <ha-icon-picker .hass="${this.hass}" .value="${this._config.icon || ''}" allow-custom-icon
-              @value-changed="${e => {
-                this._config = { ...this._config, icon: e.detail.value };
-                this.requestUpdate(); this._fireConfigChanged();
-              }}">
-            </ha-icon-picker>
-          </div>
-          <div class="input-group">
-            <label>Layout:</label>
-            <select .value="${this._config.layout_mode || '6x3'}" @change="${this._updateLayoutMode}">
-              <option value="6x3">6x3</option>
-              <option value="12x4">12x4</option>
-            </select>
-          </div>
-          ${this._renderRoomAction()}
-          <div class="input-group">
-            ${this._renderEntityInput("Presence (ID)", "presence")}
-          </div>
-        </div>
-      </ha-expansion-panel>
+      ${this._renderRoomPanel()}
       <ha-expansion-panel id="subButtonMainPanel">
         <div slot="header" @click="${() => this._togglePanel('subButtonMainPanel')}">SUB-BUTTON</div>
         <div class="section-content">
@@ -1094,7 +1130,11 @@ class BubbleRoomEditor extends r {
               <label>Service:</label>
               <input type="text" .value="${tapAction.service || ''}" @input="${this._updateTapActionField('service')}" />
               <label>Service Data (JSON):</label>
-              <textarea .value="${tapAction.service_data ? JSON.stringify(tapAction.service_data) : ''}" @input="${this._updateTapActionField('service_data')}"></textarea>
+              <textarea
+                class="${this._jsonError ? 'error' : ''}"
+                .value="${tapAction.service_data ? JSON.stringify(tapAction.service_data) : ''}"
+                @input="${this._updateTapActionField('service_data')}"></textarea>
+              ${this._jsonError ? x`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
             `
           : ''}
       </div>
@@ -1118,12 +1158,17 @@ class BubbleRoomEditor extends r {
               <label>Service:</label>
               <input type="text" .value="${holdAction.service || ''}" @input="${this._updateHoldActionField('service')}" />
               <label>Service Data (JSON):</label>
-              <textarea .value="${holdAction.service_data ? JSON.stringify(holdAction.service_data) : ''}" @input="${this._updateHoldActionField('service_data')}"></textarea>
+              <textarea
+                class="${this._jsonError ? 'error' : ''}"
+                .value="${holdAction.service_data ? JSON.stringify(holdAction.service_data) : ''}"
+                @input="${this._updateHoldActionField('service_data')}"></textarea>
+              ${this._jsonError ? x`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
             `
           : ''}
       </div>
     `;
   }
+  
 
   _renderMushroomEntityPanel(key, label) {
     const panelId = `${key}Panel`;
@@ -1167,15 +1212,16 @@ class BubbleRoomEditor extends r {
           <div class="input-group">
             ${this._renderEntityInput("Entity ID", key)}
           </div>
-          ${sensor.type && this._getUnitsForType(sensor.type).length > 0 ? x`
+          ${sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? x`
             <div class="input-group">
               <label>Unità:</label>
-              <select .value="${sensor.unit || this._getUnitsForType(sensor.type)[0]}"
+              <select
+                .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
                 @change="${e => this._updateSensor(parseInt(key.replace('sensor', '')) - 1, 'unit', e.target.value)}">
-                ${this._getUnitsForType(sensor.type).map(u => x`<option value="${u}">${u}</option>`)}
+                ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u => x`<option value="${u}">${u}</option>`)}
               </select>
             </div>
-          ` : ''}
+          ` : ''}          
         </div>
       </ha-expansion-panel>
     `;
@@ -1185,28 +1231,11 @@ class BubbleRoomEditor extends r {
     const key = `sensor${index + 1}`;
     const current = this._config.entities?.[key] || {};
     const updated = { ...current, [field]: value };
-    if (field === 'type') updated.unit = this._getUnitsForType(value)[0] || '';
+    if (field === 'type') updated.unit = (SENSOR_TYPE_MAP[value]?.units || [])[0] || '';
     const entities = { ...this._config.entities, [key]: updated };
     this._config = { ...this._config, entities };
     this.requestUpdate();
     this._fireConfigChanged();
-  }
-
-  _getUnitsForType(type) {
-    switch (type) {
-      case 'temperature': return ['C', 'F'];
-      case 'humidity': return ['%'];
-      case 'pressure': return ['hPa'];
-      case 'co2': return ['ppm'];
-      case 'illuminance': return ['lx'];
-      case 'pm1':
-      case 'pm25':
-      case 'pm10': return ['µg/m³'];
-      case 'uv': return ['UV'];
-      case 'noise': return ['dB'];
-      case 'voc': return ['ppb'];
-      default: return [];
-    }
   }
 
   _parseRGBA(str) {
@@ -1283,28 +1312,35 @@ class BubbleRoomEditor extends r {
   _getDefaultIconForEntity(entityId) {
     if (!entityId || typeof entityId !== 'string') return 'mdi:help-circle';
     const domain = entityId.split('.')[0];
-    const domainIconMap = {
-      light: 'mdi:lightbulb',
-      fan: 'mdi:fan',
-      climate: 'mdi:thermostat',
-      media_player: 'mdi:speaker',
-      vacuum: 'mdi:robot-vacuum',
-      binary_sensor: 'mdi:motion-sensor',
-      sensor: 'mdi:information-outline',
-      switch: 'mdi:toggle-switch',
-      cover: 'mdi:window-shutter',
-      lock: 'mdi:lock',
-      camera: 'mdi:cctv',
-      humidifier: 'mdi:air-humidifier',
-      weather: 'mdi:weather-partly-cloudy',
-      device_tracker: 'mdi:map-marker',
-      person: 'mdi:account',
-      input_boolean: 'mdi:toggle-switch',
-      input_number: 'mdi:ray-vertex',
-      input_select: 'mdi:format-list-bulleted',
-      input_text: 'mdi:text-box-outline'
-    };
-    return domainIconMap[domain] || 'mdi:bookmark-outline';
+    return DOMAIN_ICON_MAP[domain] || 'mdi:bookmark-outline';
+  }
+  _getIconForEntity(entityId, entityConfig) {
+    // 1. Se l'icona è stata impostata manualmente nella configurazione
+    if (entityConfig?.icon) {
+      return entityConfig.icon;
+    }
+  
+    // 2. Se c'è un'icona di default per il dominio
+    const domain = entityId.split('.')[0];
+    const defaultDomainIcon = DOMAIN_ICON_MAP[domain];
+    if (defaultDomainIcon) {
+      return defaultDomainIcon;
+    }
+  
+    // 3. Se l'entità ha un attributo icon
+    const stateObj = this.hass?.states?.[entityId];
+    if (stateObj?.attributes?.icon) {
+      return stateObj.attributes.icon;
+    }
+  
+    // 4. Se ha un device_class
+    const deviceClass = stateObj?.attributes?.device_class;
+    if (deviceClass) {
+      return this._getDeviceClassIcon(deviceClass, stateObj.state) || 'mdi:bookmark-outline';
+    }
+  
+    // 5. Fallback generico
+    return 'mdi:bookmark-outline';
   }
   
   _updateNestedColorDirect(section, key, value) {
@@ -1398,12 +1434,6 @@ class BubbleRoomEditor extends r {
     this.requestUpdate();
     this._fireConfigChanged();
   }
-  _updateLayoutMode(ev) {
-    const layout_mode = ev.target.value;
-    this._config = { ...this._config, layout_mode };
-    this.requestUpdate();
-    this._fireConfigChanged();
-  }
   _updateIcon(ev) {
     const newIcon = ev.target.value;
     this._config = { ...this._config, icon: newIcon };
@@ -1414,96 +1444,181 @@ class BubbleRoomEditor extends r {
   _updateEntity(entityKey, field = 'entity') {
     return (ev) => {
       const value = ev.target.value;
-      let curEntity = this._config.entities[entityKey] || {};
-      curEntity = { ...curEntity, [field]: value };
   
-      // AGGIUNTA: forza l’icona di dominio/device_class appena cambi entità!
       if (field === 'entity') {
-        // Preferisce attributo icon
-        if (this.hass?.states?.[value]?.attributes?.icon) {
-          curEntity.icon = this.hass.states[value].attributes.icon;
-        } else {
-          // device_class?
-          const stateObj = this.hass?.states?.[value];
-          const deviceClass = stateObj?.attributes?.device_class;
-          if (deviceClass) {
-            curEntity.icon = this._getDeviceClassIcon(deviceClass, stateObj.state)
-              || this._getDefaultIconForEntity(value);
-          } else {
-            curEntity.icon = this._getDefaultIconForEntity(value);
-          }
-        }
-      }
+        // Aggiorna l'entità
+        this._updateEntityConfig(entityKey, ["entity"], value);
   
-      const entities = { ...this._config.entities, [entityKey]: curEntity };
-      this._config = { ...this._config, entities };
-      this.requestUpdate();
-      this._fireConfigChanged();
+        // Calcola l'icona in base alla logica di priorità
+        const iconValue = this._getIconForEntity(value, this._config.entities?.[entityKey]);
+        this._updateEntityConfig(entityKey, ["icon"], iconValue);
+      } else {
+        // Aggiorna qualsiasi altro campo (es. icon)
+        this._updateEntityConfig(entityKey, [field], value);
+      }
     };
   }
+  
   
   _updateTapActionField(field) {
     return (ev) => {
       let newValue = ev.target.value;
       if (field === 'service_data') {
-        try { newValue = JSON.parse(newValue); } catch (e) {}
+        try {
+          newValue = JSON.parse(newValue);
+          this._jsonError = false;
+        } catch (e) {
+          this._jsonError = true;
+          this.requestUpdate();
+          return; // NON aggiorna la config se JSON non valido
+        }
       }
       const tap_action = {
         ...(this._config.tap_action || { action: 'navigate', navigation_path: '' }),
         [field]: newValue
       };
       this._config = { ...this._config, tap_action };
+      this._jsonError = false;
       this.requestUpdate();
       this._fireConfigChanged();
     };
   }
+  
   _updateHoldActionField(field) {
     return (ev) => {
       let newValue = ev.target.value;
       if (field === 'service_data') {
-        try { newValue = JSON.parse(newValue); } catch (e) {}
+        try {
+          newValue = JSON.parse(newValue);
+          this._jsonError = false;
+        } catch (e) {
+          this._jsonError = true;
+          this.requestUpdate();
+          return; // NON aggiorna la config se JSON non valido
+        }
       }
       const hold_action = {
         ...(this._config.hold_action || { action: 'more-info', navigation_path: '' }),
         [field]: newValue
       };
       this._config = { ...this._config, hold_action };
+      this._jsonError = false;
       this.requestUpdate();
       this._fireConfigChanged();
     };
   }
+  
   _updateEntityTapAction(entityKey, field) {
     return (ev) => {
       let value = ev.target.value;
       if (field === 'service_data') {
-        try { value = JSON.parse(value); } catch (e) {}
+        try {
+          value = JSON.parse(value);
+          this._jsonError = false;
+        } catch (e) {
+          this._jsonError = true;
+          this.requestUpdate();
+          return;
+        }
       }
-      let entityConf = this._config.entities[entityKey] || {};
-      let tapAction = entityConf.tap_action || { action: 'toggle', navigation_path: '' };
-      tapAction = { ...tapAction, [field]: value };
-      entityConf = { ...entityConf, tap_action: tapAction };
-      const entities = { ...this._config.entities, [entityKey]: entityConf };
-      this._config = { ...this._config, entities };
-      this.requestUpdate();
-      this._fireConfigChanged();
+      this._updateEntityConfig(entityKey, ["tap_action", field], value);
+      this._jsonError = false;
     };
   }
+  
   _updateEntityHoldAction(entityKey, field) {
     return (ev) => {
       let value = ev.target.value;
       if (field === 'service_data') {
-        try { value = JSON.parse(value); } catch (e) {}
+        try {
+          value = JSON.parse(value);
+          this._jsonError = false;
+        } catch (e) {
+          this._jsonError = true;
+          this.requestUpdate();
+          return;
+        }
       }
-      let entityConf = this._config.entities[entityKey] || {};
-      let holdAction = entityConf.hold_action || { action: 'more-info', navigation_path: '' };
-      holdAction = { ...holdAction, [field]: value };
-      entityConf = { ...entityConf, hold_action: holdAction };
-      const entities = { ...this._config.entities, [entityKey]: entityConf };
-      this._config = { ...this._config, entities };
-      this.requestUpdate();
-      this._fireConfigChanged();
+      this._updateEntityConfig(entityKey, ["hold_action", field], value);
+      this._jsonError = false;
     };
   }
+  
+  _updateEntityConfig(entityKey, pathArray, value) {
+    let entityConf = this._config.entities?.[entityKey] || {};
+    entityConf = JSON.parse(JSON.stringify(entityConf)); // deep clone
+  
+    let ref = entityConf;
+    for (let i = 0; i < pathArray.length - 1; i++) {
+      const key = pathArray[i];
+      if (typeof ref[key] !== "object" || ref[key] === null) {
+        ref[key] = {};
+      }
+      ref = ref[key];
+    }
+    ref[pathArray[pathArray.length - 1]] = value;
+  
+    const entities = { ...this._config.entities, [entityKey]: entityConf };
+    this._config = { ...this._config, entities };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
+  _renderRoomPanel() {
+    return x`
+      <ha-expansion-panel id="roomPanel">
+        <div slot="header" @click="${() => this._togglePanel('roomPanel')}">Room Settings</div>
+        <div class="section-content">
+          <div class="input-group">
+            <label>Room name:</label>
+            <input
+              type="text"
+              .value="${this._config.name || ''}"
+              @input="${this._updateName}" />
+          </div>
+          <div class="input-group">
+            <label>Room Icon:</label>
+            <ha-icon-picker
+              .hass="${this.hass}"
+              .value="${this._config.icon || ''}"
+              allow-custom-icon
+              @value-changed="${e => {
+                this._config = { ...this._config, icon: e.detail.value };
+                this.requestUpdate();
+                this._fireConfigChanged();
+              }}">
+            </ha-icon-picker>
+          </div>
+          ${this._renderRoomAction()}
+          <div class="input-group">
+            ${this._renderEntityInput("Presence (ID)", "presence")}
+          </div>
+          <div style="margin-top:1em;">
+            <button @click="${this._resetRoomConfig}">🔄 Reset Room Settings</button>
+          </div>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+
+
+
+
+  _resetRoomConfig() {
+    this._config = {
+      ...this._config,
+      name: '',
+      icon: '',
+      tap_action: { action: 'none' },
+      hold_action: { action: 'none' },
+      entities: {
+        ...this._config.entities,
+        presence: {}
+      }
+    };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
+  
 }
 
 customElements.define('bubble-room-editor', BubbleRoomEditor);
