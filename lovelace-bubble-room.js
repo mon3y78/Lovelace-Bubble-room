@@ -833,7 +833,10 @@ class BubbleRoomEditor extends r {
     });
   }
 
-  
+  set hass(hass) {
+    this._hass = hass;
+    this.requestUpdate();
+  }
 
   setConfig(config) {
     if (!config) config = {};
@@ -869,10 +872,10 @@ class BubbleRoomEditor extends r {
   
       // Se non c’è icon, la forziamo comunque qui come fallback
       if (!updatedConfig.icon || updatedConfig.icon === "") {
-        if (entityId && this.hass?.states?.[entityId]?.attributes?.icon) {
-          updatedConfig.icon = this.hass.states[entityId].attributes.icon;
+        if (entityId && this._hass?.states?.[entityId]?.attributes?.icon) {
+          updatedConfig.icon = this._hass.states[entityId].attributes.icon;
         } else if (entityId) {
-          const stateObj = this.hass?.states?.[entityId];
+          const stateObj = this._hass?.states?.[entityId];
           const deviceClass = stateObj?.attributes?.device_class;
           if (deviceClass) {
             updatedConfig.icon = this._getDeviceClassIcon(deviceClass, stateObj.state)
@@ -1020,22 +1023,16 @@ class BubbleRoomEditor extends r {
   }
 
   _renderEntityInput(labelText, entityKey, field = 'entity') {
-    const value = (this._config.entities && this._config.entities[entityKey] && this._config.entities[entityKey][field]) || '';
-    const hasEntityPicker = customElements.get("ha-entity-picker");
+    const value = (this._config.entities?.[entityKey]?.[field]) || '';
     return x`
       <label>${labelText}:</label>
-      ${hasEntityPicker ? x`
-        <ha-entity-picker
-          .hass="${this.hass}"
-          .value="${value}"
-          .area="${this._config.area || ''}"
-          allow-custom-entity
-          @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
-        </ha-entity-picker>
-      ` : x`
-        <input type="text" .value="${value}" list="entity-list" placeholder="Inserisci entity_id"
-          @input="${this._updateEntity(entityKey, field)}" />
-      `}
+      <ha-entity-picker
+        .hass="${this._hass}"
+        .value="${value}"
+        .area="${this._config.area || ''}"
+        allow-custom-entity
+        @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
+      </ha-entity-picker>
     `;
   }
 
@@ -1044,7 +1041,7 @@ class BubbleRoomEditor extends r {
     return x`
       <label>${labelText}:</label>
       <ha-icon-picker
-        .hass="${this.hass}"
+        .hass="${this._hass}"
         .value="${value}"
         allow-custom-icon
         @value-changed="${e => {
@@ -1290,7 +1287,7 @@ class BubbleRoomEditor extends r {
     }
   
     // 3. Se l'entità ha un attributo icon
-    const stateObj = this.hass?.states?.[entityId];
+    const stateObj = this._hass?.states?.[entityId];
     if (stateObj?.attributes?.icon) {
       return stateObj.attributes.icon;
     }
@@ -1560,7 +1557,7 @@ class BubbleRoomEditor extends r {
           <div class="input-group">
             <label>Area:</label>
             <ha-area-picker
-              .hass="${this.hass}"
+              .hass="${this._hass}"
               .value="${this._config.area || ''}"
               @value-changed="${e => {
                 this._config = { ...this._config, area: e.detail.value };
@@ -1572,7 +1569,7 @@ class BubbleRoomEditor extends r {
           <div class="input-group">
             <label>Room Icon:</label>
             <ha-icon-picker
-              .hass="${this.hass}"
+              .hass="${this._hass}"
               .value="${this._config.icon || ''}"
               allow-custom-icon
               @value-changed="${e => {
