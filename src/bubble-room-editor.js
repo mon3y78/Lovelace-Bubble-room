@@ -233,21 +233,43 @@ class BubbleRoomEditor extends LitElement {
       .editor-header { text-align: center; margin: 1rem 0; }
       .version { font-size: 0.8rem; font-weight: normal; margin-left: 8px; color: var(--secondary-text-color); }
       ha-expansion-panel div[slot="header"] {
-        background-color: var(--card-background-color, #f5f5f5);
-        color: var(--primary-text-color, #333);
-        padding: 12px;
+        background-color: var(--primary-background-color, #222);
+        color: var(--primary-text-color, #eee);
+        font-size: 1.1em;
         font-weight: 600;
-        border-bottom: 1px solid var(--divider-color, #ddd);
+        padding: 12px;
       }
+
       .section-content {
         padding: 20px;
+        background-color: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--divider-color, #444);
+        border-radius: 8px;
+        box-shadow: 0 0 6px rgba(0,0,0,0.4);
       }
+
+      }
+
       .section-content h4 {
         margin-top: 1.5em;
         margin-bottom: 0.5em;
         font-size: 1.1em;
         font-weight: 600;
       }
+
+      .section-content button {
+        background: #cc0000;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .section-content button:hover {
+        background: #ff0000;
+      }
+
       .input-group {
         margin-bottom: 20px;
       }
@@ -308,84 +330,18 @@ class BubbleRoomEditor extends LitElement {
         <h3>Visual Editor Bubble Room V3.1<span class="version">v3.0</span></h3>
       </div>
       ${this._renderRoomPanel()}
-      <ha-expansion-panel id="subButtonMainPanel">
-        <div slot="header" @click="${() => this._togglePanel('subButtonMainPanel')}">SUB-BUTTON</div>
-        <div class="section-content">
-          ${this._renderSubButtonPanel("sub-button1")}
-          ${this._renderSubButtonPanel("sub-button2")}
-          ${this._renderSubButtonPanel("sub-button3")}
-          ${this._renderSubButtonPanel("sub-button4")}
-        </div>
-      </ha-expansion-panel>
-      <ha-expansion-panel id="mushroomEntitiesPanel">
-        <div slot="header" @click="${() => this._togglePanel('mushroomEntitiesPanel')}">Mushroom Entities</div>
-        <div class="section-content">
-          ${this._renderMushroomEntityPanel("entities1", "Entity 1")}
-          ${this._renderMushroomEntityPanel("entities2", "Entity 2")}
-          ${this._renderMushroomEntityPanel("entities3", "Entity 3")}
-          ${this._renderMushroomEntityPanel("entities4", "Entity 4")}
-          ${this._renderMushroomEntityPanel("entities5", "Entity 5")}
-        </div>
-      </ha-expansion-panel>
-      <ha-expansion-panel id="cameraPanel">
-        <div slot="header" @click="${() => this._togglePanel('cameraPanel')}">Camera</div>
-        <div class="section-content">
-          <div class="input-group">
-            ${this._renderEntityInput("Camera (ID)", "camera")}
-          </div>
-          <div class="input-group">
-            ${this._renderIconInput("Camera Icon", "camera")}
-          </div>
-        </div>
-      </ha-expansion-panel>
-      <ha-expansion-panel id="climatePanel">
-        <div slot="header" @click="${() => this._togglePanel('climatePanel')}">Climate</div>
-        <div class="section-content">
-          <div class="input-group">
-            ${this._renderEntityInput("Climate (ID)", "climate")}
-          </div>
-          <div class="input-group">
-            ${this._renderIconInput("Climate Icon", "climate")}
-          </div>
-        </div>
-      </ha-expansion-panel>
-      <ha-expansion-panel id="sensorPanel">
-        <div slot="header" @click="${() => this._togglePanel('sensorPanel')}">Sensor</div>
-        <div class="section-content">
-          ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) =>
-            this._renderSensorPanel(key, `Sensor ${i + 1}`)
-          )}
-        </div>
-      </ha-expansion-panel>
-      <ha-expansion-panel id="colorsPanel">
-        <div slot="header" @click="${() => this._togglePanel('colorsPanel')}">Colors</div>
-        <div class="section-content">
-          <h4>Room</h4>
-          ${this._renderColorField("room", "icon_active", "Icon Active")}
-          ${this._renderColorField("room", "icon_inactive", "Icon Inactive")}
-          ${this._renderColorField("room", "background_active", "Background Active")}
-          ${this._renderColorField("room", "background_inactive", "Background Inactive")}
-          ${this._renderColorField("room", "mushroom_active", "Mushroom Icon Active")}
-          ${this._renderColorField("room", "mushroom_inactive", "Mushroom Icon Inactive")}
-          <h4>Subbutton</h4>
-          ${this._renderColorField("subbutton", "background_on", "Background On")}
-          ${this._renderColorField("subbutton", "background_off", "Background Off")}
-          ${this._renderColorField("subbutton", "icon_on", "Icon On")}
-          ${this._renderColorField("subbutton", "icon_off", "Icon Off")}
-        </div>
-      </ha-expansion-panel>
-      <datalist id="entity-list">
-        ${this.hass
-          ? Object.keys(this.hass.states).map(
-              entityId => html`<option value="${entityId}"></option>`
-            )
-          : ''}
-      </datalist>
+      ${this._renderSubButtonPanelGroup()}
+      ${this._renderMushroomEntitiesPanel()}
+      ${this._renderCameraPanel()}
+      ${this._renderClimatePanel()}
+      ${this._renderSensorPanel()}
+      ${this._renderColorsPanel()}
       <p class="note">
         For advanced configurations, modify the YAML directly.
       </p>
     `;
   }
+  
 
   _renderEntityInput(labelText, entityKey, field = 'entity') {
     const value = (this._config.entities && this._config.entities[entityKey] && this._config.entities[entityKey][field]) || '';
@@ -918,10 +874,6 @@ class BubbleRoomEditor extends LitElement {
       </ha-expansion-panel>
     `;
   }
-
-
-
-
   _resetRoomConfig() {
     this._config = {
       ...this._config,
@@ -938,6 +890,171 @@ class BubbleRoomEditor extends LitElement {
     this._fireConfigChanged();
   }
   
+  _renderSubButtonPanelGroup() {
+    return html`
+      <ha-expansion-panel id="subButtonMainPanel">
+        <div slot="header" @click="${() => this._togglePanel('subButtonMainPanel')}">SUB-BUTTON</div>
+        <div class="section-content">
+          ${this._renderSubButtonPanel("sub-button1")}
+          ${this._renderSubButtonPanel("sub-button2")}
+          ${this._renderSubButtonPanel("sub-button3")}
+          ${this._renderSubButtonPanel("sub-button4")}
+          <div style="margin-top:1em;">
+            <button @click="${this._resetSubButtonConfig}">🔄 Reset Sub-buttons</button>
+          </div>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+  _resetSubButtonConfig() {
+    const entities = { ...this._config.entities };
+    ["sub-button1", "sub-button2", "sub-button3", "sub-button4"].forEach(key => {
+      delete entities[key];
+    });
+    this._config = { ...this._config, entities };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
+  _renderMushroomEntitiesPanel() {
+    return html`
+      <ha-expansion-panel id="mushroomEntitiesPanel">
+        <div slot="header" @click="${() => this._togglePanel('mushroomEntitiesPanel')}">Mushroom Entities</div>
+        <div class="section-content">
+          ${this._renderMushroomEntityPanel("entities1", "Entity 1")}
+          ${this._renderMushroomEntityPanel("entities2", "Entity 2")}
+          ${this._renderMushroomEntityPanel("entities3", "Entity 3")}
+          ${this._renderMushroomEntityPanel("entities4", "Entity 4")}
+          ${this._renderMushroomEntityPanel("entities5", "Entity 5")}
+          <div style="margin-top:1em;">
+            <button @click="${this._resetMushroomEntitiesConfig}">🔄 Reset Mushroom Entities</button>
+          </div>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+  _resetMushroomEntitiesConfig() {
+    const entities = { ...this._config.entities };
+    ["entities1", "entities2", "entities3", "entities4", "entities5"].forEach(key => {
+      delete entities[key];
+    });
+    this._config = { ...this._config, entities };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
+  _renderCameraPanel() {
+    return html`
+      <ha-expansion-panel id="cameraPanel">
+        <div slot="header" @click="${() => this._togglePanel('cameraPanel')}">Camera</div>
+        <div class="section-content">
+          <div class="input-group">
+            ${this._renderEntityInput("Camera (ID)", "camera")}
+          </div>
+          <div class="input-group">
+            ${this._renderIconInput("Camera Icon", "camera")}
+          </div>
+          <div style="margin-top:1em;">
+            <button @click="${this._resetCameraConfig}">🔄 Reset Camera</button>
+          </div>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+  _resetCameraConfig() {
+    const entities = { ...this._config.entities };
+    delete entities["camera"];
+    this._config = { ...this._config, entities };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
+  _renderClimatePanel() {
+    return html`
+      <ha-expansion-panel id="climatePanel">
+        <div slot="header" @click="${() => this._togglePanel('climatePanel')}">Climate</div>
+        <div class="section-content">
+          <div class="input-group">
+            ${this._renderEntityInput("Climate (ID)", "climate")}
+          </div>
+          <div class="input-group">
+            ${this._renderIconInput("Climate Icon", "climate")}
+          </div>
+          <div style="margin-top:1em;">
+            <button @click="${this._resetClimateConfig}">🔄 Reset Climate</button>
+          </div>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+  _resetClimateConfig() {
+    const entities = { ...this._config.entities };
+    delete entities["climate"];
+    this._config = { ...this._config, entities };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
+  _renderSensorPanel() {
+    return html`
+      <ha-expansion-panel id="sensorPanel">
+        <div slot="header" @click="${() => this._togglePanel('sensorPanel')}">Sensor</div>
+        <div class="section-content">
+          ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) =>
+            this._renderSensorPanel(key, `Sensor ${i + 1}`)
+          )}
+          <div style="margin-top:1em;">
+            <button @click="${this._resetSensorConfig}">🔄 Reset Sensors</button>
+          </div>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+  _resetSensorConfig() {
+    const entities = { ...this._config.entities };
+    ["sensor1", "sensor2", "sensor3", "sensor4"].forEach(key => {
+      delete entities[key];
+    });
+    this._config = { ...this._config, entities };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
+  _renderColorsPanel() {
+    return html`
+      <ha-expansion-panel id="colorsPanel">
+        <div slot="header" @click="${() => this._togglePanel('colorsPanel')}">Colors</div>
+        <div class="section-content">
+          <h4>Room</h4>
+          ${this._renderColorField("room", "icon_active", "Icon Active")}
+          ${this._renderColorField("room", "icon_inactive", "Icon Inactive")}
+          ${this._renderColorField("room", "background_active", "Background Active")}
+          ${this._renderColorField("room", "background_inactive", "Background Inactive")}
+          ${this._renderColorField("room", "mushroom_active", "Mushroom Icon Active")}
+          ${this._renderColorField("room", "mushroom_inactive", "Mushroom Icon Inactive")}
+          <h4>Subbutton</h4>
+          ${this._renderColorField("subbutton", "background_on", "Background On")}
+          ${this._renderColorField("subbutton", "background_off", "Background Off")}
+          ${this._renderColorField("subbutton", "icon_on", "Icon On")}
+          ${this._renderColorField("subbutton", "icon_off", "Icon Off")}
+          <div style="margin-top:1em;">
+            <button @click="${this._resetColorsConfig}">🔄 Reset Colors</button>
+          </div>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+  _resetColorsConfig() {
+    this._config = {
+      ...this._config,
+      colors: {
+        room: {},
+        subbutton: {}
+      }
+    };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
+                        
+
+
+
+
 }
 
 customElements.define('bubble-room-editor', BubbleRoomEditor);
