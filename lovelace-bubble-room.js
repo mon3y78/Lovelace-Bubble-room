@@ -824,8 +824,6 @@ class BubbleRoomEditor extends r {
       "mdi:toilet", "mdi:fridge", "mdi:oven", "mdi:coffee-maker", "mdi:washing-machine",
       "mdi:vacuum", "mdi:garage", "mdi:garage-open", "mdi:cctv"
     ];
-    // Imposta come già caricato
-    this._haComponentsLoaded = true;
   }
 
   set hass(hass) {
@@ -1013,20 +1011,35 @@ class BubbleRoomEditor extends r {
       </p>
     `;
   }
-
   _renderEntityInput(labelText, entityKey, field = 'entity') {
-    const value = (this._config.entities?.[entityKey]?.[field]) || '';
+    const value = (
+      this._config.entities &&
+      this._config.entities[entityKey] &&
+      this._config.entities[entityKey][field]
+    ) || '';
+  
+    const hasEntityPicker = customElements.get("ha-entity-picker");
+  
     return x`
       <label>${labelText}:</label>
-      <ha-entity-picker
-        .hass="${this._hass}"
-        .value="${value}"
-        .area="${this._config.area || ''}"
-        allow-custom-entity
-        @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
-      </ha-entity-picker>
+      ${hasEntityPicker ? x`
+        <ha-entity-picker
+          .hass="${this._hass}"
+          .value="${value}"
+          .area="${this._config.area || ''}"
+          allow-custom-entity
+          @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
+        </ha-entity-picker>
+      ` : x`
+        <input
+          type="text"
+          .value="${value}"
+          placeholder="Inserisci entity_id"
+          @input="${this._updateEntity(entityKey, field)}" />
+      `}
     `;
   }
+
 
   _renderIconInput(labelText, entityKey, field = 'icon') {
     const value = this._config.entities?.[entityKey]?.[field] || '';
