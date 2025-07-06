@@ -152,7 +152,10 @@ class BubbleRoomEditor extends LitElement {
     });
   }
 
-  
+  set hass(hass) {
+    this._hass = hass;
+    this.requestUpdate();
+  }
 
   setConfig(config) {
     if (!config) config = {};
@@ -188,10 +191,10 @@ class BubbleRoomEditor extends LitElement {
   
       // Se non c’è icon, la forziamo comunque qui come fallback
       if (!updatedConfig.icon || updatedConfig.icon === "") {
-        if (entityId && this.hass?.states?.[entityId]?.attributes?.icon) {
-          updatedConfig.icon = this.hass.states[entityId].attributes.icon;
+        if (entityId && this._hass?.states?.[entityId]?.attributes?.icon) {
+          updatedConfig.icon = this._hass.states[entityId].attributes.icon;
         } else if (entityId) {
-          const stateObj = this.hass?.states?.[entityId];
+          const stateObj = this._hass?.states?.[entityId];
           const deviceClass = stateObj?.attributes?.device_class;
           if (deviceClass) {
             updatedConfig.icon = this._getDeviceClassIcon(deviceClass, stateObj.state)
@@ -345,7 +348,7 @@ class BubbleRoomEditor extends LitElement {
       <label>${labelText}:</label>
       ${hasEntityPicker ? html`
         <ha-entity-picker
-          .hass="${this.hass}"
+          .hass="${this._hass}"
           .value="${value}"
           .area="${this._config.area || ''}"
           allow-custom-entity
@@ -363,7 +366,7 @@ class BubbleRoomEditor extends LitElement {
     return html`
       <label>${labelText}:</label>
       <ha-icon-picker
-        .hass="${this.hass}"
+        .hass="${this._hass}"
         .value="${value}"
         allow-custom-icon
         @value-changed="${e => {
@@ -609,7 +612,7 @@ class BubbleRoomEditor extends LitElement {
     }
   
     // 3. Se l'entità ha un attributo icon
-    const stateObj = this.hass?.states?.[entityId];
+    const stateObj = this._hass?.states?.[entityId];
     if (stateObj?.attributes?.icon) {
       return stateObj.attributes.icon;
     }
@@ -879,7 +882,7 @@ class BubbleRoomEditor extends LitElement {
           <div class="input-group">
             <label>Area:</label>
             <ha-area-picker
-              .hass="${this.hass}"
+              .hass="${this._hass}"
               .value="${this._config.area || ''}"
               @value-changed="${e => {
                 this._config = { ...this._config, area: e.detail.value };
@@ -891,7 +894,7 @@ class BubbleRoomEditor extends LitElement {
           <div class="input-group">
             <label>Room Icon:</label>
             <ha-icon-picker
-              .hass="${this.hass}"
+              .hass="${this._hass}"
               .value="${this._config.icon || ''}"
               allow-custom-icon
               @value-changed="${e => {
