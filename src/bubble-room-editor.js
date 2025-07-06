@@ -143,22 +143,16 @@ class BubbleRoomEditor extends LitElement {
       "mdi:toilet", "mdi:fridge", "mdi:oven", "mdi:coffee-maker", "mdi:washing-machine",
       "mdi:vacuum", "mdi:garage", "mdi:garage-open", "mdi:cctv"
     ];
-    if (!customElements.get("ha-entity-picker")) {
-      import("custom-card-helpers").then(module => module.loadHaComponents()).catch(() => {});
-    }
+    this._haComponentsLoaded = false;
+    import("custom-card-helpers").then(m => {
+      m.loadHaComponents().then(() => {
+        this._haComponentsLoaded = true;
+        this.requestUpdate();
+      });
+    });
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    // Forza il preload di ha-entity-picker
-    if (!customElements.get("ha-entity-picker")) {
-      const preload = document.createElement("ha-entity-picker");
-      preload.hass = this.hass;
-      preload.style.display = "none";
-      document.body.appendChild(preload);
-      setTimeout(() => document.body.removeChild(preload), 1000);
-    }
-  }
+  
 
   setConfig(config) {
     if (!config) config = {};
@@ -321,7 +315,12 @@ class BubbleRoomEditor extends LitElement {
   }
 
   render() {
-    if (!this._config) return html`<div>Caricamento configurazione...</div>`;
+    if (!this._haComponentsLoaded) {
+      return html`<div>Loading components...</div>`;
+    }
+    if (!this._config) {
+      return html`<div>Caricamento configurazione...</div>`;
+    }
     return html`
       <div class="editor-header">
         <h3>Visual Editor Bubble Room V3.1<span class="version">v3.0</span></h3>
@@ -338,7 +337,6 @@ class BubbleRoomEditor extends LitElement {
       </p>
     `;
   }
-  
 
   _renderEntityInput(labelText, entityKey, field = 'entity') {
     const value = (this._config.entities && this._config.entities[entityKey] && this._config.entities[entityKey][field]) || '';
@@ -919,6 +917,7 @@ class BubbleRoomEditor extends LitElement {
       ...this._config,
       name: '',
       icon: '',
+      area: '',
       tap_action: { action: 'none' },
       hold_action: { action: 'none' },
       entities: {
