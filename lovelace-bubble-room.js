@@ -929,8 +929,6 @@ class BubbleRoomEditor extends r {
         box-shadow: 0 0 6px rgba(0,0,0,0.4);
       }
 
-      }
-
       .section-content h4 {
         margin-top: 1.5em;
         margin-bottom: 0.5em;
