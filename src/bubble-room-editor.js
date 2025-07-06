@@ -699,34 +699,39 @@ class BubbleRoomEditor extends LitElement {
   }
   _updateName(ev) {
     const newName = ev.target.value;
+    if (this._config.name === newName) return;
     this._config = { ...this._config, name: newName };
     this.requestUpdate();
     this._fireConfigChanged();
   }
+  
   _updateIcon(ev) {
     const newIcon = ev.target.value;
+    if (this._config.icon === newIcon) return;
     this._config = { ...this._config, icon: newIcon };
     this.requestUpdate();
     this._fireConfigChanged();
   }
+  
 
   _updateEntity(entityKey, field = 'entity') {
     return (ev) => {
       const value = ev.target.value;
   
-      if (field === 'entity') {
-        // Aggiorna l'entità
-        this._updateEntityConfig(entityKey, ["entity"], value);
+      // Non aggiornare se il valore non cambia
+      if (this._config.entities?.[entityKey]?.[field] === value) return;
   
-        // Calcola l'icona in base alla logica di priorità
+      if (field === 'entity') {
+        this._updateEntityConfig(entityKey, ["entity"], value);
         const iconValue = this._getIconForEntity(value, this._config.entities?.[entityKey]);
         this._updateEntityConfig(entityKey, ["icon"], iconValue);
       } else {
-        // Aggiorna qualsiasi altro campo (es. icon)
         this._updateEntityConfig(entityKey, [field], value);
       }
     };
   }
+  
+  
   
   
   _updateTapActionField(field) {
@@ -739,9 +744,13 @@ class BubbleRoomEditor extends LitElement {
         } catch (e) {
           this._jsonError = true;
           this.requestUpdate();
-          return; // NON aggiorna la config se JSON non valido
+          return;
         }
       }
+  
+      // Non aggiornare se il valore non cambia
+      if (this._config.tap_action?.[field] === newValue) return;
+  
       const tap_action = {
         ...(this._config.tap_action || { action: 'navigate', navigation_path: '' }),
         [field]: newValue
@@ -753,6 +762,7 @@ class BubbleRoomEditor extends LitElement {
     };
   }
   
+  
   _updateHoldActionField(field) {
     return (ev) => {
       let newValue = ev.target.value;
@@ -763,9 +773,13 @@ class BubbleRoomEditor extends LitElement {
         } catch (e) {
           this._jsonError = true;
           this.requestUpdate();
-          return; // NON aggiorna la config se JSON non valido
+          return;
         }
       }
+  
+      // Non aggiornare se il valore non cambia
+      if (this._config.hold_action?.[field] === newValue) return;
+  
       const hold_action = {
         ...(this._config.hold_action || { action: 'more-info', navigation_path: '' }),
         [field]: newValue
@@ -776,7 +790,6 @@ class BubbleRoomEditor extends LitElement {
       this._fireConfigChanged();
     };
   }
-  
   _updateEntityTapAction(entityKey, field) {
     return (ev) => {
       let value = ev.target.value;
@@ -790,11 +803,14 @@ class BubbleRoomEditor extends LitElement {
           return;
         }
       }
+  
+      // Non aggiornare se il valore non cambia
+      if (this._config.entities?.[entityKey]?.tap_action?.[field] === value) return;
+  
       this._updateEntityConfig(entityKey, ["tap_action", field], value);
       this._jsonError = false;
     };
   }
-  
   _updateEntityHoldAction(entityKey, field) {
     return (ev) => {
       let value = ev.target.value;
@@ -808,10 +824,15 @@ class BubbleRoomEditor extends LitElement {
           return;
         }
       }
+  
+      // Non aggiornare se il valore non cambia
+      if (this._config.entities?.[entityKey]?.hold_action?.[field] === value) return;
+  
       this._updateEntityConfig(entityKey, ["hold_action", field], value);
       this._jsonError = false;
     };
   }
+  
   
   _updateEntityConfig(entityKey, pathArray, value) {
     let entityConf = this._config.entities?.[entityKey] || {};
