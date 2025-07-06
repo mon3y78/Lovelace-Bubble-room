@@ -76,64 +76,6 @@ class BubbleRoomEditor extends LitElement {
     return document.createElement('bubble-room-editor');
   }
 
-  static getStubConfig() {
-    return {
-      entities: {
-        presence: { entity: 'binary_sensor.aqara_fp1_presence' },
-        "sub-button1": {
-          entity: 'light.luce_ventola',
-          icon: 'mdi:lightbulb',
-          tap_action: { action: 'toggle' },
-          hold_action: { action: 'more-info' }
-        },
-        "sub-button2": {
-          entity: 'fan.sonoff_1000f6e5c7',
-          icon: 'mdi:fan',
-          tap_action: { action: 'toggle' },
-          hold_action: { action: 'more-info' }
-        },
-        "sub-button3": {
-          entity: 'media_player.google_nest_1',
-          icon: 'mdi:speaker',
-          tap_action: { action: 'toggle' },
-          hold_action: { action: 'more-info' }
-        },
-        "sub-button4": {
-          entity: 'vacuum.slider',
-          icon: 'mdi:robot-vacuum',
-          tap_action: { action: 'toggle' },
-          hold_action: { action: 'more-info' }
-        },
-        climate: { entity: 'climate.termostato_salotto', icon: 'mdi:thermostat', tap_action: { action: 'more-info' } },
-        entities1: { entity: 'sensor.some_sensor1', icon: 'mdi:information-outline' },
-        entities2: { entity: 'sensor.some_sensor2', icon: 'mdi:information-outline' },
-        entities3: { entity: 'sensor.some_sensor3', icon: 'mdi:information-outline' },
-        entities4: { entity: 'sensor.some_sensor4', icon: 'mdi:information-outline' },
-        entities5: { entity: 'sensor.some_sensor5', icon: 'mdi:information-outline' },
-      },
-      colors: {
-        room: {
-          icon_active: 'rgba(255, 255, 0, 1)',
-          icon_inactive: 'rgba(102, 102, 102, 1)',
-          background_active: 'rgba(0, 128, 0, 1)',
-          background_inactive: 'rgba(0, 128, 0, 0.3)',
-          mushroom_active: 'rgba(255, 255, 0, 1)',
-          mushroom_inactive: 'rgba(102, 102, 102, 1)'
-        },
-        subbutton: {
-          background_on: 'rgba(0, 128, 0, 1)',
-          background_off: 'rgba(0, 128, 0, 0.3)',
-          icon_on: 'rgba(255, 255, 0, 1)',
-          icon_off: 'rgba(102, 102, 102, 1)'
-        }
-      },
-      name: 'Salotto2',
-      icon: 'mdi:sofa',
-      tap_action: { action: 'navigate', navigation_path: '/lovelace/sala' },
-      hold_action: { action: 'more-info', navigation_path: '' }
-    };
-  }
-
   constructor() {
     super();
     this._iconList = [
