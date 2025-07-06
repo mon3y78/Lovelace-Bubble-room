@@ -1027,7 +1027,11 @@ class BubbleRoomEditor extends r {
     return x`
       <label>${labelText}:</label>
       ${hasEntityPicker ? x`
-        <ha-entity-picker .hass="${this.hass}" .value="${value}" allow-custom-entity
+        <ha-entity-picker
+          .hass="${this.hass}"
+          .value="${value}"
+          .area="${this._config.area || ''}"
+          allow-custom-entity
           @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
         </ha-entity-picker>
       ` : x`
@@ -1554,6 +1558,18 @@ class BubbleRoomEditor extends r {
               type="text"
               .value="${this._config.name || ''}"
               @input="${this._updateName}" />
+          </div>
+          <div class="input-group">
+            <label>Area:</label>
+            <ha-area-picker
+              .hass="${this.hass}"
+              .value="${this._config.area || ''}"
+              @value-changed="${e => {
+                this._config = { ...this._config, area: e.detail.value };
+                this.requestUpdate();
+                this._fireConfigChanged();
+              }}">
+            </ha-area-picker>
           </div>
           <div class="input-group">
             <label>Room Icon:</label>
