@@ -850,7 +850,6 @@ class BubbleRoomEditor extends LitElement {
   
     const entities = { ...this._config.entities, [entityKey]: entityConf };
     this._config = { ...this._config, entities };
-    this.requestUpdate();
     this._fireConfigChanged();
   }
   _renderRoomPanel() {
