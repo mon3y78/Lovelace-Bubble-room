@@ -357,7 +357,7 @@ class BubbleRoomEditor extends LitElement {
   }
 
   _renderIconInput(labelText, entityKey, field = 'icon') {
-    const value = this._config.entities?.[entityKey]?.[field] ?? '';
+    const value = this._config.entities?.[entityKey]?.[field] || '';
     return html`
       <label>${labelText}:</label>
       <ha-icon-picker
@@ -366,15 +366,22 @@ class BubbleRoomEditor extends LitElement {
         allow-custom-icon
         @value-changed="${e => {
           const newValue = e.detail.value;
-          let entityConf = this._config.entities[entityKey] || {};
-          entityConf = { ...entityConf, [field]: newValue };
-          const entities = { ...this._config.entities, [entityKey]: entityConf };
+          const entityConf = {
+            ...(this._config.entities?.[entityKey] || {}),
+            [field]: newValue
+          };
+          const entities = {
+            ...this._config.entities,
+            [entityKey]: entityConf
+          };
           this._config = { ...this._config, entities };
           this._fireConfigChanged();
         }}">
       </ha-icon-picker>
     `;
   }
+  
+  
   
 
   _renderRoomAction() {
@@ -717,18 +724,16 @@ class BubbleRoomEditor extends LitElement {
     return (ev) => {
       const value = ev.target.value;
   
-      // Non aggiornare se non è cambiato
-      if (this._config.entities?.[entityKey]?.[field] === value) return;
-  
       if (field === 'entity') {
-        // Aggiorna l'entità
         this._updateEntityConfig(entityKey, ["entity"], value);
   
-        // Calcola l'icona una volta sola e salva
-        const iconValue = this._getIconForEntity(value, {});
+        // Calcola e salva icona solo se entityId è valido
+        let iconValue = 'mdi:bookmark-outline';
+        if (value && typeof value === 'string') {
+          iconValue = this._getIconForEntity(value, {});
+        }
         this._updateEntityConfig(entityKey, ["icon"], iconValue);
       } else {
-        // Aggiorna qualsiasi altro campo
         this._updateEntityConfig(entityKey, [field], value);
       }
     };
