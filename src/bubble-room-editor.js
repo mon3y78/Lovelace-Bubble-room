@@ -357,26 +357,25 @@ class BubbleRoomEditor extends LitElement {
   }
 
   _renderIconInput(labelText, entityKey, field = 'icon') {
-    let value = this._config.entities?.[entityKey]?.[field] ?? '';
-    if (!value && this.hass && this._config.entities?.[entityKey]?.entity) {
-      const entityId = this._config.entities[entityKey].entity;
-      value = this.hass.states[entityId]?.attributes?.icon || this._getDefaultIconForEntity(entityId);
-    }
+    const value = this._config.entities?.[entityKey]?.[field] ?? '';
     return html`
       <label>${labelText}:</label>
-      <ha-icon-picker .hass="${this.hass}" .value="${value}" allow-custom-icon
+      <ha-icon-picker
+        .hass="${this.hass}"
+        .value="${value}"
+        allow-custom-icon
         @value-changed="${e => {
           const newValue = e.detail.value;
           let entityConf = this._config.entities[entityKey] || {};
           entityConf = { ...entityConf, [field]: newValue };
           const entities = { ...this._config.entities, [entityKey]: entityConf };
           this._config = { ...this._config, entities };
-          this.requestUpdate();
           this._fireConfigChanged();
         }}">
       </ha-icon-picker>
     `;
   }
+  
 
   _renderRoomAction() {
     const tapAction = this._config.tap_action || { action: 'navigate', navigation_path: '' };
@@ -718,18 +717,23 @@ class BubbleRoomEditor extends LitElement {
     return (ev) => {
       const value = ev.target.value;
   
-      // Non aggiornare se il valore non cambia
+      // Non aggiornare se non è cambiato
       if (this._config.entities?.[entityKey]?.[field] === value) return;
   
       if (field === 'entity') {
+        // Aggiorna l'entità
         this._updateEntityConfig(entityKey, ["entity"], value);
-        const iconValue = this._getIconForEntity(value, this._config.entities?.[entityKey]);
+  
+        // Calcola l'icona una volta sola e salva
+        const iconValue = this._getIconForEntity(value, {});
         this._updateEntityConfig(entityKey, ["icon"], iconValue);
       } else {
+        // Aggiorna qualsiasi altro campo
         this._updateEntityConfig(entityKey, [field], value);
       }
     };
   }
+  
   
   
   
