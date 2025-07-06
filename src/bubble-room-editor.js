@@ -509,10 +509,11 @@ class BubbleRoomEditor extends LitElement {
     const key = `sensor${index + 1}`;
     const current = this._config.entities?.[key] || {};
     const updated = { ...current, [field]: value };
-    if (field === 'type') updated.unit = (SENSOR_TYPE_MAP[value]?.units || [])[0] || '';
+    if (field === 'type') {
+      updated.unit = (SENSOR_TYPE_MAP[value]?.units || [])[0] || '';
+    }
     const entities = { ...this._config.entities, [key]: updated };
     this._config = { ...this._config, entities };
-    this.requestUpdate();
     this._fireConfigChanged();
   }
 
