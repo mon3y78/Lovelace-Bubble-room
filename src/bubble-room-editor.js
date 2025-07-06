@@ -342,22 +342,16 @@ class BubbleRoomEditor extends LitElement {
   }
 
   _renderEntityInput(labelText, entityKey, field = 'entity') {
-    const value = (this._config.entities && this._config.entities[entityKey] && this._config.entities[entityKey][field]) || '';
-    const hasEntityPicker = customElements.get("ha-entity-picker");
+    const value = (this._config.entities?.[entityKey]?.[field]) || '';
     return html`
       <label>${labelText}:</label>
-      ${hasEntityPicker ? html`
-        <ha-entity-picker
-          .hass="${this._hass}"
-          .value="${value}"
-          .area="${this._config.area || ''}"
-          allow-custom-entity
-          @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
-        </ha-entity-picker>
-      ` : html`
-        <input type="text" .value="${value}" list="entity-list" placeholder="Inserisci entity_id"
-          @input="${this._updateEntity(entityKey, field)}" />
-      `}
+      <ha-entity-picker
+        .hass="${this._hass}"
+        .value="${value}"
+        .area="${this._config.area || ''}"
+        allow-custom-entity
+        @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
+      </ha-entity-picker>
     `;
   }
 
