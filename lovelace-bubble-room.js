@@ -1292,59 +1292,67 @@ class BubbleRoomEditor extends r {
     const domain = entityId.split('.')[0];
     return DOMAIN_ICON_MAP[domain] || 'mdi:bookmark-outline';
   }
-  _getIconForEntity(entityId, entityConfig) {
+  getIconForEntity(entityId, entityConfig) {
     // 1. Se l'icona è stata impostata manualmente nella configurazione
     if (entityConfig?.icon) {
       return entityConfig.icon;
     }
-  
+    
     // 2. Se c'è un'icona di default per il dominio
     const domain = entityId.split('.')[0];
     const defaultDomainIcon = DOMAIN_ICON_MAP[domain];
     if (defaultDomainIcon) {
       return defaultDomainIcon;
     }
-  
+    
     // 3. Se l'entità ha un attributo icon
     const stateObj = this._hass?.states?.[entityId];
     if (stateObj?.attributes?.icon) {
       return stateObj.attributes.icon;
     }
-  
+    
     // 4. Se ha un device_class
     const deviceClass = stateObj?.attributes?.device_class;
     if (deviceClass) {
       return this._getDeviceClassIcon(deviceClass, stateObj.state) || 'mdi:bookmark-outline';
     }
-  
+    
     // 5. Fallback generico
     return 'mdi:bookmark-outline';
   }
+
   _getEntitiesForArea(areaId) {
-    if (!areaId || !this._hass) return Object.keys(this._hass.states || {});
+    if (!areaId || !this._hass) {
+      console.log(`[Bubble Room] Fallback: areaId assente, ritorno TUTTE le entità`);
+      return Object.keys(this._hass.states || {});
+    }
+  
     const hass = this._hass;
+    const allEntities = Object.keys(hass.states || {});
   
-    // Ottieni tutte le entità
-    const entityIds = Object.keys(hass.states || {});
-  
-    // Crea una mappa device_id → area_id se hai hass.devices
     let deviceAreaMap = {};
     if (hass.devices) {
       Object.values(hass.devices).forEach(device => {
-        deviceAreaMap[device.id] = device.area_id;
+        if (device.id && device.area_id) {
+          deviceAreaMap[device.id] = device.area_id;
+        }
       });
     }
   
-    // Filtra solo quelle che hanno area_id uguale a quello selezionato
-    return entityIds.filter(entityId => {
+    const filtered = allEntities.filter(entityId => {
       const entity = hass.states[entityId];
-      // 1. Attributo diretto area_id
-      if (entity.attributes && entity.attributes.area_id === areaId) return true;
-      // 2. Da device_id → area_id
-      if (entity.attributes && entity.attributes.device_id && deviceAreaMap[entity.attributes.device_id] === areaId) return true;
-      return false;
+      const entityArea = entity.attributes.area_id;
+      const deviceId = entity.attributes.device_id;
+      const deviceArea = deviceId ? deviceAreaMap[deviceId] : null;
+      return (entityArea === areaId) || (deviceArea === areaId);
     });
+  
+    console.log(`[Bubble Room] Entities filtrate per area "${areaId}":`, filtered);
+  
+    return filtered;
   }
+
+
 
   _updateNestedColorDirect(section, key, value) {
     const colors = { ...this._config.colors };
