@@ -1,5 +1,4 @@
 import { LitElement, css, html } from 'https://unpkg.com/lit@2.6.1/index.js?module';
-import '@ha/components/ha-entity-picker';
 
 // --- MAPPE DI MAPPING CENTRALIZZATE ---
 const DEVICE_CLASS_ICON_MAP = {
@@ -767,7 +766,16 @@ class BubbleRoomEditor extends r {
       "mdi:toilet", "mdi:fridge", "mdi:oven", "mdi:coffee-maker", "mdi:washing-machine",
       "mdi:vacuum", "mdi:garage", "mdi:garage-open", "mdi:cctv"
     ];
+    if (!customElements.get("ha-entity-picker")) {
+      // helpers lo inietta correttamente
+      import('custom-card-helpers').then(module => {
+        if (module && module.loadHaComponents) {
+          module.loadHaComponents();
+        }
+      }).catch(() => {});
+    }
   }
+
 
   set hass(hass) {
     this._hass = hass;
