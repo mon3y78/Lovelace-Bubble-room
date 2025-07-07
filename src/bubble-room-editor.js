@@ -1076,18 +1076,33 @@ class BubbleRoomEditor extends LitElement {
     this.requestUpdate();
     this._fireConfigChanged();
   }
-  _renderMushroomEntityPanel(key, label) {
-    const panelId = `${key}Panel`;
+  _renderMushroomEntitiesPanel() {
     return html`
-      <ha-expansion-panel id="${panelId}">
-        <div slot="header" @click="${() => this._togglePanel(panelId)}">${label}</div>
+      <ha-expansion-panel id="mushroomEntitiesPanel">
+        <div slot="header" @click="${() => this._togglePanel('mushroomEntitiesPanel')}">Mushroom Entities</div>
         <div class="section-content">
-          ${this._renderEntityInput(`${label} (ID)`, key, "entity", "mushroom")}
-          ${this._renderIconInput(`${label} Icon`, key)}
+          <div class="input-group">
+            <label>
+              <input
+                type="checkbox"
+                .checked="${this._config.auto_discovery_sections?.mushroom ?? false}"
+                @change="${e => this._toggleAutoDiscoverySection('mushroom', e.target.checked)}" />
+              Auto-scoperta attiva
+            </label>
+          </div>
+          ${this._renderMushroomEntityPanel("entities1", "Entity 1")}
+          ${this._renderMushroomEntityPanel("entities2", "Entity 2")}
+          ${this._renderMushroomEntityPanel("entities3", "Entity 3")}
+          ${this._renderMushroomEntityPanel("entities4", "Entity 4")}
+          ${this._renderMushroomEntityPanel("entities5", "Entity 5")}
+          <div style="margin-top:1em;">
+            <button @click="${this._resetMushroomEntitiesConfig}">🔄 Reset Mushroom Entities</button>
+          </div>
         </div>
       </ha-expansion-panel>
     `;
   }
+
 
 
   _resetMushroomEntitiesConfig() {
