@@ -811,6 +811,54 @@ class BubbleRoomEditor extends r {
     }
   }
 
+  _getFilteredEntities(sectionName) {
+    const allEntityIds = this._hass ? Object.keys(this._hass.states) : [];
+    const areaId = this._config.area;
+    const autoDiscovery = this._config.auto_discovery_sections?.[sectionName];
+  
+    let baseEntities = allEntityIds;
+  
+    // Se è selezionata l'area e l'auto-scoperta è attiva
+    if (areaId && autoDiscovery && this._areaEntities?.[areaId]) {
+      baseEntities = this._areaEntities[areaId];
+    }
+  
+    // Filtra in base alla sezione
+    return baseEntities.filter(eid => this._filterEntityForSection(eid, sectionName));
+  }
+
+  _filterEntityForSection(entityId, sectionName) {
+    const domain = entityId.split(".")[0];
+    const stateObj = this._hass?.states?.[entityId];
+  
+    switch (sectionName) {
+      case "room_presence":
+        if (domain === "binary_sensor") {
+          const dc = stateObj?.attributes?.device_class;
+          return ["motion", "occupancy", "presence"].includes(dc);
+        }
+        return ["light", "switch", "media_player", "fan", "humidifier", "lock", "input_boolean", "scene"].includes(domain);
+  
+      case "subbutton":
+        return ["light", "switch", "media_player", "fan", "cover", "humidifier", "lock", "input_boolean", "scene"].includes(domain);
+  
+      case "mushroom":
+        return domain !== "sensor";
+  
+      case "climate":
+        return domain === "climate";
+  
+      case "camera":
+        return domain === "camera";
+  
+      case "sensor":
+        return domain === "sensor";
+  
+      default:
+        return true;
+    }
+  }
+
 
   setConfig(config) {
     if (!config.auto_discovery_sections) {
@@ -1036,40 +1084,16 @@ class BubbleRoomEditor extends r {
   
     const hasEntityPicker = customElements.get("ha-entity-picker");
   
-    let includeEntities = Object.keys(this._hass?.states || {});
-    let autoDiscoveryAttiva = false;
-    let filteredEntitiesFromArea = [];
-  
-    if (sectionName && this._config.auto_discovery_sections?.[sectionName]) {
-      autoDiscoveryAttiva = true;
-      if (this._config.area) {
-        filteredEntitiesFromArea = this._getEntitiesForArea(this._config.area);
-        includeEntities = filteredEntitiesFromArea;
-      }
-    }
-  
-    console.log(`🟢 Entity Input Debug - ${labelText}`, {
-      EntityKey: entityKey,
-      Field: field,
-      Section: sectionName,
-      "Auto-discovery sections": this._config.auto_discovery_sections,
-      "Auto-discovery attiva?": autoDiscoveryAttiva,
-      "Area selezionata": this._config.area,
-      "Entità filtrate da area": filteredEntitiesFromArea,
-      "Entità incluse finali": includeEntities
-    });
-  
     return x`
       <label>${labelText}:</label>
       ${hasEntityPicker ? x`
         <ha-entity-picker
           .hass="${this._hass}"
           .value="${value}"
-          .includeEntities="${includeEntities}"
+          .includeEntities="${sectionName ? this._getFilteredEntities(sectionName) : Object.keys(this._hass?.states || {})}"
           allow-custom-entity
           @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
         </ha-entity-picker>
-
       ` : x`
         <input
           type="text"
@@ -1079,12 +1103,6 @@ class BubbleRoomEditor extends r {
       `}
     `;
   }
-
-
-
-
-
-
 
   _renderIconInput(labelText, entityKey, field = 'icon') {
     const value = this._config.entities?.[entityKey]?.[field] || '';
@@ -1670,7 +1688,7 @@ class BubbleRoomEditor extends r {
             </label>
           </div>
           <div class="input-group">
-            ${this._renderEntityInput("Presence (ID)", "presence", 'entity', 'room_presence')}
+            ${this._renderEntityInput("Presence (ID)", "presence", "entity", "room_presence")}
           </div>
           <div style="margin-top:1em;">
             <button @click="${this._resetRoomConfig}">🔄 Reset Room Settings</button>
@@ -1697,31 +1715,34 @@ class BubbleRoomEditor extends r {
     this._fireConfigChanged();
   }
   
-  _renderSubButtonPanelGroup() {
+  _renderSubButtonPanel(key) {
+    this._config.entities?.[key] || {
+      entity: "",
+      icon: "",
+      tap_action: { action: "toggle", navigation_path: "" },
+      hold_action: { action: "more-info", navigation_path: "" }
+    };
+    let label;
+    switch(key) {
+      case "sub-button1": label = "Sub-button1"; break;
+      case "sub-button2": label = "Sub-button2"; break;
+      case "sub-button3": label = "Sub-button3"; break;
+      case "sub-button4": label = "Sub-button4"; break;
+      default: label = key;
+    }
+    const panelId = `${key}Panel`;
     return x`
-      <ha-expansion-panel id="subButtonMainPanel">
-        <div slot="header" @click="${() => this._togglePanel('subButtonMainPanel')}">SUB-BUTTON</div>
+      <ha-expansion-panel id="${panelId}">
+        <div slot="header" @click="${() => this._togglePanel(panelId)}">${label}</div>
         <div class="section-content">
-          <div class="input-group">
-            <label>
-              <input
-                type="checkbox"
-                .checked="${this._config.auto_discovery_sections?.subbutton ?? false}"
-                @change="${e => this._toggleAutoDiscoverySection('subbutton', e.target.checked)}" />
-              Auto-scoperta attiva
-            </label>
-          </div>
-          ${this._renderSubButtonPanel("sub-button1")}
-          ${this._renderSubButtonPanel("sub-button2")}
-          ${this._renderSubButtonPanel("sub-button3")}
-          ${this._renderSubButtonPanel("sub-button4")}
-          <div style="margin-top:1em;">
-            <button @click="${this._resetSubButtonConfig}">🔄 Reset Sub-buttons</button>
-          </div>
+          ${this._renderEntityInput("Entities (ID)", key, "entity", "subbutton")}
+          ${this._renderIconInput("Icon", key)}
+          ${this._renderSubButtonAction(key)}
         </div>
       </ha-expansion-panel>
     `;
   }
+
 
   _resetSubButtonConfig() {
     const entities = { ...this._config.entities };
@@ -1732,32 +1753,19 @@ class BubbleRoomEditor extends r {
     this.requestUpdate();
     this._fireConfigChanged();
   }
-  _renderMushroomEntitiesPanel() {
+  _renderMushroomEntityPanel(key, label) {
+    const panelId = `${key}Panel`;
     return x`
-      <ha-expansion-panel id="mushroomEntitiesPanel">
-        <div slot="header" @click="${() => this._togglePanel('mushroomEntitiesPanel')}">Mushroom Entities</div>
+      <ha-expansion-panel id="${panelId}">
+        <div slot="header" @click="${() => this._togglePanel(panelId)}">${label}</div>
         <div class="section-content">
-          <div class="input-group">
-            <label>
-              <input
-                type="checkbox"
-                .checked="${this._config.auto_discovery_sections?.mushroom ?? false}"
-                @change="${e => this._toggleAutoDiscoverySection('mushroom', e.target.checked)}" />
-              Auto-scoperta attiva
-            </label>
-          </div>
-          ${this._renderMushroomEntityPanel("entities1", "Entity 1")}
-          ${this._renderMushroomEntityPanel("entities2", "Entity 2")}
-          ${this._renderMushroomEntityPanel("entities3", "Entity 3")}
-          ${this._renderMushroomEntityPanel("entities4", "Entity 4")}
-          ${this._renderMushroomEntityPanel("entities5", "Entity 5")}
-          <div style="margin-top:1em;">
-            <button @click="${this._resetMushroomEntitiesConfig}">🔄 Reset Mushroom Entities</button>
-          </div>
+          ${this._renderEntityInput(`${label} (ID)`, key, "entity", "mushroom")}
+          ${this._renderIconInput(`${label} Icon`, key)}
         </div>
       </ha-expansion-panel>
     `;
   }
+
 
   _resetMushroomEntitiesConfig() {
     const entities = { ...this._config.entities };
@@ -1838,30 +1846,52 @@ class BubbleRoomEditor extends r {
     this.requestUpdate();
     this._fireConfigChanged();
   }
-  _renderSensorPanel() {
+  _renderSingleSensorPanel(key, label) {
+    const sensor = this._config.entities?.[key] || {};
+    const panelId = `${key}Panel`;
     return x`
-      <ha-expansion-panel id="sensorPanel">
-        <div slot="header" @click="${() => this._togglePanel('sensorPanel')}">Sensor</div>
+      <ha-expansion-panel id="${panelId}">
+        <div slot="header" @click="${() => this._togglePanel(panelId)}">${label}</div>
         <div class="section-content">
           <div class="input-group">
-            <label>
-              <input
-                type="checkbox"
-                .checked="${this._config.auto_discovery_sections?.sensor ?? false}"
-                @change="${e => this._toggleAutoDiscoverySection('sensor', e.target.checked)}" />
-              Auto-scoperta attiva
-            </label>
+            <label>Tipo Sensore:</label>
+            <select
+              .value="${sensor.type || ''}"
+              @change="${e => this._updateSensor(parseInt(key.replace('sensor', '')) - 1, 'type', e.target.value)}">
+              <option value="">-- nessuno --</option>
+              ${[
+                { type: 'temperature', label: '🌡️ Temperatura' },
+                { type: 'humidity', label: '💦 Umidità' },
+                { type: 'co2', label: '🟢 CO₂' },
+                { type: 'illuminance', label: '☀️ Luminosità' },
+                { type: 'pm1', label: '🟤 PM1' },
+                { type: 'pm25', label: '⚫️ PM2.5' },
+                { type: 'pm10', label: '⚪️ PM10' },
+                { type: 'uv', label: '🌞 UV Index' },
+                { type: 'noise', label: '🔊 Rumore' },
+                { type: 'pressure', label: '📈 Pressione' },
+                { type: 'voc', label: '🧪 VOC' },
+              ].map(t => x`<option value="${t.type}">${t.label}</option>`)}
+            </select>
           </div>
-          ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) =>
-            this._renderSingleSensorPanel(key, `Sensor ${i + 1}`)
-          )}
-          <div style="margin-top:1em;">
-            <button @click="${this._resetSensorConfig}">🔄 Reset Sensors</button>
+          <div class="input-group">
+            ${this._renderEntityInput("Entity ID", key, "entity", "sensor")}
           </div>
+          ${sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? x`
+            <div class="input-group">
+              <label>Unità:</label>
+              <select
+                .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
+                @change="${e => this._updateSensor(parseInt(key.replace('sensor', '')) - 1, 'unit', e.target.value)}">
+                ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u => x`<option value="${u}">${u}</option>`)}
+              </select>
+            </div>
+          ` : ''}
         </div>
       </ha-expansion-panel>
     `;
   }
+
 
   _resetSensorConfig() {
     const entities = { ...this._config.entities };
