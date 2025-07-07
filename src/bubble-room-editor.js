@@ -131,6 +131,54 @@ class BubbleRoomEditor extends LitElement {
     }
   }
 
+  _getFilteredEntities(sectionName) {
+    const allEntityIds = this._hass ? Object.keys(this._hass.states) : [];
+    const areaId = this._config.area;
+    const autoDiscovery = this._config.auto_discovery_sections?.[sectionName];
+  
+    let baseEntities = allEntityIds;
+  
+    // Se è selezionata l'area e l'auto-scoperta è attiva
+    if (areaId && autoDiscovery && this._areaEntities?.[areaId]) {
+      baseEntities = this._areaEntities[areaId];
+    }
+  
+    // Filtra in base alla sezione
+    return baseEntities.filter(eid => this._filterEntityForSection(eid, sectionName));
+  }
+
+  _filterEntityForSection(entityId, sectionName) {
+    const domain = entityId.split(".")[0];
+    const stateObj = this._hass?.states?.[entityId];
+  
+    switch (sectionName) {
+      case "room_presence":
+        if (domain === "binary_sensor") {
+          const dc = stateObj?.attributes?.device_class;
+          return ["motion", "occupancy", "presence"].includes(dc);
+        }
+        return ["light", "switch", "media_player", "fan", "humidifier", "lock", "input_boolean", "scene"].includes(domain);
+  
+      case "subbutton":
+        return ["light", "switch", "media_player", "fan", "cover", "humidifier", "lock", "input_boolean", "scene"].includes(domain);
+  
+      case "mushroom":
+        return domain !== "sensor";
+  
+      case "climate":
+        return domain === "climate";
+  
+      case "camera":
+        return domain === "camera";
+  
+      case "sensor":
+        return domain === "sensor";
+  
+      default:
+        return true;
+    }
+  }
+
 
   setConfig(config) {
     if (!config.auto_discovery_sections) {
