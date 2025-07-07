@@ -991,7 +991,7 @@ class BubbleRoomEditor extends r {
         <ha-entity-picker
           .hass="${this._hass}"
           .value="${value}"
-          .includeEntities="${this._config.area ? this._getEntitiesForArea(this._config.area) : undefined}"
+          .includeEntities="${this._config.area ? this._getEntitiesForArea(this._config.area) : Object.keys(this._hass?.states || {})}"
           allow-custom-entity
           .key="${this._config.area || 'none'}"
           @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
@@ -1558,13 +1558,12 @@ class BubbleRoomEditor extends r {
               .hass="${this._hass}"
               .value="${this._config.area || ''}"
               @value-changed="${e => {
-                // 1️⃣ Logghiamo cosa arriva come area_id
-                console.log('Area scelta:', e.detail.value);
                 this._config = { ...this._config, area: e.detail.value };
                 this.requestUpdate();
                 this._fireConfigChanged();
               }}">
             </ha-area-picker>
+
           </div>
           <div class="input-group">
             <label>Room Icon:</label>
