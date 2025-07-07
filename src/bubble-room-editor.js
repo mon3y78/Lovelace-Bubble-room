@@ -641,19 +641,36 @@ class BubbleRoomEditor extends LitElement {
     return 'mdi:bookmark-outline';
   }
   _getEntitiesForArea(areaId) {
-    if (!areaId || !this._hass) return Object.keys(this._hass.states || {});
+    if (!areaId || !this._hass) {
+      console.log(`[Bubble Room] Fallback: areaId assente, ritorno TUTTE le entità`);
+      return Object.keys(this._hass.states || {});
+    }
+  
     const hass = this._hass;
-  
-    // Ottieni tutte le entità
-    const entityIds = Object.keys(hass.states || {});
-  
-    // Crea una mappa device_id → area_id se hai hass.devices
+    const allEntities = Object.values(hass.states || {});
     let deviceAreaMap = {};
+  
+    // Costruiamo mappa device_id => area_id
     if (hass.devices) {
       Object.values(hass.devices).forEach(device => {
-        deviceAreaMap[device.id] = device.area_id;
+        if (device.id && device.area_id) {
+          deviceAreaMap[device.id] = device.area_id;
+        }
       });
     }
+  
+    const filtered = allEntities.filter(e => {
+      const entityArea = e.attributes.area_id;
+      const deviceId = e.attributes.device_id;
+      const deviceArea = deviceId ? deviceAreaMap[deviceId] : null;
+      return (entityArea === areaId) || (deviceArea === areaId);
+    });
+  
+    console.log(`[Bubble Room] Entities filtrate per area "${areaId}":`, filtered.map(e => e.entity_id));
+  
+    return filtered.map(e => e.entity_id);
+  }
+
   
     // Filtra solo quelle che hanno area_id uguale a quello selezionato
     return entityIds.filter(entityId => {
