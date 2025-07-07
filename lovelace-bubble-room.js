@@ -944,8 +944,6 @@ class BubbleRoomEditor extends r {
     return i$3`
       :host {
         display: block;
-        margin: 0;
-        padding: 0;
         font-family: "Segoe UI", Roboto, sans-serif;
       }
   
@@ -955,97 +953,147 @@ class BubbleRoomEditor extends r {
       }
   
       .editor-header h3 {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
         font-weight: bold;
-        color: #42a5f5;
+        color: #4dabf7;
       }
   
       .version {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         font-weight: normal;
         margin-left: 8px;
         color: var(--secondary-text-color);
       }
   
-      ha-expansion-panel div[slot="header"] {
-        background: linear-gradient(to right, #1e1e2f, #2d2d44);
+      ha-expansion-panel::part(header) {
+        background: linear-gradient(90deg, #1e1e2f, #2e2e44);
         color: #ffffff;
-        font-size: 1.1em;
+        font-size: 1.1rem;
         font-weight: 600;
-        padding: 14px;
-        border-radius: 6px;
-        margin-bottom: 6px;
-        cursor: pointer;
-        transition: background 0.3s;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        transition: background 0.3s ease;
       }
   
-      ha-expansion-panel div[slot="header"]:hover {
-        background: linear-gradient(to right, #2e2e4d, #3d3d66);
+      ha-expansion-panel::part(header):hover {
+        background: linear-gradient(90deg, #2e2e4f, #3d3d66);
       }
   
       .section-content {
         padding: 20px;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.02);
+        border: none;
         border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        margin-bottom: 20px;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
       }
   
       .section-content h4 {
-        margin: 1.5em 0 0.5em 0;
-        font-size: 1.1em;
-        font-weight: bold;
-        color: #90caf9;
+        margin: 1.2em 0 0.5em;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #4dabf7;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 0.3em;
       }
   
       .input-group {
-        margin-bottom: 20px;
+        margin-bottom: 16px;
       }
   
       label {
         display: inline-block;
         margin-bottom: 4px;
         font-weight: 600;
-        color: #ccc;
+        font-size: 0.95rem;
+        color: #ddd;
       }
   
-      input, textarea, select {
+      input,
+      textarea,
+      select {
         width: 100%;
         box-sizing: border-box;
-        border: 1px solid var(--divider-color, #666);
+        border: 1px solid var(--divider-color, #444);
         border-radius: 6px;
         padding: 8px;
-        background-color: #1f1f1f;
-        color: white;
+        background-color: #202020;
+        color: #f1f1f1;
+        font-size: 0.95rem;
       }
   
       select {
-        background-color: #2a2a2a;
+        background-color: #262626;
       }
   
       textarea {
-        min-height: 60px;
+        min-height: 70px;
       }
   
       input[type="color"] {
         padding: 0;
         border: none;
-        background: none;
+        background: transparent;
+      }
+  
+      input[type="range"] {
+        width: 100px;
       }
   
       .note {
-        margin-top: 1rem;
-        font-size: 0.9rem;
-        color: var(--secondary-text-color);
+        margin-top: 2rem;
+        font-size: 0.85rem;
         text-align: center;
+        color: var(--secondary-text-color);
       }
   
       .error {
         border: 1px solid red;
       }
+      
+      .pill-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 8px 0;
+      }
+      
+      .pill-button {
+        padding: 6px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background-color: #1e1e2f;
+        color: #ccc;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      
+      .pill-button:hover {
+        background-color: #2a2a3f;
+        border-color: #4dabf7;
+        color: #fff;
+      }
+      
+      .pill-button.active {
+        background-color: #4dabf7;
+        color: #000;
+        font-weight: 600;
+        border-color: #4dabf7;
+      }
+
+      
+      /* Colore personalizzato dei titoli sezione */
+      ha-expansion-panel#roomPanel::part(header)      { background: linear-gradient(to right, #263238, #37474f); }
+      ha-expansion-panel#subButtonMainPanel::part(header)  { background: linear-gradient(to right, #4527a0, #5e35b1); }
+      ha-expansion-panel#mushroomEntitiesPanel::part(header) { background: linear-gradient(to right, #00695c, #00796b); }
+      ha-expansion-panel#cameraPanel::part(header)    { background: linear-gradient(to right, #1565c0, #1e88e5); }
+      ha-expansion-panel#climatePanel::part(header)   { background: linear-gradient(to right, #ef6c00, #f57c00); }
+      ha-expansion-panel#sensorPanel::part(header)    { background: linear-gradient(to right, #ad1457, #d81b60); }
+      ha-expansion-panel#colorsPanel::part(header)    { background: linear-gradient(to right, #37474f, #263238); }
     `;
   }
+
 
 
   _togglePanel(panelId) {
@@ -1183,65 +1231,67 @@ class BubbleRoomEditor extends r {
   _renderRoomAction() {
     const tapAction = this._config.tap_action || { action: 'navigate', navigation_path: '' };
     const holdAction = this._config.hold_action || { action: 'more-info', navigation_path: '' };
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+  
     return x`
       <div class="input-group">
         <label>Tap:</label>
-        <select @change="${this._updateTapActionField('action')}" .value="${tapAction.action}">
-          <option value="toggle">Toggle</option>
-          <option value="more-info">More Info</option>
-          <option value="navigate">Navigate</option>
-          <option value="call-service">Call Service</option>
-          <option value="none">None</option>
-        </select>
-        ${tapAction.action === 'navigate'
-          ? x`
-              <label>Navigation Path:</label>
-              <input type="text" .value="${tapAction.navigation_path || ''}" @input="${this._updateTapActionField('navigation_path')}" />
-            `
-          : ''}
-        ${tapAction.action === 'call-service'
-          ? x`
-              <label>Service:</label>
-              <input type="text" .value="${tapAction.service || ''}" @input="${this._updateTapActionField('service')}" />
-              <label>Service Data (JSON):</label>
-              <textarea
-                class="${this._jsonError ? 'error' : ''}"
-                .value="${tapAction.service_data ? JSON.stringify(tapAction.service_data) : ''}"
-                @input="${this._updateTapActionField('service_data')}"></textarea>
-              ${this._jsonError ? x`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
-            `
-          : ''}
+        <div class="pill-group">
+          ${actions.map(action => x`
+            <button
+              class="pill-button ${tapAction.action === action ? 'active' : ''}"
+              @click="${() => this._updateTapActionField('action')({ target: { value: action } })}"
+            >${action}</button>
+          `)}
+        </div>
+        ${tapAction.action === 'navigate' ? x`
+          <label>Navigation Path:</label>
+          <input type="text" .value="${tapAction.navigation_path || ''}"
+            @input="${this._updateTapActionField('navigation_path')}" />
+        ` : ''}
+        ${tapAction.action === 'call-service' ? x`
+          <label>Service:</label>
+          <input type="text" .value="${tapAction.service || ''}"
+            @input="${this._updateTapActionField('service')}" />
+          <label>Service Data (JSON):</label>
+          <textarea
+            class="${this._jsonError ? 'error' : ''}"
+            .value="${tapAction.service_data ? JSON.stringify(tapAction.service_data) : ''}"
+            @input="${this._updateTapActionField('service_data')}"></textarea>
+          ${this._jsonError ? x`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
+        ` : ''}
       </div>
+  
       <div class="input-group">
         <label>Hold:</label>
-        <select @change="${this._updateHoldActionField('action')}" .value="${holdAction.action}">
-          <option value="more-info">More Info</option>
-          <option value="toggle">Toggle</option>
-          <option value="call-service">Call Service</option>
-          <option value="navigate">Navigate</option>
-          <option value="none">None</option>
-        </select>
-        ${holdAction.action === 'navigate'
-          ? x`
-              <label>Navigation Path:</label>
-              <input type="text" .value="${holdAction.navigation_path || ''}" @input="${this._updateHoldActionField('navigation_path')}" />
-            `
-          : ''}
-        ${holdAction.action === 'call-service'
-          ? x`
-              <label>Service:</label>
-              <input type="text" .value="${holdAction.service || ''}" @input="${this._updateHoldActionField('service')}" />
-              <label>Service Data (JSON):</label>
-              <textarea
-                class="${this._jsonError ? 'error' : ''}"
-                .value="${holdAction.service_data ? JSON.stringify(holdAction.service_data) : ''}"
-                @input="${this._updateHoldActionField('service_data')}"></textarea>
-              ${this._jsonError ? x`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
-            `
-          : ''}
+        <div class="pill-group">
+          ${actions.map(action => x`
+            <button
+              class="pill-button ${holdAction.action === action ? 'active' : ''}"
+              @click="${() => this._updateHoldActionField('action')({ target: { value: action } })}"
+            >${action}</button>
+          `)}
+        </div>
+        ${holdAction.action === 'navigate' ? x`
+          <label>Navigation Path:</label>
+          <input type="text" .value="${holdAction.navigation_path || ''}"
+            @input="${this._updateHoldActionField('navigation_path')}" />
+        ` : ''}
+        ${holdAction.action === 'call-service' ? x`
+          <label>Service:</label>
+          <input type="text" .value="${holdAction.service || ''}"
+            @input="${this._updateHoldActionField('service')}" />
+          <label>Service Data (JSON):</label>
+          <textarea
+            class="${this._jsonError ? 'error' : ''}"
+            .value="${holdAction.service_data ? JSON.stringify(holdAction.service_data) : ''}"
+            @input="${this._updateHoldActionField('service_data')}"></textarea>
+          ${this._jsonError ? x`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
+        ` : ''}
       </div>
     `;
   }
+
   
 
   _renderMushroomEntityPanel(key, label) {
@@ -1360,6 +1410,65 @@ class BubbleRoomEditor extends r {
     return ctx.fillStyle;
   }
 
+  _renderSubButtonAction(key) {
+    const tapAction = this._config.entities[key]?.tap_action || { action: 'toggle', navigation_path: '' };
+    const holdAction = this._config.entities[key]?.hold_action || { action: 'more-info', navigation_path: '' };
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+  
+    return x`
+      <div class="input-group">
+        <label>Tap:</label>
+        <div class="pill-group">
+          ${actions.map(action => x`
+            <button
+              class="pill-button ${tapAction.action === action ? 'active' : ''}"
+              @click="${() => this._updateEntityTapAction(key, 'action')({ target: { value: action } })}"
+            >${action}</button>
+          `)}
+        </div>
+        ${tapAction.action === 'navigate' ? x`
+          <label>Navigation Path:</label>
+          <input type="text" .value="${tapAction.navigation_path || ''}"
+            @input="${this._updateEntityTapAction(key, 'navigation_path')}" />
+        ` : ''}
+        ${tapAction.action === 'call-service' ? x`
+          <label>Service:</label>
+          <input type="text" .value="${tapAction.service || ''}"
+            @input="${this._updateEntityTapAction(key, 'service')}" />
+          <label>Service Data (JSON):</label>
+          <textarea
+            .value="${tapAction.service_data ? JSON.stringify(tapAction.service_data) : ''}"
+            @input="${this._updateEntityTapAction(key, 'service_data')}"></textarea>
+        ` : ''}
+      </div>
+  
+      <div class="input-group">
+        <label>Hold:</label>
+        <div class="pill-group">
+          ${actions.map(action => x`
+            <button
+              class="pill-button ${holdAction.action === action ? 'active' : ''}"
+              @click="${() => this._updateEntityHoldAction(key, 'action')({ target: { value: action } })}"
+            >${action}</button>
+          `)}
+        </div>
+        ${holdAction.action === 'navigate' ? x`
+          <label>Navigation Path:</label>
+          <input type="text" .value="${holdAction.navigation_path || ''}"
+            @input="${this._updateEntityHoldAction(key, 'navigation_path')}" />
+        ` : ''}
+        ${holdAction.action === 'call-service' ? x`
+          <label>Service:</label>
+          <input type="text" .value="${holdAction.service || ''}"
+            @input="${this._updateEntityHoldAction(key, 'service')}" />
+          <label>Service Data (JSON):</label>
+          <textarea
+            .value="${holdAction.service_data ? JSON.stringify(holdAction.service_data) : ''}"
+            @input="${this._updateEntityHoldAction(key, 'service_data')}"></textarea>
+        ` : ''}
+      </div>
+    `;
+  }
 
 
   
@@ -1449,60 +1558,7 @@ class BubbleRoomEditor extends r {
     this._fireConfigChanged();
   }
 
-  _renderSubButtonAction(key) {
-    const tapAction = this._config.entities[key]?.tap_action || { action: 'toggle', navigation_path: '' };
-    const holdAction = this._config.entities[key]?.hold_action || { action: 'more-info', navigation_path: '' };
-    return x`
-      <div class="input-group">
-        <label>Tap:</label>
-        <select @change="${this._updateEntityTapAction(key, 'action')}" .value="${tapAction.action}">
-          <option value="toggle">Toggle</option>
-          <option value="more-info">More Info</option>
-          <option value="navigate">Navigate</option>
-          <option value="call-service">Call Service</option>
-          <option value="none">None</option>
-        </select>
-        ${tapAction.action === 'navigate'
-          ? x`
-              <label>Navigation Path:</label>
-              <input type="text" .value="${tapAction.navigation_path || ''}" @input="${this._updateEntityTapAction(key, 'navigation_path')}" />
-            `
-          : ''}
-        ${tapAction.action === 'call-service'
-          ? x`
-              <label>Service:</label>
-              <input type="text" .value="${tapAction.service || ''}" @input="${this._updateEntityTapAction(key, 'service')}" />
-              <label>Service Data (JSON):</label>
-              <textarea .value="${tapAction.service_data ? JSON.stringify(tapAction.service_data) : ''}" @input="${this._updateEntityTapAction(key, 'service_data')}"></textarea>
-            `
-          : ''}
-      </div>
-      <div class="input-group">
-        <label>Hold:</label>
-        <select @change="${this._updateEntityHoldAction(key, 'action')}" .value="${holdAction.action}">
-          <option value="more-info">More Info</option>
-          <option value="toggle">Toggle</option>
-          <option value="navigate">Navigate</option>
-          <option value="call-service">Call Service</option>
-          <option value="none">None</option>
-        </select>
-        ${holdAction.action === 'navigate'
-          ? x`
-              <label>Navigation Path:</label>
-              <input type="text" .value="${holdAction.navigation_path || ''}" @input="${this._updateEntityHoldAction(key, 'navigation_path')}" />
-            `
-          : ''}
-        ${holdAction.action === 'call-service'
-          ? x`
-              <label>Service:</label>
-              <input type="text" .value="${holdAction.service || ''}" @input="${this._updateEntityHoldAction(key, 'service')}" />
-              <label>Service Data (JSON):</label>
-              <textarea .value="${holdAction.service_data ? JSON.stringify(holdAction.service_data) : ''}" @input="${this._updateEntityHoldAction(key, 'service_data')}"></textarea>
-            `
-          : ''}
-      </div>
-    `;
-  }
+ 
 
   _fireConfigChanged() {
     this.dispatchEvent(new CustomEvent('config-changed', {
