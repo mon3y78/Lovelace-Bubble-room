@@ -818,14 +818,17 @@ class BubbleRoomEditor extends r {
   
     let baseEntities = allEntityIds;
   
-    // Se è selezionata l'area e l'auto-scoperta è attiva
     if (areaId && autoDiscovery && this._areaEntities?.[areaId]) {
       baseEntities = this._areaEntities[areaId];
     }
   
-    // Filtra in base alla sezione
-    return baseEntities.filter(eid => this._filterEntityForSection(eid, sectionName));
+    return baseEntities.filter(eid =>
+      this._filterEntityForSection(eid, sectionName)
+      || this._config.entities?.[sectionName]?.entity === eid // <-- questo è fondamentale
+    );
   }
+
+
 
   _filterEntityForSection(entityId, sectionName) {
     const domain = entityId.split(".")[0];
@@ -843,7 +846,7 @@ class BubbleRoomEditor extends r {
         return ["light", "switch", "media_player", "fan", "cover", "humidifier", "lock", "input_boolean", "scene"].includes(domain);
   
       case "mushroom":
-        return domain !== "sensor";
+        return !["sensor", "binary_sensor"].includes(domain);
   
       case "climate":
         return domain === "climate";
@@ -858,6 +861,7 @@ class BubbleRoomEditor extends r {
         return true;
     }
   }
+
 
 
   setConfig(config) {
