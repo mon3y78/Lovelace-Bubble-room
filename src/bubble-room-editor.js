@@ -94,13 +94,44 @@ class BubbleRoomEditor extends LitElement {
         }
       }).catch(() => {});
     }
+    async _loadAreaEntities() {
+      if (!this._hass) return;
+    
+      // Recupera devices e entities registrate
+      const devices = await this._hass.callWS({ type: "config/device_registry/list" });
+      const entities = await this._hass.callWS({ type: "config/entity_registry/list" });
+    
+      // Prepara mappa area_id -> lista entità
+      const areaEntities = {};
+    
+      for (const entity of entities) {
+        let areaId = entity.area_id;
+        if (!areaId) {
+          const device = devices.find(d => d.id === entity.device_id);
+          areaId = device?.area_id;
+        }
+        if (areaId) {
+          if (!areaEntities[areaId]) areaEntities[areaId] = [];
+          areaEntities[areaId].push(entity.entity_id);
+        }
+      }
+    
+      console.log("[Bubble Room] Area Entities Loaded:", areaEntities);
+      this._areaEntities = areaEntities;
+    }
+
   }
 
 
   set hass(hass) {
     this._hass = hass;
     this.requestUpdate();
+  
+    if (!this._areaEntities) {
+      this._loadAreaEntities();
+    }
   }
+
 
   setConfig(config) {
     if (!config.auto_discovery_sections) {
@@ -642,35 +673,13 @@ class BubbleRoomEditor extends LitElement {
   }
 
   _getEntitiesForArea(areaId) {
-    if (!areaId || !this._hass) {
-      console.log(`[Bubble Room] Fallback: areaId assente, ritorno TUTTE le entità`);
+    if (!areaId || !this._areaEntities) {
+      // fallback: tutte le entità visibili
       return Object.keys(this._hass.states || {});
     }
-  
-    const hass = this._hass;
-    const allEntities = Object.keys(hass.states || {});
-  
-    let deviceAreaMap = {};
-    if (hass.devices) {
-      Object.values(hass.devices).forEach(device => {
-        if (device.id && device.area_id) {
-          deviceAreaMap[device.id] = device.area_id;
-        }
-      });
-    }
-  
-    const filtered = allEntities.filter(entityId => {
-      const entity = hass.states[entityId];
-      const entityArea = entity.attributes.area_id;
-      const deviceId = entity.attributes.device_id;
-      const deviceArea = deviceId ? deviceAreaMap[deviceId] : null;
-      return (entityArea === areaId) || (deviceArea === areaId);
-    });
-  
-    console.log(`[Bubble Room] Entities filtrate per area "${areaId}":`, filtered);
-  
-    return filtered;
+    return this._areaEntities[areaId] || [];
   }
+
 
 
 
