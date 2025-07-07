@@ -298,6 +298,7 @@ class BubbleRoomEditor extends LitElement {
           .hass="${this._hass}"
           .value="${value}"
           .area="${this._config.area || ''}"
+          .key="${this._config.area || ''}"
           allow-custom-entity
           @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
         </ha-entity-picker>
