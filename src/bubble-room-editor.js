@@ -103,6 +103,16 @@ class BubbleRoomEditor extends LitElement {
   }
 
   setConfig(config) {
+    if (!config.auto_discovery_sections) {
+      config.auto_discovery_sections = {
+        room_presence: !!config.area,
+        subbutton: !!config.area,
+        mushroom: !!config.area,
+        climate: !!config.area,
+        camera: !!config.area,
+        sensor: !!config.area
+      };
+    }
     if (!config) config = {};
     if (!config.entities) config.entities = {};
     if (!config.colors) config.colors = {};
@@ -236,6 +246,17 @@ class BubbleRoomEditor extends LitElement {
     const panel = this.shadowRoot.getElementById(panelId);
     if (panel) panel.open = !panel.open;
   }
+  _toggleAutoDiscoverySection(section, enabled) {
+    this._config = {
+      ...this._config,
+      auto_discovery_sections: {
+        ...this._config.auto_discovery_sections,
+        [section]: enabled
+      }
+    };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
 
   _renderSubButtonPanel(key) {
     const entityConfig = this._config.entities?.[key] || {
@@ -296,7 +317,7 @@ class BubbleRoomEditor extends LitElement {
     return areas.some(a => a.area_id === area_id);
   }
 
-  _renderEntityInput(labelText, entityKey, field = 'entity') {
+  _renderEntityInput(labelText, entityKey, field = 'entity', sectionName = '') {
     const value = (
       this._config.entities &&
       this._config.entities[entityKey] &&
@@ -311,10 +332,17 @@ class BubbleRoomEditor extends LitElement {
         <ha-entity-picker
           .hass="${this._hass}"
           .value="${value}"
-          .includeEntities="${this._config.area ? this._getEntitiesForArea(this._config.area) : Object.keys(this._hass?.states || {})}"
+          .includeEntities=${
+            this._config.auto_discovery_sections?.[sectionName]
+              ? (this._config.area
+                  ? this._getEntitiesForArea(this._config.area)
+                  : Object.keys(this._hass?.states || {}))
+              : Object.keys(this._hass?.states || {})
+          }
           allow-custom-entity
           .key="${this._config.area || 'none'}"
-          @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
+          @value-changed="${e =>
+            this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
         </ha-entity-picker>
       ` : html`
         <input
@@ -325,6 +353,7 @@ class BubbleRoomEditor extends LitElement {
       `}
     `;
   }
+
 
 
 
@@ -883,7 +912,6 @@ class BubbleRoomEditor extends LitElement {
                 this._fireConfigChanged();
               }}">
             </ha-area-picker>
-
           </div>
           <div class="input-group">
             <label>Room Icon:</label>
@@ -900,7 +928,16 @@ class BubbleRoomEditor extends LitElement {
           </div>
           ${this._renderRoomAction()}
           <div class="input-group">
-            ${this._renderEntityInput("Presence (ID)", "presence")}
+            <label>
+              <input
+                type="checkbox"
+                .checked="${this._config.auto_discovery_sections?.room_presence ?? false}"
+                @change="${e => this._toggleAutoDiscoverySection('room_presence', e.target.checked)}" />
+              Auto-scoperta attiva per Presence
+            </label>
+          </div>
+          <div class="input-group">
+            ${this._renderEntityInput("Presence (ID)", "presence", 'entity', 'room_presence')}
           </div>
           <div style="margin-top:1em;">
             <button @click="${this._resetRoomConfig}">🔄 Reset Room Settings</button>
@@ -909,6 +946,7 @@ class BubbleRoomEditor extends LitElement {
       </ha-expansion-panel>
     `;
   }
+
   _resetRoomConfig() {
     this._config = {
       ...this._config,
@@ -931,6 +969,15 @@ class BubbleRoomEditor extends LitElement {
       <ha-expansion-panel id="subButtonMainPanel">
         <div slot="header" @click="${() => this._togglePanel('subButtonMainPanel')}">SUB-BUTTON</div>
         <div class="section-content">
+          <div class="input-group">
+            <label>
+              <input
+                type="checkbox"
+                .checked="${this._config.auto_discovery_sections?.subbutton ?? false}"
+                @change="${e => this._toggleAutoDiscoverySection('subbutton', e.target.checked)}" />
+              Auto-scoperta attiva
+            </label>
+          </div>
           ${this._renderSubButtonPanel("sub-button1")}
           ${this._renderSubButtonPanel("sub-button2")}
           ${this._renderSubButtonPanel("sub-button3")}
@@ -942,6 +989,7 @@ class BubbleRoomEditor extends LitElement {
       </ha-expansion-panel>
     `;
   }
+
   _resetSubButtonConfig() {
     const entities = { ...this._config.entities };
     ["sub-button1", "sub-button2", "sub-button3", "sub-button4"].forEach(key => {
@@ -956,6 +1004,15 @@ class BubbleRoomEditor extends LitElement {
       <ha-expansion-panel id="mushroomEntitiesPanel">
         <div slot="header" @click="${() => this._togglePanel('mushroomEntitiesPanel')}">Mushroom Entities</div>
         <div class="section-content">
+          <div class="input-group">
+            <label>
+              <input
+                type="checkbox"
+                .checked="${this._config.auto_discovery_sections?.mushroom ?? false}"
+                @change="${e => this._toggleAutoDiscoverySection('mushroom', e.target.checked)}" />
+              Auto-scoperta attiva
+            </label>
+          </div>
           ${this._renderMushroomEntityPanel("entities1", "Entity 1")}
           ${this._renderMushroomEntityPanel("entities2", "Entity 2")}
           ${this._renderMushroomEntityPanel("entities3", "Entity 3")}
@@ -968,6 +1025,7 @@ class BubbleRoomEditor extends LitElement {
       </ha-expansion-panel>
     `;
   }
+
   _resetMushroomEntitiesConfig() {
     const entities = { ...this._config.entities };
     ["entities1", "entities2", "entities3", "entities4", "entities5"].forEach(key => {
@@ -983,7 +1041,16 @@ class BubbleRoomEditor extends LitElement {
         <div slot="header" @click="${() => this._togglePanel('cameraPanel')}">Camera</div>
         <div class="section-content">
           <div class="input-group">
-            ${this._renderEntityInput("Camera (ID)", "camera")}
+            <label>
+              <input
+                type="checkbox"
+                .checked="${this._config.auto_discovery_sections?.camera ?? false}"
+                @change="${e => this._toggleAutoDiscoverySection('camera', e.target.checked)}" />
+              Auto-scoperta attiva
+            </label>
+          </div>
+          <div class="input-group">
+            ${this._renderEntityInput("Camera (ID)", "camera", 'entity', 'camera')}
           </div>
           <div class="input-group">
             ${this._renderIconInput("Camera Icon", "camera")}
@@ -995,6 +1062,7 @@ class BubbleRoomEditor extends LitElement {
       </ha-expansion-panel>
     `;
   }
+
   _resetCameraConfig() {
     const entities = { ...this._config.entities };
     delete entities["camera"];
@@ -1008,7 +1076,16 @@ class BubbleRoomEditor extends LitElement {
         <div slot="header" @click="${() => this._togglePanel('climatePanel')}">Climate</div>
         <div class="section-content">
           <div class="input-group">
-            ${this._renderEntityInput("Climate (ID)", "climate")}
+            <label>
+              <input
+                type="checkbox"
+                .checked="${this._config.auto_discovery_sections?.climate ?? false}"
+                @change="${e => this._toggleAutoDiscoverySection('climate', e.target.checked)}" />
+              Auto-scoperta attiva
+            </label>
+          </div>
+          <div class="input-group">
+            ${this._renderEntityInput("Climate (ID)", "climate", 'entity', 'climate')}
           </div>
           <div class="input-group">
             ${this._renderIconInput("Climate Icon", "climate")}
@@ -1020,6 +1097,7 @@ class BubbleRoomEditor extends LitElement {
       </ha-expansion-panel>
     `;
   }
+
   _resetClimateConfig() {
     const entities = { ...this._config.entities };
     delete entities["climate"];
@@ -1032,6 +1110,15 @@ class BubbleRoomEditor extends LitElement {
       <ha-expansion-panel id="sensorPanel">
         <div slot="header" @click="${() => this._togglePanel('sensorPanel')}">Sensor</div>
         <div class="section-content">
+          <div class="input-group">
+            <label>
+              <input
+                type="checkbox"
+                .checked="${this._config.auto_discovery_sections?.sensor ?? false}"
+                @change="${e => this._toggleAutoDiscoverySection('sensor', e.target.checked)}" />
+              Auto-scoperta attiva
+            </label>
+          </div>
           ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) =>
             this._renderSingleSensorPanel(key, `Sensor ${i + 1}`)
           )}
@@ -1042,6 +1129,7 @@ class BubbleRoomEditor extends LitElement {
       </ha-expansion-panel>
     `;
   }
+
   _resetSensorConfig() {
     const entities = { ...this._config.entities };
     ["sensor1", "sensor2", "sensor3", "sensor4"].forEach(key => {
@@ -1086,11 +1174,6 @@ class BubbleRoomEditor extends LitElement {
     this.requestUpdate();
     this._fireConfigChanged();
   }
-                        
-
-
-
 
 }
-
 customElements.define('bubble-room-editor', BubbleRoomEditor);

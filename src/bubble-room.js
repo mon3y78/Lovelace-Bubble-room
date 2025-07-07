@@ -219,7 +219,6 @@ class BubbleRoom extends LitElement {
     }
     this.config = {
       entities,
-      layout_mode: config.layout_mode || '6x3',
       colors: {
         room: {
           color_active: 'rgba(var(--color-green), 1)',
@@ -483,7 +482,7 @@ class BubbleRoom extends LitElement {
               <div class="bubble-icon-container"
                   style="
                     background-color: ${bubbleBg};
-                    ${this._getIconShapeStyle(this.config.layout_mode)}
+                    ${this._getIconShapeStyle()}
                   "
                   @pointerdown="${(e) => this._startHold(e, this.config)}"
                   @pointerup="${(e) => this._endHold(e, this.config, () => this._handleMainIconTap())}"
@@ -646,7 +645,7 @@ class BubbleRoom extends LitElement {
 
  
 
-  _getIconShapeStyle(mode) {
+  _getIconShapeStyle() {
     return `
       width: 100%;
       height: 100%;
@@ -655,6 +654,7 @@ class BubbleRoom extends LitElement {
       left: 0;
     `;
   }
+
   _getMainIconSize() {
     return Math.round(Math.min(this._iconAreaSize.w, this._iconAreaSize.h) * 0.65); // 65% dell'area icona
   }
