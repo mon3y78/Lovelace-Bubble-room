@@ -197,8 +197,16 @@ class BubbleRoomEditor extends LitElement {
     }
     if (!config) config = {};
     if (!config.auto_discovery_sections) {
-      config.auto_discovery_sections = ...
+      config.auto_discovery_sections = {
+        room_presence: !!config.area,
+        subbutton: !!config.area,
+        mushroom: !!config.area,
+        climate: !!config.area,
+        camera: !!config.area,
+        sensor: !!config.area,
+      };
     }
+
 
     if (!config.colors) config.colors = {};
     config.colors.room = config.colors.room || {};
