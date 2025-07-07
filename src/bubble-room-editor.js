@@ -673,6 +673,7 @@ class BubbleRoomEditor extends LitElement {
   }
 
 
+
   _updateNestedColorDirect(section, key, value) {
     const colors = { ...this._config.colors };
     colors[section] = { ...colors[section], [key]: value };
