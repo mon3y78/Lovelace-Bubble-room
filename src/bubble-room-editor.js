@@ -87,39 +87,38 @@ class BubbleRoomEditor extends LitElement {
       "mdi:vacuum", "mdi:garage", "mdi:garage-open", "mdi:cctv"
     ];
     if (!customElements.get("ha-entity-picker")) {
-      // helpers lo inietta correttamente
       import("custom-card-helpers").then(module => {
         if (module && module.loadHaComponents) {
           module.loadHaComponents();
         }
       }).catch(() => {});
     }
-    async _loadAreaEntities() {
-      if (!this._hass) return;
-    
-      // Recupera devices e entities registrate
-      const devices = await this._hass.callWS({ type: "config/device_registry/list" });
-      const entities = await this._hass.callWS({ type: "config/entity_registry/list" });
-    
-      // Prepara mappa area_id -> lista entità
-      const areaEntities = {};
-    
-      for (const entity of entities) {
-        let areaId = entity.area_id;
-        if (!areaId) {
-          const device = devices.find(d => d.id === entity.device_id);
-          areaId = device?.area_id;
-        }
-        if (areaId) {
-          if (!areaEntities[areaId]) areaEntities[areaId] = [];
-          areaEntities[areaId].push(entity.entity_id);
-        }
-      }
-    
-      console.log("[Bubble Room] Area Entities Loaded:", areaEntities);
-      this._areaEntities = areaEntities;
-    }
+  }
 
+  async _loadAreaEntities() {
+    if (!this._hass) return;
+  
+    // Recupera devices e entities registrate
+    const devices = await this._hass.callWS({ type: "config/device_registry/list" });
+    const entities = await this._hass.callWS({ type: "config/entity_registry/list" });
+  
+    // Prepara mappa area_id -> lista entità
+    const areaEntities = {};
+  
+    for (const entity of entities) {
+      let areaId = entity.area_id;
+      if (!areaId) {
+        const device = devices.find(d => d.id === entity.device_id);
+        areaId = device?.area_id;
+      }
+      if (areaId) {
+        if (!areaEntities[areaId]) areaEntities[areaId] = [];
+        areaEntities[areaId].push(entity.entity_id);
+      }
+    }
+  
+    console.log("[Bubble Room] Area Entities Loaded:", areaEntities);
+    this._areaEntities = areaEntities;
   }
 
 
