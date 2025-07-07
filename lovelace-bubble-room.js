@@ -1,4 +1,5 @@
 import { LitElement, css, html } from 'https://unpkg.com/lit@2.6.1/index.js?module';
+import '@ha/components/ha-entity-picker';
 
 // --- MAPPE DI MAPPING CENTRALIZZATE ---
 const DEVICE_CLASS_ICON_MAP = {
