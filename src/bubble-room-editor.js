@@ -382,13 +382,34 @@ class BubbleRoomEditor extends LitElement {
     return html`
       <label>${labelText}:</label>
       ${hasEntityPicker ? html`
-        <ha-entity-picker
+        <ha-area-picker
           .hass="${this._hass}"
-          .value="${value}"
-          .includeEntities="${includeEntities}"
-          allow-custom-entity
-          @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
-        </ha-entity-picker>
+          .value="${this._config.area || ''}"
+          @value-changed="${e => {
+            // Aggiorna area
+            const newArea = e.detail.value;
+        
+            // Forza tutti i flag auto-scoperta a true
+            const autoDiscovery = {
+              room_presence: true,
+              subbutton: true,
+              mushroom: true,
+              camera: true,
+              climate: true,
+              sensor: true
+            };
+        
+            this._config = {
+              ...this._config,
+              area: newArea,
+              auto_discovery_sections: autoDiscovery
+            };
+        
+            this.requestUpdate();
+            this._fireConfigChanged();
+          }}">
+        </ha-area-picker>
+
       ` : html`
         <input
           type="text"
