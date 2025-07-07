@@ -1062,33 +1062,13 @@ class BubbleRoomEditor extends r {
     return x`
       <label>${labelText}:</label>
       ${hasEntityPicker ? x`
-        <ha-area-picker
+        <ha-entity-picker
           .hass="${this._hass}"
-          .value="${this._config.area || ''}"
-          @value-changed="${e => {
-            // Aggiorna area
-            const newArea = e.detail.value;
-        
-            // Forza tutti i flag auto-scoperta a true
-            const autoDiscovery = {
-              room_presence: true,
-              subbutton: true,
-              mushroom: true,
-              camera: true,
-              climate: true,
-              sensor: true
-            };
-        
-            this._config = {
-              ...this._config,
-              area: newArea,
-              auto_discovery_sections: autoDiscovery
-            };
-        
-            this.requestUpdate();
-            this._fireConfigChanged();
-          }}">
-        </ha-area-picker>
+          .value="${value}"
+          .includeEntities="${includeEntities}"
+          allow-custom-entity
+          @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
+        </ha-entity-picker>
 
       ` : x`
         <input
@@ -1641,11 +1621,30 @@ class BubbleRoomEditor extends r {
               .hass="${this._hass}"
               .value="${this._config.area || ''}"
               @value-changed="${e => {
-                this._config = { ...this._config, area: e.detail.value };
+                // Aggiorna area
+                const newArea = e.detail.value;
+            
+                // Forza tutti i flag auto-scoperta a true
+                const autoDiscovery = {
+                  room_presence: true,
+                  subbutton: true,
+                  mushroom: true,
+                  camera: true,
+                  climate: true,
+                  sensor: true
+                };
+            
+                this._config = {
+                  ...this._config,
+                  area: newArea,
+                  auto_discovery_sections: autoDiscovery
+                };
+            
                 this.requestUpdate();
                 this._fireConfigChanged();
               }}">
             </ha-area-picker>
+
           </div>
           <div class="input-group">
             <label>Room Icon:</label>
