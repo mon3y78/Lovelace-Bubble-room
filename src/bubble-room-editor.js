@@ -311,15 +311,11 @@ class BubbleRoomEditor extends LitElement {
         <ha-entity-picker
           .hass="${this._hass}"
           .value="${value}"
-          .area="${this._areaIsValid(this._config.area) ? this._config.area : ''}"
-          .key="${this._config.area || 'none'}"
+          .includeEntities="${this._config.area ? this._getEntitiesForArea(this._config.area) : undefined}"
           allow-custom-entity
+          .key="${this._config.area || 'none'}"
           @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
         </ha-entity-picker>
-
-        ${!this._areaIsValid(this._config.area) && this._config.area ? html`
-          <div style="color: orange; font-size: 0.9em;">Area non trovata: tutte le entità sono visibili.</div>
-        ` : ''}
       ` : html`
         <input
           type="text"
@@ -329,6 +325,7 @@ class BubbleRoomEditor extends LitElement {
       `}
     `;
   }
+
 
 
 
@@ -597,7 +594,32 @@ class BubbleRoomEditor extends LitElement {
     // 5. Fallback generico
     return 'mdi:bookmark-outline';
   }
+  _getEntitiesForArea(areaId) {
+    if (!areaId || !this._hass) return Object.keys(this._hass.states || {});
+    const hass = this._hass;
   
+    // Ottieni tutte le entità
+    const entityIds = Object.keys(hass.states || {});
+  
+    // Crea una mappa device_id → area_id se hai hass.devices
+    let deviceAreaMap = {};
+    if (hass.devices) {
+      Object.values(hass.devices).forEach(device => {
+        deviceAreaMap[device.id] = device.area_id;
+      });
+    }
+  
+    // Filtra solo quelle che hanno area_id uguale a quello selezionato
+    return entityIds.filter(entityId => {
+      const entity = hass.states[entityId];
+      // 1. Attributo diretto area_id
+      if (entity.attributes && entity.attributes.area_id === areaId) return true;
+      // 2. Da device_id → area_id
+      if (entity.attributes && entity.attributes.device_id && deviceAreaMap[entity.attributes.device_id] === areaId) return true;
+      return false;
+    });
+  }
+
   _updateNestedColorDirect(section, key, value) {
     const colors = { ...this._config.colors };
     colors[section] = { ...colors[section], [key]: value };
