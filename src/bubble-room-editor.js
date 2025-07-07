@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+import "@ha/components/ha-entity-picker";
 
 
 // --- MAPPE DI MAPPING CENTRALIZZATE ---
