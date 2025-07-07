@@ -963,8 +963,9 @@ class BubbleRoomEditor extends r {
         margin: 1.5rem 0;
       }
   
+  
       .editor-header h3 {
-        font-size: 1.6rem;
+        font-size: 1.6rem; 
         font-weight: bold;
         color: #4dabf7;
       }
@@ -1109,24 +1110,31 @@ class BubbleRoomEditor extends r {
       }
       
       .section-header-pill {
-        display: inline-block;
-        padding: 8px 22px;
-        border-radius: 18px;
-        background: linear-gradient(90deg, #4dabf7 0%, #1976d2 100%);
+        display: block; /* full width */
+        width: 100%;
+        padding: 14px 0;
+        border-radius: 16px;
+        background: linear-gradient(90deg, rgba(77, 171, 247, 0.50), rgba(25, 118, 210, 0.40));
         color: #fff;
-        font-size: 1.1rem;
+        font-size: 1.14rem;
         font-weight: bold;
-        box-shadow: 0 2px 8px rgba(77, 171, 247, 0.20);
+        box-shadow: 0 2px 8px rgba(77, 171, 247, 0.12);
         border: none;
         margin-bottom: 0.3em;
-        letter-spacing: 0.5px;\
+        letter-spacing: 0.5px;
         cursor: pointer;
-        transition: transform 0.15s;
+        transition: background 0.18s, color 0.18s;
+        text-align: left;
+        /* Soft inner shadow for glass effect */
+        box-shadow: 0 1px 7px 0 rgba(30,50,80,0.08) inset;
+        opacity: 0.93;
       }
-      .section-header-pill:active {
-        transform: scale(0.98);
-        box-shadow: 0 1px 2px rgba(77, 171, 247, 0.10);
+      .section-header-pill:active,
+      .section-header-pill:focus {
+        background: linear-gradient(90deg, rgba(77,171,247,0.70), rgba(25,118,210,0.55));
+        opacity: 1;
       }
+
 
     `;
   }
