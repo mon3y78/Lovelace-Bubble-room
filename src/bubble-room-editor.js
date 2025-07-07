@@ -317,7 +317,7 @@ class BubbleRoomEditor extends LitElement {
     return areas.some(a => a.area_id === area_id);
   }
 
-  _renderEntityInput(labelText, entityKey, field = 'entity', sectionName = '') {
+  _renderEntityInput(labelText, entityKey, field = 'entity', sectionName) {
     const value = (
       this._config.entities &&
       this._config.entities[entityKey] &&
@@ -326,19 +326,38 @@ class BubbleRoomEditor extends LitElement {
   
     const hasEntityPicker = customElements.get("ha-entity-picker");
   
+    // Prepara elenco entità in base a auto-discovery e area
+    let includedEntities;
+    if (sectionName && this._config.auto_discovery_sections?.[sectionName]) {
+      const filtered = this._config.area
+        ? this._getEntitiesForArea(this._config.area)
+        : Object.keys(this._hass?.states || {});
+      includedEntities = (filtered && filtered.length > 0)
+        ? filtered
+        : Object.keys(this._hass?.states || {});
+    } else {
+      includedEntities = Object.keys(this._hass?.states || {});
+    }
+  
+    // Log dettagliati
+    console.group(`🟢 Entity Input - ${sectionName || "no section"}`);
+    console.log("Label:", labelText);
+    console.log("EntityKey:", entityKey);
+    console.log("Field:", field);
+    console.log("Auto-discovery sections:", this._config.auto_discovery_sections);
+    console.log("Auto-discovery attiva?", sectionName ? this._config.auto_discovery_sections?.[sectionName] : "NO section");
+    console.log("Area selezionata:", this._config.area);
+    console.log("Entità filtrate da area:", this._config.area ? this._getEntitiesForArea(this._config.area) : "(nessuna area)");
+    console.log("Entità incluse finali:", includedEntities);
+    console.groupEnd();
+  
     return html`
       <label>${labelText}:</label>
       ${hasEntityPicker ? html`
         <ha-entity-picker
           .hass="${this._hass}"
           .value="${value}"
-          .includeEntities=${
-            this._config.auto_discovery_sections?.[sectionName]
-              ? (this._config.area
-                  ? this._getEntitiesForArea(this._config.area)
-                  : Object.keys(this._hass?.states || {}))
-              : Object.keys(this._hass?.states || {})
-          }
+          .includeEntities="${includedEntities}"
           allow-custom-entity
           .key="${this._config.area || 'none'}"
           @value-changed="${e =>
@@ -353,6 +372,7 @@ class BubbleRoomEditor extends LitElement {
       `}
     `;
   }
+
 
 
 
