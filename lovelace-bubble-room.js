@@ -1517,6 +1517,8 @@ class BubbleRoomEditor extends r {
               .hass="${this._hass}"
               .value="${this._config.area || ''}"
               @value-changed="${e => {
+                // 1️⃣ Logghiamo cosa arriva come area_id
+                console.log('Area scelta:', e.detail.value);
                 this._config = { ...this._config, area: e.detail.value };
                 this.requestUpdate();
                 this._fireConfigChanged();
