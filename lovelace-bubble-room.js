@@ -962,6 +962,18 @@ class BubbleRoomEditor extends r {
       </p>
     `;
   }
+    _areaIsValid(area_id) {
+    if (!area_id || !this._hass) return false;
+    let areas = [];
+    // Home Assistant >=2024.4 usa this._hass.areas (oggetto), versioni precedenti areasRegistry
+    if (this._hass.areas) {
+      areas = Object.values(this._hass.areas);
+    } else if (this._hass.areasRegistry && Array.isArray(this._hass.areasRegistry.areas)) {
+      areas = this._hass.areasRegistry.areas;
+    }
+    if (!areas.length) return false;
+    return areas.some(a => a.area_id === area_id);
+  }
   _renderEntityInput(labelText, entityKey, field = 'entity') {
     const value = (
       this._config.entities &&
@@ -977,11 +989,13 @@ class BubbleRoomEditor extends r {
         <ha-entity-picker
           .hass="${this._hass}"
           .value="${value}"
-          .area="${this._config.area || ''}"
-          .key="${this._config.area || ''}"
+          .area="${this._areaIsValid(this._config.area) ? this._config.area : ''}"
           allow-custom-entity
           @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
         </ha-entity-picker>
+        ${!this._areaIsValid(this._config.area) && this._config.area ? x`
+          <div style="color: orange; font-size: 0.9em;">Area non trovata: tutte le entità sono visibili.</div>
+        ` : ''}
       ` : x`
         <input
           type="text"
@@ -991,6 +1005,7 @@ class BubbleRoomEditor extends r {
       `}
     `;
   }
+
 
 
   _renderIconInput(labelText, entityKey, field = 'icon') {
