@@ -1784,7 +1784,7 @@ class BubbleRoomEditor extends r {
   }
 
 
-
+                
   _resetMushroomEntitiesConfig() {
     const entities = { ...this._config.entities };
     ["entities1", "entities2", "entities3", "entities4", "entities5"].forEach(key => {
@@ -1864,51 +1864,31 @@ class BubbleRoomEditor extends r {
     this.requestUpdate();
     this._fireConfigChanged();
   }
-  _renderSingleSensorPanel(key, label) {
-    const sensor = this._config.entities?.[key] || {};
-    const panelId = `${key}Panel`;
+  _renderSensorPanel() {
     return x`
-      <ha-expansion-panel id="${panelId}">
-        <div slot="header" @click="${() => this._togglePanel(panelId)}">${label}</div>
+      <ha-expansion-panel id="sensorPanel">
+        <div slot="header" @click="${() => this._togglePanel('sensorPanel')}">Sensor</div>
         <div class="section-content">
           <div class="input-group">
-            <label>Tipo Sensore:</label>
-            <select
-              .value="${sensor.type || ''}"
-              @change="${e => this._updateSensor(parseInt(key.replace('sensor', '')) - 1, 'type', e.target.value)}">
-              <option value="">-- nessuno --</option>
-              ${[
-                { type: 'temperature', label: '🌡️ Temperatura' },
-                { type: 'humidity', label: '💦 Umidità' },
-                { type: 'co2', label: '🟢 CO₂' },
-                { type: 'illuminance', label: '☀️ Luminosità' },
-                { type: 'pm1', label: '🟤 PM1' },
-                { type: 'pm25', label: '⚫️ PM2.5' },
-                { type: 'pm10', label: '⚪️ PM10' },
-                { type: 'uv', label: '🌞 UV Index' },
-                { type: 'noise', label: '🔊 Rumore' },
-                { type: 'pressure', label: '📈 Pressione' },
-                { type: 'voc', label: '🧪 VOC' },
-              ].map(t => x`<option value="${t.type}">${t.label}</option>`)}
-            </select>
+            <label>
+              <input
+                type="checkbox"
+                .checked="${this._config.auto_discovery_sections?.sensor ?? false}"
+                @change="${e => this._toggleAutoDiscoverySection('sensor', e.target.checked)}" />
+              Auto-scoperta attiva
+            </label>
           </div>
-          <div class="input-group">
-            ${this._renderEntityInput("Entity ID", key, "entity", "sensor")}
+          ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) =>
+            this._renderSingleSensorPanel(key, `Sensor ${i + 1}`)
+          )}
+          <div style="margin-top:1em;">
+            <button @click="${this._resetSensorConfig}">🔄 Reset Sensors</button>
           </div>
-          ${sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? x`
-            <div class="input-group">
-              <label>Unità:</label>
-              <select
-                .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
-                @change="${e => this._updateSensor(parseInt(key.replace('sensor', '')) - 1, 'unit', e.target.value)}">
-                ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u => x`<option value="${u}">${u}</option>`)}
-              </select>
-            </div>
-          ` : ''}
         </div>
       </ha-expansion-panel>
     `;
   }
+
 
 
   _resetSensorConfig() {
