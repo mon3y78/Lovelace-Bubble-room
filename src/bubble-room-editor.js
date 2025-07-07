@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'lit';
-import "@ha/components/ha-entity-picker";
 
 
 // --- MAPPE DI MAPPING CENTRALIZZATE ---
@@ -87,7 +86,16 @@ class BubbleRoomEditor extends LitElement {
       "mdi:toilet", "mdi:fridge", "mdi:oven", "mdi:coffee-maker", "mdi:washing-machine",
       "mdi:vacuum", "mdi:garage", "mdi:garage-open", "mdi:cctv"
     ];
+    if (!customElements.get("ha-entity-picker")) {
+      // helpers lo inietta correttamente
+      import("custom-card-helpers").then(module => {
+        if (module && module.loadHaComponents) {
+          module.loadHaComponents();
+        }
+      }).catch(() => {});
+    }
   }
+
 
   set hass(hass) {
     this._hass = hass;
