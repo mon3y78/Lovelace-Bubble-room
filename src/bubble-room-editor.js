@@ -285,25 +285,36 @@ class BubbleRoomEditor extends LitElement {
         color: var(--secondary-text-color);
       }
   
+      /* HEADER SEZIONI */
       ha-expansion-panel::part(header) {
-        background: linear-gradient(90deg, #1e1e2f, #2e2e44);
-        color: #ffffff;
+        background: linear-gradient(to right, rgba(48,48,64,0.9), rgba(32,32,48,0.9));
+        color: #fff;
         font-size: 1.1rem;
         font-weight: 600;
-        border-radius: 10px;
-        margin-bottom: 10px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        border-radius: 12px;
+        margin-bottom: 8px;
+        padding: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
         transition: background 0.3s ease;
       }
   
       ha-expansion-panel::part(header):hover {
-        background: linear-gradient(90deg, #2e2e4f, #3d3d66);
+        background: linear-gradient(to right, rgba(64,64,96,1), rgba(48,48,72,1));
       }
   
+      /* COLORI INDIVIDUALI HEADER (opzionale) */
+      ha-expansion-panel#roomPanel::part(header)        { background: linear-gradient(to right, #263238, #37474f); }
+      ha-expansion-panel#subButtonMainPanel::part(header)  { background: linear-gradient(to right, #4527a0, #5e35b1); }
+      ha-expansion-panel#mushroomEntitiesPanel::part(header) { background: linear-gradient(to right, #00695c, #00796b); }
+      ha-expansion-panel#cameraPanel::part(header)      { background: linear-gradient(to right, #1565c0, #1e88e5); }
+      ha-expansion-panel#climatePanel::part(header)     { background: linear-gradient(to right, #ef6c00, #f57c00); }
+      ha-expansion-panel#sensorPanel::part(header)      { background: linear-gradient(to right, #ad1457, #d81b60); }
+      ha-expansion-panel#colorsPanel::part(header)      { background: linear-gradient(to right, #37474f, #263238); }
+  
+      /* CONTENUTO */
       .section-content {
         padding: 20px;
         background: rgba(255, 255, 255, 0.02);
-        border: none;
         border-radius: 10px;
         box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
       }
@@ -318,7 +329,7 @@ class BubbleRoomEditor extends LitElement {
       }
   
       .input-group {
-        margin-bottom: 16px;
+        margin-bottom: 18px;
       }
   
       label {
@@ -326,7 +337,7 @@ class BubbleRoomEditor extends LitElement {
         margin-bottom: 4px;
         font-weight: 600;
         font-size: 0.95rem;
-        color: #ddd;
+        color: #90caf9;
       }
   
       input,
@@ -370,49 +381,44 @@ class BubbleRoomEditor extends LitElement {
       .error {
         border: 1px solid red;
       }
-      
+  
+      /* PILL BUTTON */
       .pill-group {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
-        margin: 8px 0;
+        margin: 6px 0 12px;
       }
-      
+  
       .pill-button {
         padding: 6px 14px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.2);
         background-color: #1e1e2f;
         color: #ccc;
         border-radius: 20px;
         font-size: 0.9rem;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.25s ease-in-out;
+        transform: scale(1);
       }
-      
+  
       .pill-button:hover {
         background-color: #2a2a3f;
         border-color: #4dabf7;
         color: #fff;
+        transform: scale(1.05);
       }
-      
+  
       .pill-button.active {
         background-color: #4dabf7;
         color: #000;
         font-weight: 600;
         border-color: #4dabf7;
+        box-shadow: 0 0 6px rgba(77, 171, 247, 0.6);
       }
-
-      
-      /* Colore personalizzato dei titoli sezione */
-      ha-expansion-panel#roomPanel::part(header)      { background: linear-gradient(to right, #263238, #37474f); }
-      ha-expansion-panel#subButtonMainPanel::part(header)  { background: linear-gradient(to right, #4527a0, #5e35b1); }
-      ha-expansion-panel#mushroomEntitiesPanel::part(header) { background: linear-gradient(to right, #00695c, #00796b); }
-      ha-expansion-panel#cameraPanel::part(header)    { background: linear-gradient(to right, #1565c0, #1e88e5); }
-      ha-expansion-panel#climatePanel::part(header)   { background: linear-gradient(to right, #ef6c00, #f57c00); }
-      ha-expansion-panel#sensorPanel::part(header)    { background: linear-gradient(to right, #ad1457, #d81b60); }
-      ha-expansion-panel#colorsPanel::part(header)    { background: linear-gradient(to right, #37474f, #263238); }
     `;
   }
+
 
 
 
