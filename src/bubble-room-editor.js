@@ -317,7 +317,7 @@ class BubbleRoomEditor extends LitElement {
     return areas.some(a => a.area_id === area_id);
   }
 
-  _renderEntityInput(labelText, entityKey, field = 'entity', sectionName) {
+  _renderEntityInput(labelText, entityKey, field = 'entity', sectionName = undefined) {
     const value = (
       this._config.entities &&
       this._config.entities[entityKey] &&
@@ -326,30 +326,28 @@ class BubbleRoomEditor extends LitElement {
   
     const hasEntityPicker = customElements.get("ha-entity-picker");
   
-    // Prepara elenco entità in base a auto-discovery e area
-    let includedEntities;
+    let includeEntities = Object.keys(this._hass?.states || {});
+    let autoDiscoveryAttiva = false;
+    let filteredEntitiesFromArea = [];
+  
     if (sectionName && this._config.auto_discovery_sections?.[sectionName]) {
-      const filtered = this._config.area
-        ? this._getEntitiesForArea(this._config.area)
-        : Object.keys(this._hass?.states || {});
-      includedEntities = (filtered && filtered.length > 0)
-        ? filtered
-        : Object.keys(this._hass?.states || {});
-    } else {
-      includedEntities = Object.keys(this._hass?.states || {});
+      autoDiscoveryAttiva = true;
+      if (this._config.area) {
+        filteredEntitiesFromArea = this._getEntitiesForArea(this._config.area);
+        includeEntities = filteredEntitiesFromArea;
+      }
     }
   
-    // Log dettagliati
-    console.group(`🟢 Entity Input - ${sectionName || "no section"}`);
-    console.log("Label:", labelText);
-    console.log("EntityKey:", entityKey);
-    console.log("Field:", field);
-    console.log("Auto-discovery sections:", this._config.auto_discovery_sections);
-    console.log("Auto-discovery attiva?", sectionName ? this._config.auto_discovery_sections?.[sectionName] : "NO section");
-    console.log("Area selezionata:", this._config.area);
-    console.log("Entità filtrate da area:", this._config.area ? this._getEntitiesForArea(this._config.area) : "(nessuna area)");
-    console.log("Entità incluse finali:", includedEntities);
-    console.groupEnd();
+    console.log(`🟢 Entity Input Debug - ${labelText}`, {
+      EntityKey: entityKey,
+      Field: field,
+      Section: sectionName,
+      "Auto-discovery sections": this._config.auto_discovery_sections,
+      "Auto-discovery attiva?": autoDiscoveryAttiva,
+      "Area selezionata": this._config.area,
+      "Entità filtrate da area": filteredEntitiesFromArea,
+      "Entità incluse finali": includeEntities
+    });
   
     return html`
       <label>${labelText}:</label>
@@ -357,11 +355,9 @@ class BubbleRoomEditor extends LitElement {
         <ha-entity-picker
           .hass="${this._hass}"
           .value="${value}"
-          .includeEntities="${includedEntities}"
+          .includeEntities="${includeEntities}"
           allow-custom-entity
-          .key="${this._config.area || 'none'}"
-          @value-changed="${e =>
-            this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
+          @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
         </ha-entity-picker>
       ` : html`
         <input
@@ -372,6 +368,7 @@ class BubbleRoomEditor extends LitElement {
       `}
     `;
   }
+
 
 
 
