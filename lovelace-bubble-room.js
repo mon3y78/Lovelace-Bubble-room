@@ -942,67 +942,111 @@ class BubbleRoomEditor extends r {
 
   static get styles() {
     return i$3`
-      :host { display: block; margin: 0; padding: 0; }
-      .editor-header { text-align: center; margin: 1rem 0; }
-      .version { font-size: 0.8rem; font-weight: normal; margin-left: 8px; color: var(--secondary-text-color); }
+      :host {
+        display: block;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Roboto, sans-serif;
+      }
+  
+      .editor-header {
+        text-align: center;
+        margin: 1.5rem 0;
+      }
+  
+      .editor-header h3 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #42a5f5;
+      }
+  
+      .version {
+        font-size: 0.8rem;
+        font-weight: normal;
+        margin-left: 8px;
+        color: var(--secondary-text-color);
+      }
+  
       ha-expansion-panel div[slot="header"] {
-        background-color: var(--primary-background-color, #222);
-        color: var(--primary-text-color, #eee);
+        background: linear-gradient(to right, #1e1e2f, #2d2d44);
+        color: #ffffff;
         font-size: 1.1em;
         font-weight: 600;
-        padding: 12px;
+        padding: 14px;
+        border-radius: 6px;
+        margin-bottom: 6px;
+        cursor: pointer;
+        transition: background 0.3s;
       }
-
+  
+      ha-expansion-panel div[slot="header"]:hover {
+        background: linear-gradient(to right, #2e2e4d, #3d3d66);
+      }
+  
       .section-content {
         padding: 20px;
-        background-color: rgba(255, 255, 255, 0.02);
-        border: 1px solid var(--divider-color, #444);
-        border-radius: 8px;
-        box-shadow: 0 0 6px rgba(0,0,0,0.4);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        margin-bottom: 20px;
       }
-
+  
       .section-content h4 {
-        margin-top: 1.5em;
-        margin-bottom: 0.5em;
+        margin: 1.5em 0 0.5em 0;
         font-size: 1.1em;
-        font-weight: 600;
-      }
-
-      .section-content button {
-        background: #cc0000;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        padding: 6px 12px;
         font-weight: bold;
-        cursor: pointer;
+        color: #90caf9;
       }
-      .section-content button:hover {
-        background: #ff0000;
-      }
-
+  
       .input-group {
         margin-bottom: 20px;
       }
+  
       label {
         display: inline-block;
         margin-bottom: 4px;
         font-weight: 600;
+        color: #ccc;
       }
+  
       input, textarea, select {
         width: 100%;
         box-sizing: border-box;
-        border: 1px solid var(--divider-color, #ccc);
-        border-radius: 4px;
-        padding: 6px;
+        border: 1px solid var(--divider-color, #666);
+        border-radius: 6px;
+        padding: 8px;
+        background-color: #1f1f1f;
+        color: white;
       }
-      .note { margin-top: 1rem; font-size: 0.9rem; color: var(--secondary-text-color); }
+  
+      select {
+        background-color: #2a2a2a;
+      }
+  
+      textarea {
+        min-height: 60px;
+      }
+  
+      input[type="color"] {
+        padding: 0;
+        border: none;
+        background: none;
+      }
+  
+      .note {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: var(--secondary-text-color);
+        text-align: center;
+      }
+  
       .error {
         border: 1px solid red;
       }
     `;
   }
-  
+
 
   _togglePanel(panelId) {
     const panel = this.shadowRoot.getElementById(panelId);
