@@ -1715,33 +1715,32 @@ class BubbleRoomEditor extends r {
     this._fireConfigChanged();
   }
   
-  _renderSubButtonPanel(key) {
-    this._config.entities?.[key] || {
-      entity: "",
-      icon: "",
-      tap_action: { action: "toggle", navigation_path: "" },
-      hold_action: { action: "more-info", navigation_path: "" }
-    };
-    let label;
-    switch(key) {
-      case "sub-button1": label = "Sub-button1"; break;
-      case "sub-button2": label = "Sub-button2"; break;
-      case "sub-button3": label = "Sub-button3"; break;
-      case "sub-button4": label = "Sub-button4"; break;
-      default: label = key;
-    }
-    const panelId = `${key}Panel`;
+  _renderSubButtonPanelGroup() {
     return x`
-      <ha-expansion-panel id="${panelId}">
-        <div slot="header" @click="${() => this._togglePanel(panelId)}">${label}</div>
+      <ha-expansion-panel id="subButtonMainPanel">
+        <div slot="header" @click="${() => this._togglePanel('subButtonMainPanel')}">SUB-BUTTON</div>
         <div class="section-content">
-          ${this._renderEntityInput("Entities (ID)", key, "entity", "subbutton")}
-          ${this._renderIconInput("Icon", key)}
-          ${this._renderSubButtonAction(key)}
+          <div class="input-group">
+            <label>
+              <input
+                type="checkbox"
+                .checked="${this._config.auto_discovery_sections?.subbutton ?? false}"
+                @change="${e => this._toggleAutoDiscoverySection('subbutton', e.target.checked)}" />
+              Auto-scoperta attiva
+            </label>
+          </div>
+          ${this._renderSubButtonPanel("sub-button1")}
+          ${this._renderSubButtonPanel("sub-button2")}
+          ${this._renderSubButtonPanel("sub-button3")}
+          ${this._renderSubButtonPanel("sub-button4")}
+          <div style="margin-top:1em;">
+            <button @click="${this._resetSubButtonConfig}">🔄 Reset Sub-buttons</button>
+          </div>
         </div>
       </ha-expansion-panel>
     `;
   }
+
 
 
   _resetSubButtonConfig() {
