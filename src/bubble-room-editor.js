@@ -196,7 +196,10 @@ class BubbleRoomEditor extends LitElement {
       };
     }
     if (!config) config = {};
-    if (!config.entities) config.entities = {};
+    if (!config.auto_discovery_sections) {
+      config.auto_discovery_sections = ...
+    }
+
     if (!config.colors) config.colors = {};
     config.colors.room = config.colors.room || {};
     config.colors.subbutton = config.colors.subbutton || {};
@@ -416,6 +419,27 @@ class BubbleRoomEditor extends LitElement {
         border-color: #4dabf7;
         box-shadow: 0 0 6px rgba(77, 171, 247, 0.6);
       }
+      
+      .section-header-pill {
+        display: inline-block;
+        padding: 8px 22px;
+        border-radius: 18px;
+        background: linear-gradient(90deg, #4dabf7 0%, #1976d2 100%);
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: bold;
+        box-shadow: 0 2px 8px rgba(77, 171, 247, 0.20);
+        border: none;
+        margin-bottom: 0.3em;
+        letter-spacing: 0.5px;\
+        cursor: pointer;
+        transition: transform 0.15s;
+      }
+      .section-header-pill:active {
+        transform: scale(0.98);
+        box-shadow: 0 1px 2px rgba(77, 171, 247, 0.10);
+      }
+
     `;
   }
 
@@ -1054,7 +1078,7 @@ class BubbleRoomEditor extends LitElement {
   _renderRoomPanel() {
     return html`
       <ha-expansion-panel id="roomPanel">
-        <div slot="header" @click="${() => this._togglePanel('roomPanel')}">🛋️ Room Settings</div>
+        <div slot="header" @click="${() => this._togglePanel('roomPanel')}"><span class="section-header-pill">🛋️ Room Settings</div>
         <div class="section-content">
           <div class="input-group">
             <label>Room name:</label>
@@ -1148,9 +1172,7 @@ class BubbleRoomEditor extends LitElement {
   _renderSubButtonPanelGroup() {
     return html`
       <ha-expansion-panel id="subButtonMainPanel">
-        <div slot="header" @click="${() => this._togglePanel('subButtonMainPanel')}">🔘 SUB-BUTTON</div>
-          
-        }UB-BUTTON</div>
+        <div slot="header" @click="${() => this._togglePanel('subButtonMainPanel')}"><span class="section-header-pill">🔘 SUB-BUTTON</div>
         <div class="section-content">
           <div class="input-group">
             <label>
@@ -1187,7 +1209,7 @@ class BubbleRoomEditor extends LitElement {
   _renderMushroomEntitiesPanel() {
     return html`
       <ha-expansion-panel id="mushroomEntitiesPanel">
-        <div slot="header" @click="${() => this._togglePanel('mushroomEntitiesPanel')}">🍄 Mushroom Entities</div>
+        <div slot="header" @click="${() => this._togglePanel('mushroomEntitiesPanel')}"><span class="section-header-pill">🍄 Mushroom Entities</div>
         <div class="section-content">
           <div class="input-group">
             <label>
@@ -1225,7 +1247,7 @@ class BubbleRoomEditor extends LitElement {
   _renderCameraPanel() {
     return html`
       <ha-expansion-panel id="cameraPanel">
-        <div slot="header" @click="${() => this._togglePanel('cameraPanel')}">📷 Camera</div>
+        <div slot="header" @click="${() => this._togglePanel('cameraPanel')}"><span class="section-header-pill">📷 Camera</div>
         <div class="section-content">
           <div class="input-group">
             <label>
@@ -1260,7 +1282,7 @@ class BubbleRoomEditor extends LitElement {
   _renderClimatePanel() {
     return html`
       <ha-expansion-panel id="climatePanel">
-        <div slot="header" @click="${() => this._togglePanel('climatePanel')}">🌡️ Climate</div>
+        <div slot="header" @click="${() => this._togglePanel('climatePanel')}"><span class="section-header-pill">🌡️ Climate</div>
         <div class="section-content">
           <div class="input-group">
             <label>
@@ -1295,7 +1317,7 @@ class BubbleRoomEditor extends LitElement {
   _renderSensorPanel() {
     return html`
       <ha-expansion-panel id="sensorPanel">
-        <div slot="header" @click="${() => this._togglePanel('sensorPanel')}">🧪 Sensor</div>
+        <div slot="header" @click="${() => this._togglePanel('sensorPanel')}"<span class="section-header-pill">>🧪 Sensor</div>
         <div class="section-content">
           <div class="input-group">
             <label>
@@ -1331,7 +1353,7 @@ class BubbleRoomEditor extends LitElement {
   _renderColorsPanel() {
     return html`
       <ha-expansion-panel id="colorsPanel">
-        <div slot="header" @click="${() => this._togglePanel('colorsPanel')}">🎨 Colors</div>
+        <div slot="header" @click="${() => this._togglePanel('colorsPanel')}"><span class="section-header-pill">🎨 Colors</div>
         <div class="section-content">
           <h4>Room</h4>
           ${this._renderColorField("room", "icon_active", "Icon Active")}
