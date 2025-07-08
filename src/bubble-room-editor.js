@@ -281,8 +281,8 @@ class BubbleRoomEditor extends LitElement {
         background: none;
       }
       
-      /* HEADER GLOBALE SEZIONI */
-      ha-expansion-panel::part(header), ha-expansion-panel > [slot="header"] {
+      /* --- HEADER --- */
+      ha-expansion-panel::part(header) {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -301,172 +301,194 @@ class BubbleRoomEditor extends LitElement {
         border: none;
         letter-spacing: 0.01em;
         transition: background 0.3s;
-        text-align: center;
+      }
+      ha-expansion-panel::part(header):hover {
+        background: linear-gradient(90deg, rgba(64,64,96,0.96) 0%, rgba(48,48,72,0.92) 100%);
       }
       
-      /* Colori distintivi per ogni SEZIONE PRINCIPALE */
-      ha-expansion-panel#roomPanel::part(header)            { background: linear-gradient(90deg, rgba(38,50,56,0.92) 0%, rgba(55,71,79,0.85) 100%);}
-      ha-expansion-panel#subButtonMainPanel::part(header)   { background: linear-gradient(90deg, rgba(69,39,160,0.91), rgba(94,53,177,0.81));}
-      ha-expansion-panel#mushroomEntitiesPanel::part(header){ background: linear-gradient(90deg, rgba(0,105,92,0.91), rgba(0,121,107,0.81));}
-      ha-expansion-panel#cameraPanel::part(header)          { background: linear-gradient(90deg, rgba(21,101,192,0.88), rgba(30,136,229,0.81));}
-      ha-expansion-panel#climatePanel::part(header)         { background: linear-gradient(90deg, rgba(239,108,0,0.88), rgba(245,124,0,0.81));}
-      ha-expansion-panel#sensorPanel::part(header)          { background: linear-gradient(90deg, rgba(173,20,87,0.88), rgba(216,27,96,0.81));}
-      ha-expansion-panel#colorsPanel::part(header)          { background: linear-gradient(90deg, rgba(55,71,79,0.85), rgba(38,50,56,0.80));}
+      /* COLORI SPECIFICI PER HEADER */
+      ha-expansion-panel#roomPanel::part(header)            { background: linear-gradient(90deg, #263238e8 0%, #37474fe9 100%);}
+      ha-expansion-panel#subButtonMainPanel::part(header)   { background: linear-gradient(90deg, #4527a0e8, #5e35b1d1);}
+      ha-expansion-panel#mushroomEntitiesPanel::part(header){ background: linear-gradient(90deg, #00695ce8, #00796bd1);}
+      ha-expansion-panel#cameraPanel::part(header)          { background: linear-gradient(90deg, #1565c0e1, #1e88e5cf);}
+      ha-expansion-panel#climatePanel::part(header)         { background: linear-gradient(90deg, #ef6c00e1, #f57c00cf);}
+      ha-expansion-panel#sensorPanel::part(header)          { background: linear-gradient(90deg, #ad1457e1, #d81b60cf);}
+      ha-expansion-panel#colorsPanel::part(header)          { background: linear-gradient(90deg, #37474fe9, #263238cc);}
       
-      /* Colori headers per sottopannelli COLORS */
-      ha-expansion-panel#roomColorsPanel::part(header)        { background: linear-gradient(90deg, rgba(38,50,56,0.90) 0%, rgba(55,71,79,0.80) 100%);}
-      ha-expansion-panel#mushroomColorsPanel::part(header)    { background: linear-gradient(90deg, rgba(0,105,92,0.90), rgba(0,121,107,0.76));}
-      ha-expansion-panel#subbuttonColorsPanel::part(header)   { background: linear-gradient(90deg, rgba(69,39,160,0.90), rgba(94,53,177,0.75));}
-      
-      /* Sotto-header delle mini-sezioni (se usate in altri punti) */
-      .sub-panel-header {
-        width: 100%;
-        text-align: center;
-        background: linear-gradient(90deg, rgba(38,50,56,0.80) 0%, rgba(55,71,79,0.77) 100%);
-        color: #fff;
-        font-size: 1rem;
-        font-weight: 600;
-        padding: 8px 0;
-        border-radius: 12px 12px 0 0;
-        margin-bottom: 2px;
-        backdrop-filter: blur(2px) saturate(110%);
-        opacity: 0.93;
-        letter-spacing: 0.03em;
+      /* --- GLOW COLORATO DEL CONTENUTO (stessa palette header) --- */
+      .section-content.room-glow {
+        box-shadow: 0 4px 24px 0 #26323855, 0 0 0 2px #37474f77;
+      }
+      .section-content.subbutton-glow {
+        box-shadow: 0 4px 24px 0 #5e35b155, 0 0 0 2px #5e35b177;
+      }
+      .section-content.mushroom-glow {
+        box-shadow: 0 4px 24px 0 #00796b44, 0 0 0 2px #00796b77;
+      }
+      .section-content.camera-glow {
+        box-shadow: 0 4px 24px 0 #1e88e544, 0 0 0 2px #1e88e577;
+      }
+      .section-content.climate-glow {
+        box-shadow: 0 4px 24px 0 #f57c0044, 0 0 0 2px #f57c0077;
+      }
+      .section-content.sensor-glow {
+        box-shadow: 0 4px 24px 0 #d81b6044, 0 0 0 2px #d81b6077;
+      }
+      .section-content.colors-glow {
+        box-shadow: 0 4px 24px 0 #37474f33, 0 0 0 2px #26323833;
       }
       
-      /* CONTENUTO SEZIONI */
+      /* --- BOX GENERALE CONTENUTO --- */
       .section-content {
-        padding: 20px;
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 10px;
-        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+        padding: 20px 18px;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.03);
+        margin-bottom: 8px;
+        transition: box-shadow 0.28s;
       }
       
-      /* GRUPPI DI INPUT */
+      /* --- AUTO-SCOPERTA BOX --- */
+      .autodiscover-box {
+        background: linear-gradient(90deg, #101725 0%, #263238 100%);
+        border-radius: 15px;
+        padding: 12px 18px;
+        margin-bottom: 17px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 2px 8px 0 #37474f3a;
+        border: 1.7px solid #4dabf7cc;
+        cursor: pointer;
+        transition: box-shadow 0.22s, border 0.22s;
+      }
+      .autodiscover-box:hover {
+        box-shadow: 0 6px 22px 0 #4dabf73a;
+        border: 1.7px solid #4dabf7;
+      }
+      .autodiscover-label {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        font-size: 1.18rem;
+        font-weight: 700;
+        color: #4dabf7;
+        gap: 20px;
+        cursor: pointer;
+      }
+      .autodiscover-label input[type="checkbox"] {
+        width: 30px;
+        height: 30px;
+        accent-color: #4dabf7;
+        border-radius: 8px;
+        border: 2px solid #4dabf7;
+        margin-right: 12px;
+        box-shadow: 0 2px 10px #4dabf7aa;
+        transition: box-shadow 0.16s;
+      }
+      
+      /* --- GRUPPI DI INPUT --- */
       .input-group {
         display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 10px 22px;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px 10px 18px;
         margin-bottom: 13px;
-        border-radius: 15px;
-        background: linear-gradient(90deg, rgba(77,171,247,0.08) 0%, rgba(33,150,243,0.06) 100%);
-        border: 1px solid rgba(77,171,247,0.09);
-        box-shadow: 0 1px 3px rgba(77,171,247,0.07);
+        border-radius: 13px;
+        background: linear-gradient(90deg, #2128410f 0%, #28304b10 100%);
+        border: 1px solid #37474f22;
+        box-shadow: 0 1px 3px #4dabf707;
         color: #a5c7ed;
-        font-size: 0.98rem;
+        font-size: 1.02rem;
         font-weight: 500;
-        transition: box-shadow 0.18s, background 0.2s;
       }
       
-      /* LABELS E CAMPI INPUT */
+      /* --- LABELS E CAMPI INPUT --- */
       label {
-        display: inline-block;
         font-weight: 600;
         font-size: 0.97rem;
         color: #90caf9;
+        margin-bottom: 4px;
       }
       input, textarea, select {
-        width: 100%;
-        box-sizing: border-box;
         border: 1px solid var(--divider-color, #444);
         border-radius: 6px;
         padding: 8px;
         background-color: #202020;
         color: #f1f1f1;
         font-size: 0.97rem;
-        transition: border-color 0.18s;
       }
-      select {
-        background-color: #262626;
-      }
-      textarea {
-        min-height: 70px;
-      }
-      input[type="color"] {
-        padding: 0;
-        border: none;
-        background: transparent;
-      }
-      input[type="range"] {
-        width: 100px;
-      }
+      input[type="color"] { padding: 0; border: none; background: transparent; }
+      input[type="range"] { width: 100px; }
       
-      /* PILL BUTTON GROUPS */
-      .pill-group {
+      /* --- TAB BUTTON GROUP (TAP/HOLD) --- */
+      .tab-group {
         display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin: 6px 0 12px;
+        gap: 10px;
+        margin: 0.5em 0 0.7em 0;
       }
-      .pill-button {
-        padding: 6px 14px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background-color: #1e1e2f;
-        color: #ccc;
-        border-radius: 20px;
-        font-size: 0.92rem;
-        cursor: pointer;
-        transition: all 0.22s cubic-bezier(.39,.19,.33,1.28);
-        transform: scale(1);
-        box-shadow: 0 1px 3px rgba(77, 171, 247, 0.08);
-      }
-      .pill-button:hover {
-        background-color: #2a2a3f;
-        border-color: #4dabf7;
-        color: #fff;
-        transform: scale(1.06);
-      }
-      .pill-button.active {
-        background-color: #4dabf7;
-        color: #101130;
+      .tab-btn {
+        padding: 7px 22px;
+        border-radius: 22px;
+        border: 2px solid #4dabf799;
+        background: #161927;
+        color: #90caf9;
+        font-size: 1rem;
         font-weight: 600;
-        border-color: #4dabf7;
-        box-shadow: 0 0 7px rgba(77, 171, 247, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: background 0.18s, color 0.18s, border 0.16s, box-shadow 0.18s;
+        box-shadow: 0 1px 7px #4dabf71a;
+      }
+      .tab-btn.active,
+      .tab-btn:active,
+      .tab-btn:focus {
+        background: linear-gradient(90deg,#4dabf7 50%,#1976d2 100%);
+        color: #101130;
+        border: 2px solid #4dabf7;
+        box-shadow: 0 3px 13px #4dabf759;
+      }
+      .tab-btn:hover:not(.active) {
+        background: #23264a;
+        color: #fff;
+        border: 2px solid #1976d2;
       }
       
-      /* RESET BUTTON (centrale, bordo rosso) */
       .reset-button {
-        border: 2px solid #d32f2f;
-        color: #d32f2f;
-        background: none;
+        background: transparent;
+        color: #ff6464;
+        border: 2px solid #ff6464;
         border-radius: 18px;
-        padding: 7px 26px;
+        padding: 7px 28px;
         font-weight: bold;
         font-size: 1rem;
-        margin: 0 auto;
-        display: block;
-        box-shadow: 0 1px 4px rgba(33,150,243,0.13);
+        margin-top: 8px;
         cursor: pointer;
-        transition: border-color 0.15s, color 0.15s, background 0.2s;
+        box-shadow: 0 1px 4px #ff646433;
+        transition: background 0.18s, box-shadow 0.16s;
       }
       .reset-button:hover {
-        background: #d32f2f1a;
+        background: #ff646417;
         color: #fff;
-        border-color: #b71c1c;
+        box-shadow: 0 3px 10px #ff646444;
       }
       
-      /* NOTE, ERRORI, VARI */
-      .note {
-        margin-top: 2rem;
-        font-size: 0.85rem;
-        text-align: center;
-        color: var(--secondary-text-color, #a0a4af);
-      }
-      .error {
-        border: 1px solid red;
-      }
-      .version {
-        font-size: 0.97rem;
-        font-weight: normal;
-        margin-left: 8px;
-        color: var(--secondary-text-color, #8ca0c0);
+      /* --- MINI PANEL HEADER (per subpanel collassabili) --- */
+      .sub-panel-header {
+        width: 100%;
+        text-align: left;
+        background: none;
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+        letter-spacing: 0.03em;
+        margin-top: 0.7em;
       }
       
-      /* Riduci padding tra i pannelli a tenda figli in Colors */
-      #colorsPanel .section-content ha-expansion-panel {
-        margin-bottom: 8px;
-      }
+      /* --- ERRORI --- */
+      .error { border: 1.2px solid #ff6464 !important; }
 
 
     `;
@@ -1107,8 +1129,26 @@ class BubbleRoomEditor extends LitElement {
   _renderRoomPanel() {
     return html`
       <ha-expansion-panel id="roomPanel">
-        <span slot="header">🛋️ Room Settings</span>
-        <div class="section-content">
+        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🛋️ Room Settings</div>
+        <div class="section-content room-glow">
+          
+          <!-- Auto-scoperta -->
+          <div class="autodiscover-box" @click="${() => {
+              const curr = this._config.auto_discovery_sections?.room_presence ?? false;
+              this._toggleAutoDiscoverySection('room_presence', !curr);
+            }}">
+            <label class="autodiscover-label">
+              <input
+                type="checkbox"
+                .checked="${this._config.auto_discovery_sections?.room_presence ?? false}"
+                @change="${e => this._toggleAutoDiscoverySection('room_presence', e.target.checked)}"
+                @click="${e => e.stopPropagation()}"
+              />
+              <span>Auto-scoperta attiva per Presence</span>
+            </label>
+          </div>
+  
+          <!-- Room name -->
           <div class="input-group">
             <label>Room name:</label>
             <input
@@ -1116,6 +1156,8 @@ class BubbleRoomEditor extends LitElement {
               .value="${this._config.name || ''}"
               @input="${this._updateName}" />
           </div>
+  
+          <!-- Area picker -->
           <div class="input-group">
             <label>Area:</label>
             <ha-area-picker
@@ -1141,40 +1183,106 @@ class BubbleRoomEditor extends LitElement {
               }}">
             </ha-area-picker>
           </div>
-          <!-- ICONA + TAP + HOLD azioni in un solo gruppo -->
+  
+          <!-- Room Icon + Tap/Hold insieme -->
           <div class="input-group">
-            <label>Room Icon:</label>
-            <ha-icon-picker
-              .hass="${this._hass}"
-              .value="${this._config.icon || ''}"
-              allow-custom-icon
-              @value-changed="${e => {
-                this._config = { ...this._config, icon: e.detail.value };
-                this.requestUpdate();
-                this._fireConfigChanged();
-              }}">
-            </ha-icon-picker>
-            ${this._renderRoomAction()}
+            <div style="display: flex; flex-direction: column; gap: 10px; width:100%;">
+              <div style="display: flex; align-items: center; gap: 18px;">
+                <label>Room Icon:</label>
+                <ha-icon-picker
+                  .hass="${this._hass}"
+                  .value="${this._config.icon || ''}"
+                  allow-custom-icon
+                  @value-changed="${e => {
+                    this._config = { ...this._config, icon: e.detail.value };
+                    this.requestUpdate();
+                    this._fireConfigChanged();
+                  }}">
+                </ha-icon-picker>
+              </div>
+              <div style="display: flex; flex-direction: row; gap: 38px; flex-wrap: wrap; margin-top: 8px;">
+                <div>
+                  <label style="margin-bottom:2px;">Tap:</label>
+                  <div class="tab-group">
+                    ${['toggle', 'more-info', 'navigate', 'call-service', 'none'].map(action => html`
+                      <button
+                        class="tab-btn ${this._config.tap_action?.action === action ? 'active' : ''}"
+                        @click="${() => this._updateTapActionField('action')({ target: { value: action } })}">
+                        ${action === 'toggle' ? '🟢' :
+                          action === 'more-info' ? '🔎' :
+                          action === 'navigate' ? '↗️' :
+                          action === 'call-service' ? '⚙️' : '🚫'
+                        } ${action.replace('-', ' ')}
+                      </button>
+                    `)}
+                  </div>
+                  ${this._config.tap_action?.action === 'navigate' ? html`
+                    <label>Navigation Path:</label>
+                    <input type="text" .value="${this._config.tap_action?.navigation_path || ''}"
+                      @input="${this._updateTapActionField('navigation_path')}" />
+                  ` : ''}
+                  ${this._config.tap_action?.action === 'call-service' ? html`
+                    <label>Service:</label>
+                    <input type="text" .value="${this._config.tap_action?.service || ''}"
+                      @input="${this._updateTapActionField('service')}" />
+                    <label>Service Data (JSON):</label>
+                    <textarea
+                      class="${this._jsonError ? 'error' : ''}"
+                      .value="${this._config.tap_action?.service_data ? JSON.stringify(this._config.tap_action.service_data) : ''}"
+                      @input="${this._updateTapActionField('service_data')}"></textarea>
+                    ${this._jsonError ? html`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
+                  ` : ''}
+                </div>
+                <div>
+                  <label style="margin-bottom:2px;">Hold:</label>
+                  <div class="tab-group">
+                    ${['toggle', 'more-info', 'navigate', 'call-service', 'none'].map(action => html`
+                      <button
+                        class="tab-btn ${this._config.hold_action?.action === action ? 'active' : ''}"
+                        @click="${() => this._updateHoldActionField('action')({ target: { value: action } })}">
+                        ${action === 'toggle' ? '🟢' :
+                          action === 'more-info' ? '🔎' :
+                          action === 'navigate' ? '↗️' :
+                          action === 'call-service' ? '⚙️' : '🚫'
+                        } ${action.replace('-', ' ')}
+                      </button>
+                    `)}
+                  </div>
+                  ${this._config.hold_action?.action === 'navigate' ? html`
+                    <label>Navigation Path:</label>
+                    <input type="text" .value="${this._config.hold_action?.navigation_path || ''}"
+                      @input="${this._updateHoldActionField('navigation_path')}" />
+                  ` : ''}
+                  ${this._config.hold_action?.action === 'call-service' ? html`
+                    <label>Service:</label>
+                    <input type="text" .value="${this._config.hold_action?.service || ''}"
+                      @input="${this._updateHoldActionField('service')}" />
+                    <label>Service Data (JSON):</label>
+                    <textarea
+                      class="${this._jsonError ? 'error' : ''}"
+                      .value="${this._config.hold_action?.service_data ? JSON.stringify(this._config.hold_action.service_data) : ''}"
+                      @input="${this._updateHoldActionField('service_data')}"></textarea>
+                    ${this._jsonError ? html`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
+                  ` : ''}
+                </div>
+              </div>
+            </div>
           </div>
-          <!-- Flag Auto-scoperta + Presence nello stesso gruppo -->
+  
+          <!-- Presence -->
           <div class="input-group">
-            <label style="margin-right:10px;">
-              <input
-                type="checkbox"
-                .checked="${this._config.auto_discovery_sections?.room_presence ?? false}"
-                @change="${e => this._toggleAutoDiscoverySection('room_presence', e.target.checked)}" />
-              Auto-scoperta attiva Presence
-            </label>
+            <label>Presence (ID):</label>
             ${this._renderEntityInput("Presence (ID)", "presence", "entity", "room_presence")}
           </div>
-          <div style="margin-top:1em;text-align:center;">
+  
+          <!-- Reset -->
+          <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetRoomConfig}">🔄 Reset Room Settings</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
-
 
   _resetRoomConfig() {
     this._config = {
@@ -1196,37 +1304,116 @@ class BubbleRoomEditor extends LitElement {
   _renderSubButtonPanelGroup() {
     return html`
       <ha-expansion-panel id="subButtonMainPanel">
-        <span slot="header">🔘 SUB-BUTTON</span>
-        <div class="section-content">
-          <!-- Auto-scoperta flag su una riga -->
-          <div class="input-group">
-            <label style="display:flex;align-items:center;gap:7px;">
+        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🔘 SUB-BUTTON</div>
+        <div class="section-content subbutton-glow">
+          
+          <!-- Auto-scoperta -->
+          <div class="autodiscover-box" @click="${() => {
+              const curr = this._config.auto_discovery_sections?.subbutton ?? false;
+              this._toggleAutoDiscoverySection('subbutton', !curr);
+            }}">
+            <label class="autodiscover-label">
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.subbutton ?? false}"
-                @change="${e => this._toggleAutoDiscoverySection('subbutton', e.target.checked)}" />
-              Auto-scoperta attiva
+                @change="${e => this._toggleAutoDiscoverySection('subbutton', e.target.checked)}"
+                @click="${e => e.stopPropagation()}"
+              />
+              <span>Auto-scoperta attiva</span>
             </label>
           </div>
-          ${["sub-button1", "sub-button2", "sub-button3", "sub-button4"].map((key, i) => html`
-            <div class="input-group" style="margin-bottom:20px;">
-              <div style="font-weight:bold;margin-bottom:4px;">Sub-button ${i+1}</div>
-              ${this._renderEntityInput("Entity (ID)", key)}
-              ${this._renderIconInput("Icon", key)}
-              ${this._renderSubButtonAction(key)}
-            </div>
-          `)}
-          <div style="margin-top:1em;text-align:center;">
+  
+          <!-- Subbuttons collapsable -->
+          ${["sub-button1", "sub-button2", "sub-button3", "sub-button4"].map((key, i) => {
+            const label = `Sub-button ${i+1}`;
+            const entityConfig = this._config.entities?.[key] || {
+              entity: "", icon: "", tap_action: { action: "toggle" }, hold_action: { action: "more-info" }
+            };
+            return html`
+              <ha-expansion-panel style="margin-top: 14px;">
+                <div slot="header" style="width:100%;font-weight:600;">${label}</div>
+                <div class="section-content subbutton-glow" style="margin-bottom:0;">
+                  <div class="input-group">
+                    <label>Entity:</label>
+                    ${this._renderEntityInput("Entity ID", key, "entity", "subbutton")}
+                  </div>
+                  <div class="input-group">
+                    <label>Icon:</label>
+                    ${this._renderIconInput("Icon", key)}
+                  </div>
+                  <div class="input-group">
+                    <label>Tap:</label>
+                    <div class="tab-group">
+                      ${['toggle', 'more-info', 'navigate', 'call-service', 'none'].map(action => html`
+                        <button
+                          class="tab-btn ${entityConfig.tap_action?.action === action ? 'active' : ''}"
+                          @click="${() => this._updateEntityTapAction(key, 'action')({ target: { value: action } })}">
+                          ${action === 'toggle' ? '🟢' :
+                            action === 'more-info' ? '🔎' :
+                            action === 'navigate' ? '↗️' :
+                            action === 'call-service' ? '⚙️' : '🚫'
+                          } ${action.replace('-', ' ')}
+                        </button>
+                      `)}
+                    </div>
+                    ${entityConfig.tap_action?.action === 'navigate' ? html`
+                      <label>Navigation Path:</label>
+                      <input type="text" .value="${entityConfig.tap_action?.navigation_path || ''}"
+                        @input="${this._updateEntityTapAction(key, 'navigation_path')}" />
+                    ` : ''}
+                    ${entityConfig.tap_action?.action === 'call-service' ? html`
+                      <label>Service:</label>
+                      <input type="text" .value="${entityConfig.tap_action?.service || ''}"
+                        @input="${this._updateEntityTapAction(key, 'service')}" />
+                      <label>Service Data (JSON):</label>
+                      <textarea
+                        .value="${entityConfig.tap_action?.service_data ? JSON.stringify(entityConfig.tap_action.service_data) : ''}"
+                        @input="${this._updateEntityTapAction(key, 'service_data')}"></textarea>
+                    ` : ''}
+                  </div>
+                  <div class="input-group">
+                    <label>Hold:</label>
+                    <div class="tab-group">
+                      ${['toggle', 'more-info', 'navigate', 'call-service', 'none'].map(action => html`
+                        <button
+                          class="tab-btn ${entityConfig.hold_action?.action === action ? 'active' : ''}"
+                          @click="${() => this._updateEntityHoldAction(key, 'action')({ target: { value: action } })}">
+                          ${action === 'toggle' ? '🟢' :
+                            action === 'more-info' ? '🔎' :
+                            action === 'navigate' ? '↗️' :
+                            action === 'call-service' ? '⚙️' : '🚫'
+                          } ${action.replace('-', ' ')}
+                        </button>
+                      `)}
+                    </div>
+                    ${entityConfig.hold_action?.action === 'navigate' ? html`
+                      <label>Navigation Path:</label>
+                      <input type="text" .value="${entityConfig.hold_action?.navigation_path || ''}"
+                        @input="${this._updateEntityHoldAction(key, 'navigation_path')}" />
+                    ` : ''}
+                    ${entityConfig.hold_action?.action === 'call-service' ? html`
+                      <label>Service:</label>
+                      <input type="text" .value="${entityConfig.hold_action?.service || ''}"
+                        @input="${this._updateEntityHoldAction(key, 'service')}" />
+                      <label>Service Data (JSON):</label>
+                      <textarea
+                        .value="${entityConfig.hold_action?.service_data ? JSON.stringify(entityConfig.hold_action.service_data) : ''}"
+                        @input="${this._updateEntityHoldAction(key, 'service_data')}"></textarea>
+                    ` : ''}
+                  </div>
+                </div>
+              </ha-expansion-panel>
+            `;
+          })}
+  
+          <!-- Reset -->
+          <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetSubButtonConfig}">🔄 Reset Sub-buttons</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
-
-
-
-
 
   _resetSubButtonConfig() {
     const entities = { ...this._config.entities };
@@ -1247,35 +1434,54 @@ class BubbleRoomEditor extends LitElement {
     ];
     return html`
       <ha-expansion-panel id="mushroomEntitiesPanel">
-        <span slot="header">🍄 Mushroom Entities</span>
-        <div class="section-content">
-          <!-- Flag auto-scoperta su una riga -->
-          <div class="input-group">
-            <label style="display:flex;align-items:center;gap:7px;">
+        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🍄 Mushroom Entities</div>
+        <div class="section-content mushroom-glow">
+  
+          <!-- Auto-scoperta -->
+          <div class="autodiscover-box" @click="${() => {
+              const curr = this._config.auto_discovery_sections?.mushroom ?? false;
+              this._toggleAutoDiscoverySection('mushroom', !curr);
+            }}">
+            <label class="autodiscover-label">
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.mushroom ?? false}"
-                @change="${e => this._toggleAutoDiscoverySection('mushroom', e.target.checked)}" />
-              Auto-scoperta attiva
+                @change="${e => this._toggleAutoDiscoverySection('mushroom', e.target.checked)}"
+                @click="${e => e.stopPropagation()}"
+              />
+              <span>Auto-scoperta attiva</span>
             </label>
           </div>
-          ${entityKeys.map((entity, i) => html`
-            <div class="input-group" style="margin-bottom:20px;">
-              <div style="font-weight:bold;margin-bottom:4px;">${entity.label}</div>
-              ${this._renderEntityInput("Entity (ID)", entity.key)}
-              ${this._renderIconInput("Icon", entity.key)}
-              ${this._renderSubButtonAction(entity.key)}
-            </div>
-          `)}
-          <div style="margin-top:1em;text-align:center;">
+  
+          <!-- Entities collapsable -->
+          ${entityKeys.map((entity, i) => {
+            const entityConfig = this._config.entities?.[entity.key] || { entity: "", icon: "" };
+            return html` <
+      ha - expansion - panel style = "margin-top: 14px;" >
+      <div slot="header" style="width:100%;font-weight:600;">${entity.label}</div> <
+      div class = "section-content mushroom-glow"
+    style = "margin-bottom:0;" >
+      <div class="input-group">
+                    <label>Entity:</label>
+                    ${this._renderEntityInput("Entity ID", entity.key, "entity", "mushroom")}
+                  </div> <
+      div class = "input-group" >
+      <label>Icon:</label>
+    $ { this._renderIconInput("Icon", entity.key) }
+    </div> <
+    /div> <
+    /ha-expansion-panel>
+    `;
+          })}
+  
+          <!-- Reset -->
+          <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetMushroomEntitiesConfig}">🔄 Reset Mushroom Entities</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
-  }
-
-                
+  }                
   _resetMushroomEntitiesConfig() {
     const entities = { ...this._config.entities };
     ["entities1", "entities2", "entities3", "entities4", "entities5"].forEach(key => {
@@ -1288,24 +1494,35 @@ class BubbleRoomEditor extends LitElement {
   _renderCameraPanel() {
     return html`
       <ha-expansion-panel id="cameraPanel">
-        <span slot="header">📷 Camera</span>
-        <div class="section-content">
-          <!-- Flag auto-scoperta su una riga -->
-          <div class="input-group">
-            <label style="display:flex;align-items:center;gap:7px;">
+        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">📷 Camera</div>
+        <div class="section-content camera-glow">
+  
+          <!-- Auto-scoperta -->
+          <div class="autodiscover-box" @click="${() => {
+              const curr = this._config.auto_discovery_sections?.camera ?? false;
+              this._toggleAutoDiscoverySection('camera', !curr);
+            }}">
+            <label class="autodiscover-label">
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.camera ?? false}"
-                @change="${e => this._toggleAutoDiscoverySection('camera', e.target.checked)}" />
-              Auto-scoperta attiva
+                @change="${e => this._toggleAutoDiscoverySection('camera', e.target.checked)}"
+                @click="${e => e.stopPropagation()}"
+              />
+              <span>Auto-scoperta attiva</span>
             </label>
           </div>
-          <!-- Entity + Icon nella stessa box -->
+  
+          <!-- Entity ID + Icona -->
           <div class="input-group">
+            <label>Camera (ID):</label>
             ${this._renderEntityInput("Camera (ID)", "camera", 'entity', 'camera')}
+            <label style="margin-left:20px;">Icon:</label>
             ${this._renderIconInput("Camera Icon", "camera")}
           </div>
-          <div style="margin-top:1em;text-align:center;">
+  
+          <!-- Reset -->
+          <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetCameraConfig}">🔄 Reset Camera</button>
           </div>
         </div>
@@ -1323,24 +1540,35 @@ class BubbleRoomEditor extends LitElement {
   _renderClimatePanel() {
     return html`
       <ha-expansion-panel id="climatePanel">
-        <span slot="header">🌡️ Climate</span>
-        <div class="section-content">
-          <!-- Flag auto-scoperta su una riga -->
-          <div class="input-group">
-            <label style="display:flex;align-items:center;gap:7px;">
+        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🌡️ Climate</div>
+        <div class="section-content climate-glow">
+  
+          <!-- Auto-scoperta -->
+          <div class="autodiscover-box" @click="${() => {
+              const curr = this._config.auto_discovery_sections?.climate ?? false;
+              this._toggleAutoDiscoverySection('climate', !curr);
+            }}">
+            <label class="autodiscover-label">
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.climate ?? false}"
-                @change="${e => this._toggleAutoDiscoverySection('climate', e.target.checked)}" />
-              Auto-scoperta attiva
+                @change="${e => this._toggleAutoDiscoverySection('climate', e.target.checked)}"
+                @click="${e => e.stopPropagation()}"
+              />
+              <span>Auto-scoperta attiva</span>
             </label>
           </div>
-          <!-- Entity + Icon nella stessa box -->
+  
+          <!-- Entity ID + Icona -->
           <div class="input-group">
+            <label>Climate (ID):</label>
             ${this._renderEntityInput("Climate (ID)", "climate", 'entity', 'climate')}
+            <label style="margin-left:20px;">Icon:</label>
             ${this._renderIconInput("Climate Icon", "climate")}
           </div>
-          <div style="margin-top:1em;text-align:center;">
+  
+          <!-- Reset -->
+          <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetClimateConfig}">🔄 Reset Climate</button>
           </div>
         </div>
@@ -1358,57 +1586,81 @@ class BubbleRoomEditor extends LitElement {
   _renderSensorPanel() {
     return html`
       <ha-expansion-panel id="sensorPanel">
-        <span slot="header">🧪 Sensor</span>
-        <div class="section-content">
-          <!-- Flag auto-scoperta su una riga -->
-          <div class="input-group">
-            <label style="display:flex;align-items:center;gap:7px;">
+        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🧪 Sensor</div>
+        <div class="section-content sensor-glow">
+  
+          <!-- Auto-scoperta -->
+          <div class="autodiscover-box" @click="${() => {
+              const curr = this._config.auto_discovery_sections?.sensor ?? false;
+              this._toggleAutoDiscoverySection('sensor', !curr);
+            }}">
+            <label class="autodiscover-label">
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.sensor ?? false}"
-                @change="${e => this._toggleAutoDiscoverySection('sensor', e.target.checked)}" />
-              Auto-scoperta attiva
+                @change="${e => this._toggleAutoDiscoverySection('sensor', e.target.checked)}"
+                @click="${e => e.stopPropagation()}"
+              />
+              <span>Auto-scoperta attiva</span>
             </label>
           </div>
-          <!-- 4 sensori, ognuno in una unica box -->
+  
+          <!-- Sensors collassabili -->
           ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) => {
             const sensor = this._config.entities?.[key] || {};
-            return html`
-              <div class="input-group" style="margin-bottom:20px;">
-                <div style="font-weight:bold;margin-bottom:4px;">Sensor ${i + 1}</div>
-                <div style="margin-bottom:8px;">
-                  <label>Tipo Sensore:</label>
-                  <select .value="${sensor.type || ''}" @change="${e => this._updateSensor(i, 'type', e.target.value)}">
-                    <option value="">-- nessuno --</option>
-                    ${Object.entries(SENSOR_TYPE_MAP).map(([type, data]) =>
-                      html`<option value="${type}">${data.emoji} ${type.charAt(0).toUpperCase() + type.slice(1)}</option>`
-                    )}
-                  </select>
-                </div>
-                <div style="margin-bottom:8px;">
-                  ${this._renderEntityInput("Entity ID", key)}
-                </div>
-                ${sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? html`
-                  <div style="margin-bottom:8px;">
-                    <label>Unità:</label>
-                    <select
-                      .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
-                      @change="${e => this._updateSensor(i, 'unit', e.target.value)}">
-                      ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u => html`<option value="${u}">${u}</option>`)}
+            return html` <
+      ha - expansion - panel style = "margin-top: 14px;" >
+      <div slot="header" style="width:100%;font-weight:600;">Sensor ${i + 1}</div> <
+      div class = "section-content sensor-glow"
+    style = "margin-bottom:0;" >
+      <div class="input-group">
+                    <label>Tipo Sensore:</label>
+                    <select .value="${sensor.type || ''}" @change="${e => this._updateSensor(i, 'type', e.target.value)}">
+                      <option value="">-- nessuno --</option>
+                      ${[
+                        { type: 'temperature', label: '🌡️ Temperatura' },
+                        { type: 'humidity', label: '💦 Umidità' },
+                        { type: 'co2', label: '🟢 CO₂' },
+                        { type: 'illuminance', label: '☀️ Luminosità' },
+                        { type: 'pm1', label: '🟤 PM1' },
+                        { type: 'pm25', label: '⚫️ PM2.5' },
+                        { type: 'pm10', label: '⚪️ PM10' },
+                        { type: 'uv', label: '🌞 UV Index' },
+                        { type: 'noise', label: '🔊 Rumore' },
+                        { type: 'pressure', label: '📈 Pressione' },
+                        { type: 'voc', label: '🧪 VOC' },
+                      ].map(t => html`<option value="${t.type}">${t.label}</option>`)}
                     </select>
-                  </div>
-                ` : ''}
-              </div>
-            `;
+                  </div> <
+      div class = "input-group" >
+      <label>Entity ID:</label>
+    $ { this._renderEntityInput("Entity ID", key) }
+    <label style="margin-left:20px;">Icon:</label>
+    $ { this._renderIconInput("Icon", key) }
+    </div>
+    $ { sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? html`
+                    <div class="input-group">
+                      <label>Unità:</label>
+                      <select
+                        .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
+                        @change="${e => this._updateSensor(i, 'unit', e.target.value)}">
+                        ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u => html`<option value="${u}">${u}</option>`)}
+                      </select>
+                    </div>
+                  ` : '' }
+    </div> <
+    /ha-expansion-panel>
+    `;
           })}
-          <div style="margin-top:1em;text-align:center;">
+  
+          <!-- Reset -->
+          <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetSensorConfig}">🔄 Reset Sensors</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
-
   _resetSensorConfig() {
     const entities = { ...this._config.entities };
     ["sensor1", "sensor2", "sensor3", "sensor4"].forEach(key => {
@@ -1421,56 +1673,52 @@ class BubbleRoomEditor extends LitElement {
   _renderColorsPanel() {
     return html`
       <ha-expansion-panel id="colorsPanel">
-        <span slot="header">🎨 Colors</span>
-        <div class="section-content">
+        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🎨 Colors</div>
+        <div class="section-content colors-glow">
   
-          <!-- ROOM COLORS -->
-          <ha-expansion-panel id="roomColorsPanel" style="margin-bottom:10px;">
-            <span slot="header">🛋️ Room</span>
-            <div class="section-content" style="padding-top:12px;">
+          <ha-expansion-panel style="margin-top:0;">
+            <div slot="header" style="width:100%;font-weight:600;">Room</div>
+            <div class="section-content colors-glow" style="margin-bottom:0;">
               <div class="input-group">
-                <label>Background:</label>
+                <label>Icon Active</label>
+                ${this._renderColorField("room", "icon_active", "Icon Active")}
+                <label style="margin-left:20px;">Icon Inactive</label>
+                ${this._renderColorField("room", "icon_inactive", "Icon Inactive")}
+              </div>
+              <div class="input-group">
+                <label>Background Active</label>
                 ${this._renderColorField("room", "background_active", "Background Active")}
+                <label style="margin-left:20px;">Background Inactive</label>
                 ${this._renderColorField("room", "background_inactive", "Background Inactive")}
               </div>
               <div class="input-group">
-                <label>Icon:</label>
-                ${this._renderColorField("room", "icon_active", "Icon Active")}
-                ${this._renderColorField("room", "icon_inactive", "Icon Inactive")}
-              </div>
-            </div>
-          </ha-expansion-panel>
-  
-          <!-- MUSHROOM COLORS -->
-          <ha-expansion-panel id="mushroomColorsPanel" style="margin-bottom:10px;">
-            <span slot="header">🍄 Mushroom</span>
-            <div class="section-content" style="padding-top:12px;">
-              <div class="input-group">
-                <label>Icon:</label>
+                <label>Mushroom Icon Active</label>
                 ${this._renderColorField("room", "mushroom_active", "Mushroom Icon Active")}
+                <label style="margin-left:20px;">Mushroom Icon Inactive</label>
                 ${this._renderColorField("room", "mushroom_inactive", "Mushroom Icon Inactive")}
               </div>
             </div>
           </ha-expansion-panel>
   
-          <!-- SUBBUTTON COLORS -->
-          <ha-expansion-panel id="subbuttonColorsPanel">
-            <span slot="header">🔘 Subbutton</span>
-            <div class="section-content" style="padding-top:12px;">
+          <ha-expansion-panel style="margin-top:18px;">
+            <div slot="header" style="width:100%;font-weight:600;">Subbutton</div>
+            <div class="section-content colors-glow" style="margin-bottom:0;">
               <div class="input-group">
-                <label>Background:</label>
+                <label>Background On</label>
                 ${this._renderColorField("subbutton", "background_on", "Background On")}
+                <label style="margin-left:20px;">Background Off</label>
                 ${this._renderColorField("subbutton", "background_off", "Background Off")}
               </div>
               <div class="input-group">
-                <label>Icon:</label>
+                <label>Icon On</label>
                 ${this._renderColorField("subbutton", "icon_on", "Icon On")}
+                <label style="margin-left:20px;">Icon Off</label>
                 ${this._renderColorField("subbutton", "icon_off", "Icon Off")}
               </div>
             </div>
           </ha-expansion-panel>
   
-          <div style="margin-top:1.2em;text-align:center;">
+          <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetColorsConfig}">🔄 Reset Colors</button>
           </div>
         </div>
