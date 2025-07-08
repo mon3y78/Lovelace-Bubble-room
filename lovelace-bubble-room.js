@@ -954,28 +954,35 @@ class BubbleRoomEditor extends r {
   static get styles() {
     return i$3`
       :host {
+        /* variabili per gestire facilmente il gradiente degli header */
+        --bubble-header-start: #263238e8;
+        --bubble-header-end:   #37474fe9;
         display: block;
         font-family: "Segoe UI", Roboto, sans-serif;
         color: #f2f4f8;
         font-size: 1rem;
         background: none;
       }
-      
-      /* --- HEADER --- */
+  
+      /* --- HEADER UNIFICATI --- */
       ha-expansion-panel::part(header) {
         display: flex;
         align-items: center;
         justify-content: center;
         min-height: 56px;
         width: 100%;
-        background: linear-gradient(90deg, rgba(48,48,64,0.88) 0%, rgba(32,32,48,0.83) 100%);
+        background: linear-gradient(
+          90deg,
+          var(--bubble-header-start) 0%,
+          var(--bubble-header-end)   100%
+        );
         color: #fff;
         font-size: 1.18rem;
         font-weight: 700;
         border-radius: 16px;
         margin-bottom: 12px;
         padding: 0 18px;
-        box-shadow: 0 2px 12px 0 rgba(0,0,0,0.16);
+        box-shadow: 0 2px 12px rgba(0,0,0,0.16);
         backdrop-filter: blur(4px) saturate(110%);
         opacity: 0.95;
         border: none;
@@ -983,104 +990,63 @@ class BubbleRoomEditor extends r {
         transition: background 0.3s;
       }
       ha-expansion-panel::part(header):hover {
-        background: linear-gradient(90deg, rgba(64,64,96,0.96) 0%, rgba(48,48,72,0.92) 100%);
+        background: linear-gradient(
+          90deg,
+          rgba(64,64,96,0.96) 0%,
+          rgba(48,48,72,0.92) 100%
+        );
       }
-      
-      /* COLORI SPECIFICI PER HEADER */
-      ha-expansion-panel#roomPanel::part(header)            { background: linear-gradient(90deg, #263238e8 0%, #37474fe9 100%);}
-      ha-expansion-panel#subButtonMainPanel::part(header)   { background: linear-gradient(90deg, #4527a0e8, #5e35b1d1);}
-      ha-expansion-panel#mushroomEntitiesPanel::part(header){ background: linear-gradient(90deg, #00695ce8, #00796bd1);}
-      ha-expansion-panel#cameraPanel::part(header)          { background: linear-gradient(90deg, #1565c0e1, #1e88e5cf);}
-      ha-expansion-panel#climatePanel::part(header)         { background: linear-gradient(90deg, #ef6c00e1, #f57c00cf);}
-      ha-expansion-panel#sensorPanel::part(header)          { background: linear-gradient(90deg, #ad1457e1, #d81b60cf);}
-      ha-expansion-panel#colorsPanel::part(header)          { background: linear-gradient(90deg, #37474fe9, #263238cc);}
-      
-      /* --- GLOW COLORATO DEL CONTENUTO (stessa palette header) --- */
-      .section-content.room-glow {
-        box-shadow: 0 4px 24px 0 #26323855, 0 0 0 2px #37474f77;
+      /* rimosse tutte le regole specifiche per #roomPanel, #cameraPanel, ecc. */
+  
+      /* --- CONTENUTO IN “CARD” --- */
+      ha-expansion-panel::part(content) {
+        padding: 0; /* reset padding di default */
       }
-      .section-content.subbutton-glow {
-        box-shadow: 0 4px 24px 0 #5e35b155, 0 0 0 2px #5e35b177;
-      }
-      .section-content.mushroom-glow {
-        box-shadow: 0 4px 24px 0 #00796b44, 0 0 0 2px #00796b77;
-      }
-      .section-content.camera-glow {
-        box-shadow: 0 4px 24px 0 #1e88e544, 0 0 0 2px #1e88e577;
-      }
-      .section-content.climate-glow {
-        box-shadow: 0 4px 24px 0 #f57c0044, 0 0 0 2px #f57c0077;
-      }
-      .section-content.sensor-glow {
-        box-shadow: 0 4px 24px 0 #d81b6044, 0 0 0 2px #d81b6077;
-      }
-      .section-content.colors-glow {
-        box-shadow: 0 4px 24px 0 #37474f33, 0 0 0 2px #26323833;
-      }
-      
-      /* --- BOX GENERALE CONTENUTO --- */
       .section-content {
-        padding: 20px 18px;
-        border-radius: 18px;
-        background: rgba(255,255,255,0.03);
-        margin-bottom: 8px;
+        margin: 0 0 12px 0;
+        padding: 24px;
+        border-radius: 16px;
+        background: rgba(40, 48, 64, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
         transition: box-shadow 0.28s;
       }
-      
+  
       /* --- AUTO-SCOPERTA BOX --- */
       .autodiscover-box {
-        background: linear-gradient(90deg, #101725 0%, #263238 100%);
+        background: linear-gradient(90deg, #1a2535 0%, #2e3b56 100%);
         border-radius: 15px;
         padding: 12px 18px;
         margin-bottom: 17px;
         display: flex;
         align-items: center;
-        box-shadow: 0 2px 8px 0 #37474f3a;
-        border: 1.7px solid #4dabf7cc;
+        box-shadow: 0 2px 8px rgba(55,71,79,0.23);
+        border: 1.5px solid #42a5f5cc;
         cursor: pointer;
         transition: box-shadow 0.22s, border 0.22s;
       }
       .autodiscover-box:hover {
-        box-shadow: 0 6px 22px 0 #4dabf73a;
-        border: 1.7px solid #4dabf7;
+        box-shadow: 0 6px 22px rgba(66,165,247,0.23);
+        border: 1.5px solid #42a5f5;
       }
-      .autodiscover-label {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        font-size: 1.18rem;
-        font-weight: 700;
-        color: #4dabf7;
-        gap: 20px;
-        cursor: pointer;
-      }
-      .autodiscover-label input[type="checkbox"] {
-        width: 30px;
-        height: 30px;
-        accent-color: #4dabf7;
-        border-radius: 8px;
-        border: 2px solid #4dabf7;
-        margin-right: 12px;
-        box-shadow: 0 2px 10px #4dabf7aa;
-        transition: box-shadow 0.16s;
-      }
-      
-      /* --- GRUPPI DI INPUT --- */
+  
+      /* --- GRUPPI DI INPUT PIÙ VISIBILI --- */
       .input-group {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         gap: 14px;
-        padding: 14px 18px 10px 18px;
+        padding: 14px 18px 10px;
         margin-bottom: 13px;
         border-radius: 13px;
-        background: linear-gradient(90deg, #2128410f 0%, #28304b10 100%);
-        border: 1px solid #37474f22;
-        box-shadow: 0 1px 3px #4dabf707;
+        background: linear-gradient(90deg, #2a3140 10%, #344058 90%);
+        border: 1px solid #5c6bc0aa;
+        box-shadow: 0 2px 6px rgba(92,107,192,0.3);
         color: #a5c7ed;
         font-size: 1.02rem;
         font-weight: 500;
       }
+  
       
       /* --- LABELS E CAMPI INPUT --- */
       label {
