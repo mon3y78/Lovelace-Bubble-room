@@ -552,7 +552,6 @@ class BubbleRoomEditor extends LitElement {
       ${this._renderCameraPanel()}
       ${this._renderClimatePanel()}
       ${this._renderSensorPanel()}
-      ${this._renderColorsPanel()}
       <p class="note">
         For advanced configurations, modify the YAML directly.
       </p>
@@ -1127,6 +1126,7 @@ class BubbleRoomEditor extends LitElement {
     this._fireConfigChanged();
   }
 
+  
   _renderTapHoldAction(actionType = "tap") {
     // actionType = "tap" oppure "hold"
     const config = actionType === "tap" ? (this._config.tap_action || {}) : (this._config.hold_action || {});
