@@ -1807,36 +1807,36 @@ class BubbleRoomEditor extends r {
     this._fireConfigChanged();
   }
 
-  _renderTapHoldAction(type, value, onActionChange, onNavChange, onServiceChange, onServiceDataChange, jsonError) {
+  _renderTapHoldAction(actionType = "tap") {
+    // actionType = "tap" oppure "hold"
+    const config = actionType === "tap" ? (this._config.tap_action || {}) : (this._config.hold_action || {});
+    const actions = [
+      { value: "toggle", label: "🟢 Toggle" },
+      { value: "more-info", label: "🔎 More Info" },
+      { value: "navigate", label: "↗️ Navigate" },
+      { value: "call-service", label: "⚙️ Call Service" },
+      { value: "none", label: "🚫 Nessuna" }
+    ];
+    
     return x`
-      <div class="tap-hold-row">
-        <label style="margin-bottom:2px;width:52px;">${type}:</label>
-        <select
-          .value="${value.action || 'none'}"
-          @change="${e => onActionChange(e.target.value)}"
-          style="margin-right:10px;"
-        >
-          <option value="toggle">🟢 Toggle</option>
-          <option value="more-info">🔎 More Info</option>
-          <option value="navigate">↗️ Navigate</option>
-          <option value="call-service">⚙️ Call Service</option>
-          <option value="none">🚫 None</option>
+      <div class="input-group">
+        <label style="min-width:50px;">${actionType === "tap" ? "Tap" : "Hold"}:</label>
+        <select style="margin-right:16px;" .value="${config.action || 'none'}"
+          @change="${e => (actionType === "tap" ? this._updateTapActionField('action') : this._updateHoldActionField('action'))({ target: { value: e.target.value } })}">
+          ${actions.map(a => x`<option value="${a.value}">${a.label}</option>`)}
         </select>
-        ${value.action === 'navigate' ? x`
-          <input type="text" placeholder="Navigation Path" .value="${value.navigation_path || ''}"
-            @input="${e => onNavChange(e.target.value)}" style="width: 150px;" />
+        ${config.action === 'navigate' ? x`
+          <label style="margin-left:12px;">Path:</label>
+          <input type="text" .value="${config.navigation_path || ''}" style="width:130px;"
+            @input="${actionType === "tap" ? this._updateTapActionField('navigation_path') : this._updateHoldActionField('navigation_path')}" />
         ` : ''}
-        ${value.action === 'call-service' ? x`
-          <input type="text" placeholder="Service" .value="${value.service || ''}"
-            @input="${e => onServiceChange(e.target.value)}" style="width: 130px;" />
-          <textarea
-            class="${jsonError ? 'error' : ''}"
-            placeholder="Service Data (JSON)"
-            .value="${value.service_data ? JSON.stringify(value.service_data) : ''}"
-            @input="${e => onServiceDataChange(e.target.value)}"
-            style="width: 130px;"
-          ></textarea>
-          ${jsonError ? x`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
+        ${config.action === 'call-service' ? x`
+          <label style="margin-left:12px;">Service:</label>
+          <input type="text" .value="${config.service || ''}" style="width:130px;"
+            @input="${actionType === "tap" ? this._updateTapActionField('service') : this._updateHoldActionField('service')}" />
+          <label style="margin-left:12px;">Data (JSON):</label>
+          <input type="text" .value="${config.service_data ? JSON.stringify(config.service_data) : ''}" style="width:120px;"
+            @input="${actionType === "tap" ? this._updateTapActionField('service_data') : this._updateHoldActionField('service_data')}" />
         ` : ''}
       </div>
     `;
