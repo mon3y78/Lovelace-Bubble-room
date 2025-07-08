@@ -341,7 +341,18 @@ class BubbleRoomEditor extends LitElement {
       }
   
       .input-group {
-        margin-bottom: 18px;
+        display: inline - flex;
+        align - items: center;
+        padding: 5 px 16 px;
+        margin - bottom: 12 px;
+        border - radius: 15 px;
+        background: linear - gradient(90 deg, rgba(77, 171, 247, 0.10) 0 % , rgba(33, 150, 243, 0.07) 100 % );
+        border: 1 px solid rgba(77, 171, 247, 0.12);
+        box - shadow: 0 1 px 3 px rgba(77, 171, 247, 0.08);
+        color: #a5c7ed;
+        font - size: 0.97 rem;
+        font - weight: 500;
+        transition: box - shadow 0.2 s, background 0.2 s;
       }
   
       label {
@@ -430,26 +441,7 @@ class BubbleRoomEditor extends LitElement {
       }
       
       .section-header-pill {
-        display: block; /* full width */
-        width: 100%;
-        padding: 14px 0;
-        border-radius: 16px;
-        background: linear-gradient(90deg, rgba(77, 171, 247, 0.50), rgba(25, 118, 210, 0.40));
-        color: #fff;
-        font-size: 1.14rem;
-        font-weight: bold;
-        box-shadow: 0 2px 8px rgba(77, 171, 247, 0.12);
-        border: none;
-        margin-bottom: 0.3em;
-        letter-spacing: 0.5px;
-        cursor: pointer;
-        transition: background 0.18s, color 0.18s;
-        text-align: left;
-        /* Soft inner shadow for glass effect */
-        box-shadow: 0 1px 7px 0 rgba(30,50,80,0.08) inset;
-        opacity: 0.93;
-      }
-      .section-header-pill:active,
+        
       .section-header-pill:focus {
         background: linear-gradient(90deg, rgba(77,171,247,0.70), rgba(25,118,210,0.55));
         opacity: 1;
