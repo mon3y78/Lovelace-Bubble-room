@@ -286,7 +286,7 @@ class BubbleRoomEditor extends LitElement {
   
       /* --- HEADER UNIFICATI --- */
       /* --- HEADER COME AUTODISCOVER-BOX --- */
-      ha-expansion-panel::part(header) {
+      :host ::part(header) {
         background: linear-gradient(90deg, #1a2535 0%, #2e3b56 100%) !important;
         border: 1.5px solid #42a5f5cc      !important;
         border-radius: 15px               !important;
@@ -296,7 +296,7 @@ class BubbleRoomEditor extends LitElement {
         transition: box-shadow 0.22s, border 0.22s;
         color: #e0e8f5                     !important; /* testo più leggibile */
       }
-      ha-expansion-panel::part(header):hover {
+      :host ::part(hover) {
         box-shadow: 0 6px 22px rgba(66,165,247,0.23) !important;
         border: 1.5px solid #42a5f5              !important;
       }
