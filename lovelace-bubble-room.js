@@ -981,6 +981,27 @@ class BubbleRoomEditor extends r {
         border: 1.5px solid #42a5f5              !important;
       }
 
+      /* ...il resto del file rimane invariato... */
+      /* —————————— */
+      /* PANEL “MASTER-HEADER” */
+      /* —————————— */
+      .master-header::part(header) {
+        background: linear-gradient(90deg, #1a2535 0%, #2e3b56 100%);
+        border: 1.5px solid #42a5f5cc;
+        border-radius: 15px;
+        margin-bottom: 17px;
+        padding: 12px 18px;
+        box-shadow: 0 2px 8px rgba(55,71,79,0.23);
+        color: #e0e8f5;
+        font-weight: 600;
+        transition: box-shadow 0.22s, border-color 0.22s;
+      }
+      .master-header::part(header):hover {
+        box-shadow: 0 6px 22px rgba(66,165,247,0.23);
+        border-color: #42a5f5;
+      }
+      
+
       /* rimosse tutte le regole specifiche per #roomPanel, #cameraPanel, ecc. */
   
       /* --- CONTENUTO IN “CARD” --- */
@@ -1795,7 +1816,7 @@ class BubbleRoomEditor extends r {
 
   _renderRoomPanel() {
     return x`
-      <ha-expansion-panel id="roomPanel">
+      <ha-expansion-panel id="roomPanel" class="master-header">
         <span slot="header">🛋️ ROOM SETTING</span>
         <div class="section-content room-glow">
           
@@ -1925,7 +1946,7 @@ class BubbleRoomEditor extends r {
   
   _renderSubButtonPanelGroup() {
     return x`
-      <ha-expansion-panel id="subButtonMainPanel">
+      <ha-expansion-panel id="subButtonMainPanel" class="master-header">
         <span slot="header">🔘 SUB-BUTTONS</span>
         <div class="section-content subbutton-glow">
   
@@ -2017,7 +2038,7 @@ class BubbleRoomEditor extends r {
       { key: "entities5", label: "Entity 5" },
     ];
     return x`
-      <ha-expansion-panel id="mushroomEntitiesPanel">
+      <ha-expansion-panel id="mushroomEntitiesPanel" class="master-header">
         <span slot="header">🍄 MUSHROOM ENTITIES</span>
         <div class="section-content mushroom-glow">
   
@@ -2098,7 +2119,7 @@ class BubbleRoomEditor extends r {
   }
   _renderCameraPanel() {
     return x`
-      <ha-expansion-panel id="cameraPanel">
+      <ha-expansion-panel id="cameraPanel" class="master-header">
         <span slot="header">📷 CAMERA</span>
         <div class="section-content camera-glow">
   
@@ -2146,7 +2167,7 @@ class BubbleRoomEditor extends r {
   }
   _renderClimatePanel() {
     return x`
-      <ha-expansion-panel id="climatePanel">
+      <ha-expansion-panel id="climatePanel" class="master-header">
         <span slot="header">🌡️ CLIMATE</span>
         <div class="section-content climate-glow">
   
@@ -2193,7 +2214,7 @@ class BubbleRoomEditor extends r {
   
   _renderSensorPanel() {
     return x`
-      <ha-expansion-panel id="sensorPanel">
+      <ha-expansion-panel id="sensorPanel" class="master-header">
         <span slot="header">� SENSORS</span>
         <div class="section-content sensor-glow">
   
@@ -2289,7 +2310,7 @@ class BubbleRoomEditor extends r {
   }
   _renderColorPanel() {
     return x`
-      <ha-expansion-panel id="colorPanel">
+      <ha-expansion-panel id="colorPanel" class="master-header">
         <span slot="header">🎨 COLORS</span>
         <div class="section-content color-glow">
   
