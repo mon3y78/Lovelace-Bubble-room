@@ -296,7 +296,7 @@ class BubbleRoomEditor extends LitElement {
         transition: box-shadow 0.22s, border 0.22s;
         color: #e0e8f5                     !important; /* testo più leggibile */
       }
-      :host ::part(hover) {
+      :host ::part(header):hover {
         box-shadow: 0 6px 22px rgba(66,165,247,0.23) !important;
         border: 1.5px solid #42a5f5              !important;
       }
