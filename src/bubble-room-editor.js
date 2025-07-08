@@ -281,8 +281,8 @@ class BubbleRoomEditor extends LitElement {
         background: none;
       }
       
-      /* HEADER GLOBALE SEZIONI (FULL WIDTH, TESTO CENTRATO, GRADIENTE) */
-      ha-expansion-panel::part(header) {
+      /* HEADER GLOBALE SEZIONI */
+      ha-expansion-panel::part(header), ha-expansion-panel > [slot="header"] {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -301,13 +301,10 @@ class BubbleRoomEditor extends LitElement {
         border: none;
         letter-spacing: 0.01em;
         transition: background 0.3s;
+        text-align: center;
       }
       
-      ha-expansion-panel::part(header):hover {
-        background: linear-gradient(90deg, rgba(64,64,96,0.96) 0%, rgba(48,48,72,0.92) 100%);
-      }
-      
-      /* COLORI SPECIFICI PER SEZIONE */
+      /* Colori distintivi per ogni SEZIONE PRINCIPALE */
       ha-expansion-panel#roomPanel::part(header)            { background: linear-gradient(90deg, rgba(38,50,56,0.92) 0%, rgba(55,71,79,0.85) 100%);}
       ha-expansion-panel#subButtonMainPanel::part(header)   { background: linear-gradient(90deg, rgba(69,39,160,0.91), rgba(94,53,177,0.81));}
       ha-expansion-panel#mushroomEntitiesPanel::part(header){ background: linear-gradient(90deg, rgba(0,105,92,0.91), rgba(0,121,107,0.81));}
@@ -316,7 +313,12 @@ class BubbleRoomEditor extends LitElement {
       ha-expansion-panel#sensorPanel::part(header)          { background: linear-gradient(90deg, rgba(173,20,87,0.88), rgba(216,27,96,0.81));}
       ha-expansion-panel#colorsPanel::part(header)          { background: linear-gradient(90deg, rgba(55,71,79,0.85), rgba(38,50,56,0.80));}
       
-      /* HEADER DI SOTTOSEZIONI (SUB-BUTTON, SENSOR ECC) */
+      /* Colori headers per sottopannelli COLORS */
+      ha-expansion-panel#roomColorsPanel::part(header)        { background: linear-gradient(90deg, rgba(38,50,56,0.90) 0%, rgba(55,71,79,0.80) 100%);}
+      ha-expansion-panel#mushroomColorsPanel::part(header)    { background: linear-gradient(90deg, rgba(0,105,92,0.90), rgba(0,121,107,0.76));}
+      ha-expansion-panel#subbuttonColorsPanel::part(header)   { background: linear-gradient(90deg, rgba(69,39,160,0.90), rgba(94,53,177,0.75));}
+      
+      /* Sotto-header delle mini-sezioni (se usate in altri punti) */
       .sub-panel-header {
         width: 100%;
         text-align: center;
@@ -343,8 +345,8 @@ class BubbleRoomEditor extends LitElement {
       /* GRUPPI DI INPUT */
       .input-group {
         display: flex;
-        align-items: center;
-        gap: 16px;
+        flex-direction: column;
+        gap: 12px;
         padding: 10px 22px;
         margin-bottom: 13px;
         border-radius: 15px;
@@ -360,7 +362,6 @@ class BubbleRoomEditor extends LitElement {
       /* LABELS E CAMPI INPUT */
       label {
         display: inline-block;
-        margin-bottom: 4px;
         font-weight: 600;
         font-size: 0.97rem;
         color: #90caf9;
@@ -424,23 +425,25 @@ class BubbleRoomEditor extends LitElement {
         box-shadow: 0 0 7px rgba(77, 171, 247, 0.4);
       }
       
-      /* RESET BUTTON */
+      /* RESET BUTTON (centrale, bordo rosso) */
       .reset-button {
-        background: linear-gradient(90deg, #1976d2 0%, #4dabf7 100%);
-        color: #fff;
-        border: none;
+        border: 2px solid #d32f2f;
+        color: #d32f2f;
+        background: none;
         border-radius: 18px;
         padding: 7px 26px;
         font-weight: bold;
         font-size: 1rem;
-        margin-top: 8px;
-        cursor: pointer;
+        margin: 0 auto;
+        display: block;
         box-shadow: 0 1px 4px rgba(33,150,243,0.13);
-        transition: background 0.18s, box-shadow 0.16s;
+        cursor: pointer;
+        transition: border-color 0.15s, color 0.15s, background 0.2s;
       }
       .reset-button:hover {
-        background: linear-gradient(90deg, #42a5f5 0%, #1976d2 100%);
-        box-shadow: 0 3px 9px rgba(33,150,243,0.15);
+        background: #d32f2f1a;
+        color: #fff;
+        border-color: #b71c1c;
       }
       
       /* NOTE, ERRORI, VARI */
@@ -459,7 +462,11 @@ class BubbleRoomEditor extends LitElement {
         margin-left: 8px;
         color: var(--secondary-text-color, #8ca0c0);
       }
-
+      
+      /* Riduci padding tra i pannelli a tenda figli in Colors */
+      #colorsPanel .section-content ha-expansion-panel {
+        margin-bottom: 8px;
+      }
 
 
     `;
@@ -1100,7 +1107,7 @@ class BubbleRoomEditor extends LitElement {
   _renderRoomPanel() {
     return html`
       <ha-expansion-panel id="roomPanel">
-        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🛋️ Room Settings</div>
+        <span slot="header">🛋️ Room Settings</span>
         <div class="section-content">
           <div class="input-group">
             <label>Room name:</label>
@@ -1134,6 +1141,7 @@ class BubbleRoomEditor extends LitElement {
               }}">
             </ha-area-picker>
           </div>
+          <!-- ICONA + TAP + HOLD azioni in un solo gruppo -->
           <div class="input-group">
             <label>Room Icon:</label>
             <ha-icon-picker
@@ -1146,21 +1154,20 @@ class BubbleRoomEditor extends LitElement {
                 this._fireConfigChanged();
               }}">
             </ha-icon-picker>
+            ${this._renderRoomAction()}
           </div>
-          ${this._renderRoomAction()}
+          <!-- Flag Auto-scoperta + Presence nello stesso gruppo -->
           <div class="input-group">
-            <label>
+            <label style="margin-right:10px;">
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.room_presence ?? false}"
                 @change="${e => this._toggleAutoDiscoverySection('room_presence', e.target.checked)}" />
-              Auto-scoperta attiva per Presence
+              Auto-scoperta attiva Presence
             </label>
-          </div>
-          <div class="input-group">
             ${this._renderEntityInput("Presence (ID)", "presence", "entity", "room_presence")}
           </div>
-          <div style="margin-top:1em;">
+          <div style="margin-top:1em;text-align:center;">
             <button class="reset-button" @click="${this._resetRoomConfig}">🔄 Reset Room Settings</button>
           </div>
         </div>
@@ -1189,10 +1196,11 @@ class BubbleRoomEditor extends LitElement {
   _renderSubButtonPanelGroup() {
     return html`
       <ha-expansion-panel id="subButtonMainPanel">
-        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🔘 SUB-BUTTON</div>
+        <span slot="header">🔘 SUB-BUTTON</span>
         <div class="section-content">
+          <!-- Auto-scoperta flag su una riga -->
           <div class="input-group">
-            <label>
+            <label style="display:flex;align-items:center;gap:7px;">
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.subbutton ?? false}"
@@ -1201,16 +1209,21 @@ class BubbleRoomEditor extends LitElement {
             </label>
           </div>
           ${["sub-button1", "sub-button2", "sub-button3", "sub-button4"].map((key, i) => html`
-            <div class="sub-panel-header">Sub-button ${i+1}</div>
-            ${this._renderSubButtonPanel(key)}
+            <div class="input-group" style="margin-bottom:20px;">
+              <div style="font-weight:bold;margin-bottom:4px;">Sub-button ${i+1}</div>
+              ${this._renderEntityInput("Entity (ID)", key)}
+              ${this._renderIconInput("Icon", key)}
+              ${this._renderSubButtonAction(key)}
+            </div>
           `)}
-          <div style="margin-top:1em;">
+          <div style="margin-top:1em;text-align:center;">
             <button class="reset-button" @click="${this._resetSubButtonConfig}">🔄 Reset Sub-buttons</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
+
 
 
 
@@ -1234,10 +1247,11 @@ class BubbleRoomEditor extends LitElement {
     ];
     return html`
       <ha-expansion-panel id="mushroomEntitiesPanel">
-        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🍄 Mushroom Entities</div>
+        <span slot="header">🍄 Mushroom Entities</span>
         <div class="section-content">
+          <!-- Flag auto-scoperta su una riga -->
           <div class="input-group">
-            <label>
+            <label style="display:flex;align-items:center;gap:7px;">
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.mushroom ?? false}"
@@ -1245,19 +1259,21 @@ class BubbleRoomEditor extends LitElement {
               Auto-scoperta attiva
             </label>
           </div>
-          ${entityKeys.map(entity => html`
-            <div class="sub-panel-header">${entity.label}</div>
-            ${this._renderMushroomEntityPanel(entity.key, entity.label)}
+          ${entityKeys.map((entity, i) => html`
+            <div class="input-group" style="margin-bottom:20px;">
+              <div style="font-weight:bold;margin-bottom:4px;">${entity.label}</div>
+              ${this._renderEntityInput("Entity (ID)", entity.key)}
+              ${this._renderIconInput("Icon", entity.key)}
+              ${this._renderSubButtonAction(entity.key)}
+            </div>
           `)}
-          <div style="margin-top:1em;">
+          <div style="margin-top:1em;text-align:center;">
             <button class="reset-button" @click="${this._resetMushroomEntitiesConfig}">🔄 Reset Mushroom Entities</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
-
-
 
                 
   _resetMushroomEntitiesConfig() {
@@ -1272,10 +1288,11 @@ class BubbleRoomEditor extends LitElement {
   _renderCameraPanel() {
     return html`
       <ha-expansion-panel id="cameraPanel">
-        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">📷 Camera</div>
+        <span slot="header">📷 Camera</span>
         <div class="section-content">
+          <!-- Flag auto-scoperta su una riga -->
           <div class="input-group">
-            <label>
+            <label style="display:flex;align-items:center;gap:7px;">
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.camera ?? false}"
@@ -1283,20 +1300,18 @@ class BubbleRoomEditor extends LitElement {
               Auto-scoperta attiva
             </label>
           </div>
+          <!-- Entity + Icon nella stessa box -->
           <div class="input-group">
             ${this._renderEntityInput("Camera (ID)", "camera", 'entity', 'camera')}
-          </div>
-          <div class="input-group">
             ${this._renderIconInput("Camera Icon", "camera")}
           </div>
-          <div style="margin-top:1em;">
+          <div style="margin-top:1em;text-align:center;">
             <button class="reset-button" @click="${this._resetCameraConfig}">🔄 Reset Camera</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
-
 
   _resetCameraConfig() {
     const entities = { ...this._config.entities };
@@ -1308,10 +1323,11 @@ class BubbleRoomEditor extends LitElement {
   _renderClimatePanel() {
     return html`
       <ha-expansion-panel id="climatePanel">
-        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🌡️ Climate</div>
+        <span slot="header">🌡️ Climate</span>
         <div class="section-content">
+          <!-- Flag auto-scoperta su una riga -->
           <div class="input-group">
-            <label>
+            <label style="display:flex;align-items:center;gap:7px;">
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.climate ?? false}"
@@ -1319,13 +1335,12 @@ class BubbleRoomEditor extends LitElement {
               Auto-scoperta attiva
             </label>
           </div>
+          <!-- Entity + Icon nella stessa box -->
           <div class="input-group">
             ${this._renderEntityInput("Climate (ID)", "climate", 'entity', 'climate')}
-          </div>
-          <div class="input-group">
             ${this._renderIconInput("Climate Icon", "climate")}
           </div>
-          <div style="margin-top:1em;">
+          <div style="margin-top:1em;text-align:center;">
             <button class="reset-button" @click="${this._resetClimateConfig}">🔄 Reset Climate</button>
           </div>
         </div>
@@ -1343,10 +1358,11 @@ class BubbleRoomEditor extends LitElement {
   _renderSensorPanel() {
     return html`
       <ha-expansion-panel id="sensorPanel">
-        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🧪 Sensor</div>
+        <span slot="header">🧪 Sensor</span>
         <div class="section-content">
+          <!-- Flag auto-scoperta su una riga -->
           <div class="input-group">
-            <label>
+            <label style="display:flex;align-items:center;gap:7px;">
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.sensor ?? false}"
@@ -1354,19 +1370,44 @@ class BubbleRoomEditor extends LitElement {
               Auto-scoperta attiva
             </label>
           </div>
-          ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) => html`
-            <div class="sub-panel-header">Sensor ${i + 1}</div>
-            ${this._renderSingleSensorPanel(key, `Sensor ${i + 1}`)}
-          `)}
-          <div style="margin-top:1em;">
+          <!-- 4 sensori, ognuno in una unica box -->
+          ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) => {
+            const sensor = this._config.entities?.[key] || {};
+            return html`
+              <div class="input-group" style="margin-bottom:20px;">
+                <div style="font-weight:bold;margin-bottom:4px;">Sensor ${i + 1}</div>
+                <div style="margin-bottom:8px;">
+                  <label>Tipo Sensore:</label>
+                  <select .value="${sensor.type || ''}" @change="${e => this._updateSensor(i, 'type', e.target.value)}">
+                    <option value="">-- nessuno --</option>
+                    ${Object.entries(SENSOR_TYPE_MAP).map(([type, data]) =>
+                      html`<option value="${type}">${data.emoji} ${type.charAt(0).toUpperCase() + type.slice(1)}</option>`
+                    )}
+                  </select>
+                </div>
+                <div style="margin-bottom:8px;">
+                  ${this._renderEntityInput("Entity ID", key)}
+                </div>
+                ${sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? html`
+                  <div style="margin-bottom:8px;">
+                    <label>Unità:</label>
+                    <select
+                      .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
+                      @change="${e => this._updateSensor(i, 'unit', e.target.value)}">
+                      ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u => html`<option value="${u}">${u}</option>`)}
+                    </select>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          })}
+          <div style="margin-top:1em;text-align:center;">
             <button class="reset-button" @click="${this._resetSensorConfig}">🔄 Reset Sensors</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
-
-
 
   _resetSensorConfig() {
     const entities = { ...this._config.entities };
@@ -1380,27 +1421,63 @@ class BubbleRoomEditor extends LitElement {
   _renderColorsPanel() {
     return html`
       <ha-expansion-panel id="colorsPanel">
-        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🎨 Colors</div>
+        <span slot="header">🎨 Colors</span>
         <div class="section-content">
-          <div class="sub-panel-header">Room</div>
-          ${this._renderColorField("room", "icon_active", "Icon Active")}
-          ${this._renderColorField("room", "icon_inactive", "Icon Inactive")}
-          ${this._renderColorField("room", "background_active", "Background Active")}
-          ${this._renderColorField("room", "background_inactive", "Background Inactive")}
-          ${this._renderColorField("room", "mushroom_active", "Mushroom Icon Active")}
-          ${this._renderColorField("room", "mushroom_inactive", "Mushroom Icon Inactive")}
-          <div class="sub-panel-header">Subbutton</div>
-          ${this._renderColorField("subbutton", "background_on", "Background On")}
-          ${this._renderColorField("subbutton", "background_off", "Background Off")}
-          ${this._renderColorField("subbutton", "icon_on", "Icon On")}
-          ${this._renderColorField("subbutton", "icon_off", "Icon Off")}
-          <div style="margin-top:1em;">
+  
+          <!-- ROOM COLORS -->
+          <ha-expansion-panel id="roomColorsPanel" style="margin-bottom:10px;">
+            <span slot="header">🛋️ Room</span>
+            <div class="section-content" style="padding-top:12px;">
+              <div class="input-group">
+                <label>Background:</label>
+                ${this._renderColorField("room", "background_active", "Background Active")}
+                ${this._renderColorField("room", "background_inactive", "Background Inactive")}
+              </div>
+              <div class="input-group">
+                <label>Icon:</label>
+                ${this._renderColorField("room", "icon_active", "Icon Active")}
+                ${this._renderColorField("room", "icon_inactive", "Icon Inactive")}
+              </div>
+            </div>
+          </ha-expansion-panel>
+  
+          <!-- MUSHROOM COLORS -->
+          <ha-expansion-panel id="mushroomColorsPanel" style="margin-bottom:10px;">
+            <span slot="header">🍄 Mushroom</span>
+            <div class="section-content" style="padding-top:12px;">
+              <div class="input-group">
+                <label>Icon:</label>
+                ${this._renderColorField("room", "mushroom_active", "Mushroom Icon Active")}
+                ${this._renderColorField("room", "mushroom_inactive", "Mushroom Icon Inactive")}
+              </div>
+            </div>
+          </ha-expansion-panel>
+  
+          <!-- SUBBUTTON COLORS -->
+          <ha-expansion-panel id="subbuttonColorsPanel">
+            <span slot="header">🔘 Subbutton</span>
+            <div class="section-content" style="padding-top:12px;">
+              <div class="input-group">
+                <label>Background:</label>
+                ${this._renderColorField("subbutton", "background_on", "Background On")}
+                ${this._renderColorField("subbutton", "background_off", "Background Off")}
+              </div>
+              <div class="input-group">
+                <label>Icon:</label>
+                ${this._renderColorField("subbutton", "icon_on", "Icon On")}
+                ${this._renderColorField("subbutton", "icon_off", "Icon Off")}
+              </div>
+            </div>
+          </ha-expansion-panel>
+  
+          <div style="margin-top:1.2em;text-align:center;">
             <button class="reset-button" @click="${this._resetColorsConfig}">🔄 Reset Colors</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
+
   _resetColorsConfig() {
     this._config = {
       ...this._config,
