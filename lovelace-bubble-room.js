@@ -1224,7 +1224,7 @@ class BubbleRoomEditor extends r {
     }
     return x`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room V3.1<span class="version">v3.0</span></h3>
+        <h3>Visual Editor Bubble Room V3.2<span class="version">v3.0</span></h3>
       </div>
       ${this._renderRoomPanel()}
       ${this._renderSubButtonPanelGroup()}
@@ -1806,10 +1806,47 @@ class BubbleRoomEditor extends r {
     this._config = { ...this._config, entities };
     this._fireConfigChanged();
   }
+
+  _renderTapHoldAction(type, value, onActionChange, onNavChange, onServiceChange, onServiceDataChange, jsonError) {
+    return x`
+      <div class="tap-hold-row">
+        <label style="margin-bottom:2px;width:52px;">${type}:</label>
+        <select
+          .value="${value.action || 'none'}"
+          @change="${e => onActionChange(e.target.value)}"
+          style="margin-right:10px;"
+        >
+          <option value="toggle">🟢 Toggle</option>
+          <option value="more-info">🔎 More Info</option>
+          <option value="navigate">↗️ Navigate</option>
+          <option value="call-service">⚙️ Call Service</option>
+          <option value="none">🚫 None</option>
+        </select>
+        ${value.action === 'navigate' ? x`
+          <input type="text" placeholder="Navigation Path" .value="${value.navigation_path || ''}"
+            @input="${e => onNavChange(e.target.value)}" style="width: 150px;" />
+        ` : ''}
+        ${value.action === 'call-service' ? x`
+          <input type="text" placeholder="Service" .value="${value.service || ''}"
+            @input="${e => onServiceChange(e.target.value)}" style="width: 130px;" />
+          <textarea
+            class="${jsonError ? 'error' : ''}"
+            placeholder="Service Data (JSON)"
+            .value="${value.service_data ? JSON.stringify(value.service_data) : ''}"
+            @input="${e => onServiceDataChange(e.target.value)}"
+            style="width: 130px;"
+          ></textarea>
+          ${jsonError ? x`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
+        ` : ''}
+      </div>
+    `;
+  }
+
+
   _renderRoomPanel() {
     return x`
       <ha-expansion-panel id="roomPanel">
-        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🛋️ Room Settings</div>
+        <span slot="header">🛋️ ROOM SETTING</span>
         <div class="section-content room-glow">
           
           <!-- Auto-scoperta -->
@@ -1864,7 +1901,7 @@ class BubbleRoomEditor extends r {
             </ha-area-picker>
           </div>
   
-          <!-- Room Icon + Tap/Hold insieme -->
+          <!-- Room Icon + Tap/Hold -->
           <div class="input-group">
             <div style="display: flex; flex-direction: column; gap: 10px; width:100%;">
               <div style="display: flex; align-items: center; gap: 18px;">
@@ -1880,71 +1917,25 @@ class BubbleRoomEditor extends r {
                   }}">
                 </ha-icon-picker>
               </div>
-              <div style="display: flex; flex-direction: row; gap: 38px; flex-wrap: wrap; margin-top: 8px;">
-                <div>
-                  <label style="margin-bottom:2px;">Tap:</label>
-                  <div class="tab-group">
-                    ${['toggle', 'more-info', 'navigate', 'call-service', 'none'].map(action => x`
-                      <button
-                        class="tab-btn ${this._config.tap_action?.action === action ? 'active' : ''}"
-                        @click="${() => this._updateTapActionField('action')({ target: { value: action } })}">
-                        ${action === 'toggle' ? '🟢' :
-                          action === 'more-info' ? '🔎' :
-                          action === 'navigate' ? '↗️' :
-                          action === 'call-service' ? '⚙️' : '🚫'
-                        } ${action.replace('-', ' ')}
-                      </button>
-                    `)}
-                  </div>
-                  ${this._config.tap_action?.action === 'navigate' ? x`
-                    <label>Navigation Path:</label>
-                    <input type="text" .value="${this._config.tap_action?.navigation_path || ''}"
-                      @input="${this._updateTapActionField('navigation_path')}" />
-                  ` : ''}
-                  ${this._config.tap_action?.action === 'call-service' ? x`
-                    <label>Service:</label>
-                    <input type="text" .value="${this._config.tap_action?.service || ''}"
-                      @input="${this._updateTapActionField('service')}" />
-                    <label>Service Data (JSON):</label>
-                    <textarea
-                      class="${this._jsonError ? 'error' : ''}"
-                      .value="${this._config.tap_action?.service_data ? JSON.stringify(this._config.tap_action.service_data) : ''}"
-                      @input="${this._updateTapActionField('service_data')}"></textarea>
-                    ${this._jsonError ? x`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
-                  ` : ''}
-                </div>
-                <div>
-                  <label style="margin-bottom:2px;">Hold:</label>
-                  <div class="tab-group">
-                    ${['toggle', 'more-info', 'navigate', 'call-service', 'none'].map(action => x`
-                      <button
-                        class="tab-btn ${this._config.hold_action?.action === action ? 'active' : ''}"
-                        @click="${() => this._updateHoldActionField('action')({ target: { value: action } })}">
-                        ${action === 'toggle' ? '🟢' :
-                          action === 'more-info' ? '🔎' :
-                          action === 'navigate' ? '↗️' :
-                          action === 'call-service' ? '⚙️' : '🚫'
-                        } ${action.replace('-', ' ')}
-                      </button>
-                    `)}
-                  </div>
-                  ${this._config.hold_action?.action === 'navigate' ? x`
-                    <label>Navigation Path:</label>
-                    <input type="text" .value="${this._config.hold_action?.navigation_path || ''}"
-                      @input="${this._updateHoldActionField('navigation_path')}" />
-                  ` : ''}
-                  ${this._config.hold_action?.action === 'call-service' ? x`
-                    <label>Service:</label>
-                    <input type="text" .value="${this._config.hold_action?.service || ''}"
-                      @input="${this._updateHoldActionField('service')}" />
-                    <label>Service Data (JSON):</label>
-                    <textarea
-                      class="${this._jsonError ? 'error' : ''}"
-                      .value="${this._config.hold_action?.service_data ? JSON.stringify(this._config.hold_action.service_data) : ''}"
-                      @input="${this._updateHoldActionField('service_data')}"></textarea>
-                    ${this._jsonError ? x`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
-                  ` : ''}
-                </div>
+              <div style="display: flex; flex-direction: row; gap: 24px; flex-wrap: wrap; margin-top: 8px;">
+                ${this._renderTapHoldAction(
+                  'Tap',
+                  this._config.tap_action || {},
+                  (val) => this._updateTapActionField('action')({ target: { value: val } }),
+                  (val) => this._updateTapActionField('navigation_path')({ target: { value: val } }),
+                  (val) => this._updateTapActionField('service')({ target: { value: val } }),
+                  (val) => this._updateTapActionField('service_data')({ target: { value: val } }),
+                  this._jsonError
+                )}
+                ${this._renderTapHoldAction(
+                  'Hold',
+                  this._config.hold_action || {},
+                  (val) => this._updateHoldActionField('action')({ target: { value: val } }),
+                  (val) => this._updateHoldActionField('navigation_path')({ target: { value: val } }),
+                  (val) => this._updateHoldActionField('service')({ target: { value: val } }),
+                  (val) => this._updateHoldActionField('service_data')({ target: { value: val } }),
+                  this._jsonError
+                )}
               </div>
             </div>
           </div>
@@ -1963,6 +1954,7 @@ class BubbleRoomEditor extends r {
       </ha-expansion-panel>
     `;
   }
+
 
   _resetRoomConfig() {
     this._config = {
@@ -1984,9 +1976,9 @@ class BubbleRoomEditor extends r {
   _renderSubButtonPanelGroup() {
     return x`
       <ha-expansion-panel id="subButtonMainPanel">
-        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🔘 SUB-BUTTON</div>
+        <span slot="header">🔘 SUB-BUTTONS</span>
         <div class="section-content subbutton-glow">
-          
+  
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.subbutton ?? false;
@@ -2021,65 +2013,25 @@ class BubbleRoomEditor extends r {
                     <label>Icon:</label>
                     ${this._renderIconInput("Icon", key)}
                   </div>
-                  <div class="input-group">
-                    <label>Tap:</label>
-                    <div class="tab-group">
-                      ${['toggle', 'more-info', 'navigate', 'call-service', 'none'].map(action => x`
-                        <button
-                          class="tab-btn ${entityConfig.tap_action?.action === action ? 'active' : ''}"
-                          @click="${() => this._updateEntityTapAction(key, 'action')({ target: { value: action } })}">
-                          ${action === 'toggle' ? '🟢' :
-                            action === 'more-info' ? '🔎' :
-                            action === 'navigate' ? '↗️' :
-                            action === 'call-service' ? '⚙️' : '🚫'
-                          } ${action.replace('-', ' ')}
-                        </button>
-                      `)}
-                    </div>
-                    ${entityConfig.tap_action?.action === 'navigate' ? x`
-                      <label>Navigation Path:</label>
-                      <input type="text" .value="${entityConfig.tap_action?.navigation_path || ''}"
-                        @input="${this._updateEntityTapAction(key, 'navigation_path')}" />
-                    ` : ''}
-                    ${entityConfig.tap_action?.action === 'call-service' ? x`
-                      <label>Service:</label>
-                      <input type="text" .value="${entityConfig.tap_action?.service || ''}"
-                        @input="${this._updateEntityTapAction(key, 'service')}" />
-                      <label>Service Data (JSON):</label>
-                      <textarea
-                        .value="${entityConfig.tap_action?.service_data ? JSON.stringify(entityConfig.tap_action.service_data) : ''}"
-                        @input="${this._updateEntityTapAction(key, 'service_data')}"></textarea>
-                    ` : ''}
-                  </div>
-                  <div class="input-group">
-                    <label>Hold:</label>
-                    <div class="tab-group">
-                      ${['toggle', 'more-info', 'navigate', 'call-service', 'none'].map(action => x`
-                        <button
-                          class="tab-btn ${entityConfig.hold_action?.action === action ? 'active' : ''}"
-                          @click="${() => this._updateEntityHoldAction(key, 'action')({ target: { value: action } })}">
-                          ${action === 'toggle' ? '🟢' :
-                            action === 'more-info' ? '🔎' :
-                            action === 'navigate' ? '↗️' :
-                            action === 'call-service' ? '⚙️' : '🚫'
-                          } ${action.replace('-', ' ')}
-                        </button>
-                      `)}
-                    </div>
-                    ${entityConfig.hold_action?.action === 'navigate' ? x`
-                      <label>Navigation Path:</label>
-                      <input type="text" .value="${entityConfig.hold_action?.navigation_path || ''}"
-                        @input="${this._updateEntityHoldAction(key, 'navigation_path')}" />
-                    ` : ''}
-                    ${entityConfig.hold_action?.action === 'call-service' ? x`
-                      <label>Service:</label>
-                      <input type="text" .value="${entityConfig.hold_action?.service || ''}"
-                        @input="${this._updateEntityHoldAction(key, 'service')}" />
-                      <label>Service Data (JSON):</label>
-                      <textarea
-                        .value="${entityConfig.hold_action?.service_data ? JSON.stringify(entityConfig.hold_action.service_data) : ''}"
-                        @input="${this._updateEntityHoldAction(key, 'service_data')}"></textarea>
-                    ` : ''}
+                  <div class="input-group" style="gap:24px;">
+                    ${this._renderTapHoldAction(
+                      'Tap',
+                      entityConfig.tap_action || {},
+                      (val) => this._updateEntityTapAction(key, 'action')({ target: { value: val } }),
+                      (val) => this._updateEntityTapAction(key, 'navigation_path')({ target: { value: val } }),
+                      (val) => this._updateEntityTapAction(key, 'service')({ target: { value: val } }),
+                      (val) => this._updateEntityTapAction(key, 'service_data')({ target: { value: val } }),
+                      this._jsonError
+                    )}
+                    ${this._renderTapHoldAction(
+                      'Hold',
+                      entityConfig.hold_action || {},
+                      (val) => this._updateEntityHoldAction(key, 'action')({ target: { value: val } }),
+                      (val) => this._updateEntityHoldAction(key, 'navigation_path')({ target: { value: val } }),
+                      (val) => this._updateEntityHoldAction(key, 'service')({ target: { value: val } }),
+                      (val) => this._updateEntityHoldAction(key, 'service_data')({ target: { value: val } }),
+                      this._jsonError
+                    )}
                   </div>
                 </div>
               </ha-expansion-panel>
@@ -2094,6 +2046,7 @@ class BubbleRoomEditor extends r {
       </ha-expansion-panel>
     `;
   }
+
 
   _resetSubButtonConfig() {
     const entities = { ...this._config.entities };
@@ -2115,7 +2068,7 @@ class BubbleRoomEditor extends r {
     ];
     return x`
       <ha-expansion-panel id="mushroomEntitiesPanel">
-        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🍄 Mushroom Entities</div>
+        <span slot="header">🍄 MUSHROOM ENTITIES</span>
         <div class="section-content mushroom-glow">
   
           <!-- Auto-scoperta -->
@@ -2136,7 +2089,7 @@ class BubbleRoomEditor extends r {
   
           <!-- Entities collapsable -->
           ${entityKeys.map((entity, i) => {
-            this._config.entities?.[entity.key] || { entity: "", icon: "" };
+            const entityConfig = this._config.entities?.[entity.key] || { entity: "", icon: "" };
             return x`
               <ha-expansion-panel style="margin-top: 14px;">
                 <div slot="header" style="width:100%;font-weight:600;">${entity.label}</div>
@@ -2149,10 +2102,30 @@ class BubbleRoomEditor extends r {
                     <label>Icon:</label>
                     ${this._renderIconInput("Icon", entity.key)}
                   </div>
+                  <!--
+                  Se vorrai aggiungere tap/hold, qui puoi già richiamare:
+                  ${this._renderTapHoldAction(
+                    'Tap',
+                    entityConfig.tap_action || {},
+                    (val) => this._updateEntityTapAction(entity.key, 'action')({ target: { value: val } }),
+                    (val) => this._updateEntityTapAction(entity.key, 'navigation_path')({ target: { value: val } }),
+                    (val) => this._updateEntityTapAction(entity.key, 'service')({ target: { value: val } }),
+                    (val) => this._updateEntityTapAction(entity.key, 'service_data')({ target: { value: val } }),
+                    this._jsonError
+                  )}
+                  ${this._renderTapHoldAction(
+                    'Hold',
+                    entityConfig.hold_action || {},
+                    (val) => this._updateEntityHoldAction(entity.key, 'action')({ target: { value: val } }),
+                    (val) => this._updateEntityHoldAction(entity.key, 'navigation_path')({ target: { value: val } }),
+                    (val) => this._updateEntityHoldAction(entity.key, 'service')({ target: { value: val } }),
+                    (val) => this._updateEntityHoldAction(entity.key, 'service_data')({ target: { value: val } }),
+                    this._jsonError
+                  )}
+                  -->
                 </div>
               </ha-expansion-panel>
             `;
-            
           })}
   
           <!-- Reset -->
@@ -2163,7 +2136,7 @@ class BubbleRoomEditor extends r {
       </ha-expansion-panel>
     `;
   }
-                  
+                
   _resetMushroomEntitiesConfig() {
     const entities = { ...this._config.entities };
     ["entities1", "entities2", "entities3", "entities4", "entities5"].forEach(key => {
@@ -2176,7 +2149,7 @@ class BubbleRoomEditor extends r {
   _renderCameraPanel() {
     return x`
       <ha-expansion-panel id="cameraPanel">
-        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">📷 Camera</div>
+        <span slot="header">📷 CAMERA</span>
         <div class="section-content camera-glow">
   
           <!-- Auto-scoperta -->
@@ -2203,6 +2176,8 @@ class BubbleRoomEditor extends r {
             ${this._renderIconInput("Camera Icon", "camera")}
           </div>
   
+          <!-- (Se vuoi tap/hold in futuro, aggiungi qui _renderTapHoldAction come nei subbutton) -->
+  
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetCameraConfig}">🔄 Reset Camera</button>
@@ -2222,7 +2197,7 @@ class BubbleRoomEditor extends r {
   _renderClimatePanel() {
     return x`
       <ha-expansion-panel id="climatePanel">
-        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🌡️ Climate</div>
+        <span slot="header">🌡️ CLIMATE</span>
         <div class="section-content climate-glow">
   
           <!-- Auto-scoperta -->
@@ -2265,10 +2240,11 @@ class BubbleRoomEditor extends r {
     this.requestUpdate();
     this._fireConfigChanged();
   }
+  
   _renderSensorPanel() {
     return x`
       <ha-expansion-panel id="sensorPanel">
-        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🧪 Sensor</div>
+        <span slot="header">� SENSORS</span>
         <div class="section-content sensor-glow">
   
           <!-- Auto-scoperta -->
@@ -2292,11 +2268,16 @@ class BubbleRoomEditor extends r {
             const sensor = this._config.entities?.[key] || {};
             return x`
               <ha-expansion-panel style="margin-top: 14px;">
-                <div slot="header" style="width:100%;font-weight:600;">Sensor ${i + 1}</div>
+                <span slot="header" style="width:100%;font-weight:600;">
+                  ${`Sensor ${i + 1}`.toUpperCase()}
+                </span>
                 <div class="section-content sensor-glow" style="margin-bottom:0;">
                   <div class="input-group">
                     <label>Tipo Sensore:</label>
-                    <select .value="${sensor.type || ''}" @change="${e => this._updateSensor(i, 'type', e.target.value)}">
+                    <select
+                      .value="${sensor.type || ''}"
+                      @change="${e => this._updateSensor(i, 'type', e.target.value)}"
+                    >
                       <option value="">-- nessuno --</option>
                       ${[
                         { type: 'temperature', label: '🌡️ Temperatura' },
@@ -2321,23 +2302,27 @@ class BubbleRoomEditor extends r {
                   </div>
                   ${sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? x`
                     <div class="input-group">
-                      <label>Unità:</label>
+                      <label>UnitÃ :</label>
                       <select
                         .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
-                        @change="${e => this._updateSensor(i, 'unit', e.target.value)}">
-                        ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u => x`<option value="${u}">${u}</option>`)}
+                        @change="${e => this._updateSensor(i, 'unit', e.target.value)}"
+                      >
+                        ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u =>
+                          x`<option value="${u}">${u}</option>`
+                        )}
                       </select>
                     </div>
                   ` : ''}
                 </div>
               </ha-expansion-panel>
             `;
-
           })}
   
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
-            <button class="reset-button" @click="${this._resetSensorConfig}">🔄 Reset Sensors</button>
+            <button class="reset-button" @click="${this._resetSensorConfig}">
+              ðŸ”„ Reset Sensors
+            </button>
           </div>
         </div>
       </ha-expansion-panel>
@@ -2352,61 +2337,66 @@ class BubbleRoomEditor extends r {
     this.requestUpdate();
     this._fireConfigChanged();
   }
-  _renderColorsPanel() {
+  _renderColorPanel() {
     return x`
-      <ha-expansion-panel id="colorsPanel">
-        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🎨 Colors</div>
-        <div class="section-content colors-glow">
+      <ha-expansion-panel id="colorPanel">
+        <span slot="header">🎨 COLORS</span>
+        <div class="section-content color-glow">
   
-          <ha-expansion-panel style="margin-top:0;">
-            <div slot="header" style="width:100%;font-weight:600;">Room</div>
-            <div class="section-content colors-glow" style="margin-bottom:0;">
-              <div class="input-group">
-                <label>Icon Active</label>
-                ${this._renderColorField("room", "icon_active", "Icon Active")}
-                <label style="margin-left:20px;">Icon Inactive</label>
-                ${this._renderColorField("room", "icon_inactive", "Icon Inactive")}
-              </div>
-              <div class="input-group">
-                <label>Background Active</label>
-                ${this._renderColorField("room", "background_active", "Background Active")}
-                <label style="margin-left:20px;">Background Inactive</label>
-                ${this._renderColorField("room", "background_inactive", "Background Inactive")}
-              </div>
-              <div class="input-group">
-                <label>Mushroom Icon Active</label>
-                ${this._renderColorField("room", "mushroom_active", "Mushroom Icon Active")}
-                <label style="margin-left:20px;">Mushroom Icon Inactive</label>
-                ${this._renderColorField("room", "mushroom_inactive", "Mushroom Icon Inactive")}
-              </div>
+          <div class="color-section">
+            <div class="color-subtitle">Room</div>
+            <div class="input-group color-row">
+              <label>Text Active:</label>
+              ${this._renderColorInput('room', 'text_active')}
+              <label>Text Inactive:</label>
+              ${this._renderColorInput('room', 'text_inactive')}
             </div>
-          </ha-expansion-panel>
-  
-          <ha-expansion-panel style="margin-top:18px;">
-            <div slot="header" style="width:100%;font-weight:600;">Subbutton</div>
-            <div class="section-content colors-glow" style="margin-bottom:0;">
-              <div class="input-group">
-                <label>Background On</label>
-                ${this._renderColorField("subbutton", "background_on", "Background On")}
-                <label style="margin-left:20px;">Background Off</label>
-                ${this._renderColorField("subbutton", "background_off", "Background Off")}
-              </div>
-              <div class="input-group">
-                <label>Icon On</label>
-                ${this._renderColorField("subbutton", "icon_on", "Icon On")}
-                <label style="margin-left:20px;">Icon Off</label>
-                ${this._renderColorField("subbutton", "icon_off", "Icon Off")}
-              </div>
+            <div class="input-group color-row">
+              <label>Background Active:</label>
+              ${this._renderColorInput('room', 'background_active')}
+              <label>Background Inactive:</label>
+              ${this._renderColorInput('room', 'background_inactive')}
             </div>
-          </ha-expansion-panel>
+            <div class="input-group color-row">
+              <label>Icon Active:</label>
+              ${this._renderColorInput('room', 'icon_active')}
+              <label>Icon Inactive:</label>
+              ${this._renderColorInput('room', 'icon_inactive')}
+            </div>
+          </div>
   
-          <div style="margin-top:1.2em; text-align:center;">
-            <button class="reset-button" @click="${this._resetColorsConfig}">🔄 Reset Colors</button>
+          <div class="color-section" style="margin-top: 24px;">
+            <div class="color-subtitle">Subbutton</div>
+            <div class="input-group color-row">
+              <label>Text Active:</label>
+              ${this._renderColorInput('subbutton', 'text_active')}
+              <label>Text Inactive:</label>
+              ${this._renderColorInput('subbutton', 'text_inactive')}
+            </div>
+            <div class="input-group color-row">
+              <label>Background Active:</label>
+              ${this._renderColorInput('subbutton', 'background_active')}
+              <label>Background Inactive:</label>
+              ${this._renderColorInput('subbutton', 'background_inactive')}
+            </div>
+            <div class="input-group color-row">
+              <label>Icon On:</label>
+              ${this._renderColorInput('subbutton', 'icon_on')}
+              <label>Icon Off:</label>
+              ${this._renderColorInput('subbutton', 'icon_off')}
+            </div>
+          </div>
+  
+          <div style="margin-top:1.5em; text-align:center;">
+            <button class="reset-button" @click="${this._resetColorConfig}">
+              🔄 Reset Colors
+            </button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
+
 
   _resetColorsConfig() {
     this._config = {
