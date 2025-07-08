@@ -956,96 +956,96 @@ class BubbleRoomEditor extends r {
       :host {
         display: block;
         font-family: "Segoe UI", Roboto, sans-serif;
+        color: #f2f4f8;
+        font-size: 1rem;
+        background: none;
       }
-  
-      .editor-header {
-        text-align: center;
-        margin: 1.5rem 0;
-      }
-  
-  
-      .editor-header h3 {
-        font-size: 1.6rem; 
-        font-weight: bold;
-        color: #4dabf7;
-      }
-  
-      .version {
-        font-size: 0.9rem;
-        font-weight: normal;
-        margin-left: 8px;
-        color: var(--secondary-text-color);
-      }
-  
-      /* HEADER SEZIONI */
+      
+      /* HEADER GLOBALE SEZIONI (FULL WIDTH, TESTO CENTRATO, GRADIENTE) */
       ha-expansion-panel::part(header) {
-        background: linear-gradient(to right, rgba(48,48,64,0.9), rgba(32,32,48,0.9));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 56px;
+        width: 100%;
+        background: linear-gradient(90deg, rgba(48,48,64,0.88) 0%, rgba(32,32,48,0.83) 100%);
         color: #fff;
-        font-size: 1.1rem;
-        font-weight: 600;
-        border-radius: 12px;
-        margin-bottom: 8px;
-        padding: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-        transition: background 0.3s ease;
+        font-size: 1.18rem;
+        font-weight: 700;
+        border-radius: 16px;
+        margin-bottom: 12px;
+        padding: 0 18px;
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,0.16);
+        backdrop-filter: blur(4px) saturate(110%);
+        opacity: 0.95;
+        border: none;
+        letter-spacing: 0.01em;
+        transition: background 0.3s;
       }
-  
+      
       ha-expansion-panel::part(header):hover {
-        background: linear-gradient(to right, rgba(64,64,96,1), rgba(48,48,72,1));
+        background: linear-gradient(90deg, rgba(64,64,96,0.96) 0%, rgba(48,48,72,0.92) 100%);
       }
-  
-      /* COLORI INDIVIDUALI HEADER (opzionale) */
-      ha-expansion-panel#roomPanel::part(header)        { background: linear-gradient(to right, #263238, #37474f); }
-      ha-expansion-panel#subButtonMainPanel::part(header)  { background: linear-gradient(to right, #4527a0, #5e35b1); }
-      ha-expansion-panel#mushroomEntitiesPanel::part(header) { background: linear-gradient(to right, #00695c, #00796b); }
-      ha-expansion-panel#cameraPanel::part(header)      { background: linear-gradient(to right, #1565c0, #1e88e5); }
-      ha-expansion-panel#climatePanel::part(header)     { background: linear-gradient(to right, #ef6c00, #f57c00); }
-      ha-expansion-panel#sensorPanel::part(header)      { background: linear-gradient(to right, #ad1457, #d81b60); }
-      ha-expansion-panel#colorsPanel::part(header)      { background: linear-gradient(to right, #37474f, #263238); }
-  
-      /* CONTENUTO */
+      
+      /* COLORI SPECIFICI PER SEZIONE */
+      ha-expansion-panel#roomPanel::part(header)            { background: linear-gradient(90deg, rgba(38,50,56,0.92) 0%, rgba(55,71,79,0.85) 100%);}
+      ha-expansion-panel#subButtonMainPanel::part(header)   { background: linear-gradient(90deg, rgba(69,39,160,0.91), rgba(94,53,177,0.81));}
+      ha-expansion-panel#mushroomEntitiesPanel::part(header){ background: linear-gradient(90deg, rgba(0,105,92,0.91), rgba(0,121,107,0.81));}
+      ha-expansion-panel#cameraPanel::part(header)          { background: linear-gradient(90deg, rgba(21,101,192,0.88), rgba(30,136,229,0.81));}
+      ha-expansion-panel#climatePanel::part(header)         { background: linear-gradient(90deg, rgba(239,108,0,0.88), rgba(245,124,0,0.81));}
+      ha-expansion-panel#sensorPanel::part(header)          { background: linear-gradient(90deg, rgba(173,20,87,0.88), rgba(216,27,96,0.81));}
+      ha-expansion-panel#colorsPanel::part(header)          { background: linear-gradient(90deg, rgba(55,71,79,0.85), rgba(38,50,56,0.80));}
+      
+      /* HEADER DI SOTTOSEZIONI (SUB-BUTTON, SENSOR ECC) */
+      .sub-panel-header {
+        width: 100%;
+        text-align: center;
+        background: linear-gradient(90deg, rgba(38,50,56,0.80) 0%, rgba(55,71,79,0.77) 100%);
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 600;
+        padding: 8px 0;
+        border-radius: 12px 12px 0 0;
+        margin-bottom: 2px;
+        backdrop-filter: blur(2px) saturate(110%);
+        opacity: 0.93;
+        letter-spacing: 0.03em;
+      }
+      
+      /* CONTENUTO SEZIONI */
       .section-content {
         padding: 20px;
         background: rgba(255, 255, 255, 0.02);
         border-radius: 10px;
         box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
       }
-  
-      .section-content h4 {
-        margin: 1.2em 0 0.5em;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #4dabf7;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-        padding-bottom: 0.3em;
-      }
-  
+      
+      /* GRUPPI DI INPUT */
       .input-group {
-        display: inline - flex;
-        align - items: center;
-        padding: 5 px 16 px;
-        margin - bottom: 12 px;
-        border - radius: 15 px;
-        background: linear - gradient(90 deg, rgba(77, 171, 247, 0.10) 0 % , rgba(33, 150, 243, 0.07) 100 % );
-        border: 1 px solid rgba(77, 171, 247, 0.12);
-        box - shadow: 0 1 px 3 px rgba(77, 171, 247, 0.08);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 10px 22px;
+        margin-bottom: 13px;
+        border-radius: 15px;
+        background: linear-gradient(90deg, rgba(77,171,247,0.08) 0%, rgba(33,150,243,0.06) 100%);
+        border: 1px solid rgba(77,171,247,0.09);
+        box-shadow: 0 1px 3px rgba(77,171,247,0.07);
         color: #a5c7ed;
-        font - size: 0.97 rem;
-        font - weight: 500;
-        transition: box - shadow 0.2 s, background 0.2 s;
+        font-size: 0.98rem;
+        font-weight: 500;
+        transition: box-shadow 0.18s, background 0.2s;
       }
-  
+      
+      /* LABELS E CAMPI INPUT */
       label {
         display: inline-block;
         margin-bottom: 4px;
         font-weight: 600;
-        font-size: 0.95rem;
+        font-size: 0.97rem;
         color: #90caf9;
       }
-  
-      input,
-      textarea,
-      select {
+      input, textarea, select {
         width: 100%;
         box-sizing: border-box;
         border: 1px solid var(--divider-color, #444);
@@ -1053,79 +1053,93 @@ class BubbleRoomEditor extends r {
         padding: 8px;
         background-color: #202020;
         color: #f1f1f1;
-        font-size: 0.95rem;
+        font-size: 0.97rem;
+        transition: border-color 0.18s;
       }
-  
       select {
         background-color: #262626;
       }
-  
       textarea {
         min-height: 70px;
       }
-  
       input[type="color"] {
         padding: 0;
         border: none;
         background: transparent;
       }
-  
       input[type="range"] {
         width: 100px;
       }
-  
-      .note {
-        margin-top: 2rem;
-        font-size: 0.85rem;
-        text-align: center;
-        color: var(--secondary-text-color);
-      }
-  
-      .error {
-        border: 1px solid red;
-      }
-  
-      /* PILL BUTTON */
+      
+      /* PILL BUTTON GROUPS */
       .pill-group {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
         margin: 6px 0 12px;
       }
-  
       .pill-button {
         padding: 6px 14px;
         border: 1px solid rgba(255, 255, 255, 0.2);
         background-color: #1e1e2f;
         color: #ccc;
         border-radius: 20px;
-        font-size: 0.9rem;
+        font-size: 0.92rem;
         cursor: pointer;
-        transition: all 0.25s ease-in-out;
+        transition: all 0.22s cubic-bezier(.39,.19,.33,1.28);
         transform: scale(1);
+        box-shadow: 0 1px 3px rgba(77, 171, 247, 0.08);
       }
-  
       .pill-button:hover {
         background-color: #2a2a3f;
         border-color: #4dabf7;
         color: #fff;
-        transform: scale(1.05);
+        transform: scale(1.06);
       }
-  
       .pill-button.active {
         background-color: #4dabf7;
-        color: #000;
+        color: #101130;
         font-weight: 600;
         border-color: #4dabf7;
-        box-shadow: 0 0 6px rgba(77, 171, 247, 0.6);
+        box-shadow: 0 0 7px rgba(77, 171, 247, 0.4);
       }
       
-      .section-header-pill {
-        
-      .section-header-pill:focus {
-        background: linear-gradient(90deg, rgba(77,171,247,0.70), rgba(25,118,210,0.55));
-        opacity: 1;
+      /* RESET BUTTON */
+      .reset-button {
+        background: linear-gradient(90deg, #1976d2 0%, #4dabf7 100%);
+        color: #fff;
+        border: none;
+        border-radius: 18px;
+        padding: 7px 26px;
+        font-weight: bold;
+        font-size: 1rem;
+        margin-top: 8px;
+        cursor: pointer;
+        box-shadow: 0 1px 4px rgba(33,150,243,0.13);
+        transition: background 0.18s, box-shadow 0.16s;
       }
+      .reset-button:hover {
+        background: linear-gradient(90deg, #42a5f5 0%, #1976d2 100%);
+        box-shadow: 0 3px 9px rgba(33,150,243,0.15);
+      }
+      
+      /* NOTE, ERRORI, VARI */
+      .note {
+        margin-top: 2rem;
+        font-size: 0.85rem;
+        text-align: center;
+        color: var(--secondary-text-color, #a0a4af);
+      }
+      .error {
+        border: 1px solid red;
+      }
+      .version {
+        font-size: 0.97rem;
+        font-weight: normal;
+        margin-left: 8px;
+        color: var(--secondary-text-color, #8ca0c0);
+      }
+
 
 
     `;
@@ -1766,7 +1780,7 @@ class BubbleRoomEditor extends r {
   _renderRoomPanel() {
     return x`
       <ha-expansion-panel id="roomPanel">
-        <div slot="header" @click="${() => this._togglePanel('roomPanel')}"><span class="section-header-pill">🛋️ Room Settings</div>
+        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🛋️ Room Settings</div>
         <div class="section-content">
           <div class="input-group">
             <label>Room name:</label>
@@ -1781,10 +1795,7 @@ class BubbleRoomEditor extends r {
               .hass="${this._hass}"
               .value="${this._config.area || ''}"
               @value-changed="${e => {
-                // Aggiorna area
                 const newArea = e.detail.value;
-            
-                // Forza tutti i flag auto-scoperta a true
                 const autoDiscovery = {
                   room_presence: true,
                   subbutton: true,
@@ -1793,18 +1804,15 @@ class BubbleRoomEditor extends r {
                   climate: true,
                   sensor: true
                 };
-            
                 this._config = {
                   ...this._config,
                   area: newArea,
                   auto_discovery_sections: autoDiscovery
                 };
-            
                 this.requestUpdate();
                 this._fireConfigChanged();
               }}">
             </ha-area-picker>
-
           </div>
           <div class="input-group">
             <label>Room Icon:</label>
@@ -1833,12 +1841,13 @@ class BubbleRoomEditor extends r {
             ${this._renderEntityInput("Presence (ID)", "presence", "entity", "room_presence")}
           </div>
           <div style="margin-top:1em;">
-            <button @click="${this._resetRoomConfig}">🔄 Reset Room Settings</button>
+            <button class="reset-button" @click="${this._resetRoomConfig}">🔄 Reset Room Settings</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
+
 
   _resetRoomConfig() {
     this._config = {
@@ -1860,7 +1869,7 @@ class BubbleRoomEditor extends r {
   _renderSubButtonPanelGroup() {
     return x`
       <ha-expansion-panel id="subButtonMainPanel">
-        <div slot="header" @click="${() => this._togglePanel('subButtonMainPanel')}"><span class="section-header-pill">🔘 SUB-BUTTON</div>
+        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🔘 SUB-BUTTON</div>
         <div class="section-content">
           <div class="input-group">
             <label>
@@ -1871,17 +1880,18 @@ class BubbleRoomEditor extends r {
               Auto-scoperta attiva
             </label>
           </div>
-          ${this._renderSubButtonPanel("sub-button1")}
-          ${this._renderSubButtonPanel("sub-button2")}
-          ${this._renderSubButtonPanel("sub-button3")}
-          ${this._renderSubButtonPanel("sub-button4")}
+          ${["sub-button1", "sub-button2", "sub-button3", "sub-button4"].map((key, i) => x`
+            <div class="sub-panel-header">Sub-button ${i+1}</div>
+            ${this._renderSubButtonPanel(key)}
+          `)}
           <div style="margin-top:1em;">
-            <button @click="${this._resetSubButtonConfig}">🔄 Reset Sub-buttons</button>
+            <button class="reset-button" @click="${this._resetSubButtonConfig}">🔄 Reset Sub-buttons</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
+
 
 
 
@@ -1895,9 +1905,16 @@ class BubbleRoomEditor extends r {
     this._fireConfigChanged();
   }
   _renderMushroomEntitiesPanel() {
+    const entityKeys = [
+      { key: "entities1", label: "Entity 1" },
+      { key: "entities2", label: "Entity 2" },
+      { key: "entities3", label: "Entity 3" },
+      { key: "entities4", label: "Entity 4" },
+      { key: "entities5", label: "Entity 5" },
+    ];
     return x`
       <ha-expansion-panel id="mushroomEntitiesPanel">
-        <div slot="header" @click="${() => this._togglePanel('mushroomEntitiesPanel')}"><span class="section-header-pill">🍄 Mushroom Entities</div>
+        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🍄 Mushroom Entities</div>
         <div class="section-content">
           <div class="input-group">
             <label>
@@ -1908,18 +1925,18 @@ class BubbleRoomEditor extends r {
               Auto-scoperta attiva
             </label>
           </div>
-          ${this._renderMushroomEntityPanel("entities1", "Entity 1")}
-          ${this._renderMushroomEntityPanel("entities2", "Entity 2")}
-          ${this._renderMushroomEntityPanel("entities3", "Entity 3")}
-          ${this._renderMushroomEntityPanel("entities4", "Entity 4")}
-          ${this._renderMushroomEntityPanel("entities5", "Entity 5")}
+          ${entityKeys.map(entity => x`
+            <div class="sub-panel-header">${entity.label}</div>
+            ${this._renderMushroomEntityPanel(entity.key, entity.label)}
+          `)}
           <div style="margin-top:1em;">
-            <button @click="${this._resetMushroomEntitiesConfig}">🔄 Reset Mushroom Entities</button>
+            <button class="reset-button" @click="${this._resetMushroomEntitiesConfig}">🔄 Reset Mushroom Entities</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
+
 
 
                 
@@ -1935,7 +1952,7 @@ class BubbleRoomEditor extends r {
   _renderCameraPanel() {
     return x`
       <ha-expansion-panel id="cameraPanel">
-        <div slot="header" @click="${() => this._togglePanel('cameraPanel')}"><span class="section-header-pill">📷 Camera</div>
+        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">📷 Camera</div>
         <div class="section-content">
           <div class="input-group">
             <label>
@@ -1953,12 +1970,13 @@ class BubbleRoomEditor extends r {
             ${this._renderIconInput("Camera Icon", "camera")}
           </div>
           <div style="margin-top:1em;">
-            <button @click="${this._resetCameraConfig}">🔄 Reset Camera</button>
+            <button class="reset-button" @click="${this._resetCameraConfig}">🔄 Reset Camera</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
+
 
   _resetCameraConfig() {
     const entities = { ...this._config.entities };
@@ -1970,7 +1988,7 @@ class BubbleRoomEditor extends r {
   _renderClimatePanel() {
     return x`
       <ha-expansion-panel id="climatePanel">
-        <div slot="header" @click="${() => this._togglePanel('climatePanel')}"><span class="section-header-pill">🌡️ Climate</div>
+        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🌡️ Climate</div>
         <div class="section-content">
           <div class="input-group">
             <label>
@@ -1988,7 +2006,7 @@ class BubbleRoomEditor extends r {
             ${this._renderIconInput("Climate Icon", "climate")}
           </div>
           <div style="margin-top:1em;">
-            <button @click="${this._resetClimateConfig}">🔄 Reset Climate</button>
+            <button class="reset-button" @click="${this._resetClimateConfig}">🔄 Reset Climate</button>
           </div>
         </div>
       </ha-expansion-panel>
@@ -2005,7 +2023,7 @@ class BubbleRoomEditor extends r {
   _renderSensorPanel() {
     return x`
       <ha-expansion-panel id="sensorPanel">
-        <div slot="header" @click="${() => this._togglePanel('sensorPanel')}"<span class="section-header-pill">>🧪 Sensor</div>
+        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🧪 Sensor</div>
         <div class="section-content">
           <div class="input-group">
             <label>
@@ -2016,11 +2034,12 @@ class BubbleRoomEditor extends r {
               Auto-scoperta attiva
             </label>
           </div>
-          ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) =>
-            this._renderSingleSensorPanel(key, `Sensor ${i + 1}`)
-          )}
+          ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) => x`
+            <div class="sub-panel-header">Sensor ${i + 1}</div>
+            ${this._renderSingleSensorPanel(key, `Sensor ${i + 1}`)}
+          `)}
           <div style="margin-top:1em;">
-            <button @click="${this._resetSensorConfig}">🔄 Reset Sensors</button>
+            <button class="reset-button" @click="${this._resetSensorConfig}">🔄 Reset Sensors</button>
           </div>
         </div>
       </ha-expansion-panel>
@@ -2041,22 +2060,22 @@ class BubbleRoomEditor extends r {
   _renderColorsPanel() {
     return x`
       <ha-expansion-panel id="colorsPanel">
-        <div slot="header" @click="${() => this._togglePanel('colorsPanel')}"><span class="section-header-pill">🎨 Colors</div>
+        <div slot="header" style="width:100%;display:flex;align-items:center;justify-content:center;">🎨 Colors</div>
         <div class="section-content">
-          <h4>Room</h4>
+          <div class="sub-panel-header">Room</div>
           ${this._renderColorField("room", "icon_active", "Icon Active")}
           ${this._renderColorField("room", "icon_inactive", "Icon Inactive")}
           ${this._renderColorField("room", "background_active", "Background Active")}
           ${this._renderColorField("room", "background_inactive", "Background Inactive")}
           ${this._renderColorField("room", "mushroom_active", "Mushroom Icon Active")}
           ${this._renderColorField("room", "mushroom_inactive", "Mushroom Icon Inactive")}
-          <h4>Subbutton</h4>
+          <div class="sub-panel-header">Subbutton</div>
           ${this._renderColorField("subbutton", "background_on", "Background On")}
           ${this._renderColorField("subbutton", "background_off", "Background Off")}
           ${this._renderColorField("subbutton", "icon_on", "Icon On")}
           ${this._renderColorField("subbutton", "icon_off", "Icon Off")}
           <div style="margin-top:1em;">
-            <button @click="${this._resetColorsConfig}">🔄 Reset Colors</button>
+            <button class="reset-button" @click="${this._resetColorsConfig}">🔄 Reset Colors</button>
           </div>
         </div>
       </ha-expansion-panel>
