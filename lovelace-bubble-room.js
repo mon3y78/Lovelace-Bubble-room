@@ -965,52 +965,36 @@ class BubbleRoomEditor extends r {
       }
   
       /* --- HEADER UNIFICATI --- */
-      ha-expansion-panel::part(header) {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 56px;
-        width: 100%;
-        background: linear-gradient(
-          90deg,
-          var(--bubble-header-start) 0%,
-          var(--bubble-header-end)   100%
-        );
-        color: #fff;
-        font-size: 1.18rem;
-        font-weight: 700;
-        border-radius: 16px;
-        margin-bottom: 12px;
-        padding: 0 18px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.16);
-        backdrop-filter: blur(4px) saturate(110%);
-        opacity: 0.95;
-        border: none;
-        letter-spacing: 0.01em;
-        transition: background 0.3s;
+      /* --- HEADER COME AUTODISCOVER-BOX --- */
+      :host ::part(header) {
+        background: linear-gradient(90deg, #1a2535 0%, #2e3b56 100%) !important;
+        border: 1.5px solid #42a5f5cc      !important;
+        border-radius: 15px               !important;
+        margin-bottom: 17px               !important;
+        padding: 12px 18px                !important;
+        box-shadow: 0 2px 8px rgba(55,71,79,0.23) !important;
+        transition: box-shadow 0.22s, border 0.22s;
+        color: #e0e8f5                     !important; /* testo più leggibile */
       }
-      ha-expansion-panel::part(header):hover {
-        background: linear-gradient(
-          90deg,
-          rgba(64,64,96,0.96) 0%,
-          rgba(48,48,72,0.92) 100%
-        );
+      :host ::part(hover) {
+        box-shadow: 0 6px 22px rgba(66,165,247,0.23) !important;
+        border: 1.5px solid #42a5f5              !important;
       }
+
       /* rimosse tutte le regole specifiche per #roomPanel, #cameraPanel, ecc. */
   
       /* --- CONTENUTO IN “CARD” --- */
+      /* --- CONTENUTO IN “CARD” (tutti i pannelli) --- */
       ha-expansion-panel::part(content) {
-        padding: 0; /* reset padding di default */
+        /* applichiamo lo stile dell’autodiscover-box a TUTTI i content */
+        background: linear-gradient(90deg, #1a2535 0%, #2e3b56 100%) !important;
+        border: 1.5px solid #42a5f5cc !important;
+        border-radius: 15px !important;
+        padding: 12px 18px !important;
+        margin: 0 0 17px 0 !important;
+        box-shadow: 0 2px 8px rgba(55,71,79,0.23) !important;
       }
-      .section-content {
-        margin: 0 0 12px 0;
-        padding: 24px;
-        border-radius: 16px;
-        background: rgba(40, 48, 64, 0.85);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-        transition: box-shadow 0.28s;
-      }
+
   
       /* --- AUTO-SCOPERTA BOX --- */
       .autodiscover-box {
