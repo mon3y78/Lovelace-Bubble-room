@@ -1424,6 +1424,7 @@ class BubbleRoomEditor extends LitElement {
     this.requestUpdate();
     this._fireConfigChanged();
   }
+  
   _renderMushroomEntitiesPanel() {
     const entityKeys = [
       { key: "entities1", label: "Entity 1" },
@@ -1456,22 +1457,22 @@ class BubbleRoomEditor extends LitElement {
           <!-- Entities collapsable -->
           ${entityKeys.map((entity, i) => {
             const entityConfig = this._config.entities?.[entity.key] || { entity: "", icon: "" };
-            return html` <
-      ha - expansion - panel style = "margin-top: 14px;" >
-      <div slot="header" style="width:100%;font-weight:600;">${entity.label}</div> <
-      div class = "section-content mushroom-glow"
-    style = "margin-bottom:0;" >
-      <div class="input-group">
+            return html`
+              <ha-expansion-panel style="margin-top: 14px;">
+                <div slot="header" style="width:100%;font-weight:600;">${entity.label}</div>
+                <div class="section-content mushroom-glow" style="margin-bottom:0;">
+                  <div class="input-group">
                     <label>Entity:</label>
                     ${this._renderEntityInput("Entity ID", entity.key, "entity", "mushroom")}
-                  </div> <
-      div class = "input-group" >
-      <label>Icon:</label>
-    $ { this._renderIconInput("Icon", entity.key) }
-    </div> <
-    /div> <
-    /ha-expansion-panel>
-    `;
+                  </div>
+                  <div class="input-group">
+                    <label>Icon:</label>
+                    ${this._renderIconInput("Icon", entity.key)}
+                  </div>
+                </div>
+              </ha-expansion-panel>
+            `;
+            
           })}
   
           <!-- Reset -->
@@ -1481,7 +1482,8 @@ class BubbleRoomEditor extends LitElement {
         </div>
       </ha-expansion-panel>
     `;
-  }                
+  }
+                  
   _resetMushroomEntitiesConfig() {
     const entities = { ...this._config.entities };
     ["entities1", "entities2", "entities3", "entities4", "entities5"].forEach(key => {
@@ -1608,12 +1610,11 @@ class BubbleRoomEditor extends LitElement {
           <!-- Sensors collassabili -->
           ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) => {
             const sensor = this._config.entities?.[key] || {};
-            return html` <
-      ha - expansion - panel style = "margin-top: 14px;" >
-      <div slot="header" style="width:100%;font-weight:600;">Sensor ${i + 1}</div> <
-      div class = "section-content sensor-glow"
-    style = "margin-bottom:0;" >
-      <div class="input-group">
+            return html`
+              <ha-expansion-panel style="margin-top: 14px;">
+                <div slot="header" style="width:100%;font-weight:600;">Sensor ${i + 1}</div>
+                <div class="section-content sensor-glow" style="margin-bottom:0;">
+                  <div class="input-group">
                     <label>Tipo Sensore:</label>
                     <select .value="${sensor.type || ''}" @change="${e => this._updateSensor(i, 'type', e.target.value)}">
                       <option value="">-- nessuno --</option>
@@ -1631,14 +1632,14 @@ class BubbleRoomEditor extends LitElement {
                         { type: 'voc', label: '🧪 VOC' },
                       ].map(t => html`<option value="${t.type}">${t.label}</option>`)}
                     </select>
-                  </div> <
-      div class = "input-group" >
-      <label>Entity ID:</label>
-    $ { this._renderEntityInput("Entity ID", key) }
-    <label style="margin-left:20px;">Icon:</label>
-    $ { this._renderIconInput("Icon", key) }
-    </div>
-    $ { sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? html`
+                  </div>
+                  <div class="input-group">
+                    <label>Entity ID:</label>
+                    ${this._renderEntityInput("Entity ID", key)}
+                    <label style="margin-left:20px;">Icon:</label>
+                    ${this._renderIconInput("Icon", key)}
+                  </div>
+                  ${sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? html`
                     <div class="input-group">
                       <label>Unità:</label>
                       <select
@@ -1647,10 +1648,11 @@ class BubbleRoomEditor extends LitElement {
                         ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u => html`<option value="${u}">${u}</option>`)}
                       </select>
                     </div>
-                  ` : '' }
-    </div> <
-    /ha-expansion-panel>
-    `;
+                  ` : ''}
+                </div>
+              </ha-expansion-panel>
+            `;
+
           })}
   
           <!-- Reset -->
