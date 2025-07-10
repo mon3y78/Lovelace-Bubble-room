@@ -454,6 +454,26 @@ class BubbleRoomEditor extends LitElement {
       
       /* --- ERRORI --- */
       .error { border: 1.2px solid #ff6464 !important; }
+      
+      .room-glow {
+        background: linear-gradient(90deg, #2b6cb0 0%, #2c5282 100%) !important;
+      }
+      .subbutton-glow {
+        background: linear-gradient(90deg, #6b21a8 0%, #a78bfa 100%) !important;
+      }
+      .mushroom-glow {
+        background: linear-gradient(90deg, #159947 0%, #57efc1 100%) !important;
+      }
+      .climate-glow {
+        background: linear-gradient(90deg, #1976d2 0%, #64b5f6 100%) !important;
+      }
+      .camera-glow {
+        background: linear-gradient(90deg, #4e4376 0%, #2b5876 100%) !important;
+      }
+      .sensor-glow {
+        background: linear-gradient(90deg, #a18cd1 0%, #fbc2eb 100%) !important;
+      }
+
 
 
     `;
