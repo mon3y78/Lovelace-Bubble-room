@@ -953,40 +953,38 @@ class BubbleRoomEditor extends r {
 
   static get styles() {
     return i$3`
-      : host {
-        /* Variabili globali per colori (modificabili se vuoi cambiare palette) */
-        --bubble - header - start: #263238e8;
-        --bubble-header-end:   # 37474 fe9;
+      :host {
+        --bubble-header-start: #263238e8;
+        --bubble-header-end:   #37474fe9;
         display: block;
-        font - family: "Segoe UI", Roboto, sans - serif;
+        font-family: "Segoe UI", Roboto, sans-serif;
         color: #f2f4f8;
-        font - size: 1 rem;
+        font-size: 1rem;
         background: none;
       }
       
       /* ============ PANNELLI PRINCIPALI (ROOM, SUBBUTTON, ECC.) ============ */
-      /* Tutto il blocco expansion-panel */
-      ha - expansion - panel {
-        background: none!important; /* Nessun colore sfondo */
-        border: none!important; /* Nessun bordo */
-        box - shadow: none!important; /* Nessuna ombra di default */
-        margin - bottom: 20 px!important; /* Spazio fra i pannelli */
-        border - radius: 15 px!important; /* Arrotonda tutto il blocco */
-        overflow: visible!important;
+      ha-expansion-panel {
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        margin-bottom: 20px !important;
+        border-radius: 15px !important;
+        overflow: visible !important;
       }
       
       /* Header traslucido blu moderno, testo centrato */
-      ha - expansion - panel div[slot = "header"] {
-          background: linear - gradient(90 deg, rgba(40, 124, 255, 0.86) 0 % , rgba(64, 186, 255, 0.86) 100 % );
-          color: #fff;
-          text - align: center;
-          font - size: 1.1 rem;
-          font - weight: 600;
-          padding: 16 px 0;
-          border - radius: 15 px 15 px 0 0; /* Arrotonda solo in alto */
-          box - shadow: 0 2 px 8 px rgba(64, 120, 255, 0.12);
-          border - bottom: 1.5 px solid #64b5f6aa;
-        backdrop-filter: blur(2px);        /* Effetto "vetro" */
+      ha-expansion-panel div[slot="header"] {
+        background: linear-gradient(90deg, rgba(40,124,255,0.86) 0%, rgba(64,186,255,0.86) 100%);
+        color: #fff;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 600;
+        padding: 16px 0;
+        border-radius: 15px 15px 0 0;
+        box-shadow: 0 2px 8px rgba(64,120,255,0.12);
+        border-bottom: 1.5px solid #64b5f6aa;
+        backdrop-filter: blur(2px);
         letter-spacing: 0.02em;
         margin: 0 !important;
         width: 100%;
@@ -994,107 +992,106 @@ class BubbleRoomEditor extends r {
       }
       
       /* Bordo inferiore più spesso quando il pannello è aperto */
-      ha-expansion-panel[open] div[slot= "header"] {
-          border - bottom: 2.2 px solid #90caf9;
+      ha-expansion-panel[open] div[slot="header"] {
+        border-bottom: 2.2px solid #90caf9;
       }
       
       /* Contenuto del pannello, sfondo blu scurissimo e arrotondato in basso */
       ha-expansion-panel .section-content {
-        background: # 1 c273f;
-          color: #fff;
-          padding: 22 px 20 px 18 px 20 px;
-          border - radius: 0 0 15 px 15 px;
-          box - shadow: none!important;
-          font - size: 1 em;
-          margin: 0;
-        }
-        
-        /* ============ AUTO-SCOPERTA / AUTODISCOVER BOX ============ */
-        .autodiscover - box {
-          background: linear - gradient(90 deg, #1a2535 0%, # 2e3 b56 100 % );
-          border - radius: 15 px;
-          padding: 12 px 18 px;
-          margin - bottom: 17 px;
-          display: flex;
-          align - items: center;
-          box - shadow: 0 2 px 8 px rgba(55, 71, 79, 0.23);
-          border: 1.5 px solid #42a5f5cc;
+        background: #1c273f;
+        color: #fff;
+        padding: 22px 20px 18px 20px;
+        border-radius: 0 0 15px 15px;
+        box-shadow: none !important;
+        font-size: 1em;
+        margin: 0;
+      }
+      
+      /* ============ AUTO-SCOPERTA / AUTODISCOVER BOX ============ */
+      .autodiscover-box {
+        background: linear-gradient(90deg, #1a2535 0%, #2e3b56 100%);
+        border-radius: 15px;
+        padding: 12px 18px;
+        margin-bottom: 17px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(55,71,79,0.23);
+        border: 1.5px solid #42a5f5cc;
         cursor: pointer;
         transition: box-shadow 0.22s, border 0.22s;
       }
       .autodiscover-box:hover {
         box-shadow: 0 6px 22px rgba(66,165,247,0.23);
-        border: 1.5px solid # 42 a5f5;
-        }
-        
-        /* ============ RESET BUTTON ============ */
-        .reset - button {
-          background: transparent;
-          color: #ff6464;
-          border: 2 px solid #ff6464;
-          border - radius: 18 px;
-          padding: 7 px 28 px;
-          font - weight: bold;
-          font - size: 1 rem;
-          margin - top: 8 px;
-          cursor: pointer;
-          box - shadow: 0 1 px 4 px #ff646433;
-          transition: background 0.18 s,
-          box - shadow 0.16 s;
-        }
-        .reset - button: hover {
-          background: #ff646417;
-          color: #fff;
-          box - shadow: 0 3 px 10 px #ff646444;
-        }
-        
-        /* ============ GRUPPI DI INPUT / INPUT-GROUP ============ */
-        .input - group {
-          display: flex;
-          flex - wrap: wrap;
-          align - items: center;
-          gap: 14 px;
-          padding: 14 px 18 px 10 px;
-          margin - bottom: 13 px;
-          border - radius: 13 px;
-          background: linear - gradient(90 deg, #2a3140 10%, # 344058 90 % );
-          border: 1 px solid #5c6bc0aa;
+        border: 1.5px solid #42a5f5;
+      }
+      
+      /* ============ RESET BUTTON ============ */
+      .reset-button {
+        background: transparent;
+        color: #ff6464;
+        border: 2px solid #ff6464;
+        border-radius: 18px;
+        padding: 7px 28px;
+        font-weight: bold;
+        font-size: 1rem;
+        margin-top: 8px;
+        cursor: pointer;
+        box-shadow: 0 1px 4px #ff646433;
+        transition: background 0.18s, box-shadow 0.16s;
+      }
+      .reset-button:hover {
+        background: #ff646417;
+        color: #fff;
+        box-shadow: 0 3px 10px #ff646444;
+      }
+      
+      /* ============ GRUPPI DI INPUT / INPUT-GROUP ============ */
+      .input-group {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px 10px;
+        margin-bottom: 13px;
+        border-radius: 13px;
+        background: linear-gradient(90deg, #2a3140 10%, #344058 90%);
+        border: 1px solid #5c6bc0aa;
         box-shadow: 0 2px 6px rgba(92,107,192,0.3);
-        color: # a5c7ed;
-          font - size: 1.02 rem;
-          font - weight: 500;
-        }
+        color: #a5c7ed;
+        font-size: 1.02rem;
+        font-weight: 500;
+      }
       
       /* ============ LABELS E CAMPI INPUT ============ */
       label {
-        font - weight: 600;
-        font - size: 0.97 rem;
+        font-weight: 600;
+        font-size: 0.97rem;
         color: #90caf9;
         margin-bottom: 4px;
       }
       input, textarea, select {
-        border: 1px solid var(--divider-color, # 444);
-      border - radius: 6 px;
-      padding: 8 px;
-      background - color: #202020;
-        color: # f1f1f1;
-      font - size: 0.97 rem;
+        border: 1px solid var(--divider-color, #444);
+        border-radius: 6px;
+        padding: 8px;
+        background-color: #202020;
+        color: #f1f1f1;
+        font-size: 0.97rem;
       }
-      input[type = "color"] { padding: 0;border: none;background: transparent; }
-      input[type = "range"] { width: 100 px; }
-        
-        /* ============ TAB BUTTON GROUP (TAP/HOLD) ============ */
-        .tab - group {
-          display: flex;
-          gap: 10 px;
-          margin: 0.5 em 0 0.7 em 0;
-        }
-        .tab - btn {
-          padding: 7 px 22 px;
-          border - radius: 22 px;
-          border: 2 px solid #4dabf799;
-        background: # 161927;
-          color: #90caf9;
+      input[type="color"] { padding: 0; border: none; background: transparent; }
+      input[type="range"] { width: 100px; }
+      
+      /* ============ TAB BUTTON GROUP (TAP/HOLD) ============ */
+      .tab-group {
+        display: flex;
+        gap: 10px;
+        margin: 0.5em 0 0.7em 0;
+      }
+      .tab-btn {
+        padding: 7px 22px;
+        border-radius: 22px;
+        border: 2px solid #4dabf799;
+        background: #161927;
+        color: #90caf9;
         font-size: 1rem;
         font-weight: 600;
         display: flex;
@@ -1102,37 +1099,37 @@ class BubbleRoomEditor extends r {
         gap: 8px;
         cursor: pointer;
         transition: background 0.18s, color 0.18s, border 0.16s, box-shadow 0.18s;
-        box-shadow: 0 1px 7px # 4 dabf71a;
-        }
-        .tab - btn.active,
-        .tab - btn: active,
-        .tab - btn: focus {
-          background: linear - gradient(90 deg, #4dabf7 50%,# 1976 d2 100 % );
-          color: #101130;
-        border: 2px solid # 4 dabf7;
-          box - shadow: 0 3 px 13 px #4dabf759;
+        box-shadow: 0 1px 7px #4dabf71a;
+      }
+      .tab-btn.active,
+      .tab-btn:active,
+      .tab-btn:focus {
+        background: linear-gradient(90deg,#4dabf7 50%,#1976d2 100%);
+        color: #101130;
+        border: 2px solid #4dabf7;
+        box-shadow: 0 3px 13px #4dabf759;
       }
       .tab-btn:hover:not(.active) {
-        background: # 23264 a;
-          color: #fff;
-          border: 2 px solid #1976d2;
+        background: #23264a;
+        color: #fff;
+        border: 2px solid #1976d2;
       }
       
-      /* = === === === == MINI PANEL HEADER(per subpanel collassabili) === === === === * /
-            .sub - panel - header {
-              width: 100 % ;
-              text - align: left;
-              background: none;
-              color: #fff;
-              font - size: 1 rem;
-              font - weight: 700;
-              margin - bottom: 2 px;
-              letter - spacing: 0.03 em;
-              margin - top: 0.7 em;
-            }
-            
-            /* ============ ERRORI ============ */
-            .error { border: 1.2 px solid #ff6464!important; }
+      /* ============ MINI PANEL HEADER (per subpanel collassabili) ============ */
+      .sub-panel-header {
+        width: 100%;
+        text-align: left;
+        background: none;
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+        letter-spacing: 0.03em;
+        margin-top: 0.7em;
+      }
+      
+      /* ============ ERRORI ============ */
+      .error { border: 1.2px solid #ff6464 !important; }
     `;
   }
 
