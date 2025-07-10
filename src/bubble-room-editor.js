@@ -283,44 +283,38 @@ class BubbleRoomEditor extends LitElement {
         font-size: 1rem;
         background: none;
       }
-  
-      /* --- HEADER UNIFICATI --- */
-      /* --- HEADER COME AUTODISCOVER-BOX --- */
-      :host ::part(header) {
-        background: linear-gradient(90deg, #1a2535 0%, #2e3b56 100%) !important;
-        border: 1.5px solid #42a5f5cc      !important;
-        border-radius: 15px               !important;
-        margin-bottom: 17px               !important;
-        padding: 12px 18px                !important;
-        box-shadow: 0 2px 8px rgba(55,71,79,0.23) !important;
-        transition: box-shadow 0.22s, border 0.22s;
-        color: #e0e8f5                     !important; /* testo più leggibile */
-      }
-      :host ::part(header):hover {
-        box-shadow: 0 6px 22px rgba(66,165,247,0.23) !important;
-        border: 1.5px solid #42a5f5              !important;
-      }
 
       /* ...il resto del file rimane invariato... */
       /* —————————— */
       /* PANEL “MASTER-HEADER” */
       /* —————————— */
+      /* —————————— */
+    /* PANEL “MASTER-HEADER” */
+      /* —————————— */
       .master-header::part(header) {
-        background: linear-gradient(90deg, #1a2535 0%, #2e3b56 100%);
-        border: 1.5px solid #42a5f5cc;
-        border-radius: 15px;
-        margin-bottom: 17px;
-        padding: 12px 18px;
-        box-shadow: 0 2px 8px rgba(55,71,79,0.23);
-        color: #e0e8f5;
-        font-weight: 600;
-        transition: box-shadow 0.22s, border-color 0.22s;
-      }
+        background: linear - gradient(90 deg, #1a2535 0%, # 2e3 b56 100 % ) !important;
+        border: 1.5 px solid #42a5f5cc               !important;
+        border-radius: 15px                             !important;
+        margin-bottom: 17px                             !important;
+        padding:       12px 18px                        !important;
+        box-shadow:    0 2px 8px rgba(55,71,79,0.23)    !important;
+        color: #e0e8f5!important;
+        font-weight: 600!important;
+        transition: box-shadow 0.22 s, border-color 0.22 s!important;
+      } 
       .master-header::part(header):hover {
         box-shadow: 0 6px 22px rgba(66,165,247,0.23);
         border-color: #42a5f5;
       }
-      
+      .section-content {
+        background: rgba(40,48,64,0.85);
+        border:     1px solid rgba(255,255,255,0.15);
+        border-radius: 16px;
+        padding:    24px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        margin-bottom: 12px;
+      }
+
 
       /* rimosse tutte le regole specifiche per #roomPanel, #cameraPanel, ecc. */
   
