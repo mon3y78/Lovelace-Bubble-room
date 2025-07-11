@@ -1314,6 +1314,7 @@ class BubbleRoomEditor extends r {
       ${this._renderCameraPanel()}
       ${this._renderClimatePanel()}
       ${this._renderSensorPanel()}
+      ${this._renderColorPanel()}
       <p class="note">
         For advanced configurations, modify the YAML directly.
       </p>
