@@ -274,275 +274,426 @@ class BubbleRoomEditor extends LitElement {
   static get styles() {
     return css`
       :host {
-        /* Componente principale: layout e font di base */
-        display: block;                    /* Rende il componente a blocco */
-        font-family: "Segoe UI", Roboto, sans-serif; /* Font leggibile e moderno */
-        font-size: 1rem;                   /* Dimensione testo base */
-        color: #f2f4f8;                    /* Colore testo di default */
-        background: none;                  /* Nessuno sfondo di default */
-      }
-      
-      /* ======== GLASSMORPHISM PANELS ======== */
-      
-      /* ----- ROOM PANEL: blu-azzurro ----- */
-      .room-panel div[slot="header"], .room-panel .section-content {
-        background: linear-gradient(105deg, #51aaffcc 0%, #81d5ffb2 100%); /* Gradiente vetro blu */
-        border: 2px solid #81d5ff55;          /* Bordo vetro blu tenue */
-        box-shadow: 0 4px 22px 0 #51aaff22;   /* Ombra soft blu */
-        color: #eaf6ff;                       /* Testo chiaro su blu */
-        border-radius: 20px;                  /* Angoli arrotondati liquidi */
-        backdrop-filter: blur(18px) saturate(1.10); /* Effetto glass vero */
-        -webkit-backdrop-filter: blur(18px) saturate(1.10); /* Compatibilità Safari */
-        transition: background 0.24s, border 0.22s, box-shadow 0.20s; /* Transizioni morbide */
-      }
-      .room-panel div[slot="header"] {
-        border-radius: 20px 20px 0 0;   /* Angoli superiori arrotondati */
-        font-size: 1.1rem;              /* Titolo più grande */
-        font-weight:700;                /* Titolo in grassetto */
-        text-align:center;              /* Titolo centrato */
-        padding:18px 0 14px 0;          /* Spaziatura verticale header */
-      }
-      .room-panel .section-content {
-        border-radius: 0 0 20px 20px;   /* Angoli inferiori arrotondati */
-        padding: 26px 20px 18px 20px;   /* Spaziatura interna contenuto */
-      }
-      
-      /* ----- SUBBUTTON PANEL: fucsia/viola ----- */
-      .subbutton-panel div[slot="header"], .subbutton-panel .section-content {
-        background: linear-gradient(105deg, #b77cffcc 0%, #f3a3ffb2 100%); /* Gradiente vetro viola */
-        border: 2px solid #b77cff55;
-        box-shadow: 0 4px 22px 0 #b77cff22;
-        color: #f7eaff;
-        border-radius: 20px;
-        backdrop-filter: blur(18px) saturate(1.10);
-        -webkit-backdrop-filter: blur(18px) saturate(1.10);
-      }
-      .subbutton-panel div[slot="header"] {
-        border-radius: 20px 20px 0 0;
-        font-size: 1.1rem;
-        font-weight:700;
-        text-align:center;
-        padding:18px 0 14px 0;
-      }
-      .subbutton-panel .section-content {
-        border-radius: 0 0 20px 20px;
-        padding: 26px 20px 18px 20px;
-      }
-      
-      /* ----- MUSHROOM PANEL: verde acqua ----- */
-      .mushroom-panel div[slot="header"], .mushroom-panel .section-content {
-        background: linear-gradient(105deg, #55efc4cc 0%, #36e2b1b2 100%);
-        border: 2px solid #55efc455;
-        box-shadow: 0 4px 22px 0 #55efc422;
-        color: #eafffa;
-        border-radius: 20px;
-        backdrop-filter: blur(18px) saturate(1.10);
-        -webkit-backdrop-filter: blur(18px) saturate(1.10);
-      }
-      .mushroom-panel div[slot="header"] {
-        border-radius: 20px 20px 0 0;
-        font-size: 1.1rem;
-        font-weight:700;
-        text-align:center;
-        padding:18px 0 14px 0;
-      }
-      .mushroom-panel .section-content {
-        border-radius: 0 0 20px 20px;
-        padding: 26px 20px 18px 20px;
-      }
-      
-      /* ----- CLIMATE PANEL: giallo oro ----- */
-      .climate-panel div[slot="header"], .climate-panel .section-content {
-        background: linear-gradient(105deg, #ffd36dcc 0%, #ffc888b2 100%);
-        border: 2px solid #ffd36d55;
-        box-shadow: 0 4px 22px 0 #ffd36d22;
-        color: #fffbe6;
-        border-radius: 20px;
-        backdrop-filter: blur(18px) saturate(1.10);
-        -webkit-backdrop-filter: blur(18px) saturate(1.10);
-      }
-      .climate-panel div[slot="header"] {
-        border-radius: 20px 20px 0 0;
-        font-size: 1.1rem;
-        font-weight:700;
-        text-align:center;
-        padding:18px 0 14px 0;
-      }
-      .climate-panel .section-content {
-        border-radius: 0 0 20px 20px;
-        padding: 26px 20px 18px 20px;
-      }
-      
-      /* ----- CAMERA PANEL: celeste ----- */
-      .camera-panel div[slot="header"], .camera-panel .section-content {
-        background: linear-gradient(105deg, #77ceffcc 0%, #a3f0ffb2 100%);
-        border: 2px solid #77ceff55;
-        box-shadow: 0 4px 22px 0 #77ceff22;
-        color: #e9f6ff;
-        border-radius: 20px;
-        backdrop-filter: blur(18px) saturate(1.10);
-        -webkit-backdrop-filter: blur(18px) saturate(1.10);
-      }
-      .camera-panel div[slot="header"] {
-        border-radius: 20px 20px 0 0;
-        font-size: 1.1rem;
-        font-weight:700;
-        text-align:center;
-        padding:18px 0 14px 0;
-      }
-      .camera-panel .section-content {
-        border-radius: 0 0 20px 20px;
-        padding: 26px 20px 18px 20px;
-      }
-      
-      /* ----- SENSOR PANEL: lime/verde chiaro ----- */
-      .sensor-panel div[slot="header"], .sensor-panel .section-content {
-        background: linear-gradient(105deg, #bbf7d0cc 0%, #a7ffebb2 100%);
-        border: 2px solid #bbf7d055;
-        box-shadow: 0 4px 22px 0 #bbf7d022;
-        color: #eafafd;
-        border-radius: 20px;
-        backdrop-filter: blur(18px) saturate(1.10);
-        -webkit-backdrop-filter: blur(18px) saturate(1.10);
-      }
-      .sensor-panel div[slot="header"] {
-        border-radius: 20px 20px 0 0;
-        font-size: 1.1rem;
-        font-weight:700;
-        text-align:center;
-        padding:18px 0 14px 0;
-      }
-      .sensor-panel .section-content {
-        border-radius: 0 0 20px 20px;
-        padding: 26px 20px 18px 20px;
-      }
-      
-      /* ----- COLORS PANEL: azzurro acqua ----- */
-      .colors-panel div[slot="header"], .colors-panel .section-content {
-        background: linear-gradient(105deg, #90f7eccc 0%, #32ffeed0 100%);
-        border: 2px solid #32ffee66;
-        box-shadow: 0 4px 22px 0 #32ffee15;
-        color: #24363b;
-        border-radius: 20px;
-        backdrop-filter: blur(18px) saturate(1.12);
-        -webkit-backdrop-filter: blur(18px) saturate(1.12);
-      }
-      .colors-panel div[slot="header"] {
-        border-radius: 20px 20px 0 0;
-        font-size: 1.1rem;
-        font-weight:700;
-        text-align:center;
-        padding:18px 0 14px 0;
-      }
-      .colors-panel .section-content {
-        border-radius: 0 0 20px 20px;
-        padding: 26px 20px 18px 20px;
-      }
-      
-      /* ======= GRUPPI INPUT ======= */
-      .input-group {
-        display: flex;                      /* Allinea gli input in riga/flex */
-        flex-wrap: wrap;                    /* Permette il wrap su più righe */
-        align-items: center;
-        gap: 14px;                          /* Spazio tra i campi */
-        padding: 14px 18px 10px;            /* Spaziatura interna */
-        margin-bottom: 13px;                /* Margine inferiore */
-        border-radius: 13px;                /* Arrotonda box gruppo */
-        background: linear-gradient(90deg, #2a3140 10%, #344058 90%); /* Gradiente scuro moderno */
-        border: 1px solid #5c6bc0aa;        /* Bordo blu trasparente */
-        box-shadow: 0 2px 6px rgba(92,107,192,0.13); /* Ombra soft */
-        color: #a5c7ed;                     /* Colore testo secondario */
-        font-size: 1.02rem;
-        font-weight: 500;
-      }
-      label {
-        font-weight: 600;                   /* Label più visibile */
-        font-size: 0.97rem;
-        color: #90caf9;                     /* Label azzurra */
-        margin-bottom: 4px;
-      }
-      input, textarea, select {
-        border: 1px solid #444;             /* Bordo scuro soft */
-        border-radius: 6px;                 /* Arrotondato */
-        padding: 8px;
-        background-color: #202020;          /* Sfondo input scuro */
-        color: #f1f1f1;                     /* Testo chiaro */
-        font-size: 0.97rem;
-      }
-      input[type="color"] { padding: 0; border: none; background: transparent; }
-      input[type="range"] { width: 100px; }
-      
-      
-      /* ======= TAB BUTTONS: stile pill ======= */
-      .tab-group {
-        display: flex;              /* Allinea in riga */
-        gap: 10px;
-        margin: 0.5em 0 0.7em 0;
-      }
-      .tab-btn {
-        padding: 7px 22px;          /* Spaziatura pill */
-        border-radius: 22px;        /* Effetto pill */
-        border: 2px solid #4dabf799;
-        background: #161927;        /* Sfondo pill scuro */
-        color: #90caf9;
-        font-size: 1rem;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        transition: background 0.18s, color 0.18s, border 0.16s, box-shadow 0.18s;
-        box-shadow: 0 1px 7px #4dabf71a;
-      }
-      .tab-btn.active,
-      .tab-btn:active,
-      .tab-btn:focus {
-        background: linear-gradient(90deg,#4dabf7 50%,#1976d2 100%);
-        color: #101130;
-        border: 2px solid #4dabf7;
-        box-shadow: 0 3px 13px #4dabf759;
-      }
-      .tab-btn:hover:not(.active) {
-        background: #23264a;
-        color: #fff;
-        border: 2px solid #1976d2;
-      }
-      
-      /* ======= RESET BUTTON (rosso) ======= */
-      .reset-button {
-        background: transparent;
-        color: #ff6464;               /* Rosso acceso */
-        border: 2px solid #ff6464;
-        border-radius: 18px;
-        padding: 7px 28px;
-        font-weight: bold;
-        font-size: 1rem;
-        margin-top: 8px;
-        cursor: pointer;
-        box-shadow: 0 1px 4px #ff646433;
-        transition: background 0.18s, box-shadow 0.16s;
-      }
-      .reset-button:hover {
-        background: #ff646417;
-        color: #fff;
-        box-shadow: 0 3px 10px #ff646444;
-      }
-      
-      /* ======= MINI HEADER DI SOTTOSEZIONI ======= */
-      .sub-panel-header {
-        width: 100%;
-        text-align: left;
-        background: none;
-        color: #fff;
-        font-size: 1rem;
-        font-weight: 700;
-        margin-bottom: 2px;
-        letter-spacing: 0.03em;
-        margin-top: 0.7em;
-      }
-      
-      /* ======= ERROR BORDO ROSSO ======= */
-      .error { border: 1.2px solid #ff6464 !important; } /* Per input/box in errore */
+        :host {
+          font-family: "Segoe UI", Roboto, sans-serif;
+          color: #f2f4f8;
+          font-size: 1rem;
+          background: none;
+        }
+        
+        /* =============== */
+        /* GLASSMORPHISM "PILL" PER OGNI SEZIONE */
+        /* =============== */
+        
+        /* ROOM SETTINGS: azzurro glass */
+        .room-panel .glass-header, .room-panel .glass-content {
+          /* Base glass effect */
+          background: rgba(73, 164, 255, 0.38);
+          backdrop-filter: blur(19px) saturate(1.4);
+          -webkit-backdrop-filter: blur(19px) saturate(1.4);
+          border-radius: 40px;
+          box-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
+          position: relative;
+          border: none;
+          /* Lucentezza: pseudo elemento! */
+        }
+        .room-panel .glass-header::after,
+        .room-panel .glass-content::after {
+          content: '';
+          position: absolute;
+          left: 8%;
+          top: 0;
+          width: 84%;
+          height: 52%;
+          border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+          background: linear-gradient(120deg,rgba(255,255,255,0.26),rgba(255,255,255,0.11) 70%,transparent 100%);
+          pointer-events: none;
+          z-index: 1;
+        }
+        
+        .room-panel .glass-header {
+          text-align: center;
+          font-size: 1.2rem;
+          font-weight: 700;
+          padding: 22px 0 18px 0;
+          margin: 0 0 6px 0;
+          border-radius: 40px;
+          position: relative;
+          z-index: 2;
+          /* Remove border bottom and box look */
+          box-shadow: 0 3px 18px 0 rgba(73,164,255,0.19);
+        }
+        
+        .room-panel .glass-content {
+          padding: 24px 28px 22px 28px;
+          border-radius: 40px;
+          margin: 0 0 20px 0;
+          z-index: 2;
+        }
+        
+        /* SUBBUTTONS: viola glass */
+        .subbutton-panel .glass-header, .subbutton-panel .glass-content {
+          background: rgba(180, 120, 255, 0.34);
+          backdrop-filter: blur(19px) saturate(1.4);
+          -webkit-backdrop-filter: blur(19px) saturate(1.4);
+          border-radius: 40px;
+          box-shadow: 0 2px 24px 0 rgba(160,100,255,0.19);
+          border: none;
+          position: relative;
+        }
+        .subbutton-panel .glass-header::after,
+        .subbutton-panel .glass-content::after {
+          content: '';
+          position: absolute;
+          left: 8%;
+          top: 0;
+          width: 84%;
+          height: 52%;
+          border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+          background: linear-gradient(120deg,rgba(255,255,255,0.22),rgba(255,255,255,0.10) 70%,transparent 100%);
+          pointer-events: none;
+          z-index: 1;
+        }
+        .subbutton-panel .glass-header {
+          text-align: center;
+          font-size: 1.15rem;
+          font-weight: 700;
+          padding: 22px 0 18px 0;
+          margin: 0 0 6px 0;
+          border-radius: 40px;
+          position: relative;
+          z-index: 2;
+        }
+        .subbutton-panel .glass-content {
+          padding: 22px 28px 18px 28px;
+          border-radius: 40px;
+          margin: 0 0 20px 0;
+          z-index: 2;
+        }
+        
+        /* MUSHROOM: verde acqua glass */
+        .mushroom-panel .glass-header, .mushroom-panel .glass-content {
+          background: rgba(80, 235, 175, 0.28);
+          backdrop-filter: blur(19px) saturate(1.4);
+          -webkit-backdrop-filter: blur(19px) saturate(1.4);
+          border-radius: 40px;
+          box-shadow: 0 2px 24px 0 rgba(40,220,145,0.18);
+          border: none;
+          position: relative;
+        }
+        .mushroom-panel .glass-header::after,
+        .mushroom-panel .glass-content::after {
+          content: '';
+          position: absolute;
+          left: 8%;
+          top: 0;
+          width: 84%;
+          height: 52%;
+          border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+          background: linear-gradient(120deg,rgba(255,255,255,0.18),rgba(255,255,255,0.10) 70%,transparent 100%);
+          pointer-events: none;
+          z-index: 1;
+        }
+        .mushroom-panel .glass-header {
+          text-align: center;
+          font-size: 1.12rem;
+          font-weight: 700;
+          padding: 22px 0 18px 0;
+          margin: 0 0 6px 0;
+          border-radius: 40px;
+          position: relative;
+          z-index: 2;
+        }
+        .mushroom-panel .glass-content {
+          padding: 22px 28px 18px 28px;
+          border-radius: 40px;
+          margin: 0 0 20px 0;
+          z-index: 2;
+        }
+        
+        /* CAMERA: blu chiaro glass */
+        .camera-panel .glass-header, .camera-panel .glass-content {
+          background: rgba(100, 225, 255, 0.23);
+          backdrop-filter: blur(19px) saturate(1.4);
+          -webkit-backdrop-filter: blur(19px) saturate(1.4);
+          border-radius: 40px;
+          box-shadow: 0 2px 24px 0 rgba(100,225,255,0.17);
+          border: none;
+          position: relative;
+        }
+        .camera-panel .glass-header::after,
+        .camera-panel .glass-content::after {
+          content: '';
+          position: absolute;
+          left: 8%;
+          top: 0;
+          width: 84%;
+          height: 52%;
+          border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+          background: linear-gradient(120deg,rgba(255,255,255,0.13),rgba(255,255,255,0.08) 70%,transparent 100%);
+          pointer-events: none;
+          z-index: 1;
+        }
+        .camera-panel .glass-header {
+          text-align: center;
+          font-size: 1.13rem;
+          font-weight: 700;
+          padding: 22px 0 18px 0;
+          margin: 0 0 6px 0;
+          border-radius: 40px;
+          position: relative;
+          z-index: 2;
+        }
+        .camera-panel .glass-content {
+          padding: 22px 28px 18px 28px;
+          border-radius: 40px;
+          margin: 0 0 20px 0;
+          z-index: 2;
+        }
+        
+        /* CLIMATE: arancio glass */
+        .climate-panel .glass-header, .climate-panel .glass-content {
+          background: rgba(255, 208, 110, 0.24);
+          backdrop-filter: blur(19px) saturate(1.4);
+          -webkit-backdrop-filter: blur(19px) saturate(1.4);
+          border-radius: 40px;
+          box-shadow: 0 2px 24px 0 rgba(255,208,110,0.13);
+          border: none;
+          position: relative;
+        }
+        .climate-panel .glass-header::after,
+        .climate-panel .glass-content::after {
+          content: '';
+          position: absolute;
+          left: 8%;
+          top: 0;
+          width: 84%;
+          height: 52%;
+          border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+          background: linear-gradient(120deg,rgba(255,255,255,0.15),rgba(255,255,255,0.09) 70%,transparent 100%);
+          pointer-events: none;
+          z-index: 1;
+        }
+        .climate-panel .glass-header {
+          text-align: center;
+          font-size: 1.12rem;
+          font-weight: 700;
+          padding: 22px 0 18px 0;
+          margin: 0 0 6px 0;
+          border-radius: 40px;
+          position: relative;
+          z-index: 2;
+        }
+        .climate-panel .glass-content {
+          padding: 22px 28px 18px 28px;
+          border-radius: 40px;
+          margin: 0 0 20px 0;
+          z-index: 2;
+        }
+        
+        /* SENSOR: lime glass */
+        .sensor-panel .glass-header, .sensor-panel .glass-content {
+          background: rgba(167, 255, 175, 0.22);
+          backdrop-filter: blur(19px) saturate(1.4);
+          -webkit-backdrop-filter: blur(19px) saturate(1.4);
+          border-radius: 40px;
+          box-shadow: 0 2px 24px 0 rgba(167,255,175,0.13);
+          border: none;
+          position: relative;
+        }
+        .sensor-panel .glass-header::after,
+        .sensor-panel .glass-content::after {
+          content: '';
+          position: absolute;
+          left: 8%;
+          top: 0;
+          width: 84%;
+          height: 52%;
+          border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+          background: linear-gradient(120deg,rgba(255,255,255,0.11),rgba(255,255,255,0.07) 70%,transparent 100%);
+          pointer-events: none;
+          z-index: 1;
+        }
+        .sensor-panel .glass-header {
+          text-align: center;
+          font-size: 1.11rem;
+          font-weight: 700;
+          padding: 22px 0 18px 0;
+          margin: 0 0 6px 0;
+          border-radius: 40px;
+          position: relative;
+          z-index: 2;
+        }
+        .sensor-panel .glass-content {
+          padding: 22px 28px 18px 28px;
+          border-radius: 40px;
+          margin: 0 0 20px 0;
+          z-index: 2;
+        }
+        
+        /* COLORS: verde acqua glass */
+        .colors-panel .glass-header, .colors-panel .glass-content {
+          background: rgba(95, 255, 235, 0.26);
+          backdrop-filter: blur(19px) saturate(1.4);
+          -webkit-backdrop-filter: blur(19px) saturate(1.4);
+          border-radius: 40px;
+          box-shadow: 0 2px 24px 0 rgba(95,255,235,0.13);
+          border: none;
+          position: relative;
+        }
+        .colors-panel .glass-header::after,
+        .colors-panel .glass-content::after {
+          content: '';
+          position: absolute;
+          left: 8%;
+          top: 0;
+          width: 84%;
+          height: 52%;
+          border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+          background: linear-gradient(120deg,rgba(255,255,255,0.14),rgba(255,255,255,0.08) 70%,transparent 100%);
+          pointer-events: none;
+          z-index: 1;
+        }
+        .colors-panel .glass-header {
+          text-align: center;
+          font-size: 1.11rem;
+          font-weight: 700;
+          padding: 22px 0 18px 0;
+          margin: 0 0 6px 0;
+          border-radius: 40px;
+          position: relative;
+          z-index: 2;
+        }
+        .colors-panel .glass-content {
+          padding: 22px 28px 18px 28px;
+          border-radius: 40px;
+          margin: 0 0 20px 0;
+          z-index: 2;
+        }
+        
+        /* =================== */
+        /* AUTO-SCOPERTA BOX   */
+        /* =================== */
+        .autodiscover-box {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 18px auto;
+          padding: 18px 0 18px 0;
+          background: rgba(73,164,255,0.35);
+          border-radius: 35px;
+          font-size: 1.17rem;
+          color: #fff;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+          box-shadow: 0 2px 18px 0 rgba(73,164,255,0.11);
+          border: 1.5px solid #d5f3ff99;
+          text-align: center;
+          transition: box-shadow 0.18s, border 0.18s;
+          cursor: pointer;
+          max-width: 88%;
+        }
+        .autodiscover-box:hover {
+          box-shadow: 0 4px 24px 0 rgba(73,164,255,0.26);
+          border: 1.5px solid #66baff;
+        }
+        
+        /* =================== */
+        /* RESET BUTTON CHIARO */
+        /* =================== */
+        .reset-button {
+          display: block;
+          margin: 14px auto 0 auto;
+          background: rgba(255,255,255,0.09);
+          color: #fd6464;
+          border: 2.5px solid #ffbebe;
+          border-radius: 22px;
+          padding: 9px 32px;
+          font-weight: bold;
+          font-size: 1.06rem;
+          cursor: pointer;
+          box-shadow: 0 2px 12px #ffbebe36;
+          text-align: center;
+          transition: background 0.18s, color 0.15s, box-shadow 0.15s, border 0.16s;
+        }
+        .reset-button:hover {
+          background: rgba(255,100,100,0.16);
+          color: #fff;
+          border: 2.5px solid #ff6464;
+          box-shadow: 0 4px 22px #ff6464a9;
+        }
+        
+        /* ====== GRUPPI INPUT E LABELS ====== */
+        .input-group {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 14px;
+          padding: 14px 18px 10px;
+          margin-bottom: 13px;
+          border-radius: 13px;
+          background: rgba(30,44,58,0.73);
+          border: 1px solid #61b5e1aa;
+          box-shadow: 0 2px 8px rgba(55,71,79,0.13);
+          color: #a5c7ed;
+          font-size: 1.02rem;
+          font-weight: 500;
+        }
+        
+        label {
+          font-weight: 600;
+          font-size: 0.97rem;
+          color: #90caf9;
+          margin-bottom: 4px;
+        }
+        input, textarea, select {
+          border: 1px solid #444;
+          border-radius: 6px;
+          padding: 8px;
+          background-color: #202020;
+          color: #f1f1f1;
+          font-size: 0.97rem;
+        }
+        input[type="color"] { padding: 0; border: none; background: transparent; }
+        input[type="range"] { width: 100px; }
+        
+        /* ====== TAB BUTTONS STILE PILL ====== */
+        .tab-group {
+          display: flex;
+          gap: 10px;
+          margin: 0.5em 0 0.7em 0;
+        }
+        .tab-btn {
+          padding: 7px 22px;
+          border-radius: 22px;
+          border: 2px solid #4dabf799;
+          background: #161927;
+          color: #90caf9;
+          font-size: 1rem;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          cursor: pointer;
+          transition: background 0.18s, color 0.18s, border 0.16s, box-shadow 0.18s;
+          box-shadow: 0 1px 7px #4dabf71a;
+        }
+        .tab-btn.active,
+        .tab-btn:active,
+        .tab-btn:focus {
+          background: linear-gradient(90deg,#4dabf7 50%,#1976d2 100%);
+          color: #101130;
+          border: 2px solid #4dabf7;
+          box-shadow: 0 3px 13px #4dabf759;
+        }
+        .tab-btn:hover:not(.active) {
+          background: #23264a;
+          color: #fff;
+          border: 2px solid #1976d2;
+        }
+        
+        /* ====== ERRORI ====== */
+        .error { border: 1.2px solid #ff6464 !important; }
 
     `;
   }
@@ -1218,10 +1369,10 @@ class BubbleRoomEditor extends LitElement {
 
   _renderRoomPanel() {
     return html`
-      <ha-expansion-panel class="room-panel">
-        <div slot="header" class="room-panel">🛋️ Room Settings</div>
-        <div class="section-content room-panel">
-          
+      <div class="room-panel">
+        <div class="glass-header">🛋️ Room Settings</div>
+        <div class="glass-content">
+  
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.room_presence ?? false;
@@ -1234,7 +1385,7 @@ class BubbleRoomEditor extends LitElement {
                 @change="${e => this._toggleAutoDiscoverySection('room_presence', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>Auto-scoperta attiva per Presence</span>
+              <span>🪄 Auto-scoperta attiva per Presence</span>
             </label>
           </div>
   
@@ -1324,7 +1475,7 @@ class BubbleRoomEditor extends LitElement {
             <button class="reset-button" @click="${this._resetRoomConfig}">🔄 Reset Room Settings</button>
           </div>
         </div>
-      </ha-expansion-panel>
+      </div>
     `;
   }
 
@@ -1348,9 +1499,9 @@ class BubbleRoomEditor extends LitElement {
   
   _renderSubButtonPanelGroup() {
     return html`
-        <ha-expansion-panel class="subbutton-panel">
-          <div slot="header" class="subbutton-panel">🎛️ Subbuttons</div>
-          <div class="section-content subbutton-panel">
+      <div class="subbutton-panel">
+        <div class="glass-header">🎛️ Subbuttons</div>
+        <div class="glass-content">
   
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
@@ -1364,7 +1515,7 @@ class BubbleRoomEditor extends LitElement {
                 @change="${e => this._toggleAutoDiscoverySection('subbutton', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>Auto-scoperta attiva</span>
+              <span>🪄 Auto-scoperta attiva</span>
             </label>
           </div>
   
@@ -1375,9 +1526,9 @@ class BubbleRoomEditor extends LitElement {
               entity: "", icon: "", tap_action: { action: "toggle" }, hold_action: { action: "more-info" }
             };
             return html`
-              <ha-expansion-panel style="margin-top: 14px;">
-                <div slot="header" style="width:100%;font-weight:600;">${label}</div>
-                <div class="section-content subbutton-glow" style="margin-bottom:0;">
+              <div class="subbutton-collapsible glass-subbutton">
+                <div class="glass-mini-header">${label}</div>
+                <div class="glass-mini-content">
                   <div class="input-group">
                     <label>Entity:</label>
                     ${this._renderEntityInput("Entity ID", key, "entity", "subbutton")}
@@ -1407,7 +1558,7 @@ class BubbleRoomEditor extends LitElement {
                     )}
                   </div>
                 </div>
-              </ha-expansion-panel>
+              </div>
             `;
           })}
   
@@ -1416,9 +1567,10 @@ class BubbleRoomEditor extends LitElement {
             <button class="reset-button" @click="${this._resetSubButtonConfig}">🔄 Reset Sub-buttons</button>
           </div>
         </div>
-      </ha-expansion-panel>
+      </div>
     `;
   }
+
 
 
   _resetSubButtonConfig() {
@@ -1440,9 +1592,10 @@ class BubbleRoomEditor extends LitElement {
       { key: "entities5", label: "Entity 5" },
     ];
     return html`
-      <ha-expansion-panel class="mushroom-panel">
-        <div slot="header" class="mushroom-panel">🍄 Mushroom Entities</div>
-        <div class="section-content mushroom-panel">
+      <div class="mushroom-panel">
+        <div class="glass-header">🍄 Mushroom Entities</div>
+        <div class="glass-content">
+  
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.mushroom ?? false;
@@ -1455,7 +1608,7 @@ class BubbleRoomEditor extends LitElement {
                 @change="${e => this._toggleAutoDiscoverySection('mushroom', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>Auto-scoperta attiva</span>
+              <span>🪄 Auto-scoperta attiva</span>
             </label>
           </div>
   
@@ -1463,9 +1616,9 @@ class BubbleRoomEditor extends LitElement {
           ${entityKeys.map((entity, i) => {
             const entityConfig = this._config.entities?.[entity.key] || { entity: "", icon: "" };
             return html`
-              <ha-expansion-panel style="margin-top: 14px;">
-                <div slot="header" style="width:100%;font-weight:600;">${entity.label}</div>
-                <div class="section-content mushroom-glow" style="margin-bottom:0;">
+              <div class="mushroom-collapsible glass-mushroom">
+                <div class="glass-mini-header">${entity.label}</div>
+                <div class="glass-mini-content">
                   <div class="input-group">
                     <label>Entity:</label>
                     ${this._renderEntityInput("Entity ID", entity.key, "entity", "mushroom")}
@@ -1474,29 +1627,9 @@ class BubbleRoomEditor extends LitElement {
                     <label>Icon:</label>
                     ${this._renderIconInput("Icon", entity.key)}
                   </div>
-                  <!--
-                  Se vorrai aggiungere tap/hold, qui puoi già richiamare:
-                  ${this._renderTapHoldAction(
-                    'Tap',
-                    entityConfig.tap_action || {},
-                    (val) => this._updateEntityTapAction(entity.key, 'action')({ target: { value: val } }),
-                    (val) => this._updateEntityTapAction(entity.key, 'navigation_path')({ target: { value: val } }),
-                    (val) => this._updateEntityTapAction(entity.key, 'service')({ target: { value: val } }),
-                    (val) => this._updateEntityTapAction(entity.key, 'service_data')({ target: { value: val } }),
-                    this._jsonError
-                  )}
-                  ${this._renderTapHoldAction(
-                    'Hold',
-                    entityConfig.hold_action || {},
-                    (val) => this._updateEntityHoldAction(entity.key, 'action')({ target: { value: val } }),
-                    (val) => this._updateEntityHoldAction(entity.key, 'navigation_path')({ target: { value: val } }),
-                    (val) => this._updateEntityHoldAction(entity.key, 'service')({ target: { value: val } }),
-                    (val) => this._updateEntityHoldAction(entity.key, 'service_data')({ target: { value: val } }),
-                    this._jsonError
-                  )}
-                  -->
+                  <!-- Se vorrai aggiungere tap/hold in futuro, qui puoi -->
                 </div>
-              </ha-expansion-panel>
+              </div>
             `;
           })}
   
@@ -1505,9 +1638,10 @@ class BubbleRoomEditor extends LitElement {
             <button class="reset-button" @click="${this._resetMushroomEntitiesConfig}">🔄 Reset Mushroom Entities</button>
           </div>
         </div>
-      </ha-expansion-panel>
+      </div>
     `;
   }
+
                 
   _resetMushroomEntitiesConfig() {
     const entities = { ...this._config.entities };
@@ -1520,10 +1654,10 @@ class BubbleRoomEditor extends LitElement {
   }
   _renderCameraPanel() {
     return html`
-      <ha-expansion-panel class="camera-panel">
-        <div slot="header" class="camera-panel">📷 Camera</div>
-        <div class="section-content camera-panel">
-      
+      <div class="camera-panel">
+        <div class="glass-header">📷 Camera</div>
+        <div class="glass-content">
+  
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.camera ?? false;
@@ -1536,7 +1670,7 @@ class BubbleRoomEditor extends LitElement {
                 @change="${e => this._toggleAutoDiscoverySection('camera', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>Auto-scoperta attiva</span>
+              <span>🪄 Auto-scoperta attiva</span>
             </label>
           </div>
   
@@ -1555,9 +1689,10 @@ class BubbleRoomEditor extends LitElement {
             <button class="reset-button" @click="${this._resetCameraConfig}">🔄 Reset Camera</button>
           </div>
         </div>
-      </ha-expansion-panel>
+      </div>
     `;
   }
+
 
   _resetCameraConfig() {
     const entities = { ...this._config.entities };
@@ -1568,9 +1703,9 @@ class BubbleRoomEditor extends LitElement {
   }
   _renderClimatePanel() {
     return html`
-      <ha-expansion-panel id="climatePanel">
-        <div slot="header">🌡️ CLIMATE</div>
-        <div class="section-content climate-glow">
+      <div class="climate-panel">
+        <div class="glass-header">🌡️ Climate</div>
+        <div class="glass-content">
   
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
@@ -1584,7 +1719,7 @@ class BubbleRoomEditor extends LitElement {
                 @change="${e => this._toggleAutoDiscoverySection('climate', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>Auto-scoperta attiva</span>
+              <span>🪄 Auto-scoperta attiva</span>
             </label>
           </div>
   
@@ -1601,7 +1736,7 @@ class BubbleRoomEditor extends LitElement {
             <button class="reset-button" @click="${this._resetClimateConfig}">🔄 Reset Climate</button>
           </div>
         </div>
-      </ha-expansion-panel>
+      </div>
     `;
   }
 
@@ -1615,10 +1750,10 @@ class BubbleRoomEditor extends LitElement {
   
   _renderSensorPanel() {
     return html`
-      <ha-expansion-panel class="sensor-panel">
-        <div slot="header" class="sensor-panel">🧭 Sensor</div>
-        <div class="section-content sensor-panel">
-      
+      <div class="sensor-panel">
+        <div class="glass-header">🧭 Sensor</div>
+        <div class="glass-content">
+  
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.sensor ?? false;
@@ -1631,7 +1766,7 @@ class BubbleRoomEditor extends LitElement {
                 @change="${e => this._toggleAutoDiscoverySection('sensor', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>Auto-scoperta attiva</span>
+              <span>🪄 Auto-scoperta attiva</span>
             </label>
           </div>
   
@@ -1639,11 +1774,9 @@ class BubbleRoomEditor extends LitElement {
           ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) => {
             const sensor = this._config.entities?.[key] || {};
             return html`
-              <ha-expansion-panel style="margin-top: 14px;">
-                <span slot="header" style="width:100%;font-weight:600;">
-                  ${`Sensor ${i + 1}`.toUpperCase()}
-                </span>
-                <div class="section-content sensor-glow" style="margin-bottom:0;">
+              <div class="sensor-collapsible glass-sensor">
+                <div class="glass-mini-header">${`Sensor ${i + 1}`}</div>
+                <div class="glass-mini-content">
                   <div class="input-group">
                     <label>Tipo Sensore:</label>
                     <select
@@ -1674,7 +1807,7 @@ class BubbleRoomEditor extends LitElement {
                   </div>
                   ${sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? html`
                     <div class="input-group">
-                      <label>UnitÃ :</label>
+                      <label>Unità:</label>
                       <select
                         .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
                         @change="${e => this._updateSensor(i, 'unit', e.target.value)}"
@@ -1686,20 +1819,21 @@ class BubbleRoomEditor extends LitElement {
                     </div>
                   ` : ''}
                 </div>
-              </ha-expansion-panel>
+              </div>
             `;
           })}
   
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetSensorConfig}">
-              ðŸ”„ Reset Sensors
+              🔄 Reset Sensors
             </button>
           </div>
         </div>
-      </ha-expansion-panel>
+      </div>
     `;
   }
+
   _resetSensorConfig() {
     const entities = { ...this._config.entities };
     ["sensor1", "sensor2", "sensor3", "sensor4"].forEach(key => {
@@ -1711,9 +1845,9 @@ class BubbleRoomEditor extends LitElement {
   }
   _renderColorPanel() {
     return html`
-      <ha-expansion-panel class="colors-panel">
-        <div slot="header" class="colors-panel">🎨 Colors</div>
-        <div class="section-content colors-panel">
+      <div class="colors-panel">
+        <div class="glass-header">🎨 Colors</div>
+        <div class="glass-content">
   
           <div class="color-section">
             <div class="color-subtitle">Room</div>
@@ -1765,9 +1899,10 @@ class BubbleRoomEditor extends LitElement {
             </button>
           </div>
         </div>
-      </ha-expansion-panel>
+      </div>
     `;
   }
+
 
 
   _resetColorsConfig() {
