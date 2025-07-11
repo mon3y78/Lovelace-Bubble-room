@@ -977,8 +977,8 @@ class BubbleRoomEditor extends r {
         position: absolute;
         left: 8%;
         top: 0;
-        width: 84%;
-        height: 52%;
+        width: 100%;
+        height: 100%;
         border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
         background: var(--glass-sheen);
         pointer-events: none;
