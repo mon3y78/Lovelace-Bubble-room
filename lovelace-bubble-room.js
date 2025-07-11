@@ -1040,6 +1040,7 @@ class BubbleRoomEditor extends r {
         font-size: 1.15rem;
         font-weight: 700;
         color: #fff;
+        z-index: 1 !important;
       }
       /* Piccoli override dimensione font */
       .room-panel .glass-header   { font-size: 1.2rem; }
@@ -1124,7 +1125,7 @@ class BubbleRoomEditor extends r {
         border: 2px solid #1976d2;
       }
       .reset-button {
-        z-index: 2 !important;
+        z-index: 1 !important;
         display: block;
         margin: 14px auto 0 auto;
         background: rgba(255,255,255,0.09);
@@ -1140,14 +1141,14 @@ class BubbleRoomEditor extends r {
         transition: background 0.18s, color 0.15s, box-shadow 0.15s, border 0.16s;
       }
       .reset-button:hover {
-        z-index: 2 !important;
+        z-index: 1 !important;
         background: rgba(255,100,100,0.16);
         color: #fff;
         border: 2.5px solid #ff6464;
         box-shadow: 0 4px 22px #ff6464a9;
       }
       .autodiscover-box {
-        z-index: 2 !important;
+        z-index: 1 !important;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1167,7 +1168,7 @@ class BubbleRoomEditor extends r {
         max-width: 88%;
       }
       .autodiscover-box:hover {
-        z-index: 2 !important;
+        z-index: 1 !important;
         box-shadow: 0 4px 24px 0 rgba(73,164,255,0.26);
         border: 1.5px solid #66baff;
       }
