@@ -953,556 +953,396 @@ class BubbleRoomEditor extends r {
 
   static get styles() {
     return i$3`
-      :host {
-        :host {
-          font-family: "Segoe UI", Roboto, sans-serif;
-          color: #f2f4f8;
-          font-size: 1rem;
-          background: none;
-        }
-        
-        /* =============== */
-        /* GLASSMORPHISM "PILL" PER OGNI SEZIONE */
-        /* =============== */
-        
-        /* ROOM SETTINGS: azzurro glass */
-        .room-panel .glass-header, .room-panel .glass-content {
-          /* Base glass effect */
-          background: rgba(73, 164, 255, 0.38);
-          backdrop-filter: blur(19px) saturate(1.4);
-          -webkit-backdrop-filter: blur(19px) saturate(1.4);
-          border-radius: 40px;
-          box-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
-          position: relative;
-          border: none;
-          /* Lucentezza: pseudo elemento! */
-        }
-        .room-panel .glass-header::after,
-        .room-panel .glass-content::after {
-          content: '';
-          position: absolute;
-          left: 8%;
-          top: 0;
-          width: 84%;
-          height: 52%;
-          border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
-          background: linear-gradient(120deg,rgba(255,255,255,0.26),rgba(255,255,255,0.11) 70%,transparent 100%);
-          pointer-events: none;
-          z-index: 1;
-        }
-        
-        .room-panel .glass-header {
-          text-align: center;
-          font-size: 1.2rem;
-          font-weight: 700;
-          padding: 22px 0 18px 0;
-          margin: 0 0 6px 0;
-          border-radius: 40px;
-          position: relative;
-          z-index: 2;
-          /* Remove border bottom and box look */
-          box-shadow: 0 3px 18px 0 rgba(73,164,255,0.19);
-        }
-        
-        .room-panel .glass-content {
-          padding: 24px 28px 22px 28px;
-          border-radius: 40px;
-          margin: 0 0 20px 0;
-          z-index: 2;
-        }
-        
-        /* SUBBUTTONS: viola glass */
-        .subbutton-panel .glass-header, .subbutton-panel .glass-content {
-          background: rgba(180, 120, 255, 0.34);
-          backdrop-filter: blur(19px) saturate(1.4);
-          -webkit-backdrop-filter: blur(19px) saturate(1.4);
-          border-radius: 40px;
-          box-shadow: 0 2px 24px 0 rgba(160,100,255,0.19);
-          border: none;
-          position: relative;
-        }
-        .subbutton-panel .glass-header::after,
-        .subbutton-panel .glass-content::after {
-          content: '';
-          position: absolute;
-          left: 8%;
-          top: 0;
-          width: 84%;
-          height: 52%;
-          border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
-          background: linear-gradient(120deg,rgba(255,255,255,0.22),rgba(255,255,255,0.10) 70%,transparent 100%);
-          pointer-events: none;
-          z-index: 1;
-        }
-        .subbutton-panel .glass-header {
-          text-align: center;
-          font-size: 1.15rem;
-          font-weight: 700;
-          padding: 22px 0 18px 0;
-          margin: 0 0 6px 0;
-          border-radius: 40px;
-          position: relative;
-          z-index: 2;
-        }
-        .subbutton-panel .glass-content {
-          padding: 22px 28px 18px 28px;
-          border-radius: 40px;
-          margin: 0 0 20px 0;
-          z-index: 2;
-        }
-        
-        /* MUSHROOM: verde acqua glass */
-        .mushroom-panel .glass-header, .mushroom-panel .glass-content {
-          background: rgba(80, 235, 175, 0.28);
-          backdrop-filter: blur(19px) saturate(1.4);
-          -webkit-backdrop-filter: blur(19px) saturate(1.4);
-          border-radius: 40px;
-          box-shadow: 0 2px 24px 0 rgba(40,220,145,0.18);
-          border: none;
-          position: relative;
-        }
-        .mushroom-panel .glass-header::after,
-        .mushroom-panel .glass-content::after {
-          content: '';
-          position: absolute;
-          left: 8%;
-          top: 0;
-          width: 84%;
-          height: 52%;
-          border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
-          background: linear-gradient(120deg,rgba(255,255,255,0.18),rgba(255,255,255,0.10) 70%,transparent 100%);
-          pointer-events: none;
-          z-index: 1;
-        }
-        .mushroom-panel .glass-header {
-          text-align: center;
-          font-size: 1.12rem;
-          font-weight: 700;
-          padding: 22px 0 18px 0;
-          margin: 0 0 6px 0;
-          border-radius: 40px;
-          position: relative;
-          z-index: 2;
-        }
-        .mushroom-panel .glass-content {
-          padding: 22px 28px 18px 28px;
-          border-radius: 40px;
-          margin: 0 0 20px 0;
-          z-index: 2;
-        }
-        
-        /* CAMERA: blu chiaro glass */
-        .camera-panel .glass-header, .camera-panel .glass-content {
-          background: rgba(100, 225, 255, 0.23);
-          backdrop-filter: blur(19px) saturate(1.4);
-          -webkit-backdrop-filter: blur(19px) saturate(1.4);
-          border-radius: 40px;
-          box-shadow: 0 2px 24px 0 rgba(100,225,255,0.17);
-          border: none;
-          position: relative;
-        }
-        .camera-panel .glass-header::after,
-        .camera-panel .glass-content::after {
-          content: '';
-          position: absolute;
-          left: 8%;
-          top: 0;
-          width: 84%;
-          height: 52%;
-          border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
-          background: linear-gradient(120deg,rgba(255,255,255,0.13),rgba(255,255,255,0.08) 70%,transparent 100%);
-          pointer-events: none;
-          z-index: 1;
-        }
-        .camera-panel .glass-header {
-          text-align: center;
-          font-size: 1.13rem;
-          font-weight: 700;
-          padding: 22px 0 18px 0;
-          margin: 0 0 6px 0;
-          border-radius: 40px;
-          position: relative;
-          z-index: 2;
-        }
-        .camera-panel .glass-content {
-          padding: 22px 28px 18px 28px;
-          border-radius: 40px;
-          margin: 0 0 20px 0;
-          z-index: 2;
-        }
-        
-        /* CLIMATE: arancio glass */
-        .climate-panel .glass-header, .climate-panel .glass-content {
-          background: rgba(255, 208, 110, 0.24);
-          backdrop-filter: blur(19px) saturate(1.4);
-          -webkit-backdrop-filter: blur(19px) saturate(1.4);
-          border-radius: 40px;
-          box-shadow: 0 2px 24px 0 rgba(255,208,110,0.13);
-          border: none;
-          position: relative;
-        }
-        .climate-panel .glass-header::after,
-        .climate-panel .glass-content::after {
-          content: '';
-          position: absolute;
-          left: 8%;
-          top: 0;
-          width: 84%;
-          height: 52%;
-          border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
-          background: linear-gradient(120deg,rgba(255,255,255,0.15),rgba(255,255,255,0.09) 70%,transparent 100%);
-          pointer-events: none;
-          z-index: 1;
-        }
-        .climate-panel .glass-header {
-          text-align: center;
-          font-size: 1.12rem;
-          font-weight: 700;
-          padding: 22px 0 18px 0;
-          margin: 0 0 6px 0;
-          border-radius: 40px;
-          position: relative;
-          z-index: 2;
-        }
-        .climate-panel .glass-content {
-          padding: 22px 28px 18px 28px;
-          border-radius: 40px;
-          margin: 0 0 20px 0;
-          z-index: 2;
-        }
-        
-        /* SENSOR: lime glass */
-        .sensor-panel .glass-header, .sensor-panel .glass-content {
-          background: rgba(167, 255, 175, 0.22);
-          backdrop-filter: blur(19px) saturate(1.4);
-          -webkit-backdrop-filter: blur(19px) saturate(1.4);
-          border-radius: 40px;
-          box-shadow: 0 2px 24px 0 rgba(167,255,175,0.13);
-          border: none;
-          position: relative;
-        }
-        .sensor-panel .glass-header::after,
-        .sensor-panel .glass-content::after {
-          content: '';
-          position: absolute;
-          left: 8%;
-          top: 0;
-          width: 84%;
-          height: 52%;
-          border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
-          background: linear-gradient(120deg,rgba(255,255,255,0.11),rgba(255,255,255,0.07) 70%,transparent 100%);
-          pointer-events: none;
-          z-index: 1;
-        }
-        .sensor-panel .glass-header {
-          text-align: center;
-          font-size: 1.11rem;
-          font-weight: 700;
-          padding: 22px 0 18px 0;
-          margin: 0 0 6px 0;
-          border-radius: 40px;
-          position: relative;
-          z-index: 2;
-        }
-        .sensor-panel .glass-content {
-          padding: 22px 28px 18px 28px;
-          border-radius: 40px;
-          margin: 0 0 20px 0;
-          z-index: 2;
-        }
-        
-        /* COLORS: verde acqua glass */
-        .colors-panel .glass-header, .colors-panel .glass-content {
-          background: rgba(95, 255, 235, 0.26);
-          backdrop-filter: blur(19px) saturate(1.4);
-          -webkit-backdrop-filter: blur(19px) saturate(1.4);
-          border-radius: 40px;
-          box-shadow: 0 2px 24px 0 rgba(95,255,235,0.13);
-          border: none;
-          position: relative;
-        }
-        .colors-panel .glass-header::after,
-        .colors-panel .glass-content::after {
-          content: '';
-          position: absolute;
-          left: 8%;
-          top: 0;
-          width: 84%;
-          height: 52%;
-          border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
-          background: linear-gradient(120deg,rgba(255,255,255,0.14),rgba(255,255,255,0.08) 70%,transparent 100%);
-          pointer-events: none;
-          z-index: 1;
-        }
-        .colors-panel .glass-header {
-          text-align: center;
-          font-size: 1.11rem;
-          font-weight: 700;
-          padding: 22px 0 18px 0;
-          margin: 0 0 6px 0;
-          border-radius: 40px;
-          position: relative;
-          z-index: 2;
-        }
-        .colors-panel .glass-content {
-          padding: 22px 28px 18px 28px;
-          border-radius: 40px;
-          margin: 0 0 20px 0;
-          z-index: 2;
-        }
-        
-        /* =================== */
-        /* AUTO-SCOPERTA BOX   */
-        /* =================== */
-        .autodiscover-box {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 auto 18px auto;
-          padding: 18px 0 18px 0;
-          background: rgba(73,164,255,0.35);
-          border-radius: 35px;
-          font-size: 1.17rem;
-          color: #fff;
-          font-weight: 700;
-          letter-spacing: 0.02em;
-          box-shadow: 0 2px 18px 0 rgba(73,164,255,0.11);
-          border: 1.5px solid #d5f3ff99;
-          text-align: center;
-          transition: box-shadow 0.18s, border 0.18s;
-          cursor: pointer;
-          max-width: 88%;
-        }
-        .autodiscover-box:hover {
-          box-shadow: 0 4px 24px 0 rgba(73,164,255,0.26);
-          border: 1.5px solid #66baff;
-        }
-        
-        /* =================== */
-        /* RESET BUTTON CHIARO */
-        /* =================== */
-        .reset-button {
-          display: block;
-          margin: 14px auto 0 auto;
-          background: rgba(255,255,255,0.09);
-          color: #fd6464;
-          border: 2.5px solid #ffbebe;
-          border-radius: 22px;
-          padding: 9px 32px;
-          font-weight: bold;
-          font-size: 1.06rem;
-          cursor: pointer;
-          box-shadow: 0 2px 12px #ffbebe36;
-          text-align: center;
-          transition: background 0.18s, color 0.15s, box-shadow 0.15s, border 0.16s;
-        }
-        .reset-button:hover {
-          background: rgba(255,100,100,0.16);
-          color: #fff;
-          border: 2.5px solid #ff6464;
-          box-shadow: 0 4px 22px #ff6464a9;
-        }
-        
-        /* ====== GRUPPI INPUT E LABELS ====== */
-        .input-group {
-          display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          gap: 14px;
-          padding: 14px 18px 10px;
-          margin-bottom: 13px;
-          border-radius: 13px;
-          background: rgba(30,44,58,0.73);
-          border: 1px solid #61b5e1aa;
-          box-shadow: 0 2px 8px rgba(55,71,79,0.13);
-          color: #a5c7ed;
-          font-size: 1.02rem;
-          font-weight: 500;
-        }
-        
-        label {
-          font-weight: 600;
-          font-size: 0.97rem;
-          color: #90caf9;
-          margin-bottom: 4px;
-        }
-        input, textarea, select {
-          border: 1px solid #444;
-          border-radius: 6px;
-          padding: 8px;
-          background-color: #202020;
-          color: #f1f1f1;
-          font-size: 0.97rem;
-        }
-        input[type="color"] { padding: 0; border: none; background: transparent; }
-        input[type="range"] { width: 100px; }
-        
-        /* ====== TAB BUTTONS STILE PILL ====== */
-        .tab-group {
-          display: flex;
-          gap: 10px;
-          margin: 0.5em 0 0.7em 0;
-        }
-        .tab-btn {
-          padding: 7px 22px;
-          border-radius: 22px;
-          border: 2px solid #4dabf799;
-          background: #161927;
-          color: #90caf9;
-          font-size: 1rem;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          cursor: pointer;
-          transition: background 0.18s, color 0.18s, border 0.16s, box-shadow 0.18s;
-          box-shadow: 0 1px 7px #4dabf71a;
-        }
-        .tab-btn.active,
-        .tab-btn:active,
-        .tab-btn:focus {
-          background: linear-gradient(90deg,#4dabf7 50%,#1976d2 100%);
-          color: #101130;
-          border: 2px solid #4dabf7;
-          box-shadow: 0 3px 13px #4dabf759;
-        }
-        .tab-btn:hover:not(.active) {
-          background: #23264a;
-          color: #fff;
-          border: 2px solid #1976d2;
-        }
-        
-        /* ====== ERRORI ====== */
-        .error { border: 1.2px solid #ff6464 !important; }
-        /* BASE GLASS EFFECT */
-        .glass-panel {
-          background: rgba(45, 71, 110, 0.23);
-          border-radius: 26px;
-          box-shadow: 0 8px 32px 0 rgba(20,30,55,0.18);
-          backdrop-filter: blur(16px) saturate(165%);
-          border: 1.5px solid rgba(255,255,255,0.18);
-          margin: 26px 0;
-          overflow: hidden;
-          transition: box-shadow 0.2s, border 0.2s;
-        }
-        
-        /* HEADER STYLE */
-        .glass-header {
-          padding: 22px 30px 14px 30px;
-          font-size: 1.36em;
-          font-weight: 700;
-          color: #fff;
-          letter-spacing: 0.02em;
-          background: linear-gradient(90deg, rgba(60,140,240,0.35), rgba(60,160,255,0.22));
-          backdrop-filter: blur(18px);
-          border-bottom: 1px solid rgba(255,255,255,0.12);
-          text-align: center;
-          border-radius: 24px 24px 0 0;
-          text-shadow: 0 2px 18px rgba(70,180,255,0.11);
-        }
-        
-        /* CONTENT STYLE */
-        .glass-content {
-          padding: 24px 32px 22px 32px;
-          background: rgba(45, 71, 110, 0.14);
-          border-radius: 0 0 22px 22px;
-        }
-        
-        /* COLOR VARIANTI PER SEZIONI */
-        .room-header, .room-content { 
-          /* default azzurro-blu */
-        }
-        .climate-header, .climate-content { 
-          background: linear-gradient(90deg, rgba(245,165,80,0.30), rgba(230,120,50,0.19)) !important;
-        }
-        .subbutton-header, .subbutton-content {
-          background: linear-gradient(90deg, rgba(138,43,226,0.27), rgba(186,104,200,0.15)) !important;
-        }
-        .mushroom-header, .mushroom-content {
-          background: linear-gradient(90deg, rgba(50,224,160,0.19), rgba(0,178,170,0.13)) !important;
-        }
-        .camera-header, .camera-content {
-          background: linear-gradient(90deg, rgba(60,140,240,0.24), rgba(42,128,228,0.13)) !important;
-        }
-        .sensor-header, .sensor-content {
-          background: linear-gradient(90deg, rgba(232,65,145,0.21), rgba(83,51,237,0.09)) !important;
-        }
-        .colors-header, .colors-content {
-          background: linear-gradient(90deg, rgba(255,218,121,0.18), rgba(233,30,99,0.13)) !important;
-        }
-        
-        /* Gruppi di input */
-        .input-group {
-          margin-bottom: 20px;
-        }
-        label {
-          font-weight: 600;
-          color: #e3ecfa;
-          margin-bottom: 7px;
-          display: block;
-        }
-        input, select {
-          padding: 8px 14px;
-          border-radius: 8px;
-          border: 1.2px solid rgba(180,200,255,0.14);
-          background: rgba(255,255,255,0.09);
-          color: #fff;
-          width: 100%;
-        }
-        input[type="checkbox"] {
-          width: auto;
-          margin-right: 8px;
-        }
-        
-        /* Auto-discover & reset pill buttons */
-        .autodiscover-box {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background: rgba(160,180,255,0.18);
-          border-radius: 32px;
-          margin: 18px 0 20px 0;
-          padding: 10px 18px;
-          cursor: pointer;
-          font-size: 1.08em;
-          border: 1.1px solid rgba(100,160,255,0.16);
-          box-shadow: 0 2px 10px rgba(100,160,255,0.13);
-          transition: box-shadow 0.18s, border 0.18s;
-        }
-        .autodiscover-box:hover {
-          box-shadow: 0 6px 20px rgba(100,160,255,0.22);
-          border: 1.1px solid rgba(100,160,255,0.23);
-        }
-        .reset-button {
-          display: inline-block;
-          background: linear-gradient(90deg, rgba(52,152,219,0.19), rgba(44,62,80,0.15));
-          color: #fff;
-          border: 1.5px solid rgba(52,152,219,0.14);
-          border-radius: 32px;
-          padding: 9px 35px;
-          font-weight: bold;
-          font-size: 1.08em;
-          cursor: pointer;
-          margin: 0 auto;
-          box-shadow: 0 1px 8px rgba(44,62,80,0.09);
-          transition: background 0.15s, box-shadow 0.14s;
-        }
-        .reset-button:hover {
-          background: linear-gradient(90deg, rgba(52,152,219,0.27), rgba(44,62,80,0.21));
-          color: #fff;
-          box-shadow: 0 5px 18px rgba(52,152,219,0.19);
-        }
-        
-        /* Responsive */
-        @media (max-width: 650px) {
-          .glass-content { padding: 12px 10px; }
-          .glass-header { padding: 14px 10px 9px 10px; font-size:1.13em;}
-        }
-
-
+      /* ====================== */
+      /* BASE: INPUT & LABELS   */
+      /* ====================== */
+      .input-group {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px 10px;
+        margin-bottom: 13px;
+        border-radius: 13px;
+        background: rgba(30,44,58,0.73);
+        border: 1px solid #61b5e1aa;
+        box-shadow: 0 2px 8px rgba(55,71,79,0.13);
+        color: #a5c7ed;
+        font-size: 1.02rem;
+        font-weight: 500;
+      }
+      label {
+        font-weight: 600;
+        font-size: 0.97rem;
+        color: #90caf9;
+        margin-bottom: 4px;
+      }
+      input, textarea, select {
+        border: 1px solid #444;
+        border-radius: 6px;
+        padding: 8px;
+        background-color: #202020;
+        color: #f1f1f1;
+        font-size: 0.97rem;
+      }
+      input[type="color"] { padding: 0; border: none; background: transparent; }
+      input[type="range"] { width: 100px; }
+      input[type="checkbox"] { width: auto; margin-right: 8px; }
+  
+      /* ====================== */
+      /* TAB & BUTTON STYLES    */
+      /* ====================== */
+      .tab-group {
+        display: flex;
+        gap: 10px;
+        margin: 0.5em 0 0.7em 0;
+      }
+      .tab-btn {
+        padding: 7px 22px;
+        border-radius: 22px;
+        border: 2px solid #4dabf799;
+        background: #161927;
+        color: #90caf9;
+        font-size: 1rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: background 0.18s, color 0.18s, border 0.16s, box-shadow 0.18s;
+        box-shadow: 0 1px 7px #4dabf71a;
+      }
+      .tab-btn.active,
+      .tab-btn:active,
+      .tab-btn:focus {
+        background: linear-gradient(90deg,#4dabf7 50%,#1976d2 100%);
+        color: #101130;
+        border: 2px solid #4dabf7;
+        box-shadow: 0 3px 13px #4dabf759;
+      }
+      .tab-btn:hover:not(.active) {
+        background: #23264a;
+        color: #fff;
+        border: 2px solid #1976d2;
+      }
+      .reset-button {
+        display: block;
+        margin: 14px auto 0 auto;
+        background: rgba(255,255,255,0.09);
+        color: #fd6464;
+        border: 2.5px solid #ffbebe;
+        border-radius: 22px;
+        padding: 9px 32px;
+        font-weight: bold;
+        font-size: 1.06rem;
+        cursor: pointer;
+        box-shadow: 0 2px 12px #ffbebe36;
+        text-align: center;
+        transition: background 0.18s, color 0.15s, box-shadow 0.15s, border 0.16s;
+      }
+      .reset-button:hover {
+        background: rgba(255,100,100,0.16);
+        color: #fff;
+        border: 2.5px solid #ff6464;
+        box-shadow: 0 4px 22px #ff6464a9;
+      }
+  
+      /* ====================== */
+      /* AUTO-DISCOVERY BOX     */
+      /* ====================== */
+      .autodiscover-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px auto;
+        padding: 18px 0 18px 0;
+        background: rgba(73,164,255,0.35);
+        border-radius: 35px;
+        font-size: 1.17rem;
+        color: #fff;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        box-shadow: 0 2px 18px 0 rgba(73,164,255,0.11);
+        border: 1.5px solid #d5f3ff99;
+        text-align: center;
+        transition: box-shadow 0.18s, border 0.18s;
+        cursor: pointer;
+        max-width: 88%;
+      }
+      .autodiscover-box:hover {
+        box-shadow: 0 4px 24px 0 rgba(73,164,255,0.26);
+        border: 1.5px solid #66baff;
+      }
+  
+      /* ====================== */
+      /* GLASS PANEL PRINCIPALI */
+      /* ====================== */
+      /* Ogni pannello principale ha il suo colore e glass effect applicato
+         direttamente al contenitore esterno, per un effetto pill unico */
+  
+      /* === ROOM (blu) === */
+      /* -- Esterno: glass blu + lucentezza -- */
+      .glass-panel.room-panel {
+        background: rgba(73, 164, 255, 0.38);
+        backdrop-filter: blur(19px) saturate(1.4);
+        -webkit-backdrop-filter: blur(19px) saturate(1.4);
+        border-radius: 40px;
+        box-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
+        position: relative;
+        border: none;
+      }
+      .glass-panel.room-panel::after {
+        content: '';
+        position: absolute;
+        left: 8%;
+        top: 0;
+        width: 84%;
+        height: 52%;
+        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+        background: linear-gradient(120deg,rgba(255,255,255,0.26),rgba(255,255,255,0.11) 70%,transparent 100%);
+        pointer-events: none;
+        z-index: 1;
+      }
+      /* -- Header interna: solo testo centrato sopra il glass -- */
+      .room-panel .glass-header {
+        background: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 22px 0 18px 0;
+        margin: 0;
+        text-align: center;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #fff;
+        position: relative;
+        z-index: 2;
+      }
+  
+      /* === SUBBUTTON (viola) === */
+      .glass-panel.subbutton-panel {
+        background: rgba(180, 120, 255, 0.34);
+        backdrop-filter: blur(19px) saturate(1.4);
+        -webkit-backdrop-filter: blur(19px) saturate(1.4);
+        border-radius: 40px;
+        box-shadow: 0 2px 24px 0 rgba(160,100,255,0.19);
+        position: relative;
+        border: none;
+      }
+      .glass-panel.subbutton-panel::after {
+        content: '';
+        position: absolute;
+        left: 8%;
+        top: 0;
+        width: 84%;
+        height: 52%;
+        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+        background: linear-gradient(120deg,rgba(255,255,255,0.22),rgba(255,255,255,0.10) 70%,transparent 100%);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .subbutton-panel .glass-header {
+        background: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 22px 0 18px 0;
+        margin: 0;
+        text-align: center;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #fff;
+        position: relative;
+        z-index: 2;
+      }
+  
+      /* === MUSHROOM (verde acqua) === */
+      .glass-panel.mushroom-panel {
+        background: rgba(80, 235, 175, 0.28);
+        backdrop-filter: blur(19px) saturate(1.4);
+        -webkit-backdrop-filter: blur(19px) saturate(1.4);
+        border-radius: 40px;
+        box-shadow: 0 2px 24px 0 rgba(40,220,145,0.18);
+        position: relative;
+        border: none;
+      }
+      .glass-panel.mushroom-panel::after {
+        content: '';
+        position: absolute;
+        left: 8%;
+        top: 0;
+        width: 84%;
+        height: 52%;
+        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+        background: linear-gradient(120deg,rgba(255,255,255,0.18),rgba(255,255,255,0.10) 70%,transparent 100%);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .mushroom-panel .glass-header {
+        background: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 22px 0 18px 0;
+        margin: 0;
+        text-align: center;
+        font-size: 1.12rem;
+        font-weight: 700;
+        color: #fff;
+        position: relative;
+        z-index: 2;
+      }
+  
+      /* === CAMERA (blu chiaro) === */
+      .glass-panel.camera-panel {
+        background: rgba(100, 225, 255, 0.23);
+        backdrop-filter: blur(19px) saturate(1.4);
+        -webkit-backdrop-filter: blur(19px) saturate(1.4);
+        border-radius: 40px;
+        box-shadow: 0 2px 24px 0 rgba(100,225,255,0.17);
+        position: relative;
+        border: none;
+      }
+      .glass-panel.camera-panel::after {
+        content: '';
+        position: absolute;
+        left: 8%;
+        top: 0;
+        width: 84%;
+        height: 52%;
+        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+        background: linear-gradient(120deg,rgba(255,255,255,0.13),rgba(255,255,255,0.08) 70%,transparent 100%);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .camera-panel .glass-header {
+        background: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 22px 0 18px 0;
+        margin: 0;
+        text-align: center;
+        font-size: 1.13rem;
+        font-weight: 700;
+        color: #fff;
+        position: relative;
+        z-index: 2;
+      }
+  
+      /* === CLIMATE (arancio) === */
+      .glass-panel.climate-panel {
+        background: rgba(255, 208, 110, 0.24);
+        backdrop-filter: blur(19px) saturate(1.4);
+        -webkit-backdrop-filter: blur(19px) saturate(1.4);
+        border-radius: 40px;
+        box-shadow: 0 2px 24px 0 rgba(255,208,110,0.13);
+        position: relative;
+        border: none;
+      }
+      .glass-panel.climate-panel::after {
+        content: '';
+        position: absolute;
+        left: 8%;
+        top: 0;
+        width: 84%;
+        height: 52%;
+        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+        background: linear-gradient(120deg,rgba(255,255,255,0.15),rgba(255,255,255,0.09) 70%,transparent 100%);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .climate-panel .glass-header {
+        background: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 22px 0 18px 0;
+        margin: 0;
+        text-align: center;
+        font-size: 1.12rem;
+        font-weight: 700;
+        color: #fff;
+        position: relative;
+        z-index: 2;
+      }
+  
+      /* === SENSOR (lime/rosa) === */
+      .glass-panel.sensor-panel {
+        background: rgba(167, 255, 175, 0.22);
+        backdrop-filter: blur(19px) saturate(1.4);
+        -webkit-backdrop-filter: blur(19px) saturate(1.4);
+        border-radius: 40px;
+        box-shadow: 0 2px 24px 0 rgba(167,255,175,0.13);
+        position: relative;
+        border: none;
+      }
+      .glass-panel.sensor-panel::after {
+        content: '';
+        position: absolute;
+        left: 8%;
+        top: 0;
+        width: 84%;
+        height: 52%;
+        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+        background: linear-gradient(120deg,rgba(255,255,255,0.11),rgba(255,255,255,0.07) 70%,transparent 100%);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .sensor-panel .glass-header {
+        background: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 22px 0 18px 0;
+        margin: 0;
+        text-align: center;
+        font-size: 1.11rem;
+        font-weight: 700;
+        color: #fff;
+        position: relative;
+        z-index: 2;
+      }
+  
+      /* === COLORS (verde acqua/rosa) === */
+      .glass-panel.colors-panel {
+        background: rgba(95, 255, 235, 0.26);
+        backdrop-filter: blur(19px) saturate(1.4);
+        -webkit-backdrop-filter: blur(19px) saturate(1.4);
+        border-radius: 40px;
+        box-shadow: 0 2px 24px 0 rgba(95,255,235,0.13);
+        position: relative;
+        border: none;
+      }
+      .glass-panel.colors-panel::after {
+        content: '';
+        position: absolute;
+        left: 8%;
+        top: 0;
+        width: 84%;
+        height: 52%;
+        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+        background: linear-gradient(120deg,rgba(255,255,255,0.14),rgba(255,255,255,0.08) 70%,transparent 100%);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .colors-panel .glass-header {
+        background: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 22px 0 18px 0;
+        margin: 0;
+        text-align: center;
+        font-size: 1.11rem;
+        font-weight: 700;
+        color: #fff;
+        position: relative;
+        z-index: 2;
+      }
+  
+      /* ====================== */
+      /* RESPONSIVE             */
+      /* ====================== */
+      @media (max-width: 650px) {
+        .glass-header { padding: 14px 10px 9px 10px; font-size:1.13em;}
+        .glass-content { padding: 12px 10px; }
+      }
     `;
   }
-
 
 
 
