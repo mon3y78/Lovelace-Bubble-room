@@ -1695,7 +1695,6 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
 
-  .
 
 
   _resetSubButtonConfig() {
