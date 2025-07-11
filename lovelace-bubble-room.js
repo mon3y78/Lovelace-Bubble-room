@@ -773,6 +773,11 @@ class BubbleRoomEditor extends r {
         }
       }).catch(() => {});
     }
+    this._expandedPanel = null;
+    this._expandedSubButtons = [false, false, false, false];
+    this._expandedMushroomEntities = [false, false, false, false, false];
+    this._expandedSensors = [false, false, false, false];
+    this._expandedColors = [false, false];
   }
 
   async _loadAreaEntities() {
@@ -796,8 +801,6 @@ class BubbleRoomEditor extends r {
         areaEntities[areaId].push(entity.entity_id);
       }
     }
-  
-    console.log("[Bubble Room] Area Entities Loaded:", areaEntities);
     this._areaEntities = areaEntities;
   }
 
@@ -865,16 +868,6 @@ class BubbleRoomEditor extends r {
 
 
   setConfig(config) {
-    if (!config.auto_discovery_sections) {
-      config.auto_discovery_sections = {
-        room_presence: !!config.area,
-        subbutton: !!config.area,
-        mushroom: !!config.area,
-        climate: !!config.area,
-        camera: !!config.area,
-        sensor: !!config.area
-      };
-    }
     if (!config) config = {};
     if (!config.auto_discovery_sections) {
       config.auto_discovery_sections = {
@@ -1757,7 +1750,7 @@ class BubbleRoomEditor extends r {
         // Calcola e salva icona solo se entityId è valido
         let iconValue = 'mdi:bookmark-outline';
         if (value && typeof value === 'string') {
-          iconValue = this._getIconForEntity(value, {});
+          iconValue = this.getIconForEntity(value, {});
         }
         this._updateEntityConfig(entityKey, ["icon"], iconValue);
       } else {
@@ -1884,7 +1877,7 @@ class BubbleRoomEditor extends r {
     }
     ref[pathArray[pathArray.length - 1]] = value;
   
-    const entities = { ...this._config.entities, [entityKey]: entityConf };
+    const entities = { ...(this._config.entities || {}), [entityKey]: entityConf };
     this._config = { ...this._config, entities };
     this._fireConfigChanged();
   }
@@ -1945,10 +1938,20 @@ class BubbleRoomEditor extends r {
     `;
   }
   
+  _toggleMainPanel(panelName) {
+    // Se il pannello è già aperto, lo chiudo, altrimenti lo apro e chiudo gli altri
+    this._expandedPanel = this._expandedPanel === panelName ? null : panelName;
+    this.requestUpdate();
+  }
+  
 
   _renderRoomPanel() {
     return x`
-      <ha-expansion-panel class="glass-panel room-panel">
+      <ha-expansion-panel 
+        class="glass-panel room-panel"
+        .open="${this._expandedPanel === 'room'}"
+        @click="${() => this._toggleMainPanel('room')}"
+      >
         <div slot="header" class="glass-header room-header">🛋️ Room Settings</div>
         <div class="glass-content room-content">
   
@@ -2022,18 +2025,14 @@ class BubbleRoomEditor extends r {
                     </ha-icon-picker>
                   </div>
                   <div style="display: flex; flex-direction: row; gap: 24px; flex-wrap: wrap; margin-top: 8px;">
-                    ${this._renderTapHoldAction(
-                      'Tap',
-                      this._config.tap_action || {},
+                    ${this._renderTapHoldAction('tap')}
                       (val) => this._updateTapActionField('action')({ target: { value: val } }),
                       (val) => this._updateTapActionField('navigation_path')({ target: { value: val } }),
                       (val) => this._updateTapActionField('service')({ target: { value: val } }),
                       (val) => this._updateTapActionField('service_data')({ target: { value: val } }),
                       this._jsonError
                     )}
-                    ${this._renderTapHoldAction(
-                      'Hold',
-                      this._config.hold_action || {},
+                    ${this._renderTapHoldAction('hold')}
                       (val) => this._updateHoldActionField('action')({ target: { value: val } }),
                       (val) => this._updateHoldActionField('navigation_path')({ target: { value: val } }),
                       (val) => this._updateHoldActionField('service')({ target: { value: val } }),
@@ -2087,8 +2086,17 @@ class BubbleRoomEditor extends r {
     }
   
     return x`
-      <ha-expansion-panel class="glass-panel subbutton-panel">
-        <div slot="header" class="glass-header subbutton-header">🎛️ Subbuttons</div>
+      <ha-expansion-panel
+        class="glass-panel subbutton-panel"
+        .expanded="${this._expandedPanel === 'subbutton'}"
+      >
+        <div
+          slot="header"
+          class="glass-header subbutton-header"
+          @click="${() => this._toggleMainPanel('subbutton')}"
+        >
+          🎛️ Subbuttons
+        </div>
         <div class="glass-content subbutton-content">
   
           <!-- Auto-scoperta -->
@@ -2110,7 +2118,7 @@ class BubbleRoomEditor extends r {
           <!-- Subbutton pills -->
           ${["sub-button1", "sub-button2", "sub-button3", "sub-button4"].map((key, i) => {
             const label = `Sub-button ${i+1}`;
-            const entityConfig = this._config.entities?.[key] || {
+            this._config.entities?.[key] || {
               entity: "", icon: "", tap_action: { action: "toggle" }, hold_action: { action: "more-info" }
             };
             const expanded = this._expandedSubButtons[i];
@@ -2130,17 +2138,14 @@ class BubbleRoomEditor extends r {
                   ${this._renderIconInput("Icon", key)}
                 </div>
                 <div class="input-group" style="gap:24px;">
-                  ${this._renderTapHoldAction(
-                    'Tap',
-                    entityConfig.tap_action || {},
+                  ${this._renderTapHoldAction('tap')}
                     (val) => this._updateEntityTapAction(key, 'action')({ target: { value: val } }),
                     (val) => this._updateEntityTapAction(key, 'navigation_path')({ target: { value: val } }),
                     (val) => this._updateEntityTapAction(key, 'service')({ target: { value: val } }),
                     (val) => this._updateEntityTapAction(key, 'service_data')({ target: { value: val } }),
                     this._jsonError
                   )}
-                  ${this._renderTapHoldAction(
-                    'Hold',
+                  ${this._renderTapHoldAction('hold')}
                     entityConfig.hold_action || {},
                     (val) => this._updateEntityHoldAction(key, 'action')({ target: { value: val } }),
                     (val) => this._updateEntityHoldAction(key, 'navigation_path')({ target: { value: val } }),
@@ -2164,7 +2169,8 @@ class BubbleRoomEditor extends r {
   
 
   _resetSubButtonConfig() {
-    const entities = { ...this._config.entities };
+    const entities = { ...(this._config.entities || {}) };
+
     ["sub-button1", "sub-button2", "sub-button3", "sub-button4"].forEach(key => {
       delete entities[key];
     });
@@ -2190,10 +2196,18 @@ class BubbleRoomEditor extends r {
       this._expandedMushroomEntities = [false, false, false, false, false];
     }
     return x`
-      <ha-expansion-panel class="glass-panel mushroom-panel">
-        <div slot="header" class="glass-header mushroom-header">🍄 Mushroom Entities</div>
+      <ha-expansion-panel
+        class="glass-panel mushroom-panel"
+        .expanded="${this._expandedPanel === 'mushroom'}"
+      >
+        <div
+          slot="header"
+          class="glass-header mushroom-header"
+          @click="${() => this._toggleMainPanel('mushroom')}"
+        >
+          🍄 Mushroom Entities
+        </div>
         <div class="glass-content mushroom-content">
-  
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.mushroom ?? false;
@@ -2209,7 +2223,6 @@ class BubbleRoomEditor extends r {
               <span>🪄 Auto-scoperta attiva</span>
             </label>
           </div>
-  
           <!-- Entities pills -->
           ${entityKeys.map((entity, i) => {
             this._config.entities?.[entity.key] || { entity: "", icon: "" };
@@ -2232,7 +2245,6 @@ class BubbleRoomEditor extends r {
               `
             });
           })}
-  
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetMushroomEntitiesConfig}">🧹 Reset Mushroom Entities</button>
@@ -2240,6 +2252,7 @@ class BubbleRoomEditor extends r {
         </div>
       </ha-expansion-panel>
     `;
+
   }
 
   _toggleMushroomEntityExpand(i) {
@@ -2252,7 +2265,8 @@ class BubbleRoomEditor extends r {
 
                 
   _resetMushroomEntitiesConfig() {
-    const entities = { ...this._config.entities };
+    const entities = { ...(this._config.entities || {}) };
+
     ["entities1", "entities2", "entities3", "entities4", "entities5"].forEach(key => {
       delete entities[key];
     });
@@ -2264,10 +2278,18 @@ class BubbleRoomEditor extends r {
 
   _renderCameraPanel() {
     return x`
-      <ha-expansion-panel class="glass-panel camera-panel">
-        <div slot="header" class="glass-header camera-header">📷 Camera</div>
+      <ha-expansion-panel
+        class="glass-panel camera-panel"
+        .expanded="${this._expandedPanel === 'camera'}"
+      >
+        <div
+          slot="header"
+          class="glass-header camera-header"
+          @click="${() => this._toggleMainPanel('camera')}"
+        >
+          📷 Camera
+        </div>
         <div class="glass-content camera-content">
-  
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.camera ?? false;
@@ -2283,7 +2305,6 @@ class BubbleRoomEditor extends r {
               <span>🪄 Auto-scoperta attiva</span>
             </label>
           </div>
-  
           <!-- Glass-pill con tutti i campi -->
           <div class="mini-pill glass-pill expanded">
             <div class="mini-pill-header">
@@ -2298,7 +2319,6 @@ class BubbleRoomEditor extends r {
               </div>
             </div>
           </div>
-  
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetCameraConfig}">🧹 Reset Camera</button>
@@ -2311,18 +2331,29 @@ class BubbleRoomEditor extends r {
 
 
   _resetCameraConfig() {
-    const entities = { ...this._config.entities };
+    const entities = { ...(this._config.entities || {}) };
+
     delete entities["camera"];
     this._config = { ...this._config, entities };
     this.requestUpdate();
     this._fireConfigChanged();
   }
+
+
   _renderClimatePanel() {
     return x`
-      <ha-expansion-panel class="glass-panel climate-panel">
-        <div slot="header" class="glass-header climate-header">🌡️ Climate</div>
+      <ha-expansion-panel
+        class="glass-panel climate-panel"
+        .expanded="${this._expandedPanel === 'climate'}"
+      >
+        <div
+          slot="header"
+          class="glass-header climate-header"
+          @click="${() => this._toggleMainPanel('climate')}"
+        >
+          🌡️ Climate
+        </div>
         <div class="glass-content climate-content">
-  
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.climate ?? false;
@@ -2366,7 +2397,8 @@ class BubbleRoomEditor extends r {
 
 
   _resetClimateConfig() {
-    const entities = { ...this._config.entities };
+    const entities = { ...(this._config.entities || {}) };
+
     delete entities["climate"];
     this._config = { ...this._config, entities };
     this.requestUpdate();
@@ -2379,10 +2411,18 @@ class BubbleRoomEditor extends r {
       this._expandedSensors = [false, false, false, false];
     }
     return x`
-      <ha-expansion-panel class="glass-panel sensor-panel">
-        <div slot="header" class="glass-header sensor-header">🧭 Sensor</div>
+      <ha-expansion-panel
+        class="glass-panel sensor-panel"
+        .expanded="${this._expandedPanel === 'sensor'}"
+      >
+        <div
+          slot="header"
+          class="glass-header sensor-header"
+          @click="${() => this._toggleMainPanel('sensor')}"
+        >
+          🧭 Sensor
+        </div>
         <div class="glass-content sensor-content">
-
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.sensor ?? false;
@@ -2398,7 +2438,7 @@ class BubbleRoomEditor extends r {
               <span>🪄 Auto-scoperta attiva</span>
             </label>
           </div>
-
+  
           <!-- Pills sensori -->
           ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) => {
             const sensor = this._config.entities?.[key] || {};
@@ -2454,7 +2494,7 @@ class BubbleRoomEditor extends r {
               `
             });
           })}
-
+  
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetSensorConfig}">🧹 Reset Sensors</button>
@@ -2463,6 +2503,7 @@ class BubbleRoomEditor extends r {
       </ha-expansion-panel>
     `;
   }
+  
 
   _toggleSensorExpand(i) {
     this._expandedSensors = this._expandedSensors.map(
@@ -2472,7 +2513,8 @@ class BubbleRoomEditor extends r {
   }
   
   _resetSensorConfig() {
-    const entities = { ...this._config.entities };
+    const entities = { ...(this._config.entities || {}) };
+
     ["sensor1", "sensor2", "sensor3", "sensor4"].forEach(key => {
       delete entities[key];
     });
@@ -2481,16 +2523,24 @@ class BubbleRoomEditor extends r {
     this._fireConfigChanged();
   }
   _renderColorPanel() {
-    // Difensivo: sempre 2 elementi
+    // Difensivo: sempre 2 elementi (Room, Subbutton)
     if (!this._expandedColors || this._expandedColors.length !== 2) {
       this._expandedColors = [false, false];
     }
   
     return x`
-      <ha-expansion-panel class="glass-panel colors-panel">
-        <div slot="header" class="glass-header colors-header">🎨 Colors</div>
+      <ha-expansion-panel
+        class="glass-panel colors-panel"
+        .expanded="${this._expandedPanel === 'colors'}"
+      >
+        <div
+          slot="header"
+          class="glass-header colors-header"
+          @click="${() => this._toggleMainPanel('colors')}"
+        >
+          🎨 Colors
+        </div>
         <div class="glass-content colors-content">
-  
           <!-- Pillola: Room -->
           ${this._renderExpandablePill({
             label: "Room",
@@ -2500,21 +2550,21 @@ class BubbleRoomEditor extends r {
             content: x`
               <div class="input-group color-row">
                 <label>Text Active:</label>
-                ${this._renderColorInput('room', 'text_active')}
+                ${this._renderColorField('room', 'text_active', 'Text Active')}
                 <label>Text Inactive:</label>
-                ${this._renderColorInput('room', 'text_inactive')}
+                ${this._renderColorField('room', 'text_active', 'Text Active')}
               </div>
               <div class="input-group color-row">
                 <label>Background Active:</label>
-                ${this._renderColorInput('room', 'background_active')}
+                ${this._renderColorField('room', 'background_active')}
                 <label>Background Inactive:</label>
-                ${this._renderColorInput('room', 'background_inactive')}
+                ${this._renderColorField('room', 'background_inactive')}
               </div>
               <div class="input-group color-row">
                 <label>Icon Active:</label>
-                ${this._renderColorInput('room', 'icon_active')}
+                ${this._renderColorField('room', 'icon_active')}
                 <label>Icon Inactive:</label>
-                ${this._renderColorInput('room', 'icon_inactive')}
+                ${this._renderColorField('room', 'icon_inactive')}
               </div>
             `
           })}
@@ -2528,33 +2578,35 @@ class BubbleRoomEditor extends r {
             content: x`
               <div class="input-group color-row">
                 <label>Text Active:</label>
-                ${this._renderColorInput('subbutton', 'text_active')}
+                ${this._renderColorField('subbutton', 'text_active')}
                 <label>Text Inactive:</label>
-                ${this._renderColorInput('subbutton', 'text_inactive')}
+                ${this._renderColorField('subbutton', 'text_inactive')}
               </div>
               <div class="input-group color-row">
                 <label>Background Active:</label>
-                ${this._renderColorInput('subbutton', 'background_active')}
+                ${this._renderColorField('subbutton', 'background_active')}
                 <label>Background Inactive:</label>
-                ${this._renderColorInput('subbutton', 'background_inactive')}
+                ${this._renderColorField('subbutton', 'background_inactive')}
               </div>
               <div class="input-group color-row">
                 <label>Icon On:</label>
-                ${this._renderColorInput('subbutton', 'icon_on')}
+                ${this._renderColorField('subbutton', 'icon_on')}
                 <label>Icon Off:</label>
-                ${this._renderColorInput('subbutton', 'icon_off')}
+                ${this._renderColorField('subbutton', 'icon_off')}
               </div>
             `
           })}
   
           <!-- Reset -->
           <div style="margin-top:1.5em; text-align:center;">
-            <button class="reset-button" @click="${this._resetColorConfig}">🧹 Reset Colors</button>
+            <button class="reset-button" @click="${this._resetColorsConfig}">🧹 Reset Colors</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
+  
+  
   
   _toggleColorExpand(i) {
     this._expandedColors = this._expandedColors.map((_, idx) => idx === i ? !this._expandedColors[idx] : false);
