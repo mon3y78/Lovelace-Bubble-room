@@ -273,51 +273,41 @@ class BubbleRoomEditor extends LitElement {
 
   static get styles() {
     return css`
-      /* ============================
-        PATCH: Nessun gap esterno
-        ============================ */
       :host {
-        background: transparent !important;  /* Sfondo trasparente */
-        padding: 0 !important;               /* Nessun padding */
-        margin: 0 !important;                /* Nessun margin */
-        display: block;                      /* Comportamento a blocco */
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: block;
       }
   
-      /* ============================
-        Pannello glass principale
-        ============================ */
       .glass-panel {
-        margin: 0 !important;                  /* Niente margine */
-        width: 100%;                           /* Occupa tutta la larghezza */
-        box-sizing: border-box;                /* Include padding/border nel width */
-        border-radius: 40px;                   /* Angoli arrotondati, effetto pill */
-        position: relative;                    /* Necessario per stacking context */
+        margin: 0 !important;
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 40px;
+        position: relative;
         border: none;
-        z-index: 0;                            /* Base stacking, sotto i contenuti */
-        /* Variabili CSS per colore/ombra/lucentezza di default (Room) */
+        z-index: 0;
         --glass-bg: rgba(73, 164, 255, 0.38);
         --glass-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
         --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.26),rgba(255,255,255,0.11) 70%,transparent 100%);
       }
       .glass-panel::after {
         content: '';
-        position: absolute;                  /* Sovrapposto alla pillola */
+        position: absolute;
         left: 0; top: 0;
-        width: 100%; height: 100%;           /* Occupa tutta la pillola */
-        border-radius: inherit;               /* Stesso radius del contenitore */
-        background: var(--glass-sheen);       /* Lucentezza glass */
-        pointer-events: none;                 /* Non blocca il click */
-        z-index: 0 !important;                /* Sotto i contenuti */
+        width: 100%; height: 100%;
+        border-radius: inherit;
+        background: var(--glass-sheen);
+        pointer-events: none;
+        z-index: 0 !important;
       }
       .glass-panel {
-        background: var(--glass-bg);          /* Colore di fondo glass */
-        box-shadow: var(--glass-shadow);      /* Ombra glass */
+        background: var(--glass-bg);
+        box-shadow: var(--glass-shadow);
       }
   
-      /* ============================
-        VARIANTI SEZIONE
-        (override delle variabili di colore)
-        ============================ */
+      /* Sezione varianti */
       .subbutton-panel.glass-panel {
         --glass-bg: rgba(180, 120, 255, 0.34);
         --glass-shadow: 0 2px 24px 0 rgba(160,100,255,0.19);
@@ -349,9 +339,7 @@ class BubbleRoomEditor extends LitElement {
         --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.14),rgba(255,255,255,0.08) 70%,transparent 100%);
       }
   
-      /* ============================
-        HEADER e CONTENUTO: sempre davanti alla lucentezza
-        ============================ */
+      /* Header e contenuti sopra glass */
       .glass-header,
       .glass-content,
       .input-group,
@@ -363,10 +351,10 @@ class BubbleRoomEditor extends LitElement {
         z-index: 1;
       }
       .glass-header {
-        background: none !important;            /* No background extra */
+        background: none !important;
         box-shadow: none !important;
         border-radius: 0 !important;
-        padding: 22px 0 18px 0;                 /* Spaziatura header */
+        padding: 22px 0 18px 0;
         margin: 0;
         text-align: center;
         font-size: 1.15rem;
@@ -374,7 +362,7 @@ class BubbleRoomEditor extends LitElement {
         color: #fff;
         z-index: 1 !important;
       }
-      /* Piccoli override dimensione font */
+      /* Override dimensione font */
       .room-panel .glass-header   { font-size: 1.2rem; }
       .subbutton-panel .glass-header { font-size: 1.15rem; }
       .mushroom-panel .glass-header { font-size: 1.12rem; }
@@ -383,15 +371,13 @@ class BubbleRoomEditor extends LitElement {
       .sensor-panel .glass-header   { font-size: 1.11rem; }
       .colors-panel .glass-header   { font-size: 1.11rem; }
   
-      /* ============================
-        MINI-PILL: subbutton, entity, sensor, color
-        ============================ */
+      /* === MINI-PILL (tutte le pillole) === */
       .mini-pill,
       .glass-pill {
-        background: rgba(44,70,100,0.23);                /* Effetto glass trasparente */
-        border: 1.5px solid rgba(255,255,255,0.12);      /* Bordo glass */
-        box-shadow: 0 3px 22px 0 rgba(70,120,220,0.13);  /* Ombra leggera */
-        backdrop-filter: blur(10px) saturate(1.2);       /* Blur vetro */
+        background: rgba(44,70,100,0.23);
+        border: 1.5px solid rgba(255,255,255,0.12);
+        box-shadow: 0 3px 22px 0 rgba(70,120,220,0.13);
+        backdrop-filter: blur(10px) saturate(1.2);
         -webkit-backdrop-filter: blur(10px) saturate(1.2);
         border-radius: 24px;
         margin: 0 0 18px 0;
@@ -399,23 +385,22 @@ class BubbleRoomEditor extends LitElement {
         overflow: hidden;
         position: relative;
       }
-      /* Header pill: sempre visibile e cliccabile (per espansione) */
       .mini-pill-header {
         display: flex;
         align-items: center;
         gap: 14px;
-        padding: 13px 18px 13px 22px;
-        font-size: 1.12rem;
+        padding: 15px 22px 15px 26px;
+        font-size: 1.22rem;     /* più grande! */
         font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
-        font-weight: 700;
-        color: var(--section-accent, #b28fff);            /* Colore sezione */
-        letter-spacing: 0.02em;
+        font-weight: 800;
+        color: var(--section-accent, #b28fff);
+        letter-spacing: 0.03em;
         cursor: pointer;
         user-select: none;
         position: relative;
         z-index: 1;
+        text-shadow: 0 2px 7px #0004;
       }
-      /* Chevron espansione */
       .mini-pill-header .chevron {
         margin-left: auto;
         font-size: 1.22em;
@@ -425,7 +410,6 @@ class BubbleRoomEditor extends LitElement {
       .mini-pill.expanded .mini-pill-header .chevron {
         transform: rotate(90deg);
       }
-      /* Contenuto espanso della pill */
       .mini-pill-content {
         padding: 15px 22px 16px 22px;
         background: transparent;
@@ -437,7 +421,6 @@ class BubbleRoomEditor extends LitElement {
         from { opacity: 0; transform: translateY(-12px);}
         to   { opacity: 1; transform: translateY(0);}
       }
-      /* Colore diverso per ogni sezione sulle pill */
       .room-panel .mini-pill-header   { --section-accent: #55afff; }
       .subbutton-panel .mini-pill-header { --section-accent: #b28fff; }
       .mushroom-panel .mini-pill-header { --section-accent: #36e6a0; }
@@ -446,16 +429,27 @@ class BubbleRoomEditor extends LitElement {
       .sensor-panel .mini-pill-header   { --section-accent: #8cff8a; }
       .colors-panel .mini-pill-header   { --section-accent: #73f6e5; }
   
-      /* ============================
-        LABELS INTERNE: moderne, grandi, colore sezione
-        ============================ */
+      /* ==== TUTTI I BOX INTERNI: effetto glass trasparente ==== */
+      .input-group,
+      .color-row {
+        background: rgba(44,70,100,0.23);
+        border: 1.5px solid rgba(255,255,255,0.13);
+        box-shadow: 0 2px 14px 0 rgba(70,120,220,0.10);
+        border-radius: 18px;
+        backdrop-filter: blur(7px) saturate(1.2);
+        -webkit-backdrop-filter: blur(7px) saturate(1.2);
+        margin-bottom: 13px;
+        padding: 14px 18px 10px;
+      }
+  
+      /* LABEL header interne: moderne, grandi, colore sezione */
       label,
       .input-group label {
-        font-size: 1.09rem;
+        font-size: 1.13rem;
         font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
-        font-weight: 600;
+        font-weight: 700;
         color: var(--section-accent, #b28fff);
-        letter-spacing: 0.02em;
+        letter-spacing: 0.03em;
         margin-bottom: 6px;
         display: block;
       }
@@ -467,13 +461,19 @@ class BubbleRoomEditor extends LitElement {
       .sensor-panel label { --section-accent: #8cff8a; }
       .colors-panel label { --section-accent: #73f6e5; }
   
-      /* ============================
-        RESET BUTTON: pill grosso, bordo rosso visibile
-        ============================ */
+      /* RESET e AUTODISCOVER: glass pill trasparente */
+      .reset-button,
+      .autodiscover-box {
+        background: rgba(44,70,100,0.23) !important;
+        border: 1.5px solid rgba(255,255,255,0.13) !important;
+        box-shadow: 0 2px 14px 0 rgba(70,120,220,0.14) !important;
+        border-radius: 24px !important;
+        backdrop-filter: blur(7px) saturate(1.2) !important;
+        -webkit-backdrop-filter: blur(7px) saturate(1.2) !important;
+      }
+  
       .reset-button {
-        border: 3.5px solid #ff4c6a !important;          /* Bordo rosso spesso */
-        border-radius: 27px !important;
-        background: rgba(255,76,106,0.12) !important;    /* Light glass red */
+        border: 3.5px solid #ff4c6a !important;
         color: #ff4c6a !important;
         font-size: 1.15rem;
         font-weight: 700;
@@ -491,9 +491,6 @@ class BubbleRoomEditor extends LitElement {
         box-shadow: 0 6px 32px 0 #ff4c6abf;
       }
   
-      /* ============================
-        AUTODISCOVER BOX: foreground e sopra lo sfondo glass
-        ============================ */
       .autodiscover-box {
         z-index: 2 !important;
         position: relative;
@@ -502,42 +499,21 @@ class BubbleRoomEditor extends LitElement {
         justify-content: center;
         margin: 0 auto 18px auto;
         padding: 18px 0 18px 0;
-        background: rgba(73,164,255,0.35);
-        border-radius: 35px;
         font-size: 1.17rem;
         color: #fff;
         font-weight: 700;
         letter-spacing: 0.02em;
-        box-shadow: 0 2px 18px 0 rgba(73,164,255,0.11);
-        border: 1.5px solid #d5f3ff99;
         text-align: center;
         transition: box-shadow 0.18s, border 0.18s;
         cursor: pointer;
         max-width: 88%;
       }
       .autodiscover-box:hover {
-        box-shadow: 0 4px 24px 0 rgba(73,164,255,0.26);
-        border: 1.5px solid #66baff;
+        box-shadow: 0 4px 24px 0 rgba(73,164,255,0.26) !important;
+        border: 1.5px solid #66baff !important;
       }
   
-      /* ============================
-        INPUT BASE (per liquid glass look coerente)
-        ============================ */
-      .input-group {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 14px;
-        padding: 14px 18px 10px;
-        margin-bottom: 13px;
-        border-radius: 13px;
-        background: rgba(30,44,58,0.52);  /* più glass rispetto a default */
-        border: 1px solid #61b5e1aa;
-        box-shadow: 0 2px 8px rgba(55,71,79,0.13);
-        color: #a5c7ed;
-        font-size: 1.02rem;
-        font-weight: 500;
-      }
+      /* INPUT BASE */
       input, textarea, select {
         border: 1px solid #444;
         border-radius: 6px;
@@ -550,9 +526,13 @@ class BubbleRoomEditor extends LitElement {
       input[type="range"] { width: 100px; }
       input[type="checkbox"] { width: auto; margin-right: 8px; }
   
-      /* ============================
-        TAB E BOTTONI: pill liquidi
-        ============================ */
+      /* Migliora focus */
+      input:focus, select:focus, textarea:focus {
+        outline: 2px solid #55afff;
+        background: rgba(55,100,155,0.10);
+      }
+  
+      /* TAB/BOTTONI pill liquidi */
       .tab-group {
         display: flex;
         gap: 10px;
@@ -587,9 +567,7 @@ class BubbleRoomEditor extends LitElement {
         border: 2px solid #1976d2;
       }
   
-      /* ============================
-        RESPONSIVE
-        ============================ */
+      /* RESPONSIVE */
       @media (max-width: 650px) {
         .glass-header { padding: 14px 10px 9px 10px; font-size:1.13em;}
         .glass-content { padding: 12px 10px; }
@@ -598,7 +576,6 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
   
-
 
 
   _togglePanel(panelId) {
