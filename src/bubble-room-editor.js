@@ -295,7 +295,7 @@ class BubbleRoomEditor extends LitElement {
       .glass-panel::after {
         content: '';
         position: absolute;
-        left: 8%;
+        left: 0;
         top: 0;
         width: 100%;
         height: 100%;
