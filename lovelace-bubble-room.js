@@ -2116,7 +2116,6 @@ class BubbleRoomEditor extends r {
                     <span style="display:block; font-size:1.13em; font-weight:700; color:#b28fff; margin-bottom:2px;">Icon:</span>
                   </div>
                 </div>
-                <!-- INPUTS ENTITY+ICON INLINE -->
                 <div style="display:flex; gap:22px; margin-bottom:18px;">
                   <div style="flex:1;">
                     ${this._renderEntityInput(key, "entity", "subbutton")}
@@ -2129,13 +2128,11 @@ class BubbleRoomEditor extends r {
                 <div style="margin-bottom:6px;">
                   <span style="display:block; font-size:1.13em; font-weight:700; color:#b28fff;">Function:</span>
                 </div>
-                <!-- TAP/HOLD -->
-                <div class="input-group" style="gap:24px;">
-                  ${this._renderTapHoldAction(key)}
-                  ${this._renderTapHoldAction(key)}
-                </div>
+                <!-- TAP/HOLD GIUSTI -->
+                ${this._renderSubButtonAction(key)}
               `
             });
+            
           })}
   
           <!-- Reset -->
