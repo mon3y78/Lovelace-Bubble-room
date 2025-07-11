@@ -1870,21 +1870,21 @@ class BubbleRoomEditor extends LitElement {
             content: html`
               <div class="input-group color-row">
                 <label>Text Active:</label>
-                ${this._renderColorInput('room', 'text_active')}
+                ${this._renderColorField('room', 'text_active', 'Text Active')}
                 <label>Text Inactive:</label>
-                ${this._renderColorInput('room', 'text_inactive')}
+                ${this._renderColorField('room', 'text_active', 'Text Active')}
               </div>
               <div class="input-group color-row">
                 <label>Background Active:</label>
-                ${this._renderColorInput('room', 'background_active')}
+                ${this._renderColorField('room', 'background_active')}
                 <label>Background Inactive:</label>
-                ${this._renderColorInput('room', 'background_inactive')}
+                ${this._renderColorField('room', 'background_inactive')}
               </div>
               <div class="input-group color-row">
                 <label>Icon Active:</label>
-                ${this._renderColorInput('room', 'icon_active')}
+                ${this._renderColorField('room', 'icon_active')}
                 <label>Icon Inactive:</label>
-                ${this._renderColorInput('room', 'icon_inactive')}
+                ${this._renderColorField('room', 'icon_inactive')}
               </div>
             `
           })}
@@ -1898,21 +1898,21 @@ class BubbleRoomEditor extends LitElement {
             content: html`
               <div class="input-group color-row">
                 <label>Text Active:</label>
-                ${this._renderColorInput('subbutton', 'text_active')}
+                ${this._renderColorField('subbutton', 'text_active')}
                 <label>Text Inactive:</label>
-                ${this._renderColorInput('subbutton', 'text_inactive')}
+                ${this._renderColorField('subbutton', 'text_inactive')}
               </div>
               <div class="input-group color-row">
                 <label>Background Active:</label>
-                ${this._renderColorInput('subbutton', 'background_active')}
+                ${this._renderColorField('subbutton', 'background_active')}
                 <label>Background Inactive:</label>
-                ${this._renderColorInput('subbutton', 'background_inactive')}
+                ${this._renderColorField('subbutton', 'background_inactive')}
               </div>
               <div class="input-group color-row">
                 <label>Icon On:</label>
-                ${this._renderColorInput('subbutton', 'icon_on')}
+                ${this._renderColorField('subbutton', 'icon_on')}
                 <label>Icon Off:</label>
-                ${this._renderColorInput('subbutton', 'icon_off')}
+                ${this._renderColorField('subbutton', 'icon_off')}
               </div>
             `
           })}
@@ -1927,24 +1927,11 @@ class BubbleRoomEditor extends LitElement {
   }
   
   
+  
   _toggleColorExpand(i) {
     this._expandedColors = this._expandedColors.map((_, idx) => idx === i ? !this._expandedColors[idx] : false);
     this.requestUpdate();
   }
-  _renderColorInput(section, key) {
-    const rgba = this._config.colors?.[section]?.[key] || 'rgba(0,0,0,1)';
-    const [r, g, b, a] = this._parseRGBA(rgba);
-    const hex = `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
-    return html`
-      <div style="display: flex; gap: 10px; align-items: center;">
-        <input type="color" .value="${hex}" @input="${e => this._updateColorField(section, key, e.target.value, a)}" />
-        <input type="range" min="0" max="1" step="0.01" .value="${a}" @input="${e => this._updateColorField(section, key, hex, e.target.value)}" />
-        <span>${Math.round(a * 100)}%</span>
-        <input type="text" style="width:120px" .value="${rgba}" @input="${e => this._updateNestedColorDirect(section, key, e.target.value)}" />
-      </div>
-    `;
-  }
-  
   
   
 
