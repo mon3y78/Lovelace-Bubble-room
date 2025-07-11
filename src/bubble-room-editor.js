@@ -569,13 +569,6 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
   
-  
-
-
-  _togglePanel(panelId) {
-    const panel = this.shadowRoot.getElementById(panelId);
-    if (panel) panel.open = !panel.open;
-  }
   _toggleAutoDiscoverySection(section, enabled) {
     this._config = {
       ...this._config,
@@ -1267,9 +1260,9 @@ class BubbleRoomEditor extends LitElement {
 
   _renderRoomPanel() {
     return html`
-      <ha-expansion-panel 
+      <ha-expansion-panel
         class="glass-panel room-panel"
-        .open="${this._expandedPanel === 'room'}"
+        .expanded="${this._expandedPanel === 'room'}"
         @click="${() => this._toggleMainPanel('room')}"
       >
         <div slot="header" class="glass-header room-header">🛋️ Room Settings</div>
@@ -1346,19 +1339,7 @@ class BubbleRoomEditor extends LitElement {
                   </div>
                   <div style="display: flex; flex-direction: row; gap: 24px; flex-wrap: wrap; margin-top: 8px;">
                     ${this._renderTapHoldAction('tap')}
-                      (val) => this._updateTapActionField('action')({ target: { value: val } }),
-                      (val) => this._updateTapActionField('navigation_path')({ target: { value: val } }),
-                      (val) => this._updateTapActionField('service')({ target: { value: val } }),
-                      (val) => this._updateTapActionField('service_data')({ target: { value: val } }),
-                      this._jsonError
-                    )}
                     ${this._renderTapHoldAction('hold')}
-                      (val) => this._updateHoldActionField('action')({ target: { value: val } }),
-                      (val) => this._updateHoldActionField('navigation_path')({ target: { value: val } }),
-                      (val) => this._updateHoldActionField('service')({ target: { value: val } }),
-                      (val) => this._updateHoldActionField('service_data')({ target: { value: val } }),
-                      this._jsonError
-                    )}
                   </div>
                 </div>
               </div>
@@ -1451,7 +1432,7 @@ class BubbleRoomEditor extends LitElement {
               content: html`
                 <div class="input-group">
                   <label>Entity:</label>
-                  ${this._renderEntityInput("Entity ID", key, "entity", "subbutton")}
+                  ${this._renderEntityInput(key, "entity", "subbutton")}
                 </div>
                 <div class="input-group">
                   <label>Icon:</label>
@@ -1459,20 +1440,7 @@ class BubbleRoomEditor extends LitElement {
                 </div>
                 <div class="input-group" style="gap:24px;">
                   ${this._renderTapHoldAction('tap')}
-                    (val) => this._updateEntityTapAction(key, 'action')({ target: { value: val } }),
-                    (val) => this._updateEntityTapAction(key, 'navigation_path')({ target: { value: val } }),
-                    (val) => this._updateEntityTapAction(key, 'service')({ target: { value: val } }),
-                    (val) => this._updateEntityTapAction(key, 'service_data')({ target: { value: val } }),
-                    this._jsonError
-                  )}
                   ${this._renderTapHoldAction('hold')}
-                    entityConfig.hold_action || {},
-                    (val) => this._updateEntityHoldAction(key, 'action')({ target: { value: val } }),
-                    (val) => this._updateEntityHoldAction(key, 'navigation_path')({ target: { value: val } }),
-                    (val) => this._updateEntityHoldAction(key, 'service')({ target: { value: val } }),
-                    (val) => this._updateEntityHoldAction(key, 'service_data')({ target: { value: val } }),
-                    this._jsonError
-                  )}
                 </div>
               `
             });
@@ -1556,11 +1524,11 @@ class BubbleRoomEditor extends LitElement {
               content: html`
                 <div class="input-group">
                   <label>Entity:</label>
-                  ${this._renderEntityInput("Entity ID", entity.key, "entity", "mushroom")}
+                  ${this._renderEntityInput(entity.key, "entity", "mushroom")}
                 </div>
                 <div class="input-group">
                   <label>Icon:</label>
-                  ${this._renderIconInput("Icon", entity.key)}
+                  ${this._renderIconInput(entity.key)}
                 </div>
               `
             });
@@ -1581,6 +1549,7 @@ class BubbleRoomEditor extends LitElement {
     );
     this.requestUpdate();
   }
+  
   
 
                 
@@ -1826,11 +1795,10 @@ class BubbleRoomEditor extends LitElement {
   
 
   _toggleSensorExpand(i) {
-    this._expandedSensors = this._expandedSensors.map(
-      (_, idx) => idx === i ? !this._expandedSensors[idx] : false
-    );
+    this._expandedSensors = this._expandedSensors.map((_, idx) => idx === i);
     this.requestUpdate();
   }
+  
   
   _resetSensorConfig() {
     const entities = { ...(this._config.entities || {}) };
@@ -1872,19 +1840,7 @@ class BubbleRoomEditor extends LitElement {
                 <label>Text Active:</label>
                 ${this._renderColorField('room', 'text_active', 'Text Active')}
                 <label>Text Inactive:</label>
-                ${this._renderColorField('room', 'text_active', 'Text Active')}
-              </div>
-              <div class="input-group color-row">
-                <label>Background Active:</label>
-                ${this._renderColorField('room', 'background_active')}
-                <label>Background Inactive:</label>
-                ${this._renderColorField('room', 'background_inactive')}
-              </div>
-              <div class="input-group color-row">
-                <label>Icon Active:</label>
-                ${this._renderColorField('room', 'icon_active')}
-                <label>Icon Inactive:</label>
-                ${this._renderColorField('room', 'icon_inactive')}
+                ${this._renderColorField('room', 'text_inactive', 'Text Inactive')}
               </div>
             `
           })}
@@ -1897,21 +1853,21 @@ class BubbleRoomEditor extends LitElement {
             onToggle: () => this._toggleColorExpand(1),
             content: html`
               <div class="input-group color-row">
-                <label>Text Active:</label>
+                
                 ${this._renderColorField('subbutton', 'text_active')}
-                <label>Text Inactive:</label>
+               
                 ${this._renderColorField('subbutton', 'text_inactive')}
               </div>
               <div class="input-group color-row">
-                <label>Background Active:</label>
+            
                 ${this._renderColorField('subbutton', 'background_active')}
-                <label>Background Inactive:</label>
+      
                 ${this._renderColorField('subbutton', 'background_inactive')}
               </div>
               <div class="input-group color-row">
-                <label>Icon On:</label>
+     
                 ${this._renderColorField('subbutton', 'icon_on')}
-                <label>Icon Off:</label>
+       
                 ${this._renderColorField('subbutton', 'icon_off')}
               </div>
             `
