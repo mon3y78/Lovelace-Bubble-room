@@ -273,7 +273,7 @@ class BubbleRoomEditor extends LitElement {
 
   static get styles() {
     return css`
-      /* === PATCH: nessun gap esterno === */
+      /* ===== PATCH: eliminazione gap, layout liquido, glass compatibile ===== */
       :host {
         background: transparent !important;
         padding: 0 !important;
@@ -287,7 +287,7 @@ class BubbleRoomEditor extends LitElement {
         border-radius: 40px;
         position: relative;
         border: none;
-        /* Variabili CSS per colore e ombra (default: room) */
+        z-index: 0;  /* livello base, stacking context locale */
         --glass-bg: rgba(73, 164, 255, 0.38);
         --glass-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
         --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.26),rgba(255,255,255,0.11) 70%,transparent 100%);
@@ -295,21 +295,19 @@ class BubbleRoomEditor extends LitElement {
       .glass-panel::after {
         content: '';
         position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+        left: 0; top: 0;
+        width: 100%; height: 100%;
+        border-radius: inherit;
         background: var(--glass-sheen);
         pointer-events: none;
-        z-index: 1;
+        z-index: 0 !important;  /* SOTTO il contenuto, SOPRA bg/liquid-glass */
       }
       .glass-panel {
         background: var(--glass-bg);
         box-shadow: var(--glass-shadow);
       }
   
-      /* === VARIANTI SEZIONE (solo override variabili) === */
+      /* === VARIANTI SEZIONE: override delle variabili colore/ombra === */
       .subbutton-panel.glass-panel {
         --glass-bg: rgba(180, 120, 255, 0.34);
         --glass-shadow: 0 2px 24px 0 rgba(160,100,255,0.19);
@@ -341,7 +339,17 @@ class BubbleRoomEditor extends LitElement {
         --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.14),rgba(255,255,255,0.08) 70%,transparent 100%);
       }
   
-      /* === Header unificato per tutte le sezioni === */
+      /* === HEADER E CONTENUTO: SEMPRE SOPRA LA LUCENTEZZA === */
+      .glass-header,
+      .glass-content,
+      .input-group,
+      label,
+      input,
+      select,
+      textarea {
+        position: relative;
+        z-index: 1;
+      }
       .glass-header {
         background: none !important;
         box-shadow: none !important;
@@ -352,10 +360,8 @@ class BubbleRoomEditor extends LitElement {
         font-size: 1.15rem;
         font-weight: 700;
         color: #fff;
-        position: relative;
-        z-index: 2;
       }
-      /* Piccoli adattamenti taglia */
+      /* Piccoli override dimensione font */
       .room-panel .glass-header   { font-size: 1.2rem; }
       .subbutton-panel .glass-header { font-size: 1.15rem; }
       .mushroom-panel .glass-header { font-size: 1.12rem; }
@@ -364,13 +370,13 @@ class BubbleRoomEditor extends LitElement {
       .sensor-panel .glass-header   { font-size: 1.11rem; }
       .colors-panel .glass-header   { font-size: 1.11rem; }
   
-      /* === Responsive === */
+      /* === RESPONSIVE === */
       @media (max-width: 650px) {
         .glass-header { padding: 14px 10px 9px 10px; font-size:1.13em;}
         .glass-content { padding: 12px 10px; }
       }
   
-      /* === Tutto il resto: input, tab, button, autodiscovery, ecc === */
+      /* === RESTO DELLA CARD: input, tab, autodiscover ecc. === */
       .input-group {
         display: flex;
         flex-wrap: wrap;
