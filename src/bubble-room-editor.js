@@ -273,9 +273,24 @@ class BubbleRoomEditor extends LitElement {
 
   static get styles() {
     return css`
-      /* ====================== */
-      /* BASE: INPUT & LABELS   */
-      /* ====================== */
+      /* ======================= */
+      /* PATCH: NESSUN GAP ESTERNO */
+      /* ======================= */
+      :host {
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: block;
+      }
+      .glass-panel {
+        margin: 0 !important;
+        width: 100%;
+        box-sizing: border-box;
+      }
+  
+      /* ======================= */
+      /* BASE: INPUT & LABELS    */
+      /* ======================= */
       .input-group {
         display: flex;
         flex-wrap: wrap;
@@ -401,7 +416,6 @@ class BubbleRoomEditor extends LitElement {
          direttamente al contenitore esterno, per un effetto pill unico */
   
       /* === ROOM (blu) === */
-      /* -- Esterno: glass blu + lucentezza -- */
       .glass-panel.room-panel {
         background: rgba(73, 164, 255, 0.38);
         backdrop-filter: blur(19px) saturate(1.4);
@@ -423,7 +437,6 @@ class BubbleRoomEditor extends LitElement {
         pointer-events: none;
         z-index: 1;
       }
-      /* -- Header interna: solo testo centrato sopra il glass -- */
       .room-panel .glass-header {
         background: none !important;
         box-shadow: none !important;
