@@ -576,6 +576,7 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
   
+  
 
 
   _togglePanel(panelId) {
