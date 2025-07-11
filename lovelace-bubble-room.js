@@ -954,143 +954,216 @@ class BubbleRoomEditor extends r {
   static get styles() {
     return i$3`
       :host {
-        --bubble-header-start: #263238e8;
-        --bubble-header-end:   #37474fe9;
-        display: block;
-        font-family: "Segoe UI", Roboto, sans-serif;
-        color: #f2f4f8;
-        font-size: 1rem;
-        background: none;
+        /* Componente principale: layout e font di base */
+        display: block;                    /* Rende il componente a blocco */
+        font-family: "Segoe UI", Roboto, sans-serif; /* Font leggibile e moderno */
+        font-size: 1rem;                   /* Dimensione testo base */
+        color: #f2f4f8;                    /* Colore testo di default */
+        background: none;                  /* Nessuno sfondo di default */
       }
       
-      /* ============ PANNELLI PRINCIPALI (ROOM, SUBBUTTON, ECC.) ============ */
-      ha-expansion-panel {
-        background: none !important;
-        border: none !important;
-        box-shadow: none !important;
-        margin-bottom: 20px !important;
-        border-radius: 15px !important;
-        overflow: visible !important;
+      /* ======== GLASSMORPHISM PANELS ======== */
+      
+      /* ----- ROOM PANEL: blu-azzurro ----- */
+      .room-panel div[slot="header"], .room-panel .section-content {
+        background: linear-gradient(105deg, #51aaffcc 0%, #81d5ffb2 100%); /* Gradiente vetro blu */
+        border: 2px solid #81d5ff55;          /* Bordo vetro blu tenue */
+        box-shadow: 0 4px 22px 0 #51aaff22;   /* Ombra soft blu */
+        color: #eaf6ff;                       /* Testo chiaro su blu */
+        border-radius: 20px;                  /* Angoli arrotondati liquidi */
+        backdrop-filter: blur(18px) saturate(1.10); /* Effetto glass vero */
+        -webkit-backdrop-filter: blur(18px) saturate(1.10); /* Compatibilità Safari */
+        transition: background 0.24s, border 0.22s, box-shadow 0.20s; /* Transizioni morbide */
+      }
+      .room-panel div[slot="header"] {
+        border-radius: 20px 20px 0 0;   /* Angoli superiori arrotondati */
+        font-size: 1.1rem;              /* Titolo più grande */
+        font-weight:700;                /* Titolo in grassetto */
+        text-align:center;              /* Titolo centrato */
+        padding:18px 0 14px 0;          /* Spaziatura verticale header */
+      }
+      .room-panel .section-content {
+        border-radius: 0 0 20px 20px;   /* Angoli inferiori arrotondati */
+        padding: 26px 20px 18px 20px;   /* Spaziatura interna contenuto */
       }
       
-      /* Header traslucido blu moderno, testo centrato */
-      ha-expansion-panel div[slot="header"] {
-        background: linear-gradient(90deg, rgba(40,124,255,0.86) 0%, rgba(64,186,255,0.86) 100%);
-        color: #fff;
-        text-align: center;
+      /* ----- SUBBUTTON PANEL: fucsia/viola ----- */
+      .subbutton-panel div[slot="header"], .subbutton-panel .section-content {
+        background: linear-gradient(105deg, #b77cffcc 0%, #f3a3ffb2 100%); /* Gradiente vetro viola */
+        border: 2px solid #b77cff55;
+        box-shadow: 0 4px 22px 0 #b77cff22;
+        color: #f7eaff;
+        border-radius: 20px;
+        backdrop-filter: blur(18px) saturate(1.10);
+        -webkit-backdrop-filter: blur(18px) saturate(1.10);
+      }
+      .subbutton-panel div[slot="header"] {
+        border-radius: 20px 20px 0 0;
         font-size: 1.1rem;
-        font-weight: 600;
-        padding: 16px 0;
-        border-radius: 15px 15px 0 0;
-        box-shadow: 0 2px 8px rgba(64,120,255,0.12);
-        border-bottom: 1.5px solid #64b5f6aa;
-        backdrop-filter: blur(2px);
-        letter-spacing: 0.02em;
-        margin: 0 !important;
-        width: 100%;
-        transition: background 0.32s, border-bottom 0.22s, box-shadow 0.22s;
+        font-weight:700;
+        text-align:center;
+        padding:18px 0 14px 0;
+      }
+      .subbutton-panel .section-content {
+        border-radius: 0 0 20px 20px;
+        padding: 26px 20px 18px 20px;
       }
       
-      /* Bordo inferiore più spesso quando il pannello è aperto */
-      ha-expansion-panel[open] div[slot="header"] {
-        border-bottom: 2.2px solid #90caf9;
+      /* ----- MUSHROOM PANEL: verde acqua ----- */
+      .mushroom-panel div[slot="header"], .mushroom-panel .section-content {
+        background: linear-gradient(105deg, #55efc4cc 0%, #36e2b1b2 100%);
+        border: 2px solid #55efc455;
+        box-shadow: 0 4px 22px 0 #55efc422;
+        color: #eafffa;
+        border-radius: 20px;
+        backdrop-filter: blur(18px) saturate(1.10);
+        -webkit-backdrop-filter: blur(18px) saturate(1.10);
+      }
+      .mushroom-panel div[slot="header"] {
+        border-radius: 20px 20px 0 0;
+        font-size: 1.1rem;
+        font-weight:700;
+        text-align:center;
+        padding:18px 0 14px 0;
+      }
+      .mushroom-panel .section-content {
+        border-radius: 0 0 20px 20px;
+        padding: 26px 20px 18px 20px;
       }
       
-      /* Contenuto del pannello, sfondo blu scurissimo e arrotondato in basso */
-      ha-expansion-panel .section-content {
-        background: #1c273f;
-        color: #fff;
-        padding: 22px 20px 18px 20px;
-        border-radius: 0 0 15px 15px;
-        box-shadow: none !important;
-        font-size: 1em;
-        margin: 0;
+      /* ----- CLIMATE PANEL: giallo oro ----- */
+      .climate-panel div[slot="header"], .climate-panel .section-content {
+        background: linear-gradient(105deg, #ffd36dcc 0%, #ffc888b2 100%);
+        border: 2px solid #ffd36d55;
+        box-shadow: 0 4px 22px 0 #ffd36d22;
+        color: #fffbe6;
+        border-radius: 20px;
+        backdrop-filter: blur(18px) saturate(1.10);
+        -webkit-backdrop-filter: blur(18px) saturate(1.10);
+      }
+      .climate-panel div[slot="header"] {
+        border-radius: 20px 20px 0 0;
+        font-size: 1.1rem;
+        font-weight:700;
+        text-align:center;
+        padding:18px 0 14px 0;
+      }
+      .climate-panel .section-content {
+        border-radius: 0 0 20px 20px;
+        padding: 26px 20px 18px 20px;
       }
       
-      /* ============ AUTO-SCOPERTA / AUTODISCOVER BOX ============ */
-      .autodiscover-box {
-        background: linear-gradient(90deg, #1a2535 0%, #2e3b56 100%);
-        border-radius: 15px;
-        padding: 12px 18px;
-        margin-bottom: 17px;
-        display: flex;
-        align-items: center;
-        box-shadow: 0 2px 8px rgba(55,71,79,0.23);
-        border: 1.5px solid #42a5f5cc;
-        cursor: pointer;
-        transition: box-shadow 0.22s, border 0.22s;
+      /* ----- CAMERA PANEL: celeste ----- */
+      .camera-panel div[slot="header"], .camera-panel .section-content {
+        background: linear-gradient(105deg, #77ceffcc 0%, #a3f0ffb2 100%);
+        border: 2px solid #77ceff55;
+        box-shadow: 0 4px 22px 0 #77ceff22;
+        color: #e9f6ff;
+        border-radius: 20px;
+        backdrop-filter: blur(18px) saturate(1.10);
+        -webkit-backdrop-filter: blur(18px) saturate(1.10);
       }
-      .autodiscover-box:hover {
-        box-shadow: 0 6px 22px rgba(66,165,247,0.23);
-        border: 1.5px solid #42a5f5;
+      .camera-panel div[slot="header"] {
+        border-radius: 20px 20px 0 0;
+        font-size: 1.1rem;
+        font-weight:700;
+        text-align:center;
+        padding:18px 0 14px 0;
       }
-      
-      /* ============ RESET BUTTON ============ */
-      .reset-button {
-        background: transparent;
-        color: #ff6464;
-        border: 2px solid #ff6464;
-        border-radius: 18px;
-        padding: 7px 28px;
-        font-weight: bold;
-        font-size: 1rem;
-        margin-top: 8px;
-        cursor: pointer;
-        box-shadow: 0 1px 4px #ff646433;
-        transition: background 0.18s, box-shadow 0.16s;
-      }
-      .reset-button:hover {
-        background: #ff646417;
-        color: #fff;
-        box-shadow: 0 3px 10px #ff646444;
+      .camera-panel .section-content {
+        border-radius: 0 0 20px 20px;
+        padding: 26px 20px 18px 20px;
       }
       
-      /* ============ GRUPPI DI INPUT / INPUT-GROUP ============ */
+      /* ----- SENSOR PANEL: lime/verde chiaro ----- */
+      .sensor-panel div[slot="header"], .sensor-panel .section-content {
+        background: linear-gradient(105deg, #bbf7d0cc 0%, #a7ffebb2 100%);
+        border: 2px solid #bbf7d055;
+        box-shadow: 0 4px 22px 0 #bbf7d022;
+        color: #eafafd;
+        border-radius: 20px;
+        backdrop-filter: blur(18px) saturate(1.10);
+        -webkit-backdrop-filter: blur(18px) saturate(1.10);
+      }
+      .sensor-panel div[slot="header"] {
+        border-radius: 20px 20px 0 0;
+        font-size: 1.1rem;
+        font-weight:700;
+        text-align:center;
+        padding:18px 0 14px 0;
+      }
+      .sensor-panel .section-content {
+        border-radius: 0 0 20px 20px;
+        padding: 26px 20px 18px 20px;
+      }
+      
+      /* ----- COLORS PANEL: azzurro acqua ----- */
+      .colors-panel div[slot="header"], .colors-panel .section-content {
+        background: linear-gradient(105deg, #90f7eccc 0%, #32ffeed0 100%);
+        border: 2px solid #32ffee66;
+        box-shadow: 0 4px 22px 0 #32ffee15;
+        color: #24363b;
+        border-radius: 20px;
+        backdrop-filter: blur(18px) saturate(1.12);
+        -webkit-backdrop-filter: blur(18px) saturate(1.12);
+      }
+      .colors-panel div[slot="header"] {
+        border-radius: 20px 20px 0 0;
+        font-size: 1.1rem;
+        font-weight:700;
+        text-align:center;
+        padding:18px 0 14px 0;
+      }
+      .colors-panel .section-content {
+        border-radius: 0 0 20px 20px;
+        padding: 26px 20px 18px 20px;
+      }
+      
+      /* ======= GRUPPI INPUT ======= */
       .input-group {
-        display: flex;
-        flex-wrap: wrap;
+        display: flex;                      /* Allinea gli input in riga/flex */
+        flex-wrap: wrap;                    /* Permette il wrap su più righe */
         align-items: center;
-        gap: 14px;
-        padding: 14px 18px 10px;
-        margin-bottom: 13px;
-        border-radius: 13px;
-        background: linear-gradient(90deg, #2a3140 10%, #344058 90%);
-        border: 1px solid #5c6bc0aa;
-        box-shadow: 0 2px 6px rgba(92,107,192,0.3);
-        color: #a5c7ed;
+        gap: 14px;                          /* Spazio tra i campi */
+        padding: 14px 18px 10px;            /* Spaziatura interna */
+        margin-bottom: 13px;                /* Margine inferiore */
+        border-radius: 13px;                /* Arrotonda box gruppo */
+        background: linear-gradient(90deg, #2a3140 10%, #344058 90%); /* Gradiente scuro moderno */
+        border: 1px solid #5c6bc0aa;        /* Bordo blu trasparente */
+        box-shadow: 0 2px 6px rgba(92,107,192,0.13); /* Ombra soft */
+        color: #a5c7ed;                     /* Colore testo secondario */
         font-size: 1.02rem;
         font-weight: 500;
       }
-      
-      /* ============ LABELS E CAMPI INPUT ============ */
       label {
-        font-weight: 600;
+        font-weight: 600;                   /* Label più visibile */
         font-size: 0.97rem;
-        color: #90caf9;
+        color: #90caf9;                     /* Label azzurra */
         margin-bottom: 4px;
       }
       input, textarea, select {
-        border: 1px solid var(--divider-color, #444);
-        border-radius: 6px;
+        border: 1px solid #444;             /* Bordo scuro soft */
+        border-radius: 6px;                 /* Arrotondato */
         padding: 8px;
-        background-color: #202020;
-        color: #f1f1f1;
+        background-color: #202020;          /* Sfondo input scuro */
+        color: #f1f1f1;                     /* Testo chiaro */
         font-size: 0.97rem;
       }
       input[type="color"] { padding: 0; border: none; background: transparent; }
       input[type="range"] { width: 100px; }
       
-      /* ============ TAB BUTTON GROUP (TAP/HOLD) ============ */
+      
+      /* ======= TAB BUTTONS: stile pill ======= */
       .tab-group {
-        display: flex;
+        display: flex;              /* Allinea in riga */
         gap: 10px;
         margin: 0.5em 0 0.7em 0;
       }
       .tab-btn {
-        padding: 7px 22px;
-        border-radius: 22px;
+        padding: 7px 22px;          /* Spaziatura pill */
+        border-radius: 22px;        /* Effetto pill */
         border: 2px solid #4dabf799;
-        background: #161927;
+        background: #161927;        /* Sfondo pill scuro */
         color: #90caf9;
         font-size: 1rem;
         font-weight: 600;
@@ -1115,7 +1188,27 @@ class BubbleRoomEditor extends r {
         border: 2px solid #1976d2;
       }
       
-      /* ============ MINI PANEL HEADER (per subpanel collassabili) ============ */
+      /* ======= RESET BUTTON (rosso) ======= */
+      .reset-button {
+        background: transparent;
+        color: #ff6464;               /* Rosso acceso */
+        border: 2px solid #ff6464;
+        border-radius: 18px;
+        padding: 7px 28px;
+        font-weight: bold;
+        font-size: 1rem;
+        margin-top: 8px;
+        cursor: pointer;
+        box-shadow: 0 1px 4px #ff646433;
+        transition: background 0.18s, box-shadow 0.16s;
+      }
+      .reset-button:hover {
+        background: #ff646417;
+        color: #fff;
+        box-shadow: 0 3px 10px #ff646444;
+      }
+      
+      /* ======= MINI HEADER DI SOTTOSEZIONI ======= */
       .sub-panel-header {
         width: 100%;
         text-align: left;
@@ -1128,8 +1221,9 @@ class BubbleRoomEditor extends r {
         margin-top: 0.7em;
       }
       
-      /* ============ ERRORI ============ */
-      .error { border: 1.2px solid #ff6464 !important; }
+      /* ======= ERROR BORDO ROSSO ======= */
+      .error { border: 1.2px solid #ff6464 !important; } /* Per input/box in errore */
+
     `;
   }
 
@@ -1804,9 +1898,9 @@ class BubbleRoomEditor extends r {
 
   _renderRoomPanel() {
     return x`
-      <ha-expansion-panel id="roomPanel">
-        <div slot="header">🛋️ ROOM SETTING</div>
-        <div class="section-content room-glow">
+      <ha-expansion-panel class="room-panel">
+        <div slot="header" class="room-panel">🛋️ Room Settings</div>
+        <div class="section-content room-panel">
           
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
@@ -1934,9 +2028,9 @@ class BubbleRoomEditor extends r {
   
   _renderSubButtonPanelGroup() {
     return x`
-      <ha-expansion-panel id="subButtonMainPanel">
-        <div slot="header">🔘 SUB-BUTTONS</div>
-        <div class="section-content subbutton-glow">
+        <ha-expansion-panel class="subbutton-panel">
+          <div slot="header" class="subbutton-panel">🎛️ Subbuttons</div>
+          <div class="section-content subbutton-panel">
   
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
@@ -2026,10 +2120,9 @@ class BubbleRoomEditor extends r {
       { key: "entities5", label: "Entity 5" },
     ];
     return x`
-      <ha-expansion-panel id="mushroomEntitiesPanel" class="master-header">
-        <div slot="header">🍄 MUSHROOM ENTITIES</div>
-        <div class="section-content mushroom-glow">
-  
+      <ha-expansion-panel class="mushroom-panel">
+        <div slot="header" class="mushroom-panel">🍄 Mushroom Entities</div>
+        <div class="section-content mushroom-panel">
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.mushroom ?? false;
@@ -2107,10 +2200,10 @@ class BubbleRoomEditor extends r {
   }
   _renderCameraPanel() {
     return x`
-      <ha-expansion-panel id="cameraPanel" class="master-header">
-        <div slot="header">📷 CAMERA</div>
-        <div class="section-content camera-glow">
-  
+      <ha-expansion-panel class="camera-panel">
+        <div slot="header" class="camera-panel">📷 Camera</div>
+        <div class="section-content camera-panel">
+      
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.camera ?? false;
@@ -2202,10 +2295,10 @@ class BubbleRoomEditor extends r {
   
   _renderSensorPanel() {
     return x`
-      <ha-expansion-panel id="sensorPanel">
-        <div slot="header">� SENSORS</div>
-        <div class="section-content sensor-glow">
-  
+      <ha-expansion-panel class="sensor-panel">
+        <div slot="header" class="sensor-panel">🧭 Sensor</div>
+        <div class="section-content sensor-panel">
+      
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.sensor ?? false;
@@ -2298,9 +2391,9 @@ class BubbleRoomEditor extends r {
   }
   _renderColorPanel() {
     return x`
-      <ha-expansion-panel id="colorPanel">
-        <div slot="header">🎨 COLORS</div>
-        <div class="section-content color-glow">
+      <ha-expansion-panel class="colors-panel">
+        <div slot="header" class="colors-panel">🎨 Colors</div>
+        <div class="section-content colors-panel">
   
           <div class="color-section">
             <div class="color-subtitle">Room</div>
