@@ -1249,13 +1249,6 @@ class BubbleRoomEditor extends r {
     `;
   }
   
-  
-
-
-  _togglePanel(panelId) {
-    const panel = this.shadowRoot.getElementById(panelId);
-    if (panel) panel.open = !panel.open;
-  }
   _toggleAutoDiscoverySection(section, enabled) {
     this._config = {
       ...this._config,
@@ -1947,9 +1940,9 @@ class BubbleRoomEditor extends r {
 
   _renderRoomPanel() {
     return x`
-      <ha-expansion-panel 
+      <ha-expansion-panel
         class="glass-panel room-panel"
-        .open="${this._expandedPanel === 'room'}"
+        .expanded="${this._expandedPanel === 'room'}"
         @click="${() => this._toggleMainPanel('room')}"
       >
         <div slot="header" class="glass-header room-header">🛋️ Room Settings</div>
@@ -2025,20 +2018,8 @@ class BubbleRoomEditor extends r {
                     </ha-icon-picker>
                   </div>
                   <div style="display: flex; flex-direction: row; gap: 24px; flex-wrap: wrap; margin-top: 8px;">
-                    ${this._renderTapHoldAction('tap')}
-                      (val) => this._updateTapActionField('action')({ target: { value: val } }),
-                      (val) => this._updateTapActionField('navigation_path')({ target: { value: val } }),
-                      (val) => this._updateTapActionField('service')({ target: { value: val } }),
-                      (val) => this._updateTapActionField('service_data')({ target: { value: val } }),
-                      this._jsonError
-                    )}
-                    ${this._renderTapHoldAction('hold')}
-                      (val) => this._updateHoldActionField('action')({ target: { value: val } }),
-                      (val) => this._updateHoldActionField('navigation_path')({ target: { value: val } }),
-                      (val) => this._updateHoldActionField('service')({ target: { value: val } }),
-                      (val) => this._updateHoldActionField('service_data')({ target: { value: val } }),
-                      this._jsonError
-                    )}
+                    ${this._renderTapHoldAction(key)}
+                    ${this._renderTapHoldAction(key)}
                   </div>
                 </div>
               </div>
@@ -2080,7 +2061,7 @@ class BubbleRoomEditor extends r {
   }
   
   _renderSubButtonPanelGroup() {
-    // Assicurati che lo stato sia sempre lungo 4 (difesa da eventuali resize/config reload)
+    // Assicurati che lo stato sia sempre lungo 4
     if (!this._expandedSubButtons || this._expandedSubButtons.length !== 4) {
       this._expandedSubButtons = [false, false, false, false];
     }
@@ -2118,41 +2099,40 @@ class BubbleRoomEditor extends r {
           <!-- Subbutton pills -->
           ${["sub-button1", "sub-button2", "sub-button3", "sub-button4"].map((key, i) => {
             const label = `Sub-button ${i+1}`;
-            this._config.entities?.[key] || {
-              entity: "", icon: "", tap_action: { action: "toggle" }, hold_action: { action: "more-info" }
-            };
             const expanded = this._expandedSubButtons[i];
-            const accent = "#b28fff"; // Viola per subbutton
+            const accent = "#b28fff";
             return this._renderExpandablePill({
               label,
               expanded,
               accent,
               onToggle: () => this._toggleSubButtonExpand(i),
               content: x`
-                <div class="input-group">
-                  <label>Entity:</label>
-                  ${this._renderEntityInput("Entity ID", key, "entity", "subbutton")}
+                <!-- LABELS ESTERNE -->
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:8px;">
+                  <div style="flex:1;">
+                    <span style="display:block; font-size:1.13em; font-weight:700; color:#b28fff; margin-bottom:2px;">Entity:</span>
+                  </div>
+                  <div style="flex:1; text-align:right;">
+                    <span style="display:block; font-size:1.13em; font-weight:700; color:#b28fff; margin-bottom:2px;">Icon:</span>
+                  </div>
                 </div>
-                <div class="input-group">
-                  <label>Icon:</label>
-                  ${this._renderIconInput("Icon", key)}
+                <!-- INPUTS ENTITY+ICON INLINE -->
+                <div style="display:flex; gap:22px; margin-bottom:18px;">
+                  <div style="flex:1;">
+                    ${this._renderEntityInput(key, "entity", "subbutton")}
+                  </div>
+                  <div style="flex:1;">
+                    ${this._renderIconInput("Icon", key)}
+                  </div>
                 </div>
+                <!-- FUNCTION LABEL (esterna, sopra Tap/Hold) -->
+                <div style="margin-bottom:6px;">
+                  <span style="display:block; font-size:1.13em; font-weight:700; color:#b28fff;">Function:</span>
+                </div>
+                <!-- TAP/HOLD -->
                 <div class="input-group" style="gap:24px;">
-                  ${this._renderTapHoldAction('tap')}
-                    (val) => this._updateEntityTapAction(key, 'action')({ target: { value: val } }),
-                    (val) => this._updateEntityTapAction(key, 'navigation_path')({ target: { value: val } }),
-                    (val) => this._updateEntityTapAction(key, 'service')({ target: { value: val } }),
-                    (val) => this._updateEntityTapAction(key, 'service_data')({ target: { value: val } }),
-                    this._jsonError
-                  )}
-                  ${this._renderTapHoldAction('hold')}
-                    entityConfig.hold_action || {},
-                    (val) => this._updateEntityHoldAction(key, 'action')({ target: { value: val } }),
-                    (val) => this._updateEntityHoldAction(key, 'navigation_path')({ target: { value: val } }),
-                    (val) => this._updateEntityHoldAction(key, 'service')({ target: { value: val } }),
-                    (val) => this._updateEntityHoldAction(key, 'service_data')({ target: { value: val } }),
-                    this._jsonError
-                  )}
+                  ${this._renderTapHoldAction(key)}
+                  ${this._renderTapHoldAction(key)}
                 </div>
               `
             });
@@ -2191,7 +2171,6 @@ class BubbleRoomEditor extends r {
       { key: "entities4", label: "Entity 4" },
       { key: "entities5", label: "Entity 5" },
     ];
-    // Difensivo: assicura sempre array di stato lungo 5
     if (!this._expandedMushroomEntities || this._expandedMushroomEntities.length !== 5) {
       this._expandedMushroomEntities = [false, false, false, false, false];
     }
@@ -2225,7 +2204,6 @@ class BubbleRoomEditor extends r {
           </div>
           <!-- Entities pills -->
           ${entityKeys.map((entity, i) => {
-            this._config.entities?.[entity.key] || { entity: "", icon: "" };
             const expanded = this._expandedMushroomEntities[i];
             const accent = "#36e6a0";
             return this._renderExpandablePill({
@@ -2234,13 +2212,21 @@ class BubbleRoomEditor extends r {
               accent,
               onToggle: () => this._toggleMushroomEntityExpand(i),
               content: x`
-                <div class="input-group">
-                  <label>Entity:</label>
-                  ${this._renderEntityInput("Entity ID", entity.key, "entity", "mushroom")}
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:8px;">
+                  <div style="flex:1;">
+                    <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0; margin-bottom:2px;">Entity:</span>
+                  </div>
+                  <div style="flex:1; text-align:right;">
+                    <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0; margin-bottom:2px;">Icon:</span>
+                  </div>
                 </div>
-                <div class="input-group">
-                  <label>Icon:</label>
-                  ${this._renderIconInput("Icon", entity.key)}
+                <div style="display:flex; gap:22px; margin-bottom:8px;">
+                  <div style="flex:1;">
+                    ${this._renderEntityInput(entity.key, "entity", "mushroom")}
+                  </div>
+                  <div style="flex:1;">
+                    ${this._renderIconInput(entity.key)}
+                  </div>
                 </div>
               `
             });
@@ -2252,8 +2238,8 @@ class BubbleRoomEditor extends r {
         </div>
       </ha-expansion-panel>
     `;
-
   }
+  
 
   _toggleMushroomEntityExpand(i) {
     this._expandedMushroomEntities = this._expandedMushroomEntities.map(
@@ -2261,6 +2247,7 @@ class BubbleRoomEditor extends r {
     );
     this.requestUpdate();
   }
+  
   
 
                 
@@ -2450,38 +2437,55 @@ class BubbleRoomEditor extends r {
               accent,
               onToggle: () => this._toggleSensorExpand(i),
               content: x`
-                <div class="input-group">
-                  <label>Tipo Sensore:</label>
-                  <select
-                    .value="${sensor.type || ''}"
-                    @change="${e => this._updateSensor(i, 'type', e.target.value)}"
-                  >
-                    <option value="">-- nessuno --</option>
-                    ${[
-                      { type: 'temperature', label: '🌡️ Temperatura' },
-                      { type: 'humidity', label: '💦 Umidità' },
-                      { type: 'co2', label: '🟢 CO₂' },
-                      { type: 'illuminance', label: '☀️ Luminosità' },
-                      { type: 'pm1', label: '🟤 PM1' },
-                      { type: 'pm25', label: '⚫️ PM2.5' },
-                      { type: 'pm10', label: '⚪️ PM10' },
-                      { type: 'uv', label: '🌞 UV Index' },
-                      { type: 'noise', label: '🔊 Rumore' },
-                      { type: 'pressure', label: '📈 Pressione' },
-                      { type: 'voc', label: '🧪 VOC' },
-                    ].map(t => x`<option value="${t.type}">${t.label}</option>`)}
-                  </select>
+                <!-- RIGA LABELS ESTERNE -->
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:8px;">
+                  <div style="flex:2;">
+                    <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0; margin-bottom:2px;">Tipo Sensore</span>
+                  </div>
+                  <div style="flex:2;">
+                    <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0; margin-bottom:2px;">Entity</span>
+                  </div>
+                  <div style="flex:2; text-align:right;">
+                    <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0; margin-bottom:2px;">Icon</span>
+                  </div>
                 </div>
-                <div class="input-group">
-                  <label>Entity ID:</label>
-                  ${this._renderEntityInput("Entity ID", key)}
-                  <label style="margin-left:20px;">Icon:</label>
-                  ${this._renderIconInput("Icon", key)}
-                </div>
-                ${sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? x`
-                  <div class="input-group">
-                    <label>Unità:</label>
+                <!-- RIGA INPUTS -->
+                <div style="display:flex; gap:18px; margin-bottom:8px;">
+                  <div style="flex:2;">
                     <select
+                      style="width:100%;"
+                      .value="${sensor.type || ''}"
+                      @change="${e => this._updateSensor(i, 'type', e.target.value)}"
+                    >
+                      <option value="">-- nessuno --</option>
+                      ${[
+                        { type: 'temperature', label: '🌡️ Temperatura' },
+                        { type: 'humidity', label: '💦 Umidità' },
+                        { type: 'co2', label: '🟢 CO₂' },
+                        { type: 'illuminance', label: '☀️ Luminosità' },
+                        { type: 'pm1', label: '🟤 PM1' },
+                        { type: 'pm25', label: '⚫️ PM2.5' },
+                        { type: 'pm10', label: '⚪️ PM10' },
+                        { type: 'uv', label: '🌞 UV Index' },
+                        { type: 'noise', label: '🔊 Rumore' },
+                        { type: 'pressure', label: '📈 Pressione' },
+                        { type: 'voc', label: '🧪 VOC' },
+                      ].map(t => x`<option value="${t.type}">${t.label}</option>`)}
+                    </select>
+                  </div>
+                  <div style="flex:2;">
+                    ${this._renderEntityInput(key, "entity", "sensor")}
+                  </div>
+                  <div style="flex:2;">
+                    ${this._renderIconInput(key)}
+                  </div>
+                </div>
+                <!-- UNITÀ -->
+                ${sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? x`
+                  <div style="margin-top:8px;">
+                    <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0; margin-bottom:2px;">Unità</span>
+                    <select
+                      style="width:100%;"
                       .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
                       @change="${e => this._updateSensor(i, 'unit', e.target.value)}"
                     >
@@ -2494,7 +2498,6 @@ class BubbleRoomEditor extends r {
               `
             });
           })}
-  
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetSensorConfig}">🧹 Reset Sensors</button>
@@ -2506,11 +2509,10 @@ class BubbleRoomEditor extends r {
   
 
   _toggleSensorExpand(i) {
-    this._expandedSensors = this._expandedSensors.map(
-      (_, idx) => idx === i ? !this._expandedSensors[idx] : false
-    );
+    this._expandedSensors = this._expandedSensors.map((_, idx) => idx === i);
     this.requestUpdate();
   }
+  
   
   _resetSensorConfig() {
     const entities = { ...(this._config.entities || {}) };
@@ -2545,26 +2547,50 @@ class BubbleRoomEditor extends r {
           ${this._renderExpandablePill({
             label: "Room",
             expanded: this._expandedColors[0],
-            accent: "#55afff", // Blu per Room
+            accent: "#55afff",
             onToggle: () => this._toggleColorExpand(0),
             content: x`
               <div class="input-group color-row">
-                <label>Text Active:</label>
-                ${this._renderColorField('room', 'text_active', 'Text Active')}
-                <label>Text Inactive:</label>
-                ${this._renderColorField('room', 'text_active', 'Text Active')}
+                <div style="display: flex; gap:18px; margin-bottom:4px;">
+                  <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Text Active</span></div>
+                  <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Text Inactive</span></div>
+                </div>
+                <div style="display: flex; gap:18px;">
+                  <div style="flex:1;">
+                    ${this._renderColorField('room', 'text_active')}
+                  </div>
+                  <div style="flex:1;">
+                    ${this._renderColorField('room', 'text_inactive')}
+                  </div>
+                </div>
               </div>
               <div class="input-group color-row">
-                <label>Background Active:</label>
-                ${this._renderColorField('room', 'background_active')}
-                <label>Background Inactive:</label>
-                ${this._renderColorField('room', 'background_inactive')}
+                <div style="display: flex; gap:18px; margin-bottom:4px;">
+                  <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Background Active</span></div>
+                  <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Background Inactive</span></div>
+                </div>
+                <div style="display: flex; gap:18px;">
+                  <div style="flex:1;">
+                    ${this._renderColorField('room', 'background_active')}
+                  </div>
+                  <div style="flex:1;">
+                    ${this._renderColorField('room', 'background_inactive')}
+                  </div>
+                </div>
               </div>
               <div class="input-group color-row">
-                <label>Icon Active:</label>
-                ${this._renderColorField('room', 'icon_active')}
-                <label>Icon Inactive:</label>
-                ${this._renderColorField('room', 'icon_inactive')}
+                <div style="display: flex; gap:18px; margin-bottom:4px;">
+                  <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Icon Active</span></div>
+                  <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Icon Inactive</span></div>
+                </div>
+                <div style="display: flex; gap:18px;">
+                  <div style="flex:1;">
+                    ${this._renderColorField('room', 'icon_active')}
+                  </div>
+                  <div style="flex:1;">
+                    ${this._renderColorField('room', 'icon_inactive')}
+                  </div>
+                </div>
               </div>
             `
           })}
@@ -2573,26 +2599,50 @@ class BubbleRoomEditor extends r {
           ${this._renderExpandablePill({
             label: "Subbutton",
             expanded: this._expandedColors[1],
-            accent: "#b28fff", // Viola per Subbutton
+            accent: "#b28fff",
             onToggle: () => this._toggleColorExpand(1),
             content: x`
               <div class="input-group color-row">
-                <label>Text Active:</label>
-                ${this._renderColorField('subbutton', 'text_active')}
-                <label>Text Inactive:</label>
-                ${this._renderColorField('subbutton', 'text_inactive')}
+                <div style="display: flex; gap:18px; margin-bottom:4px;">
+                  <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Text Active</span></div>
+                  <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Text Inactive</span></div>
+                </div>
+                <div style="display: flex; gap:18px;">
+                  <div style="flex:1;">
+                    ${this._renderColorField('subbutton', 'text_active')}
+                  </div>
+                  <div style="flex:1;">
+                    ${this._renderColorField('subbutton', 'text_inactive')}
+                  </div>
+                </div>
               </div>
               <div class="input-group color-row">
-                <label>Background Active:</label>
-                ${this._renderColorField('subbutton', 'background_active')}
-                <label>Background Inactive:</label>
-                ${this._renderColorField('subbutton', 'background_inactive')}
+                <div style="display: flex; gap:18px; margin-bottom:4px;">
+                  <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Background Active</span></div>
+                  <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Background Inactive</span></div>
+                </div>
+                <div style="display: flex; gap:18px;">
+                  <div style="flex:1;">
+                    ${this._renderColorField('subbutton', 'background_active')}
+                  </div>
+                  <div style="flex:1;">
+                    ${this._renderColorField('subbutton', 'background_inactive')}
+                  </div>
+                </div>
               </div>
               <div class="input-group color-row">
-                <label>Icon On:</label>
-                ${this._renderColorField('subbutton', 'icon_on')}
-                <label>Icon Off:</label>
-                ${this._renderColorField('subbutton', 'icon_off')}
+                <div style="display: flex; gap:18px; margin-bottom:4px;">
+                  <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Icon On</span></div>
+                  <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Icon Off</span></div>
+                </div>
+                <div style="display: flex; gap:18px;">
+                  <div style="flex:1;">
+                    ${this._renderColorField('subbutton', 'icon_on')}
+                  </div>
+                  <div style="flex:1;">
+                    ${this._renderColorField('subbutton', 'icon_off')}
+                  </div>
+                </div>
               </div>
             `
           })}
