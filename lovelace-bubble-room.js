@@ -953,9 +953,7 @@ class BubbleRoomEditor extends r {
 
   static get styles() {
     return i$3`
-      /* ======================= */
-      /* PATCH: NESSUN GAP ESTERNO */
-      /* ======================= */
+      /* === PATCH: nessun gap esterno === */
       :host {
         background: transparent !important;
         padding: 0 !important;
@@ -966,11 +964,93 @@ class BubbleRoomEditor extends r {
         margin: 0 !important;
         width: 100%;
         box-sizing: border-box;
+        border-radius: 40px;
+        position: relative;
+        border: none;
+        /* Variabili CSS per colore e ombra (default: room) */
+        --glass-bg: rgba(73, 164, 255, 0.38);
+        --glass-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
+        --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.26),rgba(255,255,255,0.11) 70%,transparent 100%);
+      }
+      .glass-panel::after {
+        content: '';
+        position: absolute;
+        left: 8%;
+        top: 0;
+        width: 84%;
+        height: 52%;
+        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
+        background: var(--glass-sheen);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .glass-panel {
+        background: var(--glass-bg);
+        box-shadow: var(--glass-shadow);
       }
   
-      /* ======================= */
-      /* BASE: INPUT & LABELS    */
-      /* ======================= */
+      /* === VARIANTI SEZIONE (solo override variabili) === */
+      .subbutton-panel.glass-panel {
+        --glass-bg: rgba(180, 120, 255, 0.34);
+        --glass-shadow: 0 2px 24px 0 rgba(160,100,255,0.19);
+        --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.22),rgba(255,255,255,0.10) 70%,transparent 100%);
+      }
+      .mushroom-panel.glass-panel {
+        --glass-bg: rgba(80, 235, 175, 0.28);
+        --glass-shadow: 0 2px 24px 0 rgba(40,220,145,0.18);
+        --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.18),rgba(255,255,255,0.10) 70%,transparent 100%);
+      }
+      .camera-panel.glass-panel {
+        --glass-bg: rgba(100, 225, 255, 0.23);
+        --glass-shadow: 0 2px 24px 0 rgba(100,225,255,0.17);
+        --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.13),rgba(255,255,255,0.08) 70%,transparent 100%);
+      }
+      .climate-panel.glass-panel {
+        --glass-bg: rgba(255, 208, 110, 0.24);
+        --glass-shadow: 0 2px 24px 0 rgba(255,208,110,0.13);
+        --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.15),rgba(255,255,255,0.09) 70%,transparent 100%);
+      }
+      .sensor-panel.glass-panel {
+        --glass-bg: rgba(167, 255, 175, 0.22);
+        --glass-shadow: 0 2px 24px 0 rgba(167,255,175,0.13);
+        --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.11),rgba(255,255,255,0.07) 70%,transparent 100%);
+      }
+      .colors-panel.glass-panel {
+        --glass-bg: rgba(95, 255, 235, 0.26);
+        --glass-shadow: 0 2px 24px 0 rgba(95,255,235,0.13);
+        --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.14),rgba(255,255,255,0.08) 70%,transparent 100%);
+      }
+  
+      /* === Header unificato per tutte le sezioni === */
+      .glass-header {
+        background: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 22px 0 18px 0;
+        margin: 0;
+        text-align: center;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #fff;
+        position: relative;
+        z-index: 2;
+      }
+      /* Piccoli adattamenti taglia */
+      .room-panel .glass-header   { font-size: 1.2rem; }
+      .subbutton-panel .glass-header { font-size: 1.15rem; }
+      .mushroom-panel .glass-header { font-size: 1.12rem; }
+      .camera-panel .glass-header   { font-size: 1.13rem; }
+      .climate-panel .glass-header  { font-size: 1.12rem; }
+      .sensor-panel .glass-header   { font-size: 1.11rem; }
+      .colors-panel .glass-header   { font-size: 1.11rem; }
+  
+      /* === Responsive === */
+      @media (max-width: 650px) {
+        .glass-header { padding: 14px 10px 9px 10px; font-size:1.13em;}
+        .glass-content { padding: 12px 10px; }
+      }
+  
+      /* === Tutto il resto: input, tab, button, autodiscovery, ecc === */
       .input-group {
         display: flex;
         flex-wrap: wrap;
@@ -1004,9 +1084,6 @@ class BubbleRoomEditor extends r {
       input[type="range"] { width: 100px; }
       input[type="checkbox"] { width: auto; margin-right: 8px; }
   
-      /* ====================== */
-      /* TAB & BUTTON STYLES    */
-      /* ====================== */
       .tab-group {
         display: flex;
         gap: 10px;
@@ -1061,10 +1138,6 @@ class BubbleRoomEditor extends r {
         border: 2.5px solid #ff6464;
         box-shadow: 0 4px 22px #ff6464a9;
       }
-  
-      /* ====================== */
-      /* AUTO-DISCOVERY BOX     */
-      /* ====================== */
       .autodiscover-box {
         display: flex;
         align-items: center;
@@ -1087,272 +1160,6 @@ class BubbleRoomEditor extends r {
       .autodiscover-box:hover {
         box-shadow: 0 4px 24px 0 rgba(73,164,255,0.26);
         border: 1.5px solid #66baff;
-      }
-  
-      /* ====================== */
-      /* GLASS PANEL PRINCIPALI */
-      /* ====================== */
-      /* Ogni pannello principale ha il suo colore e glass effect applicato
-         direttamente al contenitore esterno, per un effetto pill unico */
-  
-      /* === ROOM (blu) === */
-      .glass-panel.room-panel {
-        background: rgba(73, 164, 255, 0.38);
-        backdrop-filter: blur(19px) saturate(1.4);
-        -webkit-backdrop-filter: blur(19px) saturate(1.4);
-        border-radius: 40px;
-        box-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
-        position: relative;
-        border: none;
-      }
-      .glass-panel.room-panel::after {
-        content: '';
-        position: absolute;
-        left: 8%;
-        top: 0;
-        width: 84%;
-        height: 52%;
-        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
-        background: linear-gradient(120deg,rgba(255,255,255,0.26),rgba(255,255,255,0.11) 70%,transparent 100%);
-        pointer-events: none;
-        z-index: 1;
-      }
-      .room-panel .glass-header {
-        background: none !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        padding: 22px 0 18px 0;
-        margin: 0;
-        text-align: center;
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #fff;
-        position: relative;
-        z-index: 2;
-      }
-  
-      /* === SUBBUTTON (viola) === */
-      .glass-panel.subbutton-panel {
-        background: rgba(180, 120, 255, 0.34);
-        backdrop-filter: blur(19px) saturate(1.4);
-        -webkit-backdrop-filter: blur(19px) saturate(1.4);
-        border-radius: 40px;
-        box-shadow: 0 2px 24px 0 rgba(160,100,255,0.19);
-        position: relative;
-        border: none;
-      }
-      .glass-panel.subbutton-panel::after {
-        content: '';
-        position: absolute;
-        left: 8%;
-        top: 0;
-        width: 84%;
-        height: 52%;
-        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
-        background: linear-gradient(120deg,rgba(255,255,255,0.22),rgba(255,255,255,0.10) 70%,transparent 100%);
-        pointer-events: none;
-        z-index: 1;
-      }
-      .subbutton-panel .glass-header {
-        background: none !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        padding: 22px 0 18px 0;
-        margin: 0;
-        text-align: center;
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: #fff;
-        position: relative;
-        z-index: 2;
-      }
-  
-      /* === MUSHROOM (verde acqua) === */
-      .glass-panel.mushroom-panel {
-        background: rgba(80, 235, 175, 0.28);
-        backdrop-filter: blur(19px) saturate(1.4);
-        -webkit-backdrop-filter: blur(19px) saturate(1.4);
-        border-radius: 40px;
-        box-shadow: 0 2px 24px 0 rgba(40,220,145,0.18);
-        position: relative;
-        border: none;
-      }
-      .glass-panel.mushroom-panel::after {
-        content: '';
-        position: absolute;
-        left: 8%;
-        top: 0;
-        width: 84%;
-        height: 52%;
-        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
-        background: linear-gradient(120deg,rgba(255,255,255,0.18),rgba(255,255,255,0.10) 70%,transparent 100%);
-        pointer-events: none;
-        z-index: 1;
-      }
-      .mushroom-panel .glass-header {
-        background: none !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        padding: 22px 0 18px 0;
-        margin: 0;
-        text-align: center;
-        font-size: 1.12rem;
-        font-weight: 700;
-        color: #fff;
-        position: relative;
-        z-index: 2;
-      }
-  
-      /* === CAMERA (blu chiaro) === */
-      .glass-panel.camera-panel {
-        background: rgba(100, 225, 255, 0.23);
-        backdrop-filter: blur(19px) saturate(1.4);
-        -webkit-backdrop-filter: blur(19px) saturate(1.4);
-        border-radius: 40px;
-        box-shadow: 0 2px 24px 0 rgba(100,225,255,0.17);
-        position: relative;
-        border: none;
-      }
-      .glass-panel.camera-panel::after {
-        content: '';
-        position: absolute;
-        left: 8%;
-        top: 0;
-        width: 84%;
-        height: 52%;
-        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
-        background: linear-gradient(120deg,rgba(255,255,255,0.13),rgba(255,255,255,0.08) 70%,transparent 100%);
-        pointer-events: none;
-        z-index: 1;
-      }
-      .camera-panel .glass-header {
-        background: none !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        padding: 22px 0 18px 0;
-        margin: 0;
-        text-align: center;
-        font-size: 1.13rem;
-        font-weight: 700;
-        color: #fff;
-        position: relative;
-        z-index: 2;
-      }
-  
-      /* === CLIMATE (arancio) === */
-      .glass-panel.climate-panel {
-        background: rgba(255, 208, 110, 0.24);
-        backdrop-filter: blur(19px) saturate(1.4);
-        -webkit-backdrop-filter: blur(19px) saturate(1.4);
-        border-radius: 40px;
-        box-shadow: 0 2px 24px 0 rgba(255,208,110,0.13);
-        position: relative;
-        border: none;
-      }
-      .glass-panel.climate-panel::after {
-        content: '';
-        position: absolute;
-        left: 8%;
-        top: 0;
-        width: 84%;
-        height: 52%;
-        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
-        background: linear-gradient(120deg,rgba(255,255,255,0.15),rgba(255,255,255,0.09) 70%,transparent 100%);
-        pointer-events: none;
-        z-index: 1;
-      }
-      .climate-panel .glass-header {
-        background: none !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        padding: 22px 0 18px 0;
-        margin: 0;
-        text-align: center;
-        font-size: 1.12rem;
-        font-weight: 700;
-        color: #fff;
-        position: relative;
-        z-index: 2;
-      }
-  
-      /* === SENSOR (lime/rosa) === */
-      .glass-panel.sensor-panel {
-        background: rgba(167, 255, 175, 0.22);
-        backdrop-filter: blur(19px) saturate(1.4);
-        -webkit-backdrop-filter: blur(19px) saturate(1.4);
-        border-radius: 40px;
-        box-shadow: 0 2px 24px 0 rgba(167,255,175,0.13);
-        position: relative;
-        border: none;
-      }
-      .glass-panel.sensor-panel::after {
-        content: '';
-        position: absolute;
-        left: 8%;
-        top: 0;
-        width: 84%;
-        height: 52%;
-        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
-        background: linear-gradient(120deg,rgba(255,255,255,0.11),rgba(255,255,255,0.07) 70%,transparent 100%);
-        pointer-events: none;
-        z-index: 1;
-      }
-      .sensor-panel .glass-header {
-        background: none !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        padding: 22px 0 18px 0;
-        margin: 0;
-        text-align: center;
-        font-size: 1.11rem;
-        font-weight: 700;
-        color: #fff;
-        position: relative;
-        z-index: 2;
-      }
-  
-      /* === COLORS (verde acqua/rosa) === */
-      .glass-panel.colors-panel {
-        background: rgba(95, 255, 235, 0.26);
-        backdrop-filter: blur(19px) saturate(1.4);
-        -webkit-backdrop-filter: blur(19px) saturate(1.4);
-        border-radius: 40px;
-        box-shadow: 0 2px 24px 0 rgba(95,255,235,0.13);
-        position: relative;
-        border: none;
-      }
-      .glass-panel.colors-panel::after {
-        content: '';
-        position: absolute;
-        left: 8%;
-        top: 0;
-        width: 84%;
-        height: 52%;
-        border-radius: 40px 40px 90px 90px / 30px 30px 60px 60px;
-        background: linear-gradient(120deg,rgba(255,255,255,0.14),rgba(255,255,255,0.08) 70%,transparent 100%);
-        pointer-events: none;
-        z-index: 1;
-      }
-      .colors-panel .glass-header {
-        background: none !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        padding: 22px 0 18px 0;
-        margin: 0;
-        text-align: center;
-        font-size: 1.11rem;
-        font-weight: 700;
-        color: #fff;
-        position: relative;
-        z-index: 2;
-      }
-  
-      /* ====================== */
-      /* RESPONSIVE             */
-      /* ====================== */
-      @media (max-width: 650px) {
-        .glass-header { padding: 14px 10px 9px 10px; font-size:1.13em;}
-        .glass-content { padding: 12px 10px; }
       }
     `;
   }
