@@ -93,6 +93,11 @@ class BubbleRoomEditor extends LitElement {
         }
       }).catch(() => {});
     }
+    this._expandedPanel = null;
+    this._expandedSubButtons = [false, false, false, false];
+    this._expandedMushroomEntities = [false, false, false, false, false];
+    this._expandedSensors = [false, false, false, false];
+    this._expandedColors = [false, false];
   }
 
   async _loadAreaEntities() {
@@ -116,8 +121,6 @@ class BubbleRoomEditor extends LitElement {
         areaEntities[areaId].push(entity.entity_id);
       }
     }
-  
-    console.log("[Bubble Room] Area Entities Loaded:", areaEntities);
     this._areaEntities = areaEntities;
   }
 
@@ -185,16 +188,6 @@ class BubbleRoomEditor extends LitElement {
 
 
   setConfig(config) {
-    if (!config.auto_discovery_sections) {
-      config.auto_discovery_sections = {
-        room_presence: !!config.area,
-        subbutton: !!config.area,
-        mushroom: !!config.area,
-        climate: !!config.area,
-        camera: !!config.area,
-        sensor: !!config.area
-      };
-    }
     if (!config) config = {};
     if (!config.auto_discovery_sections) {
       config.auto_discovery_sections = {
@@ -1077,7 +1070,7 @@ class BubbleRoomEditor extends LitElement {
         // Calcola e salva icona solo se entityId è valido
         let iconValue = 'mdi:bookmark-outline';
         if (value && typeof value === 'string') {
-          iconValue = this._getIconForEntity(value, {});
+          iconValue = this.getIconForEntity(value, {});
         }
         this._updateEntityConfig(entityKey, ["icon"], iconValue);
       } else {
@@ -1204,7 +1197,7 @@ class BubbleRoomEditor extends LitElement {
     }
     ref[pathArray[pathArray.length - 1]] = value;
   
-    const entities = { ...this._config.entities, [entityKey]: entityConf };
+    const entities = { ...(this._config.entities || {}), [entityKey]: entityConf };
     this._config = { ...this._config, entities };
     this._fireConfigChanged();
   }
@@ -1265,10 +1258,20 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
   
+  _toggleMainPanel(panelName) {
+    // Se il pannello è già aperto, lo chiudo, altrimenti lo apro e chiudo gli altri
+    this._expandedPanel = this._expandedPanel === panelName ? null : panelName;
+    this.requestUpdate();
+  }
+  
 
   _renderRoomPanel() {
     return html`
-      <ha-expansion-panel class="glass-panel room-panel">
+      <ha-expansion-panel 
+        class="glass-panel room-panel"
+        .open="${this._expandedPanel === 'room'}"
+        @click="${() => this._toggleMainPanel('room')}"
+      >
         <div slot="header" class="glass-header room-header">🛋️ Room Settings</div>
         <div class="glass-content room-content">
   
@@ -1342,18 +1345,14 @@ class BubbleRoomEditor extends LitElement {
                     </ha-icon-picker>
                   </div>
                   <div style="display: flex; flex-direction: row; gap: 24px; flex-wrap: wrap; margin-top: 8px;">
-                    ${this._renderTapHoldAction(
-                      'Tap',
-                      this._config.tap_action || {},
+                    ${this._renderTapHoldAction('tap')}
                       (val) => this._updateTapActionField('action')({ target: { value: val } }),
                       (val) => this._updateTapActionField('navigation_path')({ target: { value: val } }),
                       (val) => this._updateTapActionField('service')({ target: { value: val } }),
                       (val) => this._updateTapActionField('service_data')({ target: { value: val } }),
                       this._jsonError
                     )}
-                    ${this._renderTapHoldAction(
-                      'Hold',
-                      this._config.hold_action || {},
+                    ${this._renderTapHoldAction('hold')}
                       (val) => this._updateHoldActionField('action')({ target: { value: val } }),
                       (val) => this._updateHoldActionField('navigation_path')({ target: { value: val } }),
                       (val) => this._updateHoldActionField('service')({ target: { value: val } }),
@@ -1407,8 +1406,17 @@ class BubbleRoomEditor extends LitElement {
     }
   
     return html`
-      <ha-expansion-panel class="glass-panel subbutton-panel">
-        <div slot="header" class="glass-header subbutton-header">🎛️ Subbuttons</div>
+      <ha-expansion-panel
+        class="glass-panel subbutton-panel"
+        .expanded="${this._expandedPanel === 'subbutton'}"
+      >
+        <div
+          slot="header"
+          class="glass-header subbutton-header"
+          @click="${() => this._toggleMainPanel('subbutton')}"
+        >
+          🎛️ Subbuttons
+        </div>
         <div class="glass-content subbutton-content">
   
           <!-- Auto-scoperta -->
@@ -1450,17 +1458,14 @@ class BubbleRoomEditor extends LitElement {
                   ${this._renderIconInput("Icon", key)}
                 </div>
                 <div class="input-group" style="gap:24px;">
-                  ${this._renderTapHoldAction(
-                    'Tap',
-                    entityConfig.tap_action || {},
+                  ${this._renderTapHoldAction('tap')}
                     (val) => this._updateEntityTapAction(key, 'action')({ target: { value: val } }),
                     (val) => this._updateEntityTapAction(key, 'navigation_path')({ target: { value: val } }),
                     (val) => this._updateEntityTapAction(key, 'service')({ target: { value: val } }),
                     (val) => this._updateEntityTapAction(key, 'service_data')({ target: { value: val } }),
                     this._jsonError
                   )}
-                  ${this._renderTapHoldAction(
-                    'Hold',
+                  ${this._renderTapHoldAction('hold')}
                     entityConfig.hold_action || {},
                     (val) => this._updateEntityHoldAction(key, 'action')({ target: { value: val } }),
                     (val) => this._updateEntityHoldAction(key, 'navigation_path')({ target: { value: val } }),
@@ -1484,7 +1489,8 @@ class BubbleRoomEditor extends LitElement {
   
 
   _resetSubButtonConfig() {
-    const entities = { ...this._config.entities };
+    const entities = { ...(this._config.entities || {}) };
+
     ["sub-button1", "sub-button2", "sub-button3", "sub-button4"].forEach(key => {
       delete entities[key];
     });
@@ -1510,10 +1516,18 @@ class BubbleRoomEditor extends LitElement {
       this._expandedMushroomEntities = [false, false, false, false, false];
     }
     return html`
-      <ha-expansion-panel class="glass-panel mushroom-panel">
-        <div slot="header" class="glass-header mushroom-header">🍄 Mushroom Entities</div>
+      <ha-expansion-panel
+        class="glass-panel mushroom-panel"
+        .expanded="${this._expandedPanel === 'mushroom'}"
+      >
+        <div
+          slot="header"
+          class="glass-header mushroom-header"
+          @click="${() => this._toggleMainPanel('mushroom')}"
+        >
+          🍄 Mushroom Entities
+        </div>
         <div class="glass-content mushroom-content">
-  
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.mushroom ?? false;
@@ -1529,7 +1543,6 @@ class BubbleRoomEditor extends LitElement {
               <span>🪄 Auto-scoperta attiva</span>
             </label>
           </div>
-  
           <!-- Entities pills -->
           ${entityKeys.map((entity, i) => {
             const entityConfig = this._config.entities?.[entity.key] || { entity: "", icon: "" };
@@ -1552,7 +1565,6 @@ class BubbleRoomEditor extends LitElement {
               `
             });
           })}
-  
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetMushroomEntitiesConfig}">🧹 Reset Mushroom Entities</button>
@@ -1560,6 +1572,7 @@ class BubbleRoomEditor extends LitElement {
         </div>
       </ha-expansion-panel>
     `;
+
   }
 
   _toggleMushroomEntityExpand(i) {
@@ -1572,7 +1585,8 @@ class BubbleRoomEditor extends LitElement {
 
                 
   _resetMushroomEntitiesConfig() {
-    const entities = { ...this._config.entities };
+    const entities = { ...(this._config.entities || {}) };
+
     ["entities1", "entities2", "entities3", "entities4", "entities5"].forEach(key => {
       delete entities[key];
     });
@@ -1584,10 +1598,18 @@ class BubbleRoomEditor extends LitElement {
 
   _renderCameraPanel() {
     return html`
-      <ha-expansion-panel class="glass-panel camera-panel">
-        <div slot="header" class="glass-header camera-header">📷 Camera</div>
+      <ha-expansion-panel
+        class="glass-panel camera-panel"
+        .expanded="${this._expandedPanel === 'camera'}"
+      >
+        <div
+          slot="header"
+          class="glass-header camera-header"
+          @click="${() => this._toggleMainPanel('camera')}"
+        >
+          📷 Camera
+        </div>
         <div class="glass-content camera-content">
-  
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.camera ?? false;
@@ -1603,7 +1625,6 @@ class BubbleRoomEditor extends LitElement {
               <span>🪄 Auto-scoperta attiva</span>
             </label>
           </div>
-  
           <!-- Glass-pill con tutti i campi -->
           <div class="mini-pill glass-pill expanded">
             <div class="mini-pill-header">
@@ -1618,7 +1639,6 @@ class BubbleRoomEditor extends LitElement {
               </div>
             </div>
           </div>
-  
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetCameraConfig}">🧹 Reset Camera</button>
@@ -1631,18 +1651,29 @@ class BubbleRoomEditor extends LitElement {
 
 
   _resetCameraConfig() {
-    const entities = { ...this._config.entities };
+    const entities = { ...(this._config.entities || {}) };
+
     delete entities["camera"];
     this._config = { ...this._config, entities };
     this.requestUpdate();
     this._fireConfigChanged();
   }
+
+
   _renderClimatePanel() {
     return html`
-      <ha-expansion-panel class="glass-panel climate-panel">
-        <div slot="header" class="glass-header climate-header">🌡️ Climate</div>
+      <ha-expansion-panel
+        class="glass-panel climate-panel"
+        .expanded="${this._expandedPanel === 'climate'}"
+      >
+        <div
+          slot="header"
+          class="glass-header climate-header"
+          @click="${() => this._toggleMainPanel('climate')}"
+        >
+          🌡️ Climate
+        </div>
         <div class="glass-content climate-content">
-  
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.climate ?? false;
@@ -1686,7 +1717,8 @@ class BubbleRoomEditor extends LitElement {
 
 
   _resetClimateConfig() {
-    const entities = { ...this._config.entities };
+    const entities = { ...(this._config.entities || {}) };
+
     delete entities["climate"];
     this._config = { ...this._config, entities };
     this.requestUpdate();
@@ -1699,10 +1731,18 @@ class BubbleRoomEditor extends LitElement {
       this._expandedSensors = [false, false, false, false];
     }
     return html`
-      <ha-expansion-panel class="glass-panel sensor-panel">
-        <div slot="header" class="glass-header sensor-header">🧭 Sensor</div>
+      <ha-expansion-panel
+        class="glass-panel sensor-panel"
+        .expanded="${this._expandedPanel === 'sensor'}"
+      >
+        <div
+          slot="header"
+          class="glass-header sensor-header"
+          @click="${() => this._toggleMainPanel('sensor')}"
+        >
+          🧭 Sensor
+        </div>
         <div class="glass-content sensor-content">
-
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.sensor ?? false;
@@ -1718,7 +1758,7 @@ class BubbleRoomEditor extends LitElement {
               <span>🪄 Auto-scoperta attiva</span>
             </label>
           </div>
-
+  
           <!-- Pills sensori -->
           ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) => {
             const sensor = this._config.entities?.[key] || {};
@@ -1774,7 +1814,7 @@ class BubbleRoomEditor extends LitElement {
               `
             });
           })}
-
+  
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetSensorConfig}">🧹 Reset Sensors</button>
@@ -1783,6 +1823,7 @@ class BubbleRoomEditor extends LitElement {
       </ha-expansion-panel>
     `;
   }
+  
 
   _toggleSensorExpand(i) {
     this._expandedSensors = this._expandedSensors.map(
@@ -1792,7 +1833,8 @@ class BubbleRoomEditor extends LitElement {
   }
   
   _resetSensorConfig() {
-    const entities = { ...this._config.entities };
+    const entities = { ...(this._config.entities || {}) };
+
     ["sensor1", "sensor2", "sensor3", "sensor4"].forEach(key => {
       delete entities[key];
     });
@@ -1801,16 +1843,24 @@ class BubbleRoomEditor extends LitElement {
     this._fireConfigChanged();
   }
   _renderColorPanel() {
-    // Difensivo: sempre 2 elementi
+    // Difensivo: sempre 2 elementi (Room, Subbutton)
     if (!this._expandedColors || this._expandedColors.length !== 2) {
       this._expandedColors = [false, false];
     }
   
     return html`
-      <ha-expansion-panel class="glass-panel colors-panel">
-        <div slot="header" class="glass-header colors-header">🎨 Colors</div>
+      <ha-expansion-panel
+        class="glass-panel colors-panel"
+        .expanded="${this._expandedPanel === 'colors'}"
+      >
+        <div
+          slot="header"
+          class="glass-header colors-header"
+          @click="${() => this._toggleMainPanel('colors')}"
+        >
+          🎨 Colors
+        </div>
         <div class="glass-content colors-content">
-  
           <!-- Pillola: Room -->
           ${this._renderExpandablePill({
             label: "Room",
@@ -1869,17 +1919,32 @@ class BubbleRoomEditor extends LitElement {
   
           <!-- Reset -->
           <div style="margin-top:1.5em; text-align:center;">
-            <button class="reset-button" @click="${this._resetColorConfig}">🧹 Reset Colors</button>
+            <button class="reset-button" @click="${this._resetColorsConfig}">🧹 Reset Colors</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
   
+  
   _toggleColorExpand(i) {
     this._expandedColors = this._expandedColors.map((_, idx) => idx === i ? !this._expandedColors[idx] : false);
     this.requestUpdate();
   }
+  _renderColorInput(section, key) {
+    const rgba = this._config.colors?.[section]?.[key] || 'rgba(0,0,0,1)';
+    const [r, g, b, a] = this._parseRGBA(rgba);
+    const hex = `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
+    return html`
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <input type="color" .value="${hex}" @input="${e => this._updateColorField(section, key, e.target.value, a)}" />
+        <input type="range" min="0" max="1" step="0.01" .value="${a}" @input="${e => this._updateColorField(section, key, hex, e.target.value)}" />
+        <span>${Math.round(a * 100)}%</span>
+        <input type="text" style="width:120px" .value="${rgba}" @input="${e => this._updateNestedColorDirect(section, key, e.target.value)}" />
+      </div>
+    `;
+  }
+  
   
   
 
