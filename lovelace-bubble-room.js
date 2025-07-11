@@ -953,41 +953,51 @@ class BubbleRoomEditor extends r {
 
   static get styles() {
     return i$3`
-      /* ===== PATCH: eliminazione gap, layout liquido, glass compatibile ===== */
+      /* ============================
+        PATCH: Nessun gap esterno
+        ============================ */
       :host {
-        background: transparent !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        display: block;
+        background: transparent !important;  /* Sfondo trasparente */
+        padding: 0 !important;               /* Nessun padding */
+        margin: 0 !important;                /* Nessun margin */
+        display: block;                      /* Comportamento a blocco */
       }
+  
+      /* ============================
+        Pannello glass principale
+        ============================ */
       .glass-panel {
-        margin: 0 !important;
-        width: 100%;
-        box-sizing: border-box;
-        border-radius: 40px;
-        position: relative;
+        margin: 0 !important;                  /* Niente margine */
+        width: 100%;                           /* Occupa tutta la larghezza */
+        box-sizing: border-box;                /* Include padding/border nel width */
+        border-radius: 40px;                   /* Angoli arrotondati, effetto pill */
+        position: relative;                    /* Necessario per stacking context */
         border: none;
-        z-index: 0;  /* livello base, stacking context locale */
+        z-index: 0;                            /* Base stacking, sotto i contenuti */
+        /* Variabili CSS per colore/ombra/lucentezza di default (Room) */
         --glass-bg: rgba(73, 164, 255, 0.38);
         --glass-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
         --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.26),rgba(255,255,255,0.11) 70%,transparent 100%);
       }
       .glass-panel::after {
         content: '';
-        position: absolute;
+        position: absolute;                  /* Sovrapposto alla pillola */
         left: 0; top: 0;
-        width: 100%; height: 100%;
-        border-radius: inherit;
-        background: var(--glass-sheen);
-        pointer-events: none;
-        z-index: 0 !important;  /* SOTTO il contenuto, SOPRA bg/liquid-glass */
+        width: 100%; height: 100%;           /* Occupa tutta la pillola */
+        border-radius: inherit;               /* Stesso radius del contenitore */
+        background: var(--glass-sheen);       /* Lucentezza glass */
+        pointer-events: none;                 /* Non blocca il click */
+        z-index: 0 !important;                /* Sotto i contenuti */
       }
       .glass-panel {
-        background: var(--glass-bg);
-        box-shadow: var(--glass-shadow);
+        background: var(--glass-bg);          /* Colore di fondo glass */
+        box-shadow: var(--glass-shadow);      /* Ombra glass */
       }
   
-      /* === VARIANTI SEZIONE: override delle variabili colore/ombra === */
+      /* ============================
+        VARIANTI SEZIONE
+        (override delle variabili di colore)
+        ============================ */
       .subbutton-panel.glass-panel {
         --glass-bg: rgba(180, 120, 255, 0.34);
         --glass-shadow: 0 2px 24px 0 rgba(160,100,255,0.19);
@@ -1019,7 +1029,9 @@ class BubbleRoomEditor extends r {
         --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.14),rgba(255,255,255,0.08) 70%,transparent 100%);
       }
   
-      /* === HEADER E CONTENUTO: SEMPRE SOPRA LA LUCENTEZZA === */
+      /* ============================
+        HEADER e CONTENUTO: sempre davanti alla lucentezza
+        ============================ */
       .glass-header,
       .glass-content,
       .input-group,
@@ -1031,10 +1043,10 @@ class BubbleRoomEditor extends r {
         z-index: 1;
       }
       .glass-header {
-        background: none !important;
+        background: none !important;            /* No background extra */
         box-shadow: none !important;
         border-radius: 0 !important;
-        padding: 22px 0 18px 0;
+        padding: 22px 0 18px 0;                 /* Spaziatura header */
         margin: 0;
         text-align: center;
         font-size: 1.15rem;
@@ -1051,13 +1063,146 @@ class BubbleRoomEditor extends r {
       .sensor-panel .glass-header   { font-size: 1.11rem; }
       .colors-panel .glass-header   { font-size: 1.11rem; }
   
-      /* === RESPONSIVE === */
-      @media (max-width: 650px) {
-        .glass-header { padding: 14px 10px 9px 10px; font-size:1.13em;}
-        .glass-content { padding: 12px 10px; }
+      /* ============================
+        MINI-PILL: subbutton, entity, sensor, color
+        ============================ */
+      .mini-pill,
+      .glass-pill {
+        background: rgba(44,70,100,0.23);                /* Effetto glass trasparente */
+        border: 1.5px solid rgba(255,255,255,0.12);      /* Bordo glass */
+        box-shadow: 0 3px 22px 0 rgba(70,120,220,0.13);  /* Ombra leggera */
+        backdrop-filter: blur(10px) saturate(1.2);       /* Blur vetro */
+        -webkit-backdrop-filter: blur(10px) saturate(1.2);
+        border-radius: 24px;
+        margin: 0 0 18px 0;
+        transition: background 0.18s, box-shadow 0.18s, border 0.18s;
+        overflow: hidden;
+        position: relative;
+      }
+      /* Header pill: sempre visibile e cliccabile (per espansione) */
+      .mini-pill-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 13px 18px 13px 22px;
+        font-size: 1.12rem;
+        font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+        font-weight: 700;
+        color: var(--section-accent, #b28fff);            /* Colore sezione */
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+        z-index: 1;
+      }
+      /* Chevron espansione */
+      .mini-pill-header .chevron {
+        margin-left: auto;
+        font-size: 1.22em;
+        opacity: 0.64;
+        transition: transform 0.18s;
+      }
+      .mini-pill.expanded .mini-pill-header .chevron {
+        transform: rotate(90deg);
+      }
+      /* Contenuto espanso della pill */
+      .mini-pill-content {
+        padding: 15px 22px 16px 22px;
+        background: transparent;
+        position: relative;
+        z-index: 1;
+        animation: pill-expand 0.22s cubic-bezier(.5,1.2,.6,1) both;
+      }
+      @keyframes pill-expand {
+        from { opacity: 0; transform: translateY(-12px);}
+        to   { opacity: 1; transform: translateY(0);}
+      }
+      /* Colore diverso per ogni sezione sulle pill */
+      .room-panel .mini-pill-header   { --section-accent: #55afff; }
+      .subbutton-panel .mini-pill-header { --section-accent: #b28fff; }
+      .mushroom-panel .mini-pill-header { --section-accent: #36e6a0; }
+      .camera-panel .mini-pill-header   { --section-accent: #50d2ff; }
+      .climate-panel .mini-pill-header  { --section-accent: #f1be62; }
+      .sensor-panel .mini-pill-header   { --section-accent: #8cff8a; }
+      .colors-panel .mini-pill-header   { --section-accent: #73f6e5; }
+  
+      /* ============================
+        LABELS INTERNE: moderne, grandi, colore sezione
+        ============================ */
+      label,
+      .input-group label {
+        font-size: 1.09rem;
+        font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+        font-weight: 600;
+        color: var(--section-accent, #b28fff);
+        letter-spacing: 0.02em;
+        margin-bottom: 6px;
+        display: block;
+      }
+      .room-panel label { --section-accent: #55afff; }
+      .subbutton-panel label { --section-accent: #b28fff; }
+      .mushroom-panel label { --section-accent: #36e6a0; }
+      .camera-panel label { --section-accent: #50d2ff; }
+      .climate-panel label { --section-accent: #f1be62; }
+      .sensor-panel label { --section-accent: #8cff8a; }
+      .colors-panel label { --section-accent: #73f6e5; }
+  
+      /* ============================
+        RESET BUTTON: pill grosso, bordo rosso visibile
+        ============================ */
+      .reset-button {
+        border: 3.5px solid #ff4c6a !important;          /* Bordo rosso spesso */
+        border-radius: 27px !important;
+        background: rgba(255,76,106,0.12) !important;    /* Light glass red */
+        color: #ff4c6a !important;
+        font-size: 1.15rem;
+        font-weight: 700;
+        box-shadow: 0 2px 24px 0 #ff4c6a44;
+        padding: 12px 38px !important;
+        margin: 20px auto 0 auto !important;
+        z-index: 3 !important;
+        position: relative;
+        transition: background 0.18s, color 0.18s, border 0.18s, box-shadow 0.18s;
+      }
+      .reset-button:hover {
+        background: rgba(255,76,106,0.18) !important;
+        color: #fff !important;
+        border-color: #ff1744 !important;
+        box-shadow: 0 6px 32px 0 #ff4c6abf;
       }
   
-      /* === RESTO DELLA CARD: input, tab, autodiscover ecc. === */
+      /* ============================
+        AUTODISCOVER BOX: foreground e sopra lo sfondo glass
+        ============================ */
+      .autodiscover-box {
+        z-index: 2 !important;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px auto;
+        padding: 18px 0 18px 0;
+        background: rgba(73,164,255,0.35);
+        border-radius: 35px;
+        font-size: 1.17rem;
+        color: #fff;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        box-shadow: 0 2px 18px 0 rgba(73,164,255,0.11);
+        border: 1.5px solid #d5f3ff99;
+        text-align: center;
+        transition: box-shadow 0.18s, border 0.18s;
+        cursor: pointer;
+        max-width: 88%;
+      }
+      .autodiscover-box:hover {
+        box-shadow: 0 4px 24px 0 rgba(73,164,255,0.26);
+        border: 1.5px solid #66baff;
+      }
+  
+      /* ============================
+        INPUT BASE (per liquid glass look coerente)
+        ============================ */
       .input-group {
         display: flex;
         flex-wrap: wrap;
@@ -1066,18 +1211,12 @@ class BubbleRoomEditor extends r {
         padding: 14px 18px 10px;
         margin-bottom: 13px;
         border-radius: 13px;
-        background: rgba(30,44,58,0.73);
+        background: rgba(30,44,58,0.52);  /* più glass rispetto a default */
         border: 1px solid #61b5e1aa;
         box-shadow: 0 2px 8px rgba(55,71,79,0.13);
         color: #a5c7ed;
         font-size: 1.02rem;
         font-weight: 500;
-      }
-      label {
-        font-weight: 600;
-        font-size: 0.97rem;
-        color: #90caf9;
-        margin-bottom: 4px;
       }
       input, textarea, select {
         border: 1px solid #444;
@@ -1091,6 +1230,9 @@ class BubbleRoomEditor extends r {
       input[type="range"] { width: 100px; }
       input[type="checkbox"] { width: auto; margin-right: 8px; }
   
+      /* ============================
+        TAB E BOTTONI: pill liquidi
+        ============================ */
       .tab-group {
         display: flex;
         gap: 10px;
@@ -1124,56 +1266,18 @@ class BubbleRoomEditor extends r {
         color: #fff;
         border: 2px solid #1976d2;
       }
-      .reset-button {
-        z-index: 1 !important;
-        display: block;
-        margin: 14px auto 0 auto;
-        background: rgba(255,255,255,0.09);
-        color: #fd6464;
-        border: 2.5px solid #ffbebe;
-        border-radius: 22px;
-        padding: 9px 32px;
-        font-weight: bold;
-        font-size: 1.06rem;
-        cursor: pointer;
-        box-shadow: 0 2px 12px #ffbebe36;
-        text-align: center;
-        transition: background 0.18s, color 0.15s, box-shadow 0.15s, border 0.16s;
-      }
-      .reset-button:hover {
-        z-index: 1 !important;
-        background: rgba(255,100,100,0.16);
-        color: #fff;
-        border: 2.5px solid #ff6464;
-        box-shadow: 0 4px 22px #ff6464a9;
-      }
-      .autodiscover-box {
-        z-index: 1 !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 18px auto;
-        padding: 18px 0 18px 0;
-        background: rgba(73,164,255,0.35);
-        border-radius: 35px;
-        font-size: 1.17rem;
-        color: #fff;
-        font-weight: 700;
-        letter-spacing: 0.02em;
-        box-shadow: 0 2px 18px 0 rgba(73,164,255,0.11);
-        border: 1.5px solid #d5f3ff99;
-        text-align: center;
-        transition: box-shadow 0.18s, border 0.18s;
-        cursor: pointer;
-        max-width: 88%;
-      }
-      .autodiscover-box:hover {
-        z-index: 1 !important;
-        box-shadow: 0 4px 24px 0 rgba(73,164,255,0.26);
-        border: 1.5px solid #66baff;
+  
+      /* ============================
+        RESPONSIVE
+        ============================ */
+      @media (max-width: 650px) {
+        .glass-header { padding: 14px 10px 9px 10px; font-size:1.13em;}
+        .glass-content { padding: 12px 10px; }
+        .mini-pill-content { padding: 10px 8px 9px 10px; }
       }
     `;
   }
+  
 
 
 
@@ -1842,6 +1946,26 @@ class BubbleRoomEditor extends r {
     `;
   }
 
+  _renderExpandablePill({ label, expanded, onToggle, content, accent }) {
+    return x`
+      <div class="mini-pill glass-pill ${expanded ? 'expanded' : ''}">
+        <div
+          class="mini-pill-header"
+          style="${accent ? `--section-accent: ${accent}` : ''}"
+          @click="${onToggle}"
+        >
+          ${label}
+          <span class="chevron">${expanded ? '▼' : '▶'}</span>
+        </div>
+        ${expanded ? x`
+          <div class="mini-pill-content">
+            ${content}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+  
 
   _renderRoomPanel() {
     return x`
@@ -1849,101 +1973,107 @@ class BubbleRoomEditor extends r {
         <div slot="header" class="glass-header room-header">🛋️ Room Settings</div>
         <div class="glass-content room-content">
   
-          <!-- Auto-scoperta -->
-          <div class="autodiscover-box" @click="${() => {
-              const curr = this._config.auto_discovery_sections?.room_presence ?? false;
-              this._toggleAutoDiscoverySection('room_presence', !curr);
-            }}">
-            <label>
-              <input
-                type="checkbox"
-                .checked="${this._config.auto_discovery_sections?.room_presence ?? false}"
-                @change="${e => this._toggleAutoDiscoverySection('room_presence', e.target.checked)}"
-                @click="${e => e.stopPropagation()}"
-              />
-              <span>🪄 Auto-scoperta attiva per Presence</span>
-            </label>
-          </div>
+          <!-- UNICA MINI-PILL che contiene tutti gli elementi -->
+          <div class="mini-pill glass-pill expanded">
+            <div class="mini-pill-header">
+              <span>⚙️  Room Settings</span>
+            </div>
+            <div class="mini-pill-content">
+              
+              <!-- Auto-scoperta -->
+              <div class="input-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    .checked="${this._config.auto_discovery_sections?.room_presence ?? false}"
+                    @change="${e => this._toggleAutoDiscoverySection('room_presence', e.target.checked)}"
+                    @click="${e => e.stopPropagation()}"
+                  />
+                  <span>Abilita auto-scoperta Presence</span>
+                </label>
+              </div>
+              
+              <!-- Nome stanza -->
+              <div class="input-group">
+                <label>Room name:</label>
+                <input type="text" .value="${this._config.name || ''}" @input="${this._updateName}" />
+              </div>
   
-          <!-- Room name -->
-          <div class="input-group">
-            <label>Room name:</label>
-            <input type="text" .value="${this._config.name || ''}" @input="${this._updateName}" />
-          </div>
-  
-          <!-- Area picker -->
-          <div class="input-group">
-            <label>Area:</label>
-            <ha-area-picker
-              .hass="${this._hass}"
-              .value="${this._config.area || ''}"
-              @value-changed="${e => {
-                const newArea = e.detail.value;
-                const autoDiscovery = {
-                  room_presence: true,
-                  subbutton: true,
-                  mushroom: true,
-                  camera: true,
-                  climate: true,
-                  sensor: true
-                };
-                this._config = {
-                  ...this._config,
-                  area: newArea,
-                  auto_discovery_sections: autoDiscovery
-                };
-                this.requestUpdate();
-                this._fireConfigChanged();
-              }}">
-            </ha-area-picker>
-          </div>
-  
-          <!-- Room Icon + Tap/Hold -->
-          <div class="input-group">
-            <div style="display: flex; flex-direction: column; gap: 10px; width:100%;">
-              <div style="display: flex; align-items: center; gap: 18px;">
-                <label>Room Icon:</label>
-                <ha-icon-picker
+              <!-- Area -->
+              <div class="input-group">
+                <label>Area:</label>
+                <ha-area-picker
                   .hass="${this._hass}"
-                  .value="${this._config.icon || ''}"
-                  allow-custom-icon
+                  .value="${this._config.area || ''}"
                   @value-changed="${e => {
-                    this._config = { ...this._config, icon: e.detail.value };
+                    const newArea = e.detail.value;
+                    const autoDiscovery = {
+                      room_presence: true,
+                      subbutton: true,
+                      mushroom: true,
+                      camera: true,
+                      climate: true,
+                      sensor: true
+                    };
+                    this._config = {
+                      ...this._config,
+                      area: newArea,
+                      auto_discovery_sections: autoDiscovery
+                    };
                     this.requestUpdate();
                     this._fireConfigChanged();
                   }}">
-                </ha-icon-picker>
+                </ha-area-picker>
               </div>
-              <div style="display: flex; flex-direction: row; gap: 24px; flex-wrap: wrap; margin-top: 8px;">
-                ${this._renderTapHoldAction(
-                  'Tap',
-                  this._config.tap_action || {},
-                  (val) => this._updateTapActionField('action')({ target: { value: val } }),
-                  (val) => this._updateTapActionField('navigation_path')({ target: { value: val } }),
-                  (val) => this._updateTapActionField('service')({ target: { value: val } }),
-                  (val) => this._updateTapActionField('service_data')({ target: { value: val } }),
-                  this._jsonError
-                )}
-                ${this._renderTapHoldAction(
-                  'Hold',
-                  this._config.hold_action || {},
-                  (val) => this._updateHoldActionField('action')({ target: { value: val } }),
-                  (val) => this._updateHoldActionField('navigation_path')({ target: { value: val } }),
-                  (val) => this._updateHoldActionField('service')({ target: { value: val } }),
-                  (val) => this._updateHoldActionField('service_data')({ target: { value: val } }),
-                  this._jsonError
-                )}
+  
+              <!-- Icona + Tap/Hold -->
+              <div class="input-group">
+                <div style="display: flex; flex-direction: column; gap: 10px; width:100%;">
+                  <div style="display: flex; align-items: center; gap: 18px;">
+                    <label>Room Icon:</label>
+                    <ha-icon-picker
+                      .hass="${this._hass}"
+                      .value="${this._config.icon || ''}"
+                      allow-custom-icon
+                      @value-changed="${e => {
+                        this._config = { ...this._config, icon: e.detail.value };
+                        this.requestUpdate();
+                        this._fireConfigChanged();
+                      }}">
+                    </ha-icon-picker>
+                  </div>
+                  <div style="display: flex; flex-direction: row; gap: 24px; flex-wrap: wrap; margin-top: 8px;">
+                    ${this._renderTapHoldAction(
+                      'Tap',
+                      this._config.tap_action || {},
+                      (val) => this._updateTapActionField('action')({ target: { value: val } }),
+                      (val) => this._updateTapActionField('navigation_path')({ target: { value: val } }),
+                      (val) => this._updateTapActionField('service')({ target: { value: val } }),
+                      (val) => this._updateTapActionField('service_data')({ target: { value: val } }),
+                      this._jsonError
+                    )}
+                    ${this._renderTapHoldAction(
+                      'Hold',
+                      this._config.hold_action || {},
+                      (val) => this._updateHoldActionField('action')({ target: { value: val } }),
+                      (val) => this._updateHoldActionField('navigation_path')({ target: { value: val } }),
+                      (val) => this._updateHoldActionField('service')({ target: { value: val } }),
+                      (val) => this._updateHoldActionField('service_data')({ target: { value: val } }),
+                      this._jsonError
+                    )}
+                  </div>
+                </div>
+              </div>
+  
+              <!-- Presence -->
+              <div class="input-group">
+                <label>Presence (ID):</label>
+                ${this._renderEntityInput("Presence (ID)", "presence", "entity", "room_presence")}
               </div>
             </div>
           </div>
   
-          <!-- Presence -->
-          <div class="input-group">
-            <label>Presence (ID):</label>
-            ${this._renderEntityInput("Presence (ID)", "presence", "entity", "room_presence")}
-          </div>
-  
-          <!-- Reset -->
+          <!-- RESET fuori dalla pill -->
           <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetRoomConfig}">🧹 Reset Room Settings</button>
           </div>
@@ -1951,8 +2081,7 @@ class BubbleRoomEditor extends r {
       </ha-expansion-panel>
     `;
   }
-
-
+  
 
 
   _resetRoomConfig() {
@@ -1973,6 +2102,11 @@ class BubbleRoomEditor extends r {
   }
   
   _renderSubButtonPanelGroup() {
+    // Assicurati che lo stato sia sempre lungo 4 (difesa da eventuali resize/config reload)
+    if (!this._expandedSubButtons || this._expandedSubButtons.length !== 4) {
+      this._expandedSubButtons = [false, false, false, false];
+    }
+  
     return x`
       <ha-expansion-panel class="glass-panel subbutton-panel">
         <div slot="header" class="glass-header subbutton-header">🎛️ Subbuttons</div>
@@ -1994,47 +2128,50 @@ class BubbleRoomEditor extends r {
             </label>
           </div>
   
-          <!-- Subbuttons collapsable -->
+          <!-- Subbutton pills -->
           ${["sub-button1", "sub-button2", "sub-button3", "sub-button4"].map((key, i) => {
             const label = `Sub-button ${i+1}`;
             const entityConfig = this._config.entities?.[key] || {
               entity: "", icon: "", tap_action: { action: "toggle" }, hold_action: { action: "more-info" }
             };
-            return x`
-              <div class="subbutton-collapsible glass-subbutton">
-                <div class="glass-mini-header">${label}</div>
-                <div class="glass-mini-content">
-                  <div class="input-group">
-                    <label>Entity:</label>
-                    ${this._renderEntityInput("Entity ID", key, "entity", "subbutton")}
-                  </div>
-                  <div class="input-group">
-                    <label>Icon:</label>
-                    ${this._renderIconInput("Icon", key)}
-                  </div>
-                  <div class="input-group" style="gap:24px;">
-                    ${this._renderTapHoldAction(
-                      'Tap',
-                      entityConfig.tap_action || {},
-                      (val) => this._updateEntityTapAction(key, 'action')({ target: { value: val } }),
-                      (val) => this._updateEntityTapAction(key, 'navigation_path')({ target: { value: val } }),
-                      (val) => this._updateEntityTapAction(key, 'service')({ target: { value: val } }),
-                      (val) => this._updateEntityTapAction(key, 'service_data')({ target: { value: val } }),
-                      this._jsonError
-                    )}
-                    ${this._renderTapHoldAction(
-                      'Hold',
-                      entityConfig.hold_action || {},
-                      (val) => this._updateEntityHoldAction(key, 'action')({ target: { value: val } }),
-                      (val) => this._updateEntityHoldAction(key, 'navigation_path')({ target: { value: val } }),
-                      (val) => this._updateEntityHoldAction(key, 'service')({ target: { value: val } }),
-                      (val) => this._updateEntityHoldAction(key, 'service_data')({ target: { value: val } }),
-                      this._jsonError
-                    )}
-                  </div>
+            const expanded = this._expandedSubButtons[i];
+            const accent = "#b28fff"; // Viola per subbutton
+            return this._renderExpandablePill({
+              label,
+              expanded,
+              accent,
+              onToggle: () => this._toggleSubButtonExpand(i),
+              content: x`
+                <div class="input-group">
+                  <label>Entity:</label>
+                  ${this._renderEntityInput("Entity ID", key, "entity", "subbutton")}
                 </div>
-              </div>
-            `;
+                <div class="input-group">
+                  <label>Icon:</label>
+                  ${this._renderIconInput("Icon", key)}
+                </div>
+                <div class="input-group" style="gap:24px;">
+                  ${this._renderTapHoldAction(
+                    'Tap',
+                    entityConfig.tap_action || {},
+                    (val) => this._updateEntityTapAction(key, 'action')({ target: { value: val } }),
+                    (val) => this._updateEntityTapAction(key, 'navigation_path')({ target: { value: val } }),
+                    (val) => this._updateEntityTapAction(key, 'service')({ target: { value: val } }),
+                    (val) => this._updateEntityTapAction(key, 'service_data')({ target: { value: val } }),
+                    this._jsonError
+                  )}
+                  ${this._renderTapHoldAction(
+                    'Hold',
+                    entityConfig.hold_action || {},
+                    (val) => this._updateEntityHoldAction(key, 'action')({ target: { value: val } }),
+                    (val) => this._updateEntityHoldAction(key, 'navigation_path')({ target: { value: val } }),
+                    (val) => this._updateEntityHoldAction(key, 'service')({ target: { value: val } }),
+                    (val) => this._updateEntityHoldAction(key, 'service_data')({ target: { value: val } }),
+                    this._jsonError
+                  )}
+                </div>
+              `
+            });
           })}
   
           <!-- Reset -->
@@ -2045,8 +2182,7 @@ class BubbleRoomEditor extends r {
       </ha-expansion-panel>
     `;
   }
-
-
+  
 
   _resetSubButtonConfig() {
     const entities = { ...this._config.entities };
@@ -2057,6 +2193,10 @@ class BubbleRoomEditor extends r {
     this.requestUpdate();
     this._fireConfigChanged();
   }
+  _toggleSubButtonExpand(i) {
+    this._expandedSubButtons = this._expandedSubButtons.map((_, idx) => idx === i ? !this._expandedSubButtons[idx] : false);
+    this.requestUpdate();
+  }
   
   _renderMushroomEntitiesPanel() {
     const entityKeys = [
@@ -2066,6 +2206,10 @@ class BubbleRoomEditor extends r {
       { key: "entities4", label: "Entity 4" },
       { key: "entities5", label: "Entity 5" },
     ];
+    // Difensivo: assicura sempre array di stato lungo 5
+    if (!this._expandedMushroomEntities || this._expandedMushroomEntities.length !== 5) {
+      this._expandedMushroomEntities = [false, false, false, false, false];
+    }
     return x`
       <ha-expansion-panel class="glass-panel mushroom-panel">
         <div slot="header" class="glass-header mushroom-header">🍄 Mushroom Entities</div>
@@ -2087,24 +2231,27 @@ class BubbleRoomEditor extends r {
             </label>
           </div>
   
-          <!-- Entities collapsable -->
+          <!-- Entities pills -->
           ${entityKeys.map((entity, i) => {
             this._config.entities?.[entity.key] || { entity: "", icon: "" };
-            return x`
-              <div class="mushroom-collapsible glass-mushroom">
-                <div class="glass-mini-header">${entity.label}</div>
-                <div class="glass-mini-content">
-                  <div class="input-group">
-                    <label>Entity:</label>
-                    ${this._renderEntityInput("Entity ID", entity.key, "entity", "mushroom")}
-                  </div>
-                  <div class="input-group">
-                    <label>Icon:</label>
-                    ${this._renderIconInput("Icon", entity.key)}
-                  </div>
+            const expanded = this._expandedMushroomEntities[i];
+            const accent = "#36e6a0";
+            return this._renderExpandablePill({
+              label: entity.label,
+              expanded,
+              accent,
+              onToggle: () => this._toggleMushroomEntityExpand(i),
+              content: x`
+                <div class="input-group">
+                  <label>Entity:</label>
+                  ${this._renderEntityInput("Entity ID", entity.key, "entity", "mushroom")}
                 </div>
-              </div>
-            `;
+                <div class="input-group">
+                  <label>Icon:</label>
+                  ${this._renderIconInput("Icon", entity.key)}
+                </div>
+              `
+            });
           })}
   
           <!-- Reset -->
@@ -2116,6 +2263,14 @@ class BubbleRoomEditor extends r {
     `;
   }
 
+  _toggleMushroomEntityExpand(i) {
+    this._expandedMushroomEntities = this._expandedMushroomEntities.map(
+      (_, idx) => idx === i ? !this._expandedMushroomEntities[idx] : false
+    );
+    this.requestUpdate();
+  }
+  
+
                 
   _resetMushroomEntitiesConfig() {
     const entities = { ...this._config.entities };
@@ -2126,6 +2281,8 @@ class BubbleRoomEditor extends r {
     this.requestUpdate();
     this._fireConfigChanged();
   }
+
+
   _renderCameraPanel() {
     return x`
       <ha-expansion-panel class="glass-panel camera-panel">
@@ -2148,12 +2305,19 @@ class BubbleRoomEditor extends r {
             </label>
           </div>
   
-          <!-- Entity ID + Icona -->
-          <div class="input-group">
-            <label>Camera (ID):</label>
-            ${this._renderEntityInput("Camera (ID)", "camera", 'entity', 'camera')}
-            <label style="margin-left:20px;">Icon:</label>
-            ${this._renderIconInput("Camera Icon", "camera")}
+          <!-- Glass-pill con tutti i campi -->
+          <div class="mini-pill glass-pill expanded">
+            <div class="mini-pill-header">
+              Entity & Icona
+            </div>
+            <div class="mini-pill-content">
+              <div class="input-group">
+                <label>Camera (ID):</label>
+                ${this._renderEntityInput("Camera (ID)", "camera", 'entity', 'camera')}
+                <label style="margin-left:20px;">Icon:</label>
+                ${this._renderIconInput("Camera Icon", "camera")}
+              </div>
+            </div>
           </div>
   
           <!-- Reset -->
@@ -2164,7 +2328,7 @@ class BubbleRoomEditor extends r {
       </ha-expansion-panel>
     `;
   }
-
+  
 
 
   _resetCameraConfig() {
@@ -2196,12 +2360,19 @@ class BubbleRoomEditor extends r {
             </label>
           </div>
   
-          <!-- Entity ID + Icona -->
-          <div class="input-group">
-            <label>Climate (ID):</label>
-            ${this._renderEntityInput("Climate (ID)", "climate", 'entity', 'climate')}
-            <label style="margin-left:20px;">Icon:</label>
-            ${this._renderIconInput("Climate Icon", "climate")}
+          <!-- Unica glass-pill per il gruppo di campi -->
+          <div class="mini-pill glass-pill expanded">
+            <div class="mini-pill-header">
+              Entity & Icona
+            </div>
+            <div class="mini-pill-content">
+              <div class="input-group">
+                <label>Climate (ID):</label>
+                ${this._renderEntityInput("Climate (ID)", "climate", 'entity', 'climate')}
+                <label style="margin-left:20px;">Icon:</label>
+                ${this._renderIconInput("Climate Icon", "climate")}
+              </div>
+            </div>
           </div>
   
           <!-- Reset -->
@@ -2212,6 +2383,7 @@ class BubbleRoomEditor extends r {
       </ha-expansion-panel>
     `;
   }
+  
 
 
   _resetClimateConfig() {
@@ -2223,11 +2395,15 @@ class BubbleRoomEditor extends r {
   }
   
   _renderSensorPanel() {
+    // Difensivo: assicura che l’array sia sempre lungo 4
+    if (!this._expandedSensors || this._expandedSensors.length !== 4) {
+      this._expandedSensors = [false, false, false, false];
+    }
     return x`
       <ha-expansion-panel class="glass-panel sensor-panel">
         <div slot="header" class="glass-header sensor-header">🧭 Sensor</div>
         <div class="glass-content sensor-content">
-  
+
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.sensor ?? false;
@@ -2243,60 +2419,63 @@ class BubbleRoomEditor extends r {
               <span>🪄 Auto-scoperta attiva</span>
             </label>
           </div>
-  
-          <!-- Sensors collassabili -->
+
+          <!-- Pills sensori -->
           ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) => {
             const sensor = this._config.entities?.[key] || {};
-            return x`
-              <div class="sensor-collapsible glass-sensor">
-                <div class="glass-mini-header">${`Sensor ${i + 1}`.toUpperCase()}</div>
-                <div class="glass-mini-content">
+            const expanded = this._expandedSensors[i];
+            const accent = "#8cff8a";
+            return this._renderExpandablePill({
+              label: `SENSOR ${i + 1}`,
+              expanded,
+              accent,
+              onToggle: () => this._toggleSensorExpand(i),
+              content: x`
+                <div class="input-group">
+                  <label>Tipo Sensore:</label>
+                  <select
+                    .value="${sensor.type || ''}"
+                    @change="${e => this._updateSensor(i, 'type', e.target.value)}"
+                  >
+                    <option value="">-- nessuno --</option>
+                    ${[
+                      { type: 'temperature', label: '🌡️ Temperatura' },
+                      { type: 'humidity', label: '💦 Umidità' },
+                      { type: 'co2', label: '🟢 CO₂' },
+                      { type: 'illuminance', label: '☀️ Luminosità' },
+                      { type: 'pm1', label: '🟤 PM1' },
+                      { type: 'pm25', label: '⚫️ PM2.5' },
+                      { type: 'pm10', label: '⚪️ PM10' },
+                      { type: 'uv', label: '🌞 UV Index' },
+                      { type: 'noise', label: '🔊 Rumore' },
+                      { type: 'pressure', label: '📈 Pressione' },
+                      { type: 'voc', label: '🧪 VOC' },
+                    ].map(t => x`<option value="${t.type}">${t.label}</option>`)}
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label>Entity ID:</label>
+                  ${this._renderEntityInput("Entity ID", key)}
+                  <label style="margin-left:20px;">Icon:</label>
+                  ${this._renderIconInput("Icon", key)}
+                </div>
+                ${sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? x`
                   <div class="input-group">
-                    <label>Tipo Sensore:</label>
+                    <label>Unità:</label>
                     <select
-                      .value="${sensor.type || ''}"
-                      @change="${e => this._updateSensor(i, 'type', e.target.value)}"
+                      .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
+                      @change="${e => this._updateSensor(i, 'unit', e.target.value)}"
                     >
-                      <option value="">-- nessuno --</option>
-                      ${[
-                        { type: 'temperature', label: '🌡️ Temperatura' },
-                        { type: 'humidity', label: '💦 Umidità' },
-                        { type: 'co2', label: '🟢 CO₂' },
-                        { type: 'illuminance', label: '☀️ Luminosità' },
-                        { type: 'pm1', label: '🟤 PM1' },
-                        { type: 'pm25', label: '⚫️ PM2.5' },
-                        { type: 'pm10', label: '⚪️ PM10' },
-                        { type: 'uv', label: '🌞 UV Index' },
-                        { type: 'noise', label: '🔊 Rumore' },
-                        { type: 'pressure', label: '📈 Pressione' },
-                        { type: 'voc', label: '🧪 VOC' },
-                      ].map(t => x`<option value="${t.type}">${t.label}</option>`)}
+                      ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u =>
+                        x`<option value="${u}">${u}</option>`
+                      )}
                     </select>
                   </div>
-                  <div class="input-group">
-                    <label>Entity ID:</label>
-                    ${this._renderEntityInput("Entity ID", key)}
-                    <label style="margin-left:20px;">Icon:</label>
-                    ${this._renderIconInput("Icon", key)}
-                  </div>
-                  ${sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? x`
-                    <div class="input-group">
-                      <label>Unità:</label>
-                      <select
-                        .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
-                        @change="${e => this._updateSensor(i, 'unit', e.target.value)}"
-                      >
-                        ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u =>
-                          x`<option value="${u}">${u}</option>`
-                        )}
-                      </select>
-                    </div>
-                  ` : ''}
-                </div>
-              </div>
-            `;
+                ` : ''}
+              `
+            });
           })}
-  
+
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetSensorConfig}">🧹 Reset Sensors</button>
@@ -2306,7 +2485,13 @@ class BubbleRoomEditor extends r {
     `;
   }
 
-
+  _toggleSensorExpand(i) {
+    this._expandedSensors = this._expandedSensors.map(
+      (_, idx) => idx === i ? !this._expandedSensors[idx] : false
+    );
+    this.requestUpdate();
+  }
+  
   _resetSensorConfig() {
     const entities = { ...this._config.entities };
     ["sensor1", "sensor2", "sensor3", "sensor4"].forEach(key => {
@@ -2317,55 +2502,73 @@ class BubbleRoomEditor extends r {
     this._fireConfigChanged();
   }
   _renderColorPanel() {
+    // Difensivo: sempre 2 elementi
+    if (!this._expandedColors || this._expandedColors.length !== 2) {
+      this._expandedColors = [false, false];
+    }
+  
     return x`
       <ha-expansion-panel class="glass-panel colors-panel">
         <div slot="header" class="glass-header colors-header">🎨 Colors</div>
         <div class="glass-content colors-content">
   
-          <div class="color-section">
-            <div class="color-subtitle">Room</div>
-            <div class="input-group color-row">
-              <label>Text Active:</label>
-              ${this._renderColorInput('room', 'text_active')}
-              <label>Text Inactive:</label>
-              ${this._renderColorInput('room', 'text_inactive')}
-            </div>
-            <div class="input-group color-row">
-              <label>Background Active:</label>
-              ${this._renderColorInput('room', 'background_active')}
-              <label>Background Inactive:</label>
-              ${this._renderColorInput('room', 'background_inactive')}
-            </div>
-            <div class="input-group color-row">
-              <label>Icon Active:</label>
-              ${this._renderColorInput('room', 'icon_active')}
-              <label>Icon Inactive:</label>
-              ${this._renderColorInput('room', 'icon_inactive')}
-            </div>
-          </div>
+          <!-- Pillola: Room -->
+          ${this._renderExpandablePill({
+            label: "Room",
+            expanded: this._expandedColors[0],
+            accent: "#55afff", // Blu per Room
+            onToggle: () => this._toggleColorExpand(0),
+            content: x`
+              <div class="input-group color-row">
+                <label>Text Active:</label>
+                ${this._renderColorInput('room', 'text_active')}
+                <label>Text Inactive:</label>
+                ${this._renderColorInput('room', 'text_inactive')}
+              </div>
+              <div class="input-group color-row">
+                <label>Background Active:</label>
+                ${this._renderColorInput('room', 'background_active')}
+                <label>Background Inactive:</label>
+                ${this._renderColorInput('room', 'background_inactive')}
+              </div>
+              <div class="input-group color-row">
+                <label>Icon Active:</label>
+                ${this._renderColorInput('room', 'icon_active')}
+                <label>Icon Inactive:</label>
+                ${this._renderColorInput('room', 'icon_inactive')}
+              </div>
+            `
+          })}
   
-          <div class="color-section" style="margin-top: 24px;">
-            <div class="color-subtitle">Subbutton</div>
-            <div class="input-group color-row">
-              <label>Text Active:</label>
-              ${this._renderColorInput('subbutton', 'text_active')}
-              <label>Text Inactive:</label>
-              ${this._renderColorInput('subbutton', 'text_inactive')}
-            </div>
-            <div class="input-group color-row">
-              <label>Background Active:</label>
-              ${this._renderColorInput('subbutton', 'background_active')}
-              <label>Background Inactive:</label>
-              ${this._renderColorInput('subbutton', 'background_inactive')}
-            </div>
-            <div class="input-group color-row">
-              <label>Icon On:</label>
-              ${this._renderColorInput('subbutton', 'icon_on')}
-              <label>Icon Off:</label>
-              ${this._renderColorInput('subbutton', 'icon_off')}
-            </div>
-          </div>
+          <!-- Pillola: Subbutton -->
+          ${this._renderExpandablePill({
+            label: "Subbutton",
+            expanded: this._expandedColors[1],
+            accent: "#b28fff", // Viola per Subbutton
+            onToggle: () => this._toggleColorExpand(1),
+            content: x`
+              <div class="input-group color-row">
+                <label>Text Active:</label>
+                ${this._renderColorInput('subbutton', 'text_active')}
+                <label>Text Inactive:</label>
+                ${this._renderColorInput('subbutton', 'text_inactive')}
+              </div>
+              <div class="input-group color-row">
+                <label>Background Active:</label>
+                ${this._renderColorInput('subbutton', 'background_active')}
+                <label>Background Inactive:</label>
+                ${this._renderColorInput('subbutton', 'background_inactive')}
+              </div>
+              <div class="input-group color-row">
+                <label>Icon On:</label>
+                ${this._renderColorInput('subbutton', 'icon_on')}
+                <label>Icon Off:</label>
+                ${this._renderColorInput('subbutton', 'icon_off')}
+              </div>
+            `
+          })}
   
+          <!-- Reset -->
           <div style="margin-top:1.5em; text-align:center;">
             <button class="reset-button" @click="${this._resetColorConfig}">🧹 Reset Colors</button>
           </div>
@@ -2373,6 +2576,12 @@ class BubbleRoomEditor extends r {
       </ha-expansion-panel>
     `;
   }
+  
+  _toggleColorExpand(i) {
+    this._expandedColors = this._expandedColors.map((_, idx) => idx === i ? !this._expandedColors[idx] : false);
+    this.requestUpdate();
+  }
+  
   
 
   _resetColorsConfig() {
