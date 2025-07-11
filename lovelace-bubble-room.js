@@ -1374,6 +1374,131 @@ class BubbleRoomEditor extends r {
         
         /* ====== ERRORI ====== */
         .error { border: 1.2px solid #ff6464 !important; }
+        /* BASE GLASS EFFECT */
+        .glass-panel {
+          background: rgba(45, 71, 110, 0.23);
+          border-radius: 26px;
+          box-shadow: 0 8px 32px 0 rgba(20,30,55,0.18);
+          backdrop-filter: blur(16px) saturate(165%);
+          border: 1.5px solid rgba(255,255,255,0.18);
+          margin: 26px 0;
+          overflow: hidden;
+          transition: box-shadow 0.2s, border 0.2s;
+        }
+        
+        /* HEADER STYLE */
+        .glass-header {
+          padding: 22px 30px 14px 30px;
+          font-size: 1.36em;
+          font-weight: 700;
+          color: #fff;
+          letter-spacing: 0.02em;
+          background: linear-gradient(90deg, rgba(60,140,240,0.35), rgba(60,160,255,0.22));
+          backdrop-filter: blur(18px);
+          border-bottom: 1px solid rgba(255,255,255,0.12);
+          text-align: center;
+          border-radius: 24px 24px 0 0;
+          text-shadow: 0 2px 18px rgba(70,180,255,0.11);
+        }
+        
+        /* CONTENT STYLE */
+        .glass-content {
+          padding: 24px 32px 22px 32px;
+          background: rgba(45, 71, 110, 0.14);
+          border-radius: 0 0 22px 22px;
+        }
+        
+        /* COLOR VARIANTI PER SEZIONI */
+        .room-header, .room-content { 
+          /* default azzurro-blu */
+        }
+        .climate-header, .climate-content { 
+          background: linear-gradient(90deg, rgba(245,165,80,0.30), rgba(230,120,50,0.19)) !important;
+        }
+        .subbutton-header, .subbutton-content {
+          background: linear-gradient(90deg, rgba(138,43,226,0.27), rgba(186,104,200,0.15)) !important;
+        }
+        .mushroom-header, .mushroom-content {
+          background: linear-gradient(90deg, rgba(50,224,160,0.19), rgba(0,178,170,0.13)) !important;
+        }
+        .camera-header, .camera-content {
+          background: linear-gradient(90deg, rgba(60,140,240,0.24), rgba(42,128,228,0.13)) !important;
+        }
+        .sensor-header, .sensor-content {
+          background: linear-gradient(90deg, rgba(232,65,145,0.21), rgba(83,51,237,0.09)) !important;
+        }
+        .colors-header, .colors-content {
+          background: linear-gradient(90deg, rgba(255,218,121,0.18), rgba(233,30,99,0.13)) !important;
+        }
+        
+        /* Gruppi di input */
+        .input-group {
+          margin-bottom: 20px;
+        }
+        label {
+          font-weight: 600;
+          color: #e3ecfa;
+          margin-bottom: 7px;
+          display: block;
+        }
+        input, select {
+          padding: 8px 14px;
+          border-radius: 8px;
+          border: 1.2px solid rgba(180,200,255,0.14);
+          background: rgba(255,255,255,0.09);
+          color: #fff;
+          width: 100%;
+        }
+        input[type="checkbox"] {
+          width: auto;
+          margin-right: 8px;
+        }
+        
+        /* Auto-discover & reset pill buttons */
+        .autodiscover-box {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background: rgba(160,180,255,0.18);
+          border-radius: 32px;
+          margin: 18px 0 20px 0;
+          padding: 10px 18px;
+          cursor: pointer;
+          font-size: 1.08em;
+          border: 1.1px solid rgba(100,160,255,0.16);
+          box-shadow: 0 2px 10px rgba(100,160,255,0.13);
+          transition: box-shadow 0.18s, border 0.18s;
+        }
+        .autodiscover-box:hover {
+          box-shadow: 0 6px 20px rgba(100,160,255,0.22);
+          border: 1.1px solid rgba(100,160,255,0.23);
+        }
+        .reset-button {
+          display: inline-block;
+          background: linear-gradient(90deg, rgba(52,152,219,0.19), rgba(44,62,80,0.15));
+          color: #fff;
+          border: 1.5px solid rgba(52,152,219,0.14);
+          border-radius: 32px;
+          padding: 9px 35px;
+          font-weight: bold;
+          font-size: 1.08em;
+          cursor: pointer;
+          margin: 0 auto;
+          box-shadow: 0 1px 8px rgba(44,62,80,0.09);
+          transition: background 0.15s, box-shadow 0.14s;
+        }
+        .reset-button:hover {
+          background: linear-gradient(90deg, rgba(52,152,219,0.27), rgba(44,62,80,0.21));
+          color: #fff;
+          box-shadow: 0 5px 18px rgba(52,152,219,0.19);
+        }
+        
+        /* Responsive */
+        @media (max-width: 650px) {
+          .glass-content { padding: 12px 10px; }
+          .glass-header { padding: 14px 10px 9px 10px; font-size:1.13em;}
+        }
+
 
     `;
   }
@@ -2049,16 +2174,16 @@ class BubbleRoomEditor extends r {
 
   _renderRoomPanel() {
     return x`
-      <div class="room-panel">
-        <div class="glass-header">🛋️ Room Settings</div>
-        <div class="glass-content">
+      <ha-expansion-panel class="glass-panel room-panel">
+        <div slot="header" class="glass-header room-header">🛋️ Room Settings</div>
+        <div class="glass-content room-content">
   
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.room_presence ?? false;
               this._toggleAutoDiscoverySection('room_presence', !curr);
             }}">
-            <label class="autodiscover-label">
+            <label>
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.room_presence ?? false}"
@@ -2072,10 +2197,7 @@ class BubbleRoomEditor extends r {
           <!-- Room name -->
           <div class="input-group">
             <label>Room name:</label>
-            <input
-              type="text"
-              .value="${this._config.name || ''}"
-              @input="${this._updateName}" />
+            <input type="text" .value="${this._config.name || ''}" @input="${this._updateName}" />
           </div>
   
           <!-- Area picker -->
@@ -2152,12 +2274,14 @@ class BubbleRoomEditor extends r {
   
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
-            <button class="reset-button" @click="${this._resetRoomConfig}">🔄 Reset Room Settings</button>
+            <button class="reset-button" @click="${this._resetRoomConfig}">🧹 Reset Room Settings</button>
           </div>
         </div>
-      </div>
+      </ha-expansion-panel>
     `;
   }
+
+
 
 
   _resetRoomConfig() {
@@ -2179,16 +2303,16 @@ class BubbleRoomEditor extends r {
   
   _renderSubButtonPanelGroup() {
     return x`
-      <div class="subbutton-panel">
-        <div class="glass-header">🎛️ Subbuttons</div>
-        <div class="glass-content">
+      <ha-expansion-panel class="glass-panel subbutton-panel">
+        <div slot="header" class="glass-header subbutton-header">🎛️ Subbuttons</div>
+        <div class="glass-content subbutton-content">
   
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.subbutton ?? false;
               this._toggleAutoDiscoverySection('subbutton', !curr);
             }}">
-            <label class="autodiscover-label">
+            <label>
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.subbutton ?? false}"
@@ -2244,10 +2368,10 @@ class BubbleRoomEditor extends r {
   
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
-            <button class="reset-button" @click="${this._resetSubButtonConfig}">🔄 Reset Sub-buttons</button>
+            <button class="reset-button" @click="${this._resetSubButtonConfig}">🧹 Reset Sub-buttons</button>
           </div>
         </div>
-      </div>
+      </ha-expansion-panel>
     `;
   }
 
@@ -2272,16 +2396,16 @@ class BubbleRoomEditor extends r {
       { key: "entities5", label: "Entity 5" },
     ];
     return x`
-      <div class="mushroom-panel">
-        <div class="glass-header">🍄 Mushroom Entities</div>
-        <div class="glass-content">
+      <ha-expansion-panel class="glass-panel mushroom-panel">
+        <div slot="header" class="glass-header mushroom-header">🍄 Mushroom Entities</div>
+        <div class="glass-content mushroom-content">
   
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.mushroom ?? false;
               this._toggleAutoDiscoverySection('mushroom', !curr);
             }}">
-            <label class="autodiscover-label">
+            <label>
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.mushroom ?? false}"
@@ -2307,7 +2431,6 @@ class BubbleRoomEditor extends r {
                     <label>Icon:</label>
                     ${this._renderIconInput("Icon", entity.key)}
                   </div>
-                  <!-- Se vorrai aggiungere tap/hold in futuro, qui puoi -->
                 </div>
               </div>
             `;
@@ -2315,10 +2438,10 @@ class BubbleRoomEditor extends r {
   
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
-            <button class="reset-button" @click="${this._resetMushroomEntitiesConfig}">🔄 Reset Mushroom Entities</button>
+            <button class="reset-button" @click="${this._resetMushroomEntitiesConfig}">🧹 Reset Mushroom Entities</button>
           </div>
         </div>
-      </div>
+      </ha-expansion-panel>
     `;
   }
 
@@ -2334,16 +2457,16 @@ class BubbleRoomEditor extends r {
   }
   _renderCameraPanel() {
     return x`
-      <div class="camera-panel">
-        <div class="glass-header">📷 Camera</div>
-        <div class="glass-content">
+      <ha-expansion-panel class="glass-panel camera-panel">
+        <div slot="header" class="glass-header camera-header">📷 Camera</div>
+        <div class="glass-content camera-content">
   
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.camera ?? false;
               this._toggleAutoDiscoverySection('camera', !curr);
             }}">
-            <label class="autodiscover-label">
+            <label>
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.camera ?? false}"
@@ -2362,16 +2485,15 @@ class BubbleRoomEditor extends r {
             ${this._renderIconInput("Camera Icon", "camera")}
           </div>
   
-          <!-- (Se vuoi tap/hold in futuro, aggiungi qui _renderTapHoldAction come nei subbutton) -->
-  
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
-            <button class="reset-button" @click="${this._resetCameraConfig}">🔄 Reset Camera</button>
+            <button class="reset-button" @click="${this._resetCameraConfig}">🧹 Reset Camera</button>
           </div>
         </div>
-      </div>
+      </ha-expansion-panel>
     `;
   }
+
 
 
   _resetCameraConfig() {
@@ -2383,16 +2505,16 @@ class BubbleRoomEditor extends r {
   }
   _renderClimatePanel() {
     return x`
-      <div class="climate-panel">
-        <div class="glass-header">🌡️ Climate</div>
-        <div class="glass-content">
+      <ha-expansion-panel class="glass-panel climate-panel">
+        <div slot="header" class="glass-header climate-header">🌡️ Climate</div>
+        <div class="glass-content climate-content">
   
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.climate ?? false;
               this._toggleAutoDiscoverySection('climate', !curr);
             }}">
-            <label class="autodiscover-label">
+            <label>
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.climate ?? false}"
@@ -2413,12 +2535,13 @@ class BubbleRoomEditor extends r {
   
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
-            <button class="reset-button" @click="${this._resetClimateConfig}">🔄 Reset Climate</button>
+            <button class="reset-button" @click="${this._resetClimateConfig}">🧹 Reset Climate</button>
           </div>
         </div>
-      </div>
+      </ha-expansion-panel>
     `;
   }
+
 
   _resetClimateConfig() {
     const entities = { ...this._config.entities };
@@ -2430,16 +2553,16 @@ class BubbleRoomEditor extends r {
   
   _renderSensorPanel() {
     return x`
-      <div class="sensor-panel">
-        <div class="glass-header">🧭 Sensor</div>
-        <div class="glass-content">
+      <ha-expansion-panel class="glass-panel sensor-panel">
+        <div slot="header" class="glass-header sensor-header">🧭 Sensor</div>
+        <div class="glass-content sensor-content">
   
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.sensor ?? false;
               this._toggleAutoDiscoverySection('sensor', !curr);
             }}">
-            <label class="autodiscover-label">
+            <label>
               <input
                 type="checkbox"
                 .checked="${this._config.auto_discovery_sections?.sensor ?? false}"
@@ -2455,7 +2578,7 @@ class BubbleRoomEditor extends r {
             const sensor = this._config.entities?.[key] || {};
             return x`
               <div class="sensor-collapsible glass-sensor">
-                <div class="glass-mini-header">${`Sensor ${i + 1}`}</div>
+                <div class="glass-mini-header">${`Sensor ${i + 1}`.toUpperCase()}</div>
                 <div class="glass-mini-content">
                   <div class="input-group">
                     <label>Tipo Sensore:</label>
@@ -2505,14 +2628,13 @@ class BubbleRoomEditor extends r {
   
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
-            <button class="reset-button" @click="${this._resetSensorConfig}">
-              🔄 Reset Sensors
-            </button>
+            <button class="reset-button" @click="${this._resetSensorConfig}">🧹 Reset Sensors</button>
           </div>
         </div>
-      </div>
+      </ha-expansion-panel>
     `;
   }
+
 
   _resetSensorConfig() {
     const entities = { ...this._config.entities };
@@ -2525,9 +2647,9 @@ class BubbleRoomEditor extends r {
   }
   _renderColorPanel() {
     return x`
-      <div class="colors-panel">
-        <div class="glass-header">🎨 Colors</div>
-        <div class="glass-content">
+      <ha-expansion-panel class="glass-panel colors-panel">
+        <div slot="header" class="glass-header colors-header">🎨 Colors</div>
+        <div class="glass-content colors-content">
   
           <div class="color-section">
             <div class="color-subtitle">Room</div>
@@ -2574,16 +2696,13 @@ class BubbleRoomEditor extends r {
           </div>
   
           <div style="margin-top:1.5em; text-align:center;">
-            <button class="reset-button" @click="${this._resetColorConfig}">
-              🔄 Reset Colors
-            </button>
+            <button class="reset-button" @click="${this._resetColorConfig}">🧹 Reset Colors</button>
           </div>
         </div>
-      </div>
+      </ha-expansion-panel>
     `;
   }
-
-
+  
 
   _resetColorsConfig() {
     this._config = {
