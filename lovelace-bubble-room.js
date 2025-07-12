@@ -1951,117 +1951,105 @@ class BubbleRoomEditor extends r {
 
   _renderRoomPanel() {
     return x`
-      <ha-expansion-panel
-        class="glass-panel room-panel"
-        .expanded="${this._expandedPanel === 'room'}"
-        @expanded-changed="${e => this._onPanelExpanded('room', e)}" >
-        <div slot="header" class="glass-header room-header">🛋️ Room Settings</div>
-        <div class="glass-content room-content">
+      <!-- AUTO-SCOPERTA PRESENCE FUORI DA TUTTO -->
+      <div class="autodiscover-box" style="margin-bottom:18px;">
+        <label style="cursor:pointer; font-size:1.09em;">
+          <input
+            type="checkbox"
+            .checked="${this._config.auto_discovery_sections?.room_presence ?? false}"
+            @change="${e => this._toggleAutoDiscoverySection('room_presence', e.target.checked)}"
+            @click="${e => e.stopPropagation()}"
+          />
+          <span>Abilita auto-scoperta Presence</span>
+        </label>
+      </div>
   
-          <!-- UNICA MINI-PILL che contiene tutti gli elementi -->
-          <div class="mini-pill glass-pill expanded">
-            <div class="mini-pill-header">
-              <span>⚙️  Room Settings</span>
+      <div class="glass-content room-content">
+  
+        <!-- MINI-PILL "Room": nome stanza e area sulla stessa riga -->
+        <div class="mini-pill glass-pill expanded" style="margin-bottom:18px;">
+          <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Room</div>
+          <div class="mini-pill-content">
+            <div style="display:flex; gap:18px; align-items:flex-end;">
+              <div style="flex:1;">
+                <label>Room name:</label>
+                <input type="text" .value="${this._config.name || ''}" @input="${this._updateName}" />
+              </div>
+              <div style="flex:1;">
+                <label>Area:</label>
+                <ha-area-picker
+                  .hass="${this._hass}"
+                  .value="${this._config.area || ''}"
+                  @value-changed="${e => {
+                    const newArea = e.detail.value;
+                    const autoDiscovery = {
+                      room_presence: true,
+                      subbutton: true,
+                      mushroom: true,
+                      camera: true,
+                      climate: true,
+                      sensor: true
+                    };
+                    this._config = {
+                      ...this._config,
+                      area: newArea,
+                      auto_discovery_sections: autoDiscovery
+                    };
+                    this.requestUpdate();
+                    this._fireConfigChanged();
+                  }}">
+                </ha-area-picker>
+              </div>
             </div>
-            <div class="mini-pill-content">
-              
-              <!-- Auto-scoperta -->
-              <div class="input-group">
-                <label>
-                  <input
-                    type="checkbox"
-                    .checked="${this._config.auto_discovery_sections?.room_presence ?? false}"
-                    @change="${e => this._toggleAutoDiscoverySection('room_presence', e.target.checked)}"
-                    @click="${e => e.stopPropagation()}"
-                  />
-                  <span>Abilita auto-scoperta Presence</span>
-                </label>
-              </div>
-              
-              <div class="glass-content room-content">
+          </div>
+        </div>
   
-              <!-- MINI-PILL "Room": nome stanza e area -->
-              <div class="mini-pill-content">
-                <div style="display:flex; gap:18px; align-items:flex-end;">
-                  <div style="flex:1;">
-                    <label>Room name:</label>
-                    <input type="text" .value="${this._config.name || ''}" @input="${this._updateName}" />
-                  </div>
-                  <div style="flex:1;">
-                    <label>Area:</label>
-                    <ha-area-picker
-                      .hass="${this._hass}"
-                      .value="${this._config.area || ''}"
-                      @value-changed="${e => {
-                        const newArea = e.detail.value;
-                        const autoDiscovery = {
-                          room_presence: true,
-                          subbutton: true,
-                          mushroom: true,
-                          camera: true,
-                          climate: true,
-                          sensor: true
-                        };
-                        this._config = {
-                          ...this._config,
-                          area: newArea,
-                          auto_discovery_sections: autoDiscovery
-                        };
-                        this.requestUpdate();
-                        this._fireConfigChanged();
-                      }}">
-                    </ha-area-picker>
-                  </div>
-                </div>
+        <!-- MINI-PILL "Icona": icona + presence + tap/hold -->
+        <div class="mini-pill glass-pill expanded" style="margin-bottom:12px;">
+          <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Icona</div>
+          <div class="mini-pill-content">
+            <!-- PRIMA RIGA: icona + presence -->
+            <div style="display: flex; gap: 18px; flex-wrap: wrap;">
+              <div style="flex:1; min-width:170px;">
+                <label>Room Icon:</label>
+                <ha-icon-picker
+                  .hass="${this._hass}"
+                  .value="${this._config.icon || ''}"
+                  allow-custom-icon
+                  @value-changed="${e => {
+                    this._config = { ...this._config, icon: e.detail.value };
+                    this.requestUpdate();
+                    this._fireConfigChanged();
+                  }}">
+                </ha-icon-picker>
               </div>
+              <div style="flex:2; min-width:170px;">
+                <label>Presence (ID):</label>
+                ${this._renderEntityInput("Presence (ID)", "presence", "entity", "room_presence")}
+              </div>
+            </div>
+            <!-- SECONDA RIGA: tap/hold -->
+            <div style="display: flex; gap: 18px; flex-wrap: wrap; margin-top: 18px;">
+              <div style="flex:1; min-width:160px;">
+                <label>Tap:</label>
+                ${this._renderTapHoldAction("tap")}
+              </div>
+              <div style="flex:1; min-width:160px;">
+                <label>Hold:</label>
+                ${this._renderTapHoldAction("hold")}
+              </div>
+            </div>
+          </div>
+        </div>
   
-          
-              <!-- MINI-PILL "Icona": icona + presence + tap/hold -->
-              <div class="mini-pill glass-pill expanded" style="margin-bottom:12px;">
-                <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Icona</div>
-                <div class="mini-pill-content">
-                  <!-- PRIMA RIGA: icona + presence -->
-                  <div style="display: flex; gap: 18px; flex-wrap: wrap;">
-                    <div style="flex:1; min-width:170px;">
-                      <label>Room Icon:</label>
-                      <ha-icon-picker
-                        .hass="${this._hass}"
-                        .value="${this._config.icon || ''}"
-                        allow-custom-icon
-                        @value-changed="${e => {
-                          this._config = { ...this._config, icon: e.detail.value };
-                          this.requestUpdate();
-                          this._fireConfigChanged();
-                        }}">
-                      </ha-icon-picker>
-                    </div>
-                    <div style="flex:2; min-width:170px;">
-                      <label>Presence (ID):</label>
-                      ${this._renderEntityInput("Presence (ID)", "presence", "entity", "room_presence")}
-                    </div>
-                  </div>
-                  <!-- SECONDA RIGA: tap/hold -->
-                  <div style="display: flex; gap: 18px; flex-wrap: wrap;">
-                    <div style="flex:1; min-width:170px;">
-                      <label>Room Icon:</label>
-                      <ha-icon-picker ... />
-                    </div>
-                    <div style="flex:2; min-width:170px;">
-                      <label>Presence (ID):</label>
-                      ${this._renderEntityInput("Presence (ID)", "presence", "entity", "room_presence")}
-                    </div>
-                  </div>
+        <!-- RESET fuori dalle pill -->
+        <div style="margin-top:1.2em; text-align:center;">
+          <button class="reset-button" @click="${this._resetRoomConfig}">🧹 Reset Room Settings</button>
+        </div>
+      </div>
+    `;
+  }
 
-                </div>
-              </div>
-        
-              <!-- RESET fuori dalle pill -->
-              <div style="margin-top:1.2em; text-align:center;">
-                <button class="reset-button" @click="${this._resetRoomConfig}">🧹 Reset Room Settings</button>
-              </div>
-            </div>
-        `;
-        }
 
 
   _resetRoomConfig() {
