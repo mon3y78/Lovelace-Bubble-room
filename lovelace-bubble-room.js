@@ -2176,15 +2176,13 @@ class BubbleRoomEditor extends r {
               accent,
               onToggle: () => this._toggleSubButtonExpand(i),
               content: x`
-                <!-- Entity box -->
-                <div class="input-group" style="margin-bottom:12px;">
-                  <label>Entity:</label>
-                  ${this._renderEntityInput(key, "entity", "subbutton")}
-                </div>
-                <!-- Icon box -->
-                <div class="input-group" style="margin-bottom:18px;">
-                  <label>Icon:</label>
-                  ${this._renderIconInput("Icon", key)}
+                <div style="display: flex; gap: 18px; margin-bottom: 18px;">
+                  <div class="input-group" style="flex:1; margin-bottom:0;">
+                    ${this._renderEntityInput(key, "entity", "subbutton")}
+                  </div>
+                  <div class="input-group" style="flex:1; margin-bottom:0;">
+                    ${this._renderIconInput("Icon", key)}
+                  </div>
                 </div>
                 <!-- Function label -->
                 <div style="margin-bottom:6px;">
@@ -2272,20 +2270,25 @@ class BubbleRoomEditor extends r {
               accent,
               onToggle: () => this._toggleMushroomEntityExpand(i),
               content: x`
-                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:8px;">
-                  <div style="flex:1;">
-                    <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0; margin-bottom:2px;">Entity:</span>
-                  </div>
-                  <div style="flex:1; text-align:right;">
-                    <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0; margin-bottom:2px;">Icon:</span>
-                  </div>
-                </div>
-                <div style="display:flex; gap:22px; margin-bottom:8px;">
-                  <div style="flex:1;">
+                <div style="display: flex; gap: 18px; margin-bottom: 18px;">
+                  <div class="input-group" style="flex:1; margin-bottom:0;">
+                    <label>Entity:</label>
                     ${this._renderEntityInput(entity.key, "entity", "mushroom")}
                   </div>
-                  <div style="flex:1;">
-                    ${this._renderIconInput(entity.key)}
+                  <div class="input-group" style="flex:1; margin-bottom:0;">
+                    <label>Icon:</label>
+                    ${this._renderIconInput("Icon", entity.key)}
+                  </div>
+                </div>
+                <div style="margin-bottom:6px;">
+                  <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0;">Function:</span>
+                </div>
+                <div style="display: flex; gap:18px; margin-top:18px;">
+                  <div style="flex:1; min-width:160px;">
+                    ${this._renderTapHoldAction("tap", this._config.entities?.[entity.key], this._updateActionFieldGeneric(entity.key))}
+                  </div>
+                  <div style="flex:1; min-width:160px;">
+                    ${this._renderTapHoldAction("hold", this._config.entities?.[entity.key], this._updateActionFieldGeneric(entity.key))}
                   </div>
                 </div>
               `
@@ -2326,8 +2329,8 @@ class BubbleRoomEditor extends r {
   _renderCameraPanel() {
     return x`
       <ha-expansion-panel
-        class = "glass-panel camera-panel"
-        .expanded = "${this._expandedPanel === 'camera'}"
+        class="glass-panel camera-panel"
+        .expanded="${this._expandedPanel === 'camera'}"
         @expanded-changed="${e => this._onPanelExpanded('camera', e)}">
         <div slot="header" class="glass-header camera-header">📷 Camera</div>
         <div class="glass-content camera-content">
@@ -2352,11 +2355,13 @@ class BubbleRoomEditor extends r {
               Entity & Icona
             </div>
             <div class="mini-pill-content">
-              <div class="input-group">
-                <label>Camera (ID):</label>
-                ${this._renderEntityInput("Camera (ID)", "camera", 'entity', 'camera')}
-                <label style="margin-left:20px;">Icon:</label>
-                ${this._renderIconInput("Camera Icon", "camera")}
+              <div style="display: flex; gap: 18px; margin-bottom: 18px;">
+                <div class="input-group" style="flex:1; margin-bottom:0;">
+                  ${this._renderEntityInput("Camera (ID)", "camera", 'entity', 'camera')}
+                </div>
+                <div class="input-group" style="flex:1; margin-bottom:0;">
+                  ${this._renderIconInput("Camera Icon", "camera")}
+                </div>
               </div>
             </div>
           </div>
@@ -2368,6 +2373,7 @@ class BubbleRoomEditor extends r {
       </ha-expansion-panel>
     `;
   }
+  
   
 
 
@@ -2387,7 +2393,7 @@ class BubbleRoomEditor extends r {
         class="glass-panel climate-panel"
         .expanded="${this._expandedPanel === 'climate'}"
         @expanded-changed="${e => this._onPanelExpanded('climate', e)}" >
-          <div slot="header" class="glass-header  climate-header">🌡️ Climate</div>
+        <div slot="header" class="glass-header climate-header">🌡️ Climate</div>
         <div class="glass-content climate-content">
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
@@ -2411,11 +2417,13 @@ class BubbleRoomEditor extends r {
               Entity & Icona
             </div>
             <div class="mini-pill-content">
-              <div class="input-group">
-                <label>Climate (ID):</label>
-                ${this._renderEntityInput("Climate (ID)", "climate", 'entity', 'climate')}
-                <label style="margin-left:20px;">Icon:</label>
-                ${this._renderIconInput("Climate Icon", "climate")}
+              <div style="display: flex; gap: 18px; margin-bottom: 18px;">
+                <div class="input-group" style="flex:1; margin-bottom:0;">
+                  ${this._renderEntityInput("Climate (ID)", "climate", 'entity', 'climate')}
+                </div>
+                <div class="input-group" style="flex:1; margin-bottom:0;">
+                  ${this._renderIconInput("Climate Icon", "climate")}
+                </div>
               </div>
             </div>
           </div>
@@ -2450,7 +2458,7 @@ class BubbleRoomEditor extends r {
         class="glass-panel sensor-panel"
         .expanded="${this._expandedPanel === 'sensor'}"
         @expanded-changed="${e => this._onPanelExpanded('sensor', e)}" >
-        <div slot="header" class="glass-header  sensor-header">🧭 Sensor</div>
+        <div slot="header" class="glass-header sensor-header">🧭 Sensor</div>
         <div class="glass-content sensor-content">
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
@@ -2479,21 +2487,9 @@ class BubbleRoomEditor extends r {
               accent,
               onToggle: () => this._toggleSensorExpand(i),
               content: x`
-                <!-- RIGA LABELS ESTERNE -->
-                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:8px;">
-                  <div style="flex:2;">
-                    <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0; margin-bottom:2px;">Tipo Sensore</span>
-                  </div>
-                  <div style="flex:2;">
-                    <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0; margin-bottom:2px;">Entity</span>
-                  </div>
-                  <div style="flex:2; text-align:right;">
-                    <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0; margin-bottom:2px;">Icon</span>
-                  </div>
-                </div>
-                <!-- RIGA INPUTS -->
-                <div style="display:flex; gap:18px; margin-bottom:8px;">
-                  <div style="flex:2;">
+                <div style="display: flex; gap: 18px; margin-bottom: 8px;">
+                  <div class="input-group" style="flex:2; margin-bottom:0;">
+                    <label>Tipo Sensore</label>
                     <select
                       style="width:100%;"
                       .value="${sensor.type || ''}"
@@ -2515,17 +2511,12 @@ class BubbleRoomEditor extends r {
                       ].map(t => x`<option value="${t.type}">${t.label}</option>`)}
                     </select>
                   </div>
-                  <div style="flex:2;">
+                  <div class="input-group" style="flex:2; margin-bottom:0;">
+                    <label>Entity</label>
                     ${this._renderEntityInput(key, "entity", "sensor")}
                   </div>
-                  <div style="flex:2;">
-                    ${this._renderIconInput(key)}
-                  </div>
-                </div>
-                <!-- UNITÀ -->
-                ${sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? x`
-                  <div style="margin-top:8px;">
-                    <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0; margin-bottom:2px;">Unità</span>
+                  <div class="input-group" style="flex:1; margin-bottom:0;">
+                    <label>Unità</label>
                     <select
                       style="width:100%;"
                       .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
@@ -2536,7 +2527,7 @@ class BubbleRoomEditor extends r {
                       )}
                     </select>
                   </div>
-                ` : ''}
+                </div>
               `
             });
           })}
@@ -2549,7 +2540,6 @@ class BubbleRoomEditor extends r {
     `;
   }
   
-
   _toggleSensorExpand(i) {
     this._expandedSensors = this._expandedSensors.map((_, idx) => idx === i);
     this.requestUpdate();
@@ -2572,12 +2562,15 @@ class BubbleRoomEditor extends r {
       this._expandedColors = [false, false];
     }
   
+    // Valore larghezza massima per ogni box (puoi regolarlo)
+    const colorBoxStyle = "flex:1 1 0; max-width: 250px; min-width: 0;";
+  
     return x`
       <ha-expansion-panel
         class="glass-panel colors-panel"
         .expanded="${this._expandedPanel === 'colors'}"
         @expanded-changed="${e => this._onPanelExpanded('colors', e)}" >
-        <div slot="header" class="glass-header  colors-header">🎨 Colors</div>
+        <div slot="header" class="glass-header colors-header">🎨 Colors</div>
         <div class="glass-content colors-content">
           <!-- Pillola: Room -->
           ${this._renderExpandablePill({
@@ -2587,43 +2580,43 @@ class BubbleRoomEditor extends r {
             onToggle: () => this._toggleColorExpand(0),
             content: x`
               <div class="input-group color-row">
-                <div style="display: flex; gap:18px; margin-bottom:4px;">
-                  <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Text Active</span></div>
-                  <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Text Inactive</span></div>
+                <div style="display: flex; gap:12px; margin-bottom:4px;">
+                  <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Icon Active</span></div>
+                  <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Icon Inactive</span></div>
                 </div>
-                <div style="display: flex; gap:18px;">
-                  <div style="flex:1;">
+                <div style="display: flex; gap:12px;">
+                  <div style="${colorBoxStyle}">
                     ${this._renderColorField('room', 'text_active')}
                   </div>
-                  <div style="flex:1;">
+                  <div style="${colorBoxStyle}">
                     ${this._renderColorField('room', 'text_inactive')}
                   </div>
                 </div>
               </div>
               <div class="input-group color-row">
-                <div style="display: flex; gap:18px; margin-bottom:4px;">
+                <div style="display: flex; gap:12px; margin-bottom:4px;">
                   <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Background Active</span></div>
                   <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Background Inactive</span></div>
                 </div>
-                <div style="display: flex; gap:18px;">
-                  <div style="flex:1;">
+                <div style="display: flex; gap:12px;">
+                  <div style="${colorBoxStyle}">
                     ${this._renderColorField('room', 'background_active')}
                   </div>
-                  <div style="flex:1;">
+                  <div style="${colorBoxStyle}">
                     ${this._renderColorField('room', 'background_inactive')}
                   </div>
                 </div>
               </div>
               <div class="input-group color-row">
-                <div style="display: flex; gap:18px; margin-bottom:4px;">
+                <div style="display: flex; gap:12px; margin-bottom:4px;">
                   <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Icon Active</span></div>
                   <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Icon Inactive</span></div>
                 </div>
-                <div style="display: flex; gap:18px;">
-                  <div style="flex:1;">
+                <div style="display: flex; gap:12px;">
+                  <div style="${colorBoxStyle}">
                     ${this._renderColorField('room', 'icon_active')}
                   </div>
-                  <div style="flex:1;">
+                  <div style="${colorBoxStyle}">
                     ${this._renderColorField('room', 'icon_inactive')}
                   </div>
                 </div>
@@ -2639,43 +2632,43 @@ class BubbleRoomEditor extends r {
             onToggle: () => this._toggleColorExpand(1),
             content: x`
               <div class="input-group color-row">
-                <div style="display: flex; gap:18px; margin-bottom:4px;">
+                <div style="display: flex; gap:12px; margin-bottom:4px;">
                   <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Text Active</span></div>
                   <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Text Inactive</span></div>
                 </div>
-                <div style="display: flex; gap:18px;">
-                  <div style="flex:1;">
+                <div style="display: flex; gap:12px;">
+                  <div style="${colorBoxStyle}">
                     ${this._renderColorField('subbutton', 'text_active')}
                   </div>
-                  <div style="flex:1;">
+                  <div style="${colorBoxStyle}">
                     ${this._renderColorField('subbutton', 'text_inactive')}
                   </div>
                 </div>
               </div>
               <div class="input-group color-row">
-                <div style="display: flex; gap:18px; margin-bottom:4px;">
+                <div style="display: flex; gap:12px; margin-bottom:4px;">
                   <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Background Active</span></div>
                   <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Background Inactive</span></div>
                 </div>
-                <div style="display: flex; gap:18px;">
-                  <div style="flex:1;">
+                <div style="display: flex; gap:12px;">
+                  <div style="${colorBoxStyle}">
                     ${this._renderColorField('subbutton', 'background_active')}
                   </div>
-                  <div style="flex:1;">
+                  <div style="${colorBoxStyle}">
                     ${this._renderColorField('subbutton', 'background_inactive')}
                   </div>
                 </div>
               </div>
               <div class="input-group color-row">
-                <div style="display: flex; gap:18px; margin-bottom:4px;">
+                <div style="display: flex; gap:12px; margin-bottom:4px;">
                   <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Icon On</span></div>
                   <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Icon Off</span></div>
                 </div>
-                <div style="display: flex; gap:18px;">
-                  <div style="flex:1;">
+                <div style="display: flex; gap:12px;">
+                  <div style="${colorBoxStyle}">
                     ${this._renderColorField('subbutton', 'icon_on')}
                   </div>
-                  <div style="flex:1;">
+                  <div style="${colorBoxStyle}">
                     ${this._renderColorField('subbutton', 'icon_off')}
                   </div>
                 </div>
@@ -2691,7 +2684,6 @@ class BubbleRoomEditor extends r {
       </ha-expansion-panel>
     `;
   }
-  
   
   
   _toggleColorExpand(i) {
