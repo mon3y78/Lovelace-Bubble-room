@@ -282,7 +282,7 @@ class BubbleRoom extends LitElement {
   
       .left-content {
         display: grid;
-        grid-template-rows: 1fr 2fr 7fr;
+        grid-template-rows: 0.5fr 2.5fr 7fr;
         height: 100%;
         min-height: 0;
         min-width: 0;
@@ -294,7 +294,7 @@ class BubbleRoom extends LitElement {
         align-items: center;
         padding: 0 6%;
         font-weight: normal;
-        font-size: clamp(1.2em, 4vw, 2.4em);
+        font-size: clamp(2em, 5vw, 3em);
         font-family: "Bebas Neue", "Arial Narrow", sans-serif;
         letter-spacing: 0;
         text-transform: uppercase;
