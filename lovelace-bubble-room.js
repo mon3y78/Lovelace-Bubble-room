@@ -399,7 +399,6 @@ class BubbleRoom extends LitElement {
         margin-left: auto;
         margin-right: auto;
       }
-      }
       .sensor-row {
         border: 2px dashed #1aff00;
         display: flex;
