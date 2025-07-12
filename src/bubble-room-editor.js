@@ -863,16 +863,16 @@ class BubbleRoomEditor extends LitElement {
     return html`
       <div class="input-group">
         <label>${label}:</label>
-        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 7px;">
-          <div style="display: flex; align-items: center; gap: 14px;">
-            <!-- Rettangolo color picker -->
-            <input
-              type="color"
-              style="width: 34px; height: 28px; border-radius: 7px; border: 1.5px solid #fff4; cursor: pointer;"
-              .value="${hex}"
-              @input="${e => this._updateColorField(section, key, e.target.value, a)}"
-            />
-            <!-- Slider trasparenza -->
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 7px;">
+          <!-- Rettangolo colore grande sopra -->
+          <input
+            type="color"
+            style="width: 56px; height: 32px; border-radius: 9px; border: 2px solid #fff4; cursor: pointer; margin-bottom: 7px; box-shadow: 0 2px 8px #0001;"
+            .value="${hex}"
+            @input="${e => this._updateColorField(section, key, e.target.value, a)}"
+          />
+          <!-- Barra trasparenza -->
+          <div style="display: flex; align-items: center; gap: 8px; width: 100%; justify-content: center;">
             <input
               type="range"
               min="0"
