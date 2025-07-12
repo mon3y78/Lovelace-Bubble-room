@@ -1258,9 +1258,11 @@ class BubbleRoomEditor extends LitElement {
   }
   
   _onPanelExpanded(panelName, e) {
+    // Solo se è espanso
     if (e.detail.expanded) {
       this._expandedPanel = panelName;
     } else {
+      // Se lo richiudi, nessuno aperto
       this._expandedPanel = null;
     }
     this.requestUpdate();
@@ -1397,15 +1399,8 @@ class BubbleRoomEditor extends LitElement {
     return html`
       <ha-expansion-panel
         class="glass-panel subbutton-panel"
-        .expanded="${this._expandedPanel === 'subbutton'}"
-      >
-        <div
-          slot="header"
-          class="glass-header subbutton-header"
-          @expanded-changed="${e => this._onPanelExpanded('subbutton', e)}" >
-        >
-          🎛️ Subbuttons
-        </div>
+        @expanded-changed="${e => this._onPanelExpanded('subbutton', e)}">
+        <div slot="header" class="glass-header subbutton-header">🎛️ Subbuttons</div>
         <div class="glass-content subbutton-content">
   
           <!-- Auto-scoperta -->
@@ -1503,14 +1498,8 @@ class BubbleRoomEditor extends LitElement {
       <ha-expansion-panel
         class="glass-panel mushroom-panel"
         .expanded="${this._expandedPanel === 'mushroom'}"
-      >
-        <div
-          slot="header"
-          class="glass-header mushroom-header"
-          @expanded-changed="${e => this._onPanelExpanded('mushroom', e)}" >
-        >
-          🍄 Mushroom Entities
-        </div>
+        @expanded-changed="${e => this._onPanelExpanded('mushroom', e)}" >
+        <div slot="header" class="glass-header mushroom-header">🍄 Mushroom Entities</div>
         <div class="glass-content mushroom-content">
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
@@ -1593,14 +1582,8 @@ class BubbleRoomEditor extends LitElement {
       <ha-expansion-panel
         class="glass-panel camera-panel"
         .expanded="${this._expandedPanel === 'camera'}"
-      >
-        <div
-          slot="header"
-          class="glass-header camera-header"
-          @expanded-changed="${e => this._onPanelExpanded('camera', e)}" >
-        >
-          📷 Camera
-        </div>
+        @expanded - changed = "${e => this._onPanelExpanded('camera', e)}" >
+          <div slot="header" class="glass-header camera-header">📷 Camera</div>
         <div class="glass-content camera-content">
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
@@ -1657,14 +1640,8 @@ class BubbleRoomEditor extends LitElement {
       <ha-expansion-panel
         class="glass-panel climate-panel"
         .expanded="${this._expandedPanel === 'climate'}"
-      >
-        <div
-          slot="header"
-          class="glass-header climate-header"
-          @expanded-changed="${e => this._onPanelExpanded('climate', e)}" >"
-        >
-          🌡️ Climate
-        </div>
+        @expanded-changed="${e => this._onPanelExpanded('climate', e)}" >
+          <div slot="header" class="glass-header  climate-header">🌡️ Climate</div>
         <div class="glass-content climate-content">
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
@@ -1726,14 +1703,8 @@ class BubbleRoomEditor extends LitElement {
       <ha-expansion-panel
         class="glass-panel sensor-panel"
         .expanded="${this._expandedPanel === 'sensor'}"
-      >
-        <div
-          slot="header"
-          class="glass-header sensor-header"
-          @expanded-changed="${e => this._onPanelExpanded('sensor', e)}" >
-        >
-          🧭 Sensor
-        </div>
+        @expanded-changed="${e => this._onPanelExpanded('sensor', e)}" >
+        <div slot="header" class="glass-header  sensor-header">🧭 Sensor</div>
         <div class="glass-content sensor-content">
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
@@ -1859,13 +1830,8 @@ class BubbleRoomEditor extends LitElement {
       <ha-expansion-panel
         class="glass-panel colors-panel"
         .expanded="${this._expandedPanel === 'colors'}"
-      >
-        <div
-          slot="header"
-          class="glass-header colors-header"
-          @expanded-changed="${e => this._onPanelExpanded('colors', e)}" >
-          🎨 Colors
-        </div>
+        @expanded-changed="${e => this._onPanelExpanded('colors', e)}" >
+        <div slot="header" class="glass-header  colors-header">🎨 Colors</div>
         <div class="glass-content colors-content">
           <!-- Pillola: Room -->
           ${this._renderExpandablePill({
