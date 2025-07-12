@@ -2078,8 +2078,9 @@ class BubbleRoomEditor extends r {
   
     return x`
       <ha-expansion-panel
-        class="glass-panel subbutton-panel"
-        @expanded-changed="${e => this._onPanelExpanded('subbutton', e)}">
+        class = "glass-panel subbutton-panel"
+        .expanded = "${this._expandedPanel === 'subbutton'}"
+        @expanded - changed = "${e => this._onPanelExpanded('subbutton', e)}" >
         <div slot="header" class="glass-header subbutton-header">🎛️ Subbuttons</div>
         <div class="glass-content subbutton-content">
   
@@ -2260,10 +2261,10 @@ class BubbleRoomEditor extends r {
   _renderCameraPanel() {
     return x`
       <ha-expansion-panel
-        class="glass-panel camera-panel"
-        .expanded="${this._expandedPanel === 'camera'}"
-        @expanded - changed = "${e => this._onPanelExpanded('camera', e)}" >
-          <div slot="header" class="glass-header camera-header">📷 Camera</div>
+        class = "glass-panel camera-panel"
+        .expanded = "${this._expandedPanel === 'camera'}"
+        @expanded-changed="${e => this._onPanelExpanded('camera', e)}">
+        <div slot="header" class="glass-header camera-header">📷 Camera</div>
         <div class="glass-content camera-content">
           <!-- Auto-scoperta -->
           <div class="autodiscover-box" @click="${() => {
