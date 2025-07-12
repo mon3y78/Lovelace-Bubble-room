@@ -58,9 +58,9 @@ const SENSOR_TYPE_MAP = {
   uv:          { emoji: '🌞', units: ['UV'], label: 'UV Index' },
   noise:       { emoji: '🔊', units: ['dB'], label: 'Noise' },
   pressure:    { emoji: '📈', units: ['hPa'], label: 'Pressure' },
-  voc:         { emoji: '🧪', units: ['ppb'], label: 'VOC' }
+  voc:         { emoji: '🧪', units: ['ppb'], label: 'VOC' },
   consumption: { emoji: '⚡️', units: ['W', 'kWh', 'Wh'], label: 'Consumption' },
-  production: { emoji: '🔆', units: ['W', 'kWh', 'Wh'], label: 'Production' },
+  production: { emoji: '🔆', units: ['W', 'kWh', 'Wh'], label: 'Production' }
 };
 
 
