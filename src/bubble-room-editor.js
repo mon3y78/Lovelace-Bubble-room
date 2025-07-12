@@ -457,9 +457,9 @@ class BubbleRoomEditor extends LitElement {
       /* RESET e AUTODISCOVER: glass pill trasparente */
       .reset-button,
       .autodiscover-box {
-        background: rgba(44,70,100,0.23) !important;
-        border: 1.5px solid rgba(255,255,255,0.13) !important;
-        box-shadow: 0 2px 14px 0 rgba(70,120,220,0.14) !important;
+        border: 2.5px solid #FFD600 !important;
+        box-shadow: 0 2px 24px 0 #FFD60033 !important;
+        background: rgba(255, 214, 0, 0.08) !important;
         border-radius: 24px !important;
         backdrop-filter: blur(7px) saturate(1.2) !important;
         -webkit-backdrop-filter: blur(7px) saturate(1.2) !important;
@@ -1196,9 +1196,12 @@ class BubbleRoomEditor extends LitElement {
   }
 
   
-  _renderTapHoldAction(actionType = "tap") {
-    // actionType = "tap" oppure "hold"
-    const config = actionType === "tap" ? (this._config.tap_action || {}) : (this._config.hold_action || {});
+  _renderTapHoldAction(actionType = "tap", configObj = null, updater = null) {
+    // configObj: oggetto dove c’è tap_action/hold_action, 
+    // updater: funzione per salvare i cambiamenti
+    const config = configObj
+      ? (configObj[`${actionType}_action`] || {})
+      : (actionType === "tap" ? (this._config.tap_action || {}) : (this._config.hold_action || {}));
     const actions = [
       { value: "toggle", label: "🟢 Toggle" },
       { value: "more-info", label: "🔎 More Info" },
@@ -1206,30 +1209,89 @@ class BubbleRoomEditor extends LitElement {
       { value: "call-service", label: "⚙️ Call Service" },
       { value: "none", label: "🚫 Nessuna" }
     ];
-    
+  
     return html`
       <div class="input-group">
         <label style="min-width:50px;">${actionType === "tap" ? "Tap" : "Hold"}:</label>
         <select style="margin-right:16px;" .value="${config.action || 'none'}"
-          @change="${e => (actionType === "tap" ? this._updateTapActionField('action') : this._updateHoldActionField('action'))({ target: { value: e.target.value } })}">
+          @change="${e => 
+            updater
+              ? updater(actionType, 'action', e.target.value)
+              : (actionType === "tap"
+                  ? this._updateTapActionField('action')({ target: { value: e.target.value } })
+                  : this._updateHoldActionField('action')({ target: { value: e.target.value } })
+                )
+          }">
           ${actions.map(a => html`<option value="${a.value}">${a.label}</option>`)}
         </select>
         ${config.action === 'navigate' ? html`
           <label style="margin-left:12px;">Path:</label>
           <input type="text" .value="${config.navigation_path || ''}" style="width:130px;"
-            @input="${actionType === "tap" ? this._updateTapActionField('navigation_path') : this._updateHoldActionField('navigation_path')}" />
+            @input="${e => 
+              updater
+                ? updater(actionType, 'navigation_path', e.target.value)
+                : (actionType === "tap"
+                    ? this._updateTapActionField('navigation_path')(e)
+                    : this._updateHoldActionField('navigation_path')(e)
+                  )
+            }" />
         ` : ''}
         ${config.action === 'call-service' ? html`
           <label style="margin-left:12px;">Service:</label>
           <input type="text" .value="${config.service || ''}" style="width:130px;"
-            @input="${actionType === "tap" ? this._updateTapActionField('service') : this._updateHoldActionField('service')}" />
+            @input="${e => 
+              updater
+                ? updater(actionType, 'service', e.target.value)
+                : (actionType === "tap"
+                    ? this._updateTapActionField('service')(e)
+                    : this._updateHoldActionField('service')(e)
+                  )
+            }" />
           <label style="margin-left:12px;">Data (JSON):</label>
           <input type="text" .value="${config.service_data ? JSON.stringify(config.service_data) : ''}" style="width:120px;"
-            @input="${actionType === "tap" ? this._updateTapActionField('service_data') : this._updateHoldActionField('service_data')}" />
+            @input="${e =>
+              updater
+                ? updater(actionType, 'service_data', e.target.value)
+                : (actionType === "tap"
+                    ? this._updateTapActionField('service_data')(e)
+                    : this._updateHoldActionField('service_data')(e)
+                  )
+            }" />
         ` : ''}
       </div>
     `;
   }
+  _updateActionFieldGeneric(entityKey) {
+    return (actionType, field, value) => {
+      let v = value;
+      if (field === 'service_data') {
+        try {
+          v = JSON.parse(value);
+          this._jsonError = false;
+        } catch (e) {
+          this._jsonError = true;
+          this.requestUpdate();
+          return;
+        }
+      }
+      const entConf = this._config.entities?.[entityKey] || {};
+      const actConf = { ...(entConf[`${actionType}_action`] || {}) };
+      if (actConf[field] === v) return;
+      actConf[field] = v;
+      const entities = {
+        ...this._config.entities,
+        [entityKey]: {
+          ...entConf,
+          [`${actionType}_action`]: actConf
+        }
+      };
+      this._config = { ...this._config, entities };
+      this._jsonError = false;
+      this.requestUpdate();
+      this._fireConfigChanged();
+    };
+  }
+    
 
   _renderExpandablePill({ label, expanded, onToggle, content, accent }) {
     return html`
@@ -1276,9 +1338,11 @@ class BubbleRoomEditor extends LitElement {
         @expanded-changed="${e => this._onPanelExpanded('room', e)}">
         <div slot="header" class="glass-header room-header">🛋️ Room Settings</div>
         <div class="glass-content room-content">
-  
-          <!-- Auto-scoperta fuori dalle pill -->
-          <div class="input-group" style="margin-bottom:18px;">
+          <!-- Auto-scoperta -->
+          <div class="autodiscover-box" @click="${() => {
+              const curr = this._config.auto_discovery_sections?.room_presence ?? false;
+              this._toggleAutoDiscoverySection('room_presence', !curr);
+            }}">
             <label>
               <input
                 type="checkbox"
@@ -1286,7 +1350,7 @@ class BubbleRoomEditor extends LitElement {
                 @change="${e => this._toggleAutoDiscoverySection('room_presence', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>Abilita auto-scoperta Presence</span>
+              <span>🪄 Auto-scoperta attiva</span>
             </label>
           </div>
   
@@ -1399,8 +1463,8 @@ class BubbleRoomEditor extends LitElement {
   
     return html`
       <ha-expansion-panel
-        class = "glass-panel subbutton-panel"
-        .expanded = "${this._expandedPanel === 'subbutton'}"
+        class="glass-panel subbutton-panel"
+        .expanded="${this._expandedPanel === 'subbutton'}"
         @expanded-changed="${e => this._onPanelExpanded('subbutton', e)}">
         <div slot="header" class="glass-header subbutton-header">🎛️ Subbuttons</div>
         <div class="glass-content subbutton-content">
@@ -1453,11 +1517,17 @@ class BubbleRoomEditor extends LitElement {
                 <div style="margin-bottom:6px;">
                   <span style="display:block; font-size:1.13em; font-weight:700; color:#b28fff;">Function:</span>
                 </div>
-                <!-- TAP/HOLD GIUSTI -->
-                ${this._renderSubButtonAction(key)}
+                <!-- TAP/HOLD UNIVERSALI -->
+                <div style="display: flex; gap:18px; margin-top:18px;">
+                  <div style="flex:1; min-width:160px;">
+                    ${this._renderTapHoldAction("tap", this._config.entities?.[key], this._updateActionFieldGeneric(key))}
+                  </div>
+                  <div style="flex:1; min-width:160px;">
+                    ${this._renderTapHoldAction("hold", this._config.entities?.[key], this._updateActionFieldGeneric(key))}
+                  </div>
+                </div>
               `
             });
-            
           })}
   
           <!-- Reset -->
