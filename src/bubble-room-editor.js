@@ -1257,14 +1257,22 @@ class BubbleRoomEditor extends LitElement {
     this.requestUpdate();
   }
   
+  _onPanelExpanded(panelName, e) {
+    if (e.detail.expanded) {
+      this._expandedPanel = panelName;
+    } else {
+      this._expandedPanel = null;
+    }
+    this.requestUpdate();
+  }
+
 
   _renderRoomPanel() {
     return html`
       <ha-expansion-panel
         class="glass-panel room-panel"
         .expanded="${this._expandedPanel === 'room'}"
-        @click="${() => this._toggleMainPanel('room')}"
-      >
+        @expanded-changed="${e => this._onPanelExpanded('room', e)}" >
         <div slot="header" class="glass-header room-header">🛋️ Room Settings</div>
         <div class="glass-content room-content">
   
@@ -1394,7 +1402,7 @@ class BubbleRoomEditor extends LitElement {
         <div
           slot="header"
           class="glass-header subbutton-header"
-          @click="${() => this._toggleMainPanel('subbutton')}"
+          @expanded-changed="${e => this._onPanelExpanded('subbutton', e)}" >
         >
           🎛️ Subbuttons
         </div>
@@ -1499,7 +1507,7 @@ class BubbleRoomEditor extends LitElement {
         <div
           slot="header"
           class="glass-header mushroom-header"
-          @click="${() => this._toggleMainPanel('mushroom')}"
+          @expanded-changed="${e => this._onPanelExpanded('mushroom', e)}" >
         >
           🍄 Mushroom Entities
         </div>
@@ -1589,7 +1597,7 @@ class BubbleRoomEditor extends LitElement {
         <div
           slot="header"
           class="glass-header camera-header"
-          @click="${() => this._toggleMainPanel('camera')}"
+          @expanded-changed="${e => this._onPanelExpanded('camera', e)}" >
         >
           📷 Camera
         </div>
@@ -1653,7 +1661,7 @@ class BubbleRoomEditor extends LitElement {
         <div
           slot="header"
           class="glass-header climate-header"
-          @click="${() => this._toggleMainPanel('climate')}"
+          @expanded-changed="${e => this._onPanelExpanded('climate', e)}" >"
         >
           🌡️ Climate
         </div>
@@ -1722,7 +1730,7 @@ class BubbleRoomEditor extends LitElement {
         <div
           slot="header"
           class="glass-header sensor-header"
-          @click="${() => this._toggleMainPanel('sensor')}"
+          @expanded-changed="${e => this._onPanelExpanded('sensor', e)}" >
         >
           🧭 Sensor
         </div>
@@ -1855,8 +1863,7 @@ class BubbleRoomEditor extends LitElement {
         <div
           slot="header"
           class="glass-header colors-header"
-          @click="${() => this._toggleMainPanel('colors')}"
-        >
+          @expanded-changed="${e => this._onPanelExpanded('colors', e)}" >
           🎨 Colors
         </div>
         <div class="glass-content colors-content">
