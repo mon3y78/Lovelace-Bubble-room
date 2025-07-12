@@ -425,6 +425,8 @@ class BubbleRoomEditor extends LitElement {
       /* ==== TUTTI I BOX INTERNI: effetto glass trasparente ==== */
       .input-group,
       .color-row {
+        content: none !important;
+        display: none !important;
         background: rgba(44,70,100,0.23);
         border: 1.5px solid rgba(255,255,255,0.13);
         box-shadow: 0 2px 14px 0 rgba(70,120,220,0.10);
