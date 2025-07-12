@@ -944,7 +944,9 @@ class BubbleRoomEditor extends r {
     config.colors.subbutton.icon_on = config.colors.subbutton.icon_on || 'rgba(255, 255, 0, 1)';
     config.colors.subbutton.icon_off = config.colors.subbutton.icon_off || 'rgba(102, 102, 102, 1)';
 
+    if (!config.tap_action) config.tap_action = { action: 'toggle', navigation_path: '' };
     if (!config.hold_action) config.hold_action = { action: 'more-info', navigation_path: '' };
+
     this._config = config;
   }
 
@@ -2605,11 +2607,8 @@ class BubbleRoomEditor extends r {
   
           <!-- 2 rows, 3 sensors per row -->
           <div style="display:flex; flex-direction:column; gap:12px;">
-            <div style="display:flex; gap:12px;">
-              ${sensorKeys.slice(0, 3).map((key, i) => this._renderSingleSensorPill(key, `SENSOR ${i+1}`, i))}
-            </div>
-            <div style="display:flex; gap:12px;">
-              ${sensorKeys.slice(3, 6).map((key, i) => this._renderSingleSensorPill(key, `SENSOR ${i+4}`, i+3))}
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              ${sensorKeys.map((key, i) => this._renderSingleSensorPill(key, `SENSOR ${i+1}`, i))}
             </div>
           </div>
   
