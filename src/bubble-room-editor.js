@@ -868,10 +868,16 @@ class BubbleRoomEditor extends LitElement {
           <input type="range" min="0" max="1" step="0.01" .value="${a}" @input="${e => this._updateColorField(section, key, hex, e.target.value)}" />
           <span>${Math.round(a * 100)}%</span>
         </div>
-        <input type="text" .value="${rgba}" @input="${e => this._updateNestedColorDirect(section, key, e.target.value)}" />
+        <input
+          type="text"
+          style="width: 110px; max-width: 100%; margin-top: 5px; font-size: 1em;"
+          .value="${rgba}"
+          @input="${e => this._updateNestedColorDirect(section, key, e.target.value)}"
+        />
       </div>
     `;
   }
+  
 
   _toHex(color) {
     const ctx = document.createElement("canvas").getContext("2d");
