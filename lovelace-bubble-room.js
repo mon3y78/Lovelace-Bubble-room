@@ -286,16 +286,7 @@ class BubbleRoom extends LitElement {
         height: 100%;
         min-height: 0;
         min-width: 0;
-      }
-  
-      .sensor-row {
-        display: flex;
-        align-items: center;
-        padding: 0 6%;
-        font-size: 0.85em;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        border: 2px solid orange !important;
       }
   
       .name-area {
@@ -394,8 +385,10 @@ class BubbleRoom extends LitElement {
         border: 2px dashed #ff0d00;
         display: flex;
         flex-direction: column;
-        width: 100%;           /* <-- si adatta al contenitore */
+        width: 100%;
         box-sizing: border-box;
+        /* padding: 0;  // metti 0 se vuoi aderente */
+        /* margin: 0;   // idem */
       }
       .sensor-row {
         border: 2px dashed #1aff00;
@@ -403,7 +396,10 @@ class BubbleRoom extends LitElement {
         flex-direction: row;
         align-items: center;
         width: 100%;
+        box-sizing: border-box;
         min-height: 32px;
+        /* padding: 0; */
+        /* margin: 0; */
       }
       .sensor {
         border: 2px dashed #0008ff;
@@ -411,7 +407,8 @@ class BubbleRoom extends LitElement {
         text-align: center;
         padding: 0 2px;
         min-width: 0;
-      }
+        box-sizing: border-box;
+}
 
       @media (max-width: 480px) {
         .bubble-icon-container { width: 70%; }
