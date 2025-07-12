@@ -863,20 +863,39 @@ class BubbleRoomEditor extends LitElement {
     return html`
       <div class="input-group">
         <label>${label}:</label>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <input type="color" .value="${hex}" @input="${e => this._updateColorField(section, key, e.target.value, a)}" />
-          <input type="range" min="0" max="1" step="0.01" .value="${a}" @input="${e => this._updateColorField(section, key, hex, e.target.value)}" />
-          <span>${Math.round(a * 100)}%</span>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 7px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <!-- Rettangolo color picker -->
+            <input
+              type="color"
+              style="width: 34px; height: 28px; border-radius: 7px; border: 1.5px solid #fff4; cursor: pointer;"
+              .value="${hex}"
+              @input="${e => this._updateColorField(section, key, e.target.value, a)}"
+            />
+            <!-- Slider trasparenza -->
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              .value="${a}"
+              style="width: 90px; max-width: 100%; vertical-align: middle;"
+              @input="${e => this._updateColorField(section, key, hex, e.target.value)}"
+            />
+            <span style="width:42px;">${Math.round(a * 100)}%</span>
+          </div>
+          <!-- Input RGBA compatto -->
+          <input
+            type="text"
+            style="width: 110px; max-width: 100%; margin-top: 2px; font-size: 1em;"
+            .value="${rgba}"
+            @input="${e => this._updateNestedColorDirect(section, key, e.target.value)}"
+          />
         </div>
-        <input
-          type="text"
-          style="width: 110px; max-width: 100%; margin-top: 5px; font-size: 1em;"
-          .value="${rgba}"
-          @input="${e => this._updateNestedColorDirect(section, key, e.target.value)}"
-        />
       </div>
     `;
   }
+  
   
 
   _toHex(color) {
