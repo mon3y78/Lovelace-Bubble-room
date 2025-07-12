@@ -391,13 +391,11 @@ class BubbleRoom extends LitElement {
         transform-origin: center center;
       }
       .sensor-rows {
-        width: fit-content;
         border: 2px dashed #ff0d00;
         display: flex;
         flex-direction: column;
-        margin-bottom: auto; /* opzionale, per un minimo di spazio */
-        margin-left: auto;
-        margin-right: auto;
+        width: 100%;           /* <-- si adatta al contenitore */
+        box-sizing: border-box;
       }
       .sensor-row {
         border: 2px dashed #1aff00;
@@ -405,13 +403,11 @@ class BubbleRoom extends LitElement {
         flex-direction: row;
         align-items: center;
         width: 100%;
-        min-width: 0;
-        box-sizing: border-box;
+        min-height: 32px;
       }
-
       .sensor {
         border: 2px dashed #0008ff;
-        flex: 1;
+        flex: 1 1 0;
         text-align: center;
         padding: 0 2px;
         min-width: 0;
