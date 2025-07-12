@@ -286,6 +286,7 @@ class BubbleRoom extends LitElement {
         height: 100%;
         min-height: 0;
         min-width: 0;
+        border: 2px solid orange !important;
       }
   
       .sensor-row {
