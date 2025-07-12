@@ -390,7 +390,25 @@ class BubbleRoom extends LitElement {
         transform: scale(1.4);
         transform-origin: center center;
       }
-  
+      .sensor-rows {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 4px; /* opzionale, per un minimo di spazio */
+      }
+      .sensor-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        min-height: 32px;
+      }
+      .sensor {
+        flex: 1;
+        text-align: center;
+        padding: 0 2px;
+        min-width: 0;
+      }
+
       @media (max-width: 480px) {
         .bubble-icon-container { width: 70%; }
       }
@@ -467,9 +485,20 @@ class BubbleRoom extends LitElement {
           <!-- Colonna sinistra -->
           <div class="left-content">
             <!-- Riga sensori -->
-            <div class="sensor-row">
-              ${sensorStrings.length > 0 ? html`${sensorStrings.join(' ')}` : ''}
+            <div class="sensor-rows">
+              <div class="sensor-row">
+                ${this._renderSensor(1)}
+                ${this._renderSensor(2)}
+                ${this._renderSensor(3)}
+              </div>
+              <div class="sensor-row">
+                ${this._renderSensor(4)}
+                ${this._renderSensor(5)}
+                ${this._renderSensor(6)}
+              </div>
             </div>
+
+
           
             <!-- Riga nome stanza -->
             <div class="name-area" style="color:${nameColor};">
@@ -606,6 +635,21 @@ class BubbleRoom extends LitElement {
     `;
   }
 
+  _renderSensor(n) {
+    const sensorKey = `sensor${n}`;
+    const sensor = this.config.entities?.[sensorKey];
+    if (!sensor || !sensor.type) return html`<div class="sensor"></div>`;
+    const entityId = sensor.entity;
+    let state = entityId ? (this.hass.states[entityId]?.state ?? 'N/A') : '?';
+    if (!isNaN(parseFloat(state))) state = Math.floor(parseFloat(state)).toString();
+    const { emoji, unit } = this._getSensorEmojiAndUnit(sensor.type, sensor.unit);
+    return html`
+      <div class="sensor">
+        ${emoji} ${state}${unit}
+      </div>
+    `;
+  }
+  
   // ... (resta invariato: funzioni hold/tap, getIcon, _getDeviceClassIcon, ecc.)
 
   _startHold(e, item) { e.stopPropagation(); this._holdTriggered = false; this._holdTimeout = setTimeout(() => { this._holdTriggered = true; this._handleHoldAction(item); }, 500);}

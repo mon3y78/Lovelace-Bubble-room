@@ -48,18 +48,21 @@ const DOMAIN_ICON_MAP = {
 };
 
 const SENSOR_TYPE_MAP = {
-  temperature: { emoji: '🌡️', units: ['°C', '°F'] },
-  humidity:    { emoji: '💦', units: ['%'] },
-  co2:         { emoji: '🟢', units: ['ppm'] },
-  illuminance: { emoji: '☀️', units: ['lx'] },
-  pm1:         { emoji: '🟤', units: ['µg/m³'] },
-  pm25:        { emoji: '⚫️', units: ['µg/m³'] },
-  pm10:        { emoji: '⚪️', units: ['µg/m³'] },
-  uv:          { emoji: '🌞', units: ['UV'] },
-  noise:       { emoji: '🔊', units: ['dB'] },
-  pressure:    { emoji: '📈', units: ['hPa'] },
-  voc:         { emoji: '🧪', units: ['ppb'] }
+  temperature: { emoji: '🌡️', units: ['°C', '°F'], label: 'Temperature' },
+  humidity:    { emoji: '💦', units: ['%'], label: 'Humidity' },
+  co2:         { emoji: '🟢', units: ['ppm'], label: 'CO₂' },
+  illuminance: { emoji: '☀️', units: ['lx'], label: 'Illuminance' },
+  pm1:         { emoji: '🟤', units: ['µg/m³'], label: 'PM1' },
+  pm25:        { emoji: '⚫️', units: ['µg/m³'], label: 'PM2.5' },
+  pm10:        { emoji: '⚪️', units: ['µg/m³'], label: 'PM10' },
+  uv:          { emoji: '🌞', units: ['UV'], label: 'UV Index' },
+  noise:       { emoji: '🔊', units: ['dB'], label: 'Noise' },
+  pressure:    { emoji: '📈', units: ['hPa'], label: 'Pressure' },
+  voc:         { emoji: '🧪', units: ['ppb'], label: 'VOC' }
+  consumption: { emoji: '⚡️', units: ['W', 'kWh', 'Wh'], label: 'Consumption' },
+  production: { emoji: '🔆', units: ['W', 'kWh', 'Wh'], label: 'Production' },
 };
+
 
 
 class BubbleRoomEditor extends LitElement {
@@ -776,49 +779,58 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
 
-  _renderSingleSensorPanel(key, label) {
+  _renderSingleSensorPill(key, label, index) {
     const sensor = this._config.entities?.[key] || {};
-    const panelId = `${key}Panel`;
-    return html`
-      <ha-expansion-panel id="${panelId}">
-        <div slot="header" @click="${() => this._togglePanel(panelId)}">${label}</div>
-        <div class="section-content">
-          <div class="input-group">
-            <label>Tipo Sensore:</label>
-            <select .value="${sensor.type || ''}" @change="${e => this._updateSensor(parseInt(key.replace('sensor', '')) - 1, 'type', e.target.value)}">
-              <option value="">-- nessuno --</option>
-              ${[
-                { type: 'temperature', label: '🌡️ Temperatura' },
-                { type: 'humidity', label: '💦 Umidità' },
-                { type: 'co2', label: '🟢 CO₂' },
-                { type: 'illuminance', label: '☀️ Luminosità' },
-                { type: 'pm1', label: '🟤 PM1' },
-                { type: 'pm25', label: '⚫️ PM2.5' },
-                { type: 'pm10', label: '⚪️ PM10' },
-                { type: 'uv', label: '🌞 UV Index' },
-                { type: 'noise', label: '🔊 Rumore' },
-                { type: 'pressure', label: '📈 Pressione' },
-                { type: 'voc', label: '🧪 VOC' },
-              ].map(t => html`<option value="${t.type}">${t.label}</option>`)}
+    const expanded = this._expandedSensors[index];
+    const accent = "#8cff8a";
+    // Genera tutte le opzioni dai tipi presenti in SENSOR_TYPE_MAP
+    const sensorTypeOptions = Object.entries(SENSOR_TYPE_MAP).map(
+      ([type, def]) => html`<option value="${type}">${def.emoji} ${def.label}</option>`
+    );
+    // Unità disponibili
+    const units = sensor.type && SENSOR_TYPE_MAP[sensor.type]?.units
+      ? SENSOR_TYPE_MAP[sensor.type].units
+      : [];
+  
+    return this._renderExpandablePill({
+      label,
+      expanded,
+      accent,
+      onToggle: () => this._toggleSensorExpand(index),
+      content: html`
+        <div style="display: flex; gap: 18px; margin-bottom: 8px;">
+          <div class="input-group" style="flex:2; margin-bottom:0;">
+            <label>Sensor type</label>
+            <select
+              style="width:100%;"
+              .value="${sensor.type || ''}"
+              @change="${e => this._updateSensor(index, 'type', e.target.value)}"
+            >
+              <option value="">-- none --</option>
+              ${sensorTypeOptions}
             </select>
           </div>
-          <div class="input-group">
-            ${this._renderEntityInput("Entity ID", key)}
+          <div class="input-group" style="flex:2; margin-bottom:0;">
+            <label>Entity</label>
+            ${this._renderEntityInput(key, "entity", "sensor")}
           </div>
-          ${sensor.type && (SENSOR_TYPE_MAP[sensor.type]?.units || []).length > 0 ? html`
-            <div class="input-group">
-              <label>Unità:</label>
-              <select
-                .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
-                @change="${e => this._updateSensor(parseInt(key.replace('sensor', '')) - 1, 'unit', e.target.value)}">
-                ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u => html`<option value="${u}">${u}</option>`)}
-              </select>
-            </div>
-          ` : ''}          
+          <div class="input-group" style="flex:1; margin-bottom:0;">
+            <label>Unit</label>
+            <select
+              style="width:100%;"
+              .value="${sensor.unit || (units[0] || '')}"
+              @change="${e => this._updateSensor(index, 'unit', e.target.value)}"
+            >
+              ${units.map(u =>
+                html`<option value="${u}">${u}</option>`
+              )}
+            </select>
+          </div>
         </div>
-      </ha-expansion-panel>
-    `;
+      `
+    });
   }
+  
 
   _updateSensor(index, field, value) {
     const key = `sensor${index + 1}`;
@@ -1792,20 +1804,68 @@ class BubbleRoomEditor extends LitElement {
     this.requestUpdate();
     this._fireConfigChanged();
   }
+  _renderSingleSensorPill(key, label, index) {
+    const sensor = this._config.entities?.[key] || {};
+    const expanded = this._expandedSensors[index];
+    const accent = "#8cff8a";
+    return this._renderExpandablePill({
+      label,
+      expanded,
+      accent,
+      onToggle: () => this._toggleSensorExpand(index),
+      content: html`
+        <div style="display: flex; gap: 18px; margin-bottom: 8px;">
+          <div class="input-group" style="flex:2; margin-bottom:0;">
+            <label>Sensor Type</label>
+            <select
+              style="width:100%;"
+              .value="${sensor.type || ''}"
+              @change="${e => this._updateSensor(index, 'type', e.target.value)}"
+            >
+              <option value="">-- none --</option>
+              ${Object.entries(SENSOR_TYPE_MAP).map(
+                ([type, { emoji, label }]) =>
+                  html`<option value="${type}">${emoji} ${label}</option>`
+              )}
+            </select>
+          </div>
+          <div class="input-group" style="flex:2; margin-bottom:0;">
+            <label>Entity</label>
+            ${this._renderEntityInput(key, "entity", "sensor")}
+          </div>
+          <div class="input-group" style="flex:1; margin-bottom:0;">
+            <label>Unit</label>
+            <select
+              style="width:100%;"
+              .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
+              @change="${e => this._updateSensor(index, 'unit', e.target.value)}"
+            >
+              ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u =>
+                html`<option value="${u}">${u}</option>`
+              )}
+            </select>
+          </div>
+        </div>
+      `
+    });
+  }
+  
   
   _renderSensorPanel() {
-    // Difensivo: assicura che l’array sia sempre lungo 4
-    if (!this._expandedSensors || this._expandedSensors.length !== 4) {
-      this._expandedSensors = [false, false, false, false];
+    // Defensive: always length 6 for 6 sensors
+    if (!this._expandedSensors || this._expandedSensors.length !== 6) {
+      this._expandedSensors = [false, false, false, false, false, false];
     }
+    const sensorKeys = ['sensor1', 'sensor2', 'sensor3', 'sensor4', 'sensor5', 'sensor6'];
+  
     return html`
       <ha-expansion-panel
         class="glass-panel sensor-panel"
         .expanded="${this._expandedPanel === 'sensor'}"
         @expanded-changed="${e => this._onPanelExpanded('sensor', e)}" >
-        <div slot="header" class="glass-header sensor-header">🧭 Sensor</div>
+        <div slot="header" class="glass-header sensor-header">🧭 Sensors</div>
         <div class="glass-content sensor-content">
-          <!-- Auto-scoperta -->
+          <!-- Auto-discovery -->
           <div class="autodiscover-box" @click="${() => {
               const curr = this._config.auto_discovery_sections?.sensor ?? false;
               this._toggleAutoDiscoverySection('sensor', !curr);
@@ -1817,65 +1877,20 @@ class BubbleRoomEditor extends LitElement {
                 @change="${e => this._toggleAutoDiscoverySection('sensor', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>🪄 Auto-scoperta attiva</span>
+              <span>🪄 Auto-discovery enabled</span>
             </label>
           </div>
   
-          <!-- Pills sensori -->
-          ${['sensor1', 'sensor2', 'sensor3', 'sensor4'].map((key, i) => {
-            const sensor = this._config.entities?.[key] || {};
-            const expanded = this._expandedSensors[i];
-            const accent = "#8cff8a";
-            return this._renderExpandablePill({
-              label: `SENSOR ${i + 1}`,
-              expanded,
-              accent,
-              onToggle: () => this._toggleSensorExpand(i),
-              content: html`
-                <div style="display: flex; gap: 18px; margin-bottom: 8px;">
-                  <div class="input-group" style="flex:2; margin-bottom:0;">
-                    <label>Tipo Sensore</label>
-                    <select
-                      style="width:100%;"
-                      .value="${sensor.type || ''}"
-                      @change="${e => this._updateSensor(i, 'type', e.target.value)}"
-                    >
-                      <option value="">-- nessuno --</option>
-                      ${[
-                        { type: 'temperature', label: '🌡️ Temperatura' },
-                        { type: 'humidity', label: '💦 Umidità' },
-                        { type: 'co2', label: '🟢 CO₂' },
-                        { type: 'illuminance', label: '☀️ Luminosità' },
-                        { type: 'pm1', label: '🟤 PM1' },
-                        { type: 'pm25', label: '⚫️ PM2.5' },
-                        { type: 'pm10', label: '⚪️ PM10' },
-                        { type: 'uv', label: '🌞 UV Index' },
-                        { type: 'noise', label: '🔊 Rumore' },
-                        { type: 'pressure', label: '📈 Pressione' },
-                        { type: 'voc', label: '🧪 VOC' },
-                      ].map(t => html`<option value="${t.type}">${t.label}</option>`)}
-                    </select>
-                  </div>
-                  <div class="input-group" style="flex:2; margin-bottom:0;">
-                    <label>Entity</label>
-                    ${this._renderEntityInput(key, "entity", "sensor")}
-                  </div>
-                  <div class="input-group" style="flex:1; margin-bottom:0;">
-                    <label>Unità</label>
-                    <select
-                      style="width:100%;"
-                      .value="${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}"
-                      @change="${e => this._updateSensor(i, 'unit', e.target.value)}"
-                    >
-                      ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u =>
-                        html`<option value="${u}">${u}</option>`
-                      )}
-                    </select>
-                  </div>
-                </div>
-              `
-            });
-          })}
+          <!-- 2 rows, 3 sensors per row -->
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; gap:12px;">
+              ${sensorKeys.slice(0, 3).map((key, i) => this._renderSingleSensorPill(key, `SENSOR ${i+1}`, i))}
+            </div>
+            <div style="display:flex; gap:12px;">
+              ${sensorKeys.slice(3, 6).map((key, i) => this._renderSingleSensorPill(key, `SENSOR ${i+4}`, i+3))}
+            </div>
+          </div>
+  
           <!-- Reset -->
           <div style="margin-top:1.2em; text-align:center;">
             <button class="reset-button" @click="${this._resetSensorConfig}">🧹 Reset Sensors</button>
@@ -1885,6 +1900,7 @@ class BubbleRoomEditor extends LitElement {
     `;
   }
   
+  
   _toggleSensorExpand(i) {
     this._expandedSensors = this._expandedSensors.map((_, idx) => idx === i);
     this.requestUpdate();
@@ -1893,14 +1909,14 @@ class BubbleRoomEditor extends LitElement {
   
   _resetSensorConfig() {
     const entities = { ...(this._config.entities || {}) };
-
-    ["sensor1", "sensor2", "sensor3", "sensor4"].forEach(key => {
+    ["sensor1", "sensor2", "sensor3", "sensor4", "sensor5", "sensor6"].forEach(key => {
       delete entities[key];
     });
     this._config = { ...this._config, entities };
     this.requestUpdate();
     this._fireConfigChanged();
   }
+  
   _renderColorPanel() {
     // Difensivo: sempre 2 elementi (Room, Subbutton)
     if (!this._expandedColors || this._expandedColors.length !== 2) {
