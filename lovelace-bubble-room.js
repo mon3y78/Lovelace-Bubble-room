@@ -2080,7 +2080,7 @@ class BubbleRoomEditor extends r {
       <ha-expansion-panel
         class = "glass-panel subbutton-panel"
         .expanded = "${this._expandedPanel === 'subbutton'}"
-        @expanded - changed = "${e => this._onPanelExpanded('subbutton', e)}" >
+        @expanded-changed="${e => this._onPanelExpanded('subbutton', e)}">
         <div slot="header" class="glass-header subbutton-header">🎛️ Subbuttons</div>
         <div class="glass-content subbutton-content">
   
