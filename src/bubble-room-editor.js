@@ -1273,31 +1273,27 @@ class BubbleRoomEditor extends LitElement {
       <ha-expansion-panel
         class="glass-panel room-panel"
         .expanded="${this._expandedPanel === 'room'}"
-        @expanded-changed="${e => this._onPanelExpanded('room', e)}" >
+        @expanded-changed="${e => this._onPanelExpanded('room', e)}">
         <div slot="header" class="glass-header room-header">🛋️ Room Settings</div>
         <div class="glass-content room-content">
   
-          <!-- UNICA MINI-PILL che contiene tutti gli elementi -->
-          <div class="mini-pill glass-pill expanded">
-            <div class="mini-pill-header">
-              <span>⚙️ Room Settings</span>
-            </div>
+          <!-- Auto-scoperta fuori dalle pill -->
+          <div class="input-group" style="margin-bottom:18px;">
+            <label>
+              <input
+                type="checkbox"
+                .checked="${this._config.auto_discovery_sections?.room_presence ?? false}"
+                @change="${e => this._toggleAutoDiscoverySection('room_presence', e.target.checked)}"
+                @click="${e => e.stopPropagation()}"
+              />
+              <span>Abilita auto-scoperta Presence</span>
+            </label>
+          </div>
+  
+          <!-- MINI-PILL "Room": contiene Room name e Area su una riga -->
+          <div class="mini-pill glass-pill expanded" style="margin-bottom:18px;">
+            <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Room</div>
             <div class="mini-pill-content">
-  
-              <!-- Auto-scoperta -->
-              <div class="input-group">
-                <label>
-                  <input
-                    type="checkbox"
-                    .checked="${this._config.auto_discovery_sections?.room_presence ?? false}"
-                    @change="${e => this._toggleAutoDiscoverySection('room_presence', e.target.checked)}"
-                    @click="${e => e.stopPropagation()}"
-                  />
-                  <span>Abilita auto-scoperta Presence</span>
-                </label>
-              </div>
-  
-              <!-- MINI-PILL "Room": nome stanza e area sulla stessa riga -->
               <div style="display:flex; gap:18px; align-items:flex-end;">
                 <div style="flex:1;">
                   <label>Room name:</label>
@@ -1329,55 +1325,53 @@ class BubbleRoomEditor extends LitElement {
                   </ha-area-picker>
                 </div>
               </div>
+            </div>
+          </div>
   
-              <!-- MINI-PILL "Icona": icona + presence + tap/hold -->
-              <div class="mini-pill glass-pill expanded" style="margin-bottom:12px;">
-                <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Icona</div>
-                <div class="mini-pill-content">
-                  <!-- PRIMA RIGA: icona + presence -->
-                  <div style="display: flex; gap: 18px; flex-wrap: wrap;">
-                    <div style="flex:1; min-width:170px;">
-                      <label>Room Icon:</label>
-                      <ha-icon-picker
-                        .hass="${this._hass}"
-                        .value="${this._config.icon || ''}"
-                        allow-custom-icon
-                        @value-changed="${e => {
-                          this._config = { ...this._config, icon: e.detail.value };
-                          this.requestUpdate();
-                          this._fireConfigChanged();
-                        }}">
-                      </ha-icon-picker>
-                    </div>
-                    <div style="flex:2; min-width:170px;">
-                      <label>Presence (ID):</label>
-                      ${this._renderEntityInput("Presence (ID)", "presence", "entity", "room_presence")}
-                    </div>
-                  </div>
-                  <!-- SECONDA RIGA: tap/hold -->
-                  <div style="display: flex; gap: 18px; flex-wrap: wrap; margin-top: 18px;">
-                    <div style="flex:1; min-width:160px;">
-                      <label>Tap:</label>
-                      ${this._renderTapHoldAction("tap")}
-                    </div>
-                    <div style="flex:1; min-width:160px;">
-                      <label>Hold:</label>
-                      ${this._renderTapHoldAction("hold")}
-                    </div>
-                  </div>
+          <!-- MINI-PILL "Icona": Room Icon + Presence su una riga, sotto Tap + Hold -->
+          <div class="mini-pill glass-pill expanded" style="margin-bottom:12px;">
+            <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Icona</div>
+            <div class="mini-pill-content">
+              <div style="display: flex; gap: 18px; flex-wrap: wrap;">
+                <div style="flex:1; min-width:170px;">
+                  <label>Room Icon:</label>
+                  <ha-icon-picker
+                    .hass="${this._hass}"
+                    .value="${this._config.icon || ''}"
+                    allow-custom-icon
+                    @value-changed="${e => {
+                      this._config = { ...this._config, icon: e.detail.value };
+                      this.requestUpdate();
+                      this._fireConfigChanged();
+                    }}">
+                  </ha-icon-picker>
+                </div>
+                <div style="flex:2; min-width:170px;">
+                  ${this._renderEntityInput("Presence (ID)", "presence", "entity", "room_presence")}
                 </div>
               </div>
-  
-              <!-- RESET fuori dalle pill -->
-              <div style="margin-top:1.2em; text-align:center;">
-                <button class="reset-button" @click="${this._resetRoomConfig}">🧹 Reset Room Settings</button>
+              <div style="display: flex; gap: 18px; flex-wrap: wrap; margin-top: 18px;">
+                <div style="flex:1; min-width:160px;">
+                  <label>Tap:</label>
+                  ${this._renderTapHoldAction("tap")}
+                </div>
+                <div style="flex:1; min-width:160px;">
+                  <label>Hold:</label>
+                  ${this._renderTapHoldAction("hold")}
+                </div>
               </div>
             </div>
+          </div>
+  
+          <!-- RESET -->
+          <div style="margin-top:1.2em; text-align:center;">
+            <button class="reset-button" @click="${this._resetRoomConfig}">🧹 Reset Room Settings</button>
           </div>
         </div>
       </ha-expansion-panel>
     `;
   }
+
 
 
   _resetRoomConfig() {
