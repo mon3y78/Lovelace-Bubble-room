@@ -1338,8 +1338,8 @@ class BubbleRoomEditor extends LitElement {
                     </ha-icon-picker>
                   </div>
                   <div style="display: flex; flex-direction: row; gap: 24px; flex-wrap: wrap; margin-top: 8px;">
-                    ${this._renderTapHoldAction(key)}
-                    ${this._renderTapHoldAction(key)}
+                    ${this._renderTapHoldAction("tap")}
+                    ${this._renderTapHoldAction("hold")}
                   </div>
                 </div>
               </div>
