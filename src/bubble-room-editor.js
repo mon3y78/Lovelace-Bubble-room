@@ -1230,7 +1230,7 @@ class BubbleRoomEditor extends LitElement {
       </div>
     `;
   }
-\
+
   _renderExpandablePill({ label, expanded, onToggle, content, accent }) {
     return html`
       <div class="mini-pill glass-pill ${expanded ? 'expanded' : ''}">
