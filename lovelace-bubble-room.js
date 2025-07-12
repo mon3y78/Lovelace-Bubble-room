@@ -2176,28 +2176,21 @@ class BubbleRoomEditor extends r {
               accent,
               onToggle: () => this._toggleSubButtonExpand(i),
               content: x`
-                <!-- LABELS ESTERNE -->
-                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:8px;">
-                  <div style="flex:1;">
-                    <span style="display:block; font-size:1.13em; font-weight:700; color:#b28fff; margin-bottom:2px;">Entity:</span>
-                  </div>
-                  <div style="flex:1; text-align:right;">
-                    <span style="display:block; font-size:1.13em; font-weight:700; color:#b28fff; margin-bottom:2px;">Icon:</span>
-                  </div>
+                <!-- Entity box -->
+                <div class="input-group" style="margin-bottom:12px;">
+                  <label>Entity:</label>
+                  ${this._renderEntityInput(key, "entity", "subbutton")}
                 </div>
-                <div style="display:flex; gap:22px; margin-bottom:18px;">
-                  <div style="flex:1;">
-                    ${this._renderEntityInput(key, "entity", "subbutton")}
-                  </div>
-                  <div style="flex:1;">
-                    ${this._renderIconInput("Icon", key)}
-                  </div>
+                <!-- Icon box -->
+                <div class="input-group" style="margin-bottom:18px;">
+                  <label>Icon:</label>
+                  ${this._renderIconInput("Icon", key)}
                 </div>
-                <!-- FUNCTION LABEL (esterna, sopra Tap/Hold) -->
+                <!-- Function label -->
                 <div style="margin-bottom:6px;">
                   <span style="display:block; font-size:1.13em; font-weight:700; color:#b28fff;">Function:</span>
                 </div>
-                <!-- TAP/HOLD UNIVERSALI -->
+                <!-- Tap/Hold -->
                 <div style="display: flex; gap:18px; margin-top:18px;">
                   <div style="flex:1; min-width:160px;">
                     ${this._renderTapHoldAction("tap", this._config.entities?.[key], this._updateActionFieldGeneric(key))}
@@ -2207,6 +2200,7 @@ class BubbleRoomEditor extends r {
                   </div>
                 </div>
               `
+
             });
           })}
   
