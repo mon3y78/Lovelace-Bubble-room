@@ -397,7 +397,7 @@ class BubbleRoom extends LitElement {
         align-items: center;
         width: 100%;
         box-sizing: border-box;
-        min-height: 32px;
+        min-height: 8px;
         /* padding: 0; */
         /* margin: 0; */
       }
