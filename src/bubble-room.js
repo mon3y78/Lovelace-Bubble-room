@@ -307,7 +307,11 @@ class BubbleRoom extends LitElement {
         white-space: nowrap;
         width: 100%;
         text-align: center;
+        line-height: 1;
+        /* Aggiungi se vuoi, migliora la centratura verticale: */
+        vertical-align: middle;
       }
+
   
       .icon-area {
         position: relative;
@@ -509,9 +513,10 @@ class BubbleRoom extends LitElement {
 
           
             <!-- Riga nome stanza -->
-            <div class="name-area" style="color:${nameColor};">
-              ${name}
+            <div class="name-area" id="nameArea" style="color:${nameColor};">
+              <span id="nameText">${name}</span>
             </div>
+
           
             <!-- Riga icona principale + mushroom entities -->
             <div class="icon-area">
