@@ -101,7 +101,8 @@ class BubbleRoom extends LitElement {
       this._subButtonSize = { w: rect.width, h: rect.height / 4 };
     }
     this._resizeNameFont();
-    disconnectedCallback() {
+  }
+  disconnectedCallback() {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
       this._resizeObserver = null;
@@ -115,7 +116,6 @@ class BubbleRoom extends LitElement {
     if (container) {
       this._resizeObserver = new ResizeObserver(() => this._resizeNameFont());
       this._resizeObserver.observe(container);
-    }
   }
   
   static get properties() {
