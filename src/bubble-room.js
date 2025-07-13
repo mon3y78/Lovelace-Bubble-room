@@ -278,7 +278,7 @@ class BubbleRoom extends LitElement {
         height: 100%;
         min-height: 0;
         min-width: 0;
-        border: 2px solid white !important;
+        border: 2px dashed white !important;
       }
   
       .left-content {
