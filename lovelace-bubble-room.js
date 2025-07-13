@@ -288,6 +288,7 @@ class BubbleRoom extends LitElement {
         min-height: 0;
         min-width: 0;
         border: 2px solid blue !important;
+        box-sizing: border-box;
       }
   
       .name-area {
@@ -356,6 +357,7 @@ class BubbleRoom extends LitElement {
         min-width: 0;
         padding: 2%;
         border: 2px solid green !important;
+        box-sizing: border-box;
       }
   
       .bubble-sub-button {
