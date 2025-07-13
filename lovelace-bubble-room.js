@@ -2117,7 +2117,7 @@ class BubbleRoomEditor extends r {
           <div class="mini-pill glass-pill expanded" style="margin-bottom:18px;">
             <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Room</div>
             <div class="mini-pill-content">
-              <div style="display:flex; gap:18px; align-items:flex-end;">
+              <div style="display:flex; flex-direction:column; gap:10px;">
                 <div style="flex:1;">
                   <label>Room name:</label>
                   <input type="text" .value="${this._config.name || ''}" @input="${this._updateName}" />
@@ -2155,7 +2155,7 @@ class BubbleRoomEditor extends r {
           <div class="mini-pill glass-pill expanded" style="margin-bottom:12px;">
             <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Icon</div>
             <div class="mini-pill-content">
-              <div style="display: flex; gap: 18px; flex-wrap: wrap;">
+              <div style="display:flex; flex-direction:column; gap:10px;">
                 <div style="flex:1; min-width:170px;">
                   <label>Room Icon:</label>
                   <ha-icon-picker
@@ -2173,13 +2173,11 @@ class BubbleRoomEditor extends r {
                   ${this._renderEntityInput("Presence (ID)", "presence", "entity", "room_presence")}
                 </div>
               </div>
-              <div style="display: flex; gap: 18px; flex-wrap: wrap; margin-top: 18px;">
+              <div style="display:flex; flex-direction:column; gap:10px;">
                 <div style="flex:1; min-width:160px;">
-                  <label>Tap:</label>
                   ${this._renderTapHoldAction("tap")}
                 </div>
                 <div style="flex:1; min-width:160px;">
-                  <label>Hold:</label>
                   ${this._renderTapHoldAction("hold")}
                 </div>
               </div>
