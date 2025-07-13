@@ -95,6 +95,7 @@ class BubbleRoom extends LitElement {
       const rect = subbuttonCol.getBoundingClientRect();
       this._subButtonSize = { w: rect.width, h: rect.height / 4 };
     }
+    this._resizeNameFont();
   }
   
   
@@ -294,16 +295,18 @@ class BubbleRoom extends LitElement {
       .name-area {
         display: flex;
         align-items: center;
-        padding: 0 6%;
-        font-weight: bold;
-        font-size: clamp(3em, 10vw, 5em);
+        justify-content: center;
+        height: 100%;
+        width: 100%;
         font-family: "Bebas Neue", "Arial Narrow", sans-serif;
-        letter-spacing: 0;
         text-transform: uppercase;
-        white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
-        border: 2px solid red !important;
+      }
+      #nameText {
+        display: inline-block;
+        white-space: nowrap;
+        width: 100%;
+        text-align: center;
       }
   
       .icon-area {
@@ -685,7 +688,22 @@ class BubbleRoom extends LitElement {
   _getDomainDefaultIcon(domain, state) { if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP$1[domain] || ''; }
   _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP$1[sensorType]; if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
 
- 
+  _resizeNameFont() {
+    const container = this.renderRoot?.querySelector('#nameArea');
+    const text = this.renderRoot?.querySelector('#nameText');
+    if (!container || !text) return;
+  
+    let maxFont = 300; // px, valore limite massimo per evitare loop infiniti
+    let minFont = 10;  // px
+    let fontSize = maxFont;
+  
+    // Step 1: imposta font-size grande, poi scala giù finché sta dentro all'area
+    text.style.fontSize = `${fontSize}px`;
+    while ((text.offsetHeight > container.offsetHeight || text.offsetWidth > container.offsetWidth) && fontSize > minFont) {
+      fontSize -= 1;
+      text.style.fontSize = `${fontSize}px`;
+    }
+  }
 
   _getIconShapeStyle() {
     return `
