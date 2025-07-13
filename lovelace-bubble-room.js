@@ -793,99 +793,6 @@ const t=globalThis,i$1=t.trustedTypes,s=i$1?i$1.createPolicy("lit-html",{createH
  * SPDX-License-Identifier: BSD-3-Clause
  */class r extends b{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0;}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const s=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=B(s,this.renderRoot,this.renderOptions);}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0);}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1);}render(){return T}}r._$litElement$=!0,r["finalized"]=!0,globalThis.litElementHydrateSupport?.({LitElement:r});const i=globalThis.litElementPolyfillSupport;i?.({LitElement:r});(globalThis.litElementVersions??=[]).push("4.1.1");
 
-function injectBubbleRoomMenuCSS() {
-  const styleId = "bubble-room-menu-css";
-  if (!document.getElementById(styleId)) {
-    const style = document.createElement('style');
-    style.id = styleId;
-    style.innerHTML = `
-      mwc-menu,
-      .mdc-menu, 
-      .mdc-menu-surface {
-        min-width: 340px !important;
-        max-width: 98vw !important;
-        width: auto !important;
-        background: #171c22 !important;
-        color: #f3f3f3 !important;
-        border-radius: 16px !important;
-        box-shadow: 0 4px 38px #10104099 !important;
-        font-size: 1.09em !important;
-        z-index: 1302 !important;
-      }
-      mwc-list,
-      .mdc-list {
-        background: transparent !important;
-        color: inherit !important;
-        font-size: 1em !important;
-        padding: 0 !important;
-      }
-      mwc-list-item,
-      .mdc-list-item {
-        min-height: 48px !important;
-        padding: 12px 18px !important;
-        background: transparent !important;
-        color: inherit !important;
-        border-bottom: 1px solid #292e3822 !important;
-        font-size: 1em !important;
-        cursor: pointer !important;
-        transition: background 0.18s;
-      }
-      mwc-list-item:last-child,
-      .mdc-list-item:last-child {
-        border-bottom: none !important;
-      }
-      mwc-list-item[selected],
-      .mdc-list-item--selected,
-      mwc-list-item:active,
-      .mdc-list-item:focus,
-      .mdc-list-item:hover {
-        background: #2366ff2d !important;
-        color: #4da6ff !important;
-      }
-      .mdc-list-item__primary-text,
-      .mdc-list-item__text {
-        font-size: 1.09em !important;
-        color: inherit !important;
-        white-space: normal !important;
-        overflow: visible !important;
-        text-overflow: unset !important;
-        line-height: 1.4 !important;
-        max-width: 98vw !important;
-        word-break: break-word !important;
-      }
-      .mdc-list-item__secondary-text {
-        font-size: 0.92em !important;
-        color: #b7c1ca !important;
-      }
-      .mdc-list-item__graphic {
-        color: #55afff !important;
-        margin-right: 12px !important;
-        font-size: 1.3em !important;
-      }
-      .mdc-list-item__meta {
-        color: #36e6a0 !important;
-        font-size: 1.2em !important;
-        margin-left: 10px !important;
-      }
-      .mdc-menu-surface {
-        max-height: 65vh !important;
-        overflow-y: auto !important;
-        scrollbar-width: thin !important;
-        scrollbar-color: #444 #232323 !important;
-      }
-      .mdc-menu-surface::-webkit-scrollbar {
-        width: 7px;
-        background: #20262d;
-      }
-      .mdc-menu-surface::-webkit-scrollbar-thumb {
-        background: #505a6a;
-        border-radius: 9px;
-      }
-    `;
-    document.head.appendChild(style);
-  }
-}
-
 const DOMAIN_ICON_MAP = {
   light:           'mdi:lightbulb',
   switch:          'mdi:toggle-switch',
@@ -947,7 +854,6 @@ class BubbleRoomEditor extends r {
 
   constructor() {
     super();
-    injectBubbleRoomMenuCSS();
     this._iconList = [
       "mdi:sofa", "mdi:bed", "mdi:home", "mdi:table-furniture", "mdi:television", "mdi:lightbulb",
       "mdi:fan", "mdi:air-conditioner", "mdi:robot-vacuum", "mdi:led-strip-variant", "mdi:lamp",
@@ -1431,6 +1337,51 @@ class BubbleRoomEditor extends r {
         color: #fff;
         border: 2px solid #1976d2;
       }
+      /* Multilinea, font più grande, highlight su hover */
+      mwc-list .mdc-list-item__primary-text {
+        font-size: 1.07em !important;
+        line-height: 1.3 !important;
+        white-space: pre-line !important;
+      }
+
+      mwc-list .mdc-list-item {
+        transition: background 0.18s;
+      }
+
+      mwc-list .mdc-list-item:hover {
+        background: #225cff44 !important;
+      }
+      /* Forza larghezza minima del menu */
+      mwc-menu {
+        min-width: 400px !important;
+        max-width: 700px !important;
+      }
+
+      /* Forza la lista interna */
+      mwc-list {
+        min-width: 400px !important;
+        max-width: 700px !important;
+      }
+
+      /* Forza le righe del menu */
+      mwc-list .mdc-list-item__primary-text {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        display: block !important;
+        max-width: 650px !important;
+        min-width: 350px !important;
+        word-break: break-all !important;
+      }
+
+      /* Per aumentare padding/altezza delle righe */
+      mwc-list .mdc-list-item {
+        min-height: 40px !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+      }
+
+
     `;
   }
   
@@ -1473,43 +1424,52 @@ class BubbleRoomEditor extends r {
 
   updated(changedProps) {
     super.updated(changedProps);
-    this.shadowRoot.querySelectorAll("ha-entity-picker").forEach(picker => {
-      // 1. Allarga il menu dropdown
-      const menu = picker.shadowRoot && picker.shadowRoot.querySelector("mwc-menu");
-      if (menu) {
-        menu.style.maxWidth = "600px";
-        menu.style.minWidth = "350px";
+  
+    // Aggiungi un piccolo timeout per aspettare il DOM (importante per mwc-menu)
+    setTimeout(() => {
+      // Per ogni picker nella card
+      this.shadowRoot.querySelectorAll("ha-entity-picker").forEach(picker => {
+        // Trova il menu di Material nel suo shadow DOM
+        const menu = picker.shadowRoot && picker.shadowRoot.querySelector("mwc-menu");
+        if (!menu) return;
+  
+        // Allarga il menu stesso
+        menu.style.maxWidth = "620px";
+        menu.style.minWidth = "370px";
         menu.style.width = "auto";
-      }
-      // 2. Allarga il contenitore della lista (mwc-list)
-      const mwcList = menu && menu.shadowRoot && menu.shadowRoot.querySelector("mwc-list");
-      if (mwcList) {
-        mwcList.style.maxWidth = "600px";
-        mwcList.style.minWidth = "350px";
+  
+        // Trova la lista delle opzioni (serve aprire il menu per avere il DOM pronto)
+        const mwcList = menu.shadowRoot && menu.shadowRoot.querySelector("mwc-list");
+        if (!mwcList) return;
+  
+        // Allarga la lista interna
+        mwcList.style.maxWidth = "620px";
+        mwcList.style.minWidth = "370px";
         mwcList.style.width = "auto";
-      }
-      // 3. Allarga ogni elemento della lista
-      if (mwcList && mwcList.children) {
-        Array.from(mwcList.children).forEach(child => {
-          child.style.maxWidth = "600px";
-          child.style.minWidth = "350px";
-          child.style.width = "auto";
-          child.style.whiteSpace = "normal";
-          child.style.textOverflow = "clip";
-        });
-      }
-      // 4. Prova a forzare anche il testo delle righe (label)
-      if (mwcList) {
+  
+        // Personalizza ogni elemento (label riga)
         mwcList.querySelectorAll('.mdc-list-item__primary-text').forEach(el => {
-          el.style.whiteSpace = 'normal';
+          el.style.whiteSpace = 'normal';        // multilinea
           el.style.overflow = 'visible';
           el.style.textOverflow = 'unset';
           el.style.display = 'block';
-          el.style.maxWidth = '580px';
+          el.style.maxWidth = '600px';
+          el.style.wordBreak = 'break-word';
+          el.style.fontSize = '1.07em';
+          el.style.lineHeight = '1.33';
         });
-      }
-    });
+  
+        // Personalizza l'altezza e padding delle righe
+        mwcList.querySelectorAll('.mdc-list-item').forEach(el => {
+          el.style.minHeight = '44px';
+          el.style.paddingTop = '10px';
+          el.style.paddingBottom = '10px';
+          el.style.fontSize = '1.09em';
+        });
+      });
+    }, 200);
   }
+  
   
 
 
