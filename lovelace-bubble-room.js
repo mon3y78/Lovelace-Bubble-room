@@ -1337,13 +1337,12 @@ class BubbleRoomEditor extends r {
         color: #fff;
         border: 2px solid #1976d2;
       }
-  
-      /* RESPONSIVE */
-      @media (max-width: 650px) {
-        .glass-header { padding: 14px 10px 9px 10px; font-size:1.13em;}
-        .glass-content { padding: 12px 10px; }
-        .mini-pill-content { padding: 10px 8px 9px 10px; }
+      ha-entity-picker::part(menu) {
+        max-width: 90vw !important; /* sfrutta fino al 90% della viewport */
+        min-width: 280px !important;
+        width: auto !important;
       }
+
     `;
   }
   
