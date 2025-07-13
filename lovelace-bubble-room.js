@@ -1389,14 +1389,43 @@ class BubbleRoomEditor extends r {
   updated(changedProps) {
     super.updated(changedProps);
     this.shadowRoot.querySelectorAll("ha-entity-picker").forEach(picker => {
-      const menu = picker.shadowRoot.querySelector("mwc-menu");
+      // 1. Allarga il menu dropdown
+      const menu = picker.shadowRoot && picker.shadowRoot.querySelector("mwc-menu");
       if (menu) {
-        menu.style.maxWidth = "90vw";
-        menu.style.minWidth = "280px";
+        menu.style.maxWidth = "600px";
+        menu.style.minWidth = "350px";
         menu.style.width = "auto";
+      }
+      // 2. Allarga il contenitore della lista (mwc-list)
+      const mwcList = menu && menu.shadowRoot && menu.shadowRoot.querySelector("mwc-list");
+      if (mwcList) {
+        mwcList.style.maxWidth = "600px";
+        mwcList.style.minWidth = "350px";
+        mwcList.style.width = "auto";
+      }
+      // 3. Allarga ogni elemento della lista
+      if (mwcList && mwcList.children) {
+        Array.from(mwcList.children).forEach(child => {
+          child.style.maxWidth = "600px";
+          child.style.minWidth = "350px";
+          child.style.width = "auto";
+          child.style.whiteSpace = "normal";
+          child.style.textOverflow = "clip";
+        });
+      }
+      // 4. Prova a forzare anche il testo delle righe (label)
+      if (mwcList) {
+        mwcList.querySelectorAll('.mdc-list-item__primary-text').forEach(el => {
+          el.style.whiteSpace = 'normal';
+          el.style.overflow = 'visible';
+          el.style.textOverflow = 'unset';
+          el.style.display = 'block';
+          el.style.maxWidth = '580px';
+        });
       }
     });
   }
+  
 
 
   render() {
