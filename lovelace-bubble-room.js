@@ -1386,6 +1386,19 @@ class BubbleRoomEditor extends r {
     `;
   }
 
+  updated(changedProps) {
+    super.updated(changedProps);
+    this.shadowRoot.querySelectorAll("ha-entity-picker").forEach(picker => {
+      const menu = picker.shadowRoot.querySelector("mwc-menu");
+      if (menu) {
+        menu.style.maxWidth = "90vw";
+        menu.style.minWidth = "280px";
+        menu.style.width = "auto";
+      }
+    });
+  }
+
+
   render() {
     if (!this._config) {
       return x`<div>Caricamento configurazione...</div>`;
