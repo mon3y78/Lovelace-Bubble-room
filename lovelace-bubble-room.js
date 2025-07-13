@@ -2349,7 +2349,7 @@ class BubbleRoomEditor extends r {
               content: x`
                 <div style="display:flex; flex-direction:column; gap:5px;">
                   <div class="input-group" style="flex:1; margin-bottom:0;">
-                    ${this._renderEntityInput("Entity", key, "entity", "mushroom")}
+                    ${this._renderEntityInput("Entity", entity.key, "entity", "mushroom")}
                   </div>
                   <div class="input-group" style="flex:1; margin-bottom:0;">
                     ${this._renderIconInput("Icon", entity.key)}
@@ -2377,6 +2377,7 @@ class BubbleRoomEditor extends r {
       </ha-expansion-panel>
     `;
   }
+
   
 
   _toggleMushroomEntityExpand(i) {
@@ -2548,7 +2549,7 @@ class BubbleRoomEditor extends r {
             </select>
           </div>
           <div class="input-group" style="flex:2; margin-bottom:0;">
-            ${this._renderEntityInput(key, "entity", "sensor", "sensor")}
+            ${this._renderEntityInput("Sensor (ID)", key, "entity", "sensor")}
           </div>
           <div style="display:flex; flex-direction:column; gap:5px;">
             <label>Unit</label>
@@ -2566,7 +2567,7 @@ class BubbleRoomEditor extends r {
       `
     });
   }
-  
+
   
   _renderSensorPanel() {
     // Defensive: always length 6 for 6 sensors
