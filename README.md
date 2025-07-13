@@ -3,7 +3,7 @@
 [![Community Forum](https://img.shields.io/badge/Forum-Home%20Assistant-blue?logo=home-assistant)](https://community.home-assistant.io/t/bubble-room/856230?u=ipilla)
 [![Reddit](https://img.shields.io/badge/Reddit-Discussion-orange?logo=reddit)](https://www.reddit.com/r/homeassistant/s/Qgz9acN7Mr)
 ![Bubble Room](img/bubble-room-v3.png)
-# ✨ Bubble Room Card – v3.1 for Home Assistant
+# ✨ Bubble Room Card – v4.0 for Home Assistant
 The Ultimate Visual Room Controller Card
 Customizable, responsive, and made for Home Assistant power users!
 Zero YAML required – everything is visual!
@@ -30,7 +30,7 @@ Add a camera entity with a dedicated icon and “mushroom” position
 ### Climate Control 🌡️
 Native support for a climate/thermostat entity, with icon and actions
 ### Sensor Section 📊
-Up to 4 sensors (temperature, humidity, CO₂, illuminance, PM, UV, noise, pressure, VOC, etc.)
+Up to 6 sensors (temperature, humidity, CO₂, illuminance, PM, UV, noise, pressure, VOC, etc.)
 Pick type, entity, and unit for each sensor
 ### Full Color Customization 🖌️
 Visual color pickers for every color field (Room & Subbutton sections)
@@ -43,10 +43,29 @@ Uses ha-entity-picker for entities (with dynamic Home Assistant suggestions)
 Uses ha-icon-picker for icons (MDI & custom icons)
 No need to type YAML, ever!
 
-# 🔥 Why Bubble Room 3.0?
-Modern, modular, and highly flexible
-Perfect for touch interfaces, tablets, and dashboards
-Super fast to configure, fun to personalize
+🚀 Version 4.0 Released!
+Bubble Room Card v4.0 is here, bringing a whole new level of customization and smart automation for your Home Assistant dashboards!
+This release includes a complete redesign of the editor, powerful new features, and even more flexibility for all your rooms, sensors, and devices.
+
+✨ What’s New in v4.0?
+
+Revamped Editor UI:
+Modern visual style with gradient headers, colorful labels, pill buttons, emoji section titles, and a smoother layout.
+Fully modular and easier to use—editing your Bubble Room config is now a joy!
+Auto-Discovery by Area:
+Instantly filter and assign entities for each section (climate, camera, sensor, presence, etc.) using Home Assistant’s area system.
+Dynamic Icon and Entity Pickers:
+Integrated ha-icon-picker and ha-entity-picker everywhere you select icons or entities.
+Complete fallback icon set included.
+Enhanced Section Support:
+Camera, humidifier, lock, input_boolean, scene: all get their own controls and auto-discovery.
+The sensor section now supports up to 4 fully configurable sensors (type + unit), with dynamic icon/unit suggestions.
+Advanced Color Controls:
+Set RGBA colors and transparency for every detail—active/inactive states, backgrounds, text, icons, subbuttons.
+Room Layout and Entity Organization:
+Choose from flexible layouts and arrange up to 7 secondary entities + 4 subbuttons for each room.
+Fully Backward-Compatible:
+Seamless upgrade: all your existing configurations continue to work!
 
 ## Community & Support
 
