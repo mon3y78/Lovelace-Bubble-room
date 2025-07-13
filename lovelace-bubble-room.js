@@ -793,82 +793,6 @@ const t=globalThis,i$1=t.trustedTypes,s=i$1?i$1.createPolicy("lit-html",{createH
  * SPDX-License-Identifier: BSD-3-Clause
  */class r extends b{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0;}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const s=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=B(s,this.renderRoot,this.renderOptions);}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0);}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1);}render(){return T}}r._$litElement$=!0,r["finalized"]=!0,globalThis.litElementHydrateSupport?.({LitElement:r});const i=globalThis.litElementPolyfillSupport;i?.({LitElement:r});(globalThis.litElementVersions??=[]).push("4.1.1");
 
-function injectUniversalPickerStyle(picker) {
-  // --- MWC-List (vecchio Home Assistant) ---
-  const mwcList = picker.shadowRoot?.querySelector('mwc-menu')?.shadowRoot?.querySelector('mwc-list');
-  if (mwcList && !mwcList._customStyled) {
-    mwcList._customStyled = true;
-    const style = document.createElement('style');
-    style.textContent = `
-      .mdc-list-item__primary-text {
-        white-space: normal !important;
-        overflow: visible !important;
-        text-overflow: unset !important;
-        display: block !important;
-        max-width: 600px !important;
-        word-break: break-word !important;
-        font-size: 1.09em !important;
-        line-height: 1.32 !important;
-      }
-      .mdc-list-item {
-        min-height: 44px !important;
-        padding-top: 10px !important;
-        padding-bottom: 10px !important;
-        font-size: 1.09em !important;
-      }
-    `;
-    mwcList.appendChild(style);
-  }
-
-  // --- Vaadin ComboBox (nuovo Home Assistant) ---
-  // 1. Trova overlay e scroller nel nuovo picker
-  const vaadinOverlay = picker.shadowRoot?.querySelector('vaadin-combo-box-overlay');
-  const vaadinScroller = vaadinOverlay?.shadowRoot?.querySelector('vaadin-combo-box-scroller');
-  if (vaadinScroller && !vaadinScroller._customStyled) {
-    vaadinScroller._customStyled = true;
-    // Direttamente sugli item
-    vaadinScroller.querySelectorAll('vaadin-combo-box-item').forEach(item => {
-      const headline = item.querySelector('span[slot="headline"]');
-      if (headline) {
-        headline.style.whiteSpace = 'normal';
-        headline.style.overflow = 'visible';
-        headline.style.textOverflow = 'unset';
-        headline.style.display = 'block';
-        headline.style.maxWidth = '600px';
-        headline.style.wordBreak = 'break-word';
-        headline.style.fontSize = '1.09em';
-        headline.style.lineHeight = '1.32';
-      }
-      const support = item.querySelector('span[slot="supporting-text"]');
-      if (support) {
-        support.style.whiteSpace = 'normal';
-        support.style.wordBreak = 'break-word';
-        support.style.fontSize = '0.95em';
-      }
-    });
-    // Inietta anche un <style> generale nel shadowRoot del scroller, se vuoi
-    const style = document.createElement('style');
-    style.textContent = `
-      vaadin-combo-box-item span[slot="headline"] {
-        white-space: normal !important;
-        overflow: visible !important;
-        text-overflow: unset !important;
-        display: block !important;
-        max-width: 600px !important;
-        word-break: break-word !important;
-        font-size: 1.09em !important;
-        line-height: 1.32 !important;
-      }
-      vaadin-combo-box-item span[slot="supporting-text"] {
-        white-space: normal !important;
-        word-break: break-word !important;
-        font-size: 0.95em !important;
-      }
-    `;
-    vaadinScroller.appendChild(style);
-  }
-}
-
 const DOMAIN_ICON_MAP = {
   light:           'mdi:lightbulb',
   switch:          'mdi:toggle-switch',
@@ -1413,51 +1337,13 @@ class BubbleRoomEditor extends r {
         color: #fff;
         border: 2px solid #1976d2;
       }
-      /* Multilinea, font più grande, highlight su hover */
-      mwc-list .mdc-list-item__primary-text {
-        font-size: 1.07em !important;
-        line-height: 1.3 !important;
-        white-space: pre-line !important;
+  
+      /* RESPONSIVE */
+      @media (max-width: 650px) {
+        .glass-header { padding: 14px 10px 9px 10px; font-size:1.13em;}
+        .glass-content { padding: 12px 10px; }
+        .mini-pill-content { padding: 10px 8px 9px 10px; }
       }
-
-      mwc-list .mdc-list-item {
-        transition: background 0.18s;
-      }
-
-      mwc-list .mdc-list-item:hover {
-        background: #225cff44 !important;
-      }
-      /* Forza larghezza minima del menu */
-      mwc-menu {
-        min-width: 400px !important;
-        max-width: 700px !important;
-      }
-
-      /* Forza la lista interna */
-      mwc-list {
-        min-width: 400px !important;
-        max-width: 700px !important;
-      }
-
-      /* Forza le righe del menu */
-      mwc-list .mdc-list-item__primary-text {
-        white-space: normal !important;
-        overflow: visible !important;
-        text-overflow: unset !important;
-        display: block !important;
-        max-width: 650px !important;
-        min-width: 350px !important;
-        word-break: break-all !important;
-      }
-
-      /* Per aumentare padding/altezza delle righe */
-      mwc-list .mdc-list-item {
-        min-height: 40px !important;
-        padding-top: 8px !important;
-        padding-bottom: 8px !important;
-      }
-
-
     `;
   }
   
@@ -1498,28 +1384,13 @@ class BubbleRoomEditor extends r {
     `;
   }
 
-  updated(changedProps) {
-    super.updated(changedProps);
-    this.shadowRoot.querySelectorAll("ha-entity-picker").forEach(picker => {
-      // Richiama la funzione universale
-      setTimeout(() => {
-        injectUniversalPickerStyle(picker);
-      }, 25);
-    });
-  }
-  
-  
-  
-  
-
-
   render() {
     if (!this._config) {
       return x`<div>Caricamento configurazione...</div>`;
     }
     return x`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room <span class="version">v4.0</span></h3>
+        <h3>Visual Editor Bubble Room <span class="version">v3.2.0</span></h3>
       </div>
       ${this._renderRoomPanel()}
       ${this._renderSubButtonPanelGroup()}
