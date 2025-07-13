@@ -793,6 +793,38 @@ const t=globalThis,i$1=t.trustedTypes,s=i$1?i$1.createPolicy("lit-html",{createH
  * SPDX-License-Identifier: BSD-3-Clause
  */class r extends b{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0;}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const s=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=B(s,this.renderRoot,this.renderOptions);}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0);}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1);}render(){return T}}r._$litElement$=!0,r["finalized"]=!0,globalThis.litElementHydrateSupport?.({LitElement:r});const i=globalThis.litElementPolyfillSupport;i?.({LitElement:r});(globalThis.litElementVersions??=[]).push("4.1.1");
 
+const mwcListCustomStyle = `
+  .mdc-list-item__primary-text {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    display: block !important;
+    max-width: 600px !important;
+    word-break: break-word !important;
+    font-size: 1.07em !important;
+    line-height: 1.33 !important;
+  }
+  .mdc-list-item {
+    min-height: 44px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    font-size: 1.09em !important;
+  }
+  :host {
+    min-width: 400px !important;
+    max-width: 680px !important;
+  }
+`;
+function injectListStyle(mwcList) {
+  if (!mwcList) return;
+  if (mwcList.shadowRoot && !mwcList.shadowRoot.querySelector('#custom-mwc-style')) {
+    const style = document.createElement('style');
+    style.id = 'custom-mwc-style';
+    style.textContent = mwcListCustomStyle;
+    mwcList.shadowRoot.appendChild(style);
+  }
+}
+
 const DOMAIN_ICON_MAP = {
   light:           'mdi:lightbulb',
   switch:          'mdi:toggle-switch',
@@ -1424,51 +1456,20 @@ class BubbleRoomEditor extends r {
 
   updated(changedProps) {
     super.updated(changedProps);
-  
-    // Aggiungi un piccolo timeout per aspettare il DOM (importante per mwc-menu)
-    setTimeout(() => {
-      // Per ogni picker nella card
-      this.shadowRoot.querySelectorAll("ha-entity-picker").forEach(picker => {
-        // Trova il menu di Material nel suo shadow DOM
-        const menu = picker.shadowRoot && picker.shadowRoot.querySelector("mwc-menu");
-        if (!menu) return;
-  
-        // Allarga il menu stesso
-        menu.style.maxWidth = "620px";
-        menu.style.minWidth = "370px";
-        menu.style.width = "auto";
-  
-        // Trova la lista delle opzioni (serve aprire il menu per avere il DOM pronto)
-        const mwcList = menu.shadowRoot && menu.shadowRoot.querySelector("mwc-list");
-        if (!mwcList) return;
-  
-        // Allarga la lista interna
-        mwcList.style.maxWidth = "620px";
-        mwcList.style.minWidth = "370px";
-        mwcList.style.width = "auto";
-  
-        // Personalizza ogni elemento (label riga)
-        mwcList.querySelectorAll('.mdc-list-item__primary-text').forEach(el => {
-          el.style.whiteSpace = 'normal';        // multilinea
-          el.style.overflow = 'visible';
-          el.style.textOverflow = 'unset';
-          el.style.display = 'block';
-          el.style.maxWidth = '600px';
-          el.style.wordBreak = 'break-word';
-          el.style.fontSize = '1.07em';
-          el.style.lineHeight = '1.33';
-        });
-  
-        // Personalizza l'altezza e padding delle righe
-        mwcList.querySelectorAll('.mdc-list-item').forEach(el => {
-          el.style.minHeight = '44px';
-          el.style.paddingTop = '10px';
-          el.style.paddingBottom = '10px';
-          el.style.fontSize = '1.09em';
-        });
+    this.shadowRoot.querySelectorAll("ha-entity-picker").forEach(picker => {
+      const menu = picker.shadowRoot?.querySelector("mwc-menu");
+      if (!menu) return;
+      if (menu._customStylePatched) return;
+      menu._customStylePatched = true;
+      menu.addEventListener('opened', () => {
+        setTimeout(() => {
+          const mwcList = menu.shadowRoot?.querySelector("mwc-list");
+          injectListStyle(mwcList);
+        }, 25);
       });
-    }, 200);
+    });
   }
+  
   
   
 
