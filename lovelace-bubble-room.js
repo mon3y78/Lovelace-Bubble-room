@@ -793,6 +793,30 @@ const t=globalThis,i$1=t.trustedTypes,s=i$1?i$1.createPolicy("lit-html",{createH
  * SPDX-License-Identifier: BSD-3-Clause
  */class r extends b{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0;}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const s=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=B(s,this.renderRoot,this.renderOptions);}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0);}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1);}render(){return T}}r._$litElement$=!0,r["finalized"]=!0,globalThis.litElementHydrateSupport?.({LitElement:r});const i=globalThis.litElementPolyfillSupport;i?.({LitElement:r});(globalThis.litElementVersions??=[]).push("4.1.1");
 
+(function fixHomeAssistantEntityPickerMenuWidth() {
+  const styleId = "bubble-room-global-entity-picker-width";
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.innerHTML = `
+      mwc-menu, mwc-list, .mdc-menu, .mdc-deprecated-list, .mdc-menu-surface {
+        min-width: 340px !important;
+        max-width: 95vw !important;
+        width: auto !important;
+      }
+      mwc-list .mdc-list-item__primary-text, 
+      .mdc-list-item__primary-text {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        display: block !important;
+        max-width: 95vw !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+})();
+
 const DOMAIN_ICON_MAP = {
   light:           'mdi:lightbulb',
   switch:          'mdi:toggle-switch',
