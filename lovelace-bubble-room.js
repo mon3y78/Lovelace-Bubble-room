@@ -1,5 +1,7 @@
 import { LitElement, css, html } from 'https://unpkg.com/lit@2.6.1/index.js?module';
 
+// Bubble Room v3.2.0
+
 // --- MAPPE DI MAPPING CENTRALIZZATE ---
 const DEVICE_CLASS_ICON_MAP = {
   door:        { on: 'mdi:door-open', off: 'mdi:door-closed' },
@@ -167,8 +169,8 @@ class BubbleRoom extends LitElement {
 
   setConfig(config) {
     config = JSON.parse(JSON.stringify(config));
-    if (!config || typeof config !== 'object' || Array.isArray(config)) throw new Error("La configurazione deve essere un oggetto valido.");
-    if (!config.entities || typeof config.entities !== 'object') throw new Error("Devi definire almeno la proprietà 'entities' nella configurazione.");
+    if (!config || typeof config !== 'object' || Array.isArray(config)) throw new Error("The configuration must be a valid object.");
+    if (!config.entities || typeof config.entities !== 'object') throw new Error("You must define at least the 'entities' property in the configuration.");
 
     const keysWithIcon = [
       'presence', 'sub-button1', 'sub-button2', 'sub-button3', 'sub-button4',
@@ -308,7 +310,6 @@ class BubbleRoom extends LitElement {
         line-height: 1;
         /* Aggiungi se vuoi, migliora la centratura verticale: */
         vertical-align: middle;
-        border: 2px solid yellow !important;
       }
 
   
@@ -434,7 +435,7 @@ class BubbleRoom extends LitElement {
     }
     const { entities } = this.config;
 
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 6; i++) {
       const sensorKey = `sensor${i}`;
       const sensor = this.config.entities[sensorKey];
       if (!sensor || !sensor.type) continue;
@@ -449,13 +450,6 @@ class BubbleRoom extends LitElement {
     const subColors = colors?.subbutton || {};
     const hass = this.hass;
     const presenceState = hass.states[entities.presence.entity]?.state || 'off';
-    const extractAlpha = (rgba) => {
-      const match = rgba?.match(/rgba\([^,]+,[^,]+,[^,]+,\s*([^)]+)\)/);
-      return match ? parseFloat(match[1]) : 1;
-    };
-    presenceState === 'on'
-      ? extractAlpha(roomColors.background_active || 'rgba(0,128,0,1)')
-      : extractAlpha(roomColors.background_inactive || 'rgba(0,128,0,0.3)');
     const bubbleBg = presenceState === 'on'
       ? roomColors.background_active || 'rgba(0,128,0,0.5)'
       : roomColors.background_inactive || 'rgba(0,128,0,0.3)';
@@ -686,14 +680,23 @@ class BubbleRoom extends LitElement {
     // 4. Fallback per dominio
     return this._getDomainDefaultIcon(domain, state) || 'mdi:information-outline';
   }  
-  _getDeviceClassIcon(deviceClass, state) { const icons = DEVICE_CLASS_ICON_MAP[deviceClass]; if (!icons) return ''; if (icons.on && icons.off) { return state === 'on' ? icons.on : icons.off; } return icons.on || ''; }
-  _getDomainDefaultIcon(domain, state) { if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP$1[domain] || ''; }
-  _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP$1[sensorType]; if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
+  _getDeviceClassIcon(deviceClass, state) { const icons = DEVICE_CLASS_ICON_MAP[deviceClass]; 
+    if (!icons) return ''; 
+    if (icons.on && icons.off) { return state === 'on' ? icons.on : icons.off; } return icons.on || ''; }
+  _getDomainDefaultIcon(domain, state) { 
+    if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; 
+    if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; 
+    if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; 
+    if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; 
+    if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP$1[domain] || ''; }
+  _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP$1[sensorType]; 
+    if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
 
   _resizeNameFont() {
     const container = this.renderRoot?.querySelector('#nameArea');
     const text = this.renderRoot?.querySelector('#nameText');
     if (!container || !text) return;
+
   
     // STEP 1: prova con letter-spacing ampio e font massimo
     let maxFont = 300, minFont = 5, fontSize = maxFont;
@@ -1373,7 +1376,7 @@ class BubbleRoomEditor extends r {
     }
     return x`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room V3.2<span class="version">v3.0</span></h3>
+        <h3>Visual Editor Bubble Room V3.2.0<span class="version">v3.2.0</span></h3>
       </div>
       ${this._renderRoomPanel()}
       ${this._renderSubButtonPanelGroup()}
@@ -1424,7 +1427,7 @@ class BubbleRoomEditor extends r {
         <input
           type="text"
           .value="${value}"
-          placeholder="Inserisci entity_id"
+          placeholder="Enter entity_id"
           @input="${this._updateEntity(entityKey, field)}" />
       `}
     `;
@@ -1488,7 +1491,7 @@ class BubbleRoomEditor extends r {
             class="${this._jsonError ? 'error' : ''}"
             .value="${tapAction.service_data ? JSON.stringify(tapAction.service_data) : ''}"
             @input="${this._updateTapActionField('service_data')}"></textarea>
-          ${this._jsonError ? x`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
+          ${this._jsonError ? x`<div style="color: red; font-size: 0.9em;">⚠️ Invalid JSON</div>` : ''}
         ` : ''}
       </div>
   
@@ -1536,59 +1539,6 @@ class BubbleRoomEditor extends r {
       </ha-expansion-panel>
     `;
   }
-
-  _renderSingleSensorPill(key, label, index) {
-    const sensor = this._config.entities?.[key] || {};
-    const expanded = this._expandedSensors[index];
-    const accent = "#8cff8a";
-    // Genera tutte le opzioni dai tipi presenti in SENSOR_TYPE_MAP
-    const sensorTypeOptions = Object.entries(SENSOR_TYPE_MAP).map(
-      ([type, def]) => x`<option value="${type}">${def.emoji} ${def.label}</option>`
-    );
-    // Unità disponibili
-    const units = sensor.type && SENSOR_TYPE_MAP[sensor.type]?.units
-      ? SENSOR_TYPE_MAP[sensor.type].units
-      : [];
-  
-    return this._renderExpandablePill({
-      label,
-      expanded,
-      accent,
-      onToggle: () => this._toggleSensorExpand(index),
-      content: x`
-        <div style="display: flex; gap: 18px; margin-bottom: 8px;">
-          <div class="input-group" style="flex:2; margin-bottom:0;">
-            <label>Sensor type</label>
-            <select
-              style="width:100%;"
-              .value="${sensor.type || ''}"
-              @change="${e => this._updateSensor(index, 'type', e.target.value)}"
-            >
-              <option value="">-- none --</option>
-              ${sensorTypeOptions}
-            </select>
-          </div>
-          <div class="input-group" style="flex:2; margin-bottom:0;">
-            <label>Entity</label>
-            ${this._renderEntityInput(key, "entity", "sensor")}
-          </div>
-          <div class="input-group" style="flex:1; margin-bottom:0;">
-            <label>Unit</label>
-            <select
-              style="width:100%;"
-              .value="${sensor.unit || (units[0] || '')}"
-              @change="${e => this._updateSensor(index, 'unit', e.target.value)}"
-            >
-              ${units.map(u =>
-                x`<option value="${u}">${u}</option>`
-              )}
-            </select>
-          </div>
-        </div>
-      `
-    });
-  }
-  
 
   _updateSensor(index, field, value) {
     const key = `sensor${index + 1}`;
@@ -2002,7 +1952,7 @@ class BubbleRoomEditor extends r {
       { value: "more-info", label: "🔎 More Info" },
       { value: "navigate", label: "↗️ Navigate" },
       { value: "call-service", label: "⚙️ Call Service" },
-      { value: "none", label: "🚫 Nessuna" }
+      { value: "none", label: "🚫 None" }
     ];
   
     return x`
@@ -2145,7 +2095,7 @@ class BubbleRoomEditor extends r {
                 @change="${e => this._toggleAutoDiscoverySection('room_presence', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>🪄 Auto-scoperta attiva</span>
+              <span>🪄 Auto-discovery</span>
             </label>
           </div>
   
@@ -2187,9 +2137,9 @@ class BubbleRoomEditor extends r {
             </div>
           </div>
   
-          <!-- MINI-PILL "Icona": Room Icon + Presence su una riga, sotto Tap + Hold -->
+          <!-- MINI-PILL "Icon": Room Icon + Presence su una riga, sotto Tap + Hold -->
           <div class="mini-pill glass-pill expanded" style="margin-bottom:12px;">
-            <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Icona</div>
+            <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Icon</div>
             <div class="mini-pill-content">
               <div style="display: flex; gap: 18px; flex-wrap: wrap;">
                 <div style="flex:1; min-width:170px;">
@@ -2276,7 +2226,7 @@ class BubbleRoomEditor extends r {
                 @change="${e => this._toggleAutoDiscoverySection('subbutton', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>🪄 Auto-scoperta attiva</span>
+              <span>🪄 Auto-discovery</span>
             </label>
           </div>
   
@@ -2372,7 +2322,7 @@ class BubbleRoomEditor extends r {
                 @change="${e => this._toggleAutoDiscoverySection('mushroom', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>🪄 Auto-scoperta attiva</span>
+              <span>🪄 Auto-discovery</span>
             </label>
           </div>
           <!-- Entities pills -->
@@ -2461,13 +2411,13 @@ class BubbleRoomEditor extends r {
                 @change="${e => this._toggleAutoDiscoverySection('camera', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>🪄 Auto-scoperta attiva</span>
+              <span>🪄 Auto-discovery</span>
             </label>
           </div>
           <!-- Glass-pill con tutti i campi -->
           <div class="mini-pill glass-pill expanded">
             <div class="mini-pill-header">
-              Entity & Icona
+              Entity & Icon
             </div>
             <div class="mini-pill-content">
               <div style="display: flex; gap: 18px; margin-bottom: 18px;">
@@ -2522,14 +2472,14 @@ class BubbleRoomEditor extends r {
                 @change="${e => this._toggleAutoDiscoverySection('climate', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>🪄 Auto-scoperta attiva</span>
+              <span>🪄 Auto-discovery</span>
             </label>
           </div>
   
           <!-- Unica glass-pill per il gruppo di campi -->
           <div class="mini-pill glass-pill expanded">
             <div class="mini-pill-header">
-              Entity & Icona
+              Entity & Icon
             </div>
             <div class="mini-pill-content">
               <div style="display: flex; gap: 18px; margin-bottom: 18px;">
