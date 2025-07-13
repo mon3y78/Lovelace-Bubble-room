@@ -1376,7 +1376,7 @@ class BubbleRoomEditor extends r {
       <ha-expansion-panel id="${panelId}">
         <div slot="header" @click="${() => this._togglePanel(panelId)}">${label}</div>
         <div class="section-content">
-          ${this._renderEntityInput("Entities (ID)", key)}
+          ${this._renderEntityInput("Entities (ID)", key, "entity", "subbutton")}
           ${this._renderIconInput("Icon", key)}
           ${this._renderSubButtonAction(key)}
         </div>
@@ -1547,7 +1547,7 @@ class BubbleRoomEditor extends r {
       <ha-expansion-panel id="${panelId}">
         <div slot="header" @click="${() => this._togglePanel(panelId)}">${label}</div>
         <div class="section-content">
-          ${this._renderEntityInput(`${label} (ID)`, key)}
+          ${this._renderEntityInput("Entity", key, "entity", "mushroom")}
           ${this._renderIconInput(`${label} Icon`, key)}
         </div>
       </ha-expansion-panel>
@@ -2255,7 +2255,7 @@ class BubbleRoomEditor extends r {
               content: x`
                 <div style="display:flex; flex-direction:column; gap:5px;">
                   <div class="input-group" style="flex:1; margin-bottom:0;">
-                    ${this._renderEntityInput(key, "entity", "subbutton")}
+                    ${this._renderEntityInput("Entities (ID)", key, "entity", "subbutton")}
                   </div>
                   <div class="input-group" style="flex:1; margin-bottom:0;">
                     ${this._renderIconInput("Icon", key)}
@@ -2349,7 +2349,7 @@ class BubbleRoomEditor extends r {
               content: x`
                 <div style="display:flex; flex-direction:column; gap:5px;">
                   <div class="input-group" style="flex:1; margin-bottom:0;">
-                    ${this._renderEntityInput(entity.key, "entity", "mushroom")}
+                    ${this._renderEntityInput("Entity", key, "entity", "mushroom")}
                   </div>
                   <div class="input-group" style="flex:1; margin-bottom:0;">
                     ${this._renderIconInput("Icon", entity.key)}
@@ -2432,7 +2432,7 @@ class BubbleRoomEditor extends r {
             <div class="mini-pill-content">
               <div style="display:flex; flex-direction:column; gap:5px;">
                 <div class="input-group" style="flex:1; margin-bottom:0;">
-                  ${this._renderEntityInput("Camera (ID)", "camera", 'entity', 'camera')}
+                  ${this._renderEntityInput("Camera (ID)", "camera", "entity", "camera")}
                 </div>
                 <div class="input-group" style="flex:1; margin-bottom:0;">
                   ${this._renderIconInput("Camera Icon", "camera")}
@@ -2494,7 +2494,7 @@ class BubbleRoomEditor extends r {
             <div class="mini-pill-content">
               <div style="display:flex; flex-direction:column; gap:5px;">
                 <div class="input-group" style="flex:1; margin-bottom:0;">
-                  ${this._renderEntityInput("Climate (ID)", "climate", 'entity', 'climate')}
+                  ${this._renderEntityInput("Climate (ID)", "climate", "entity", "climate")}
                 </div>
                 <div class="input-group" style="flex:1; margin-bottom:0;">
                   ${this._renderIconInput("Climate Icon", "climate")}
@@ -2548,7 +2548,7 @@ class BubbleRoomEditor extends r {
             </select>
           </div>
           <div class="input-group" style="flex:2; margin-bottom:0;">
-            ${this._renderEntityInput(key, "entity", "sensor")}
+            ${this._renderEntityInput(key, "entity", "sensor", "sensor")}
           </div>
           <div style="display:flex; flex-direction:column; gap:5px;">
             <label>Unit</label>
