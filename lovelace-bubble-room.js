@@ -67,6 +67,7 @@ class BubbleRoom extends LitElement {
     super();
     this._iconAreaSize = { w: 130, h: 140 };   // area icona principale/mushroom
     this._subButtonSize = { w: 48, h: 48 };    // area di una cella subbutton
+    this._resizeObserver = null;
   }
   connectedCallback() {
     super.connectedCallback();
@@ -78,7 +79,7 @@ class BubbleRoom extends LitElement {
       document.head.appendChild(link);
     }
   }
-  async updated() {
+  updated() {
     const iconArea = this.renderRoot?.querySelector('.icon-area');
     if (iconArea) {
       const rect = iconArea.getBoundingClientRect();
@@ -97,10 +98,24 @@ class BubbleRoom extends LitElement {
       const rect = subbuttonCol.getBoundingClientRect();
       this._subButtonSize = { w: rect.width, h: rect.height / 4 };
     }
-    await this.updateComplete;
     this._resizeNameFont();
   }
-  
+  disconnectedCallback() {
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+      this._resizeObserver = null;
+    }
+    super.disconnectedCallback();
+
+  //
+  }
+  firstUpdated() {
+    const container = this.renderRoot?.querySelector('#nameArea');
+    if (container) {
+      this._resizeObserver = new ResizeObserver(() => this._resizeNameFont());
+      this._resizeObserver.observe(container);
+    }
+  }
   
   static get properties() {
     return {
