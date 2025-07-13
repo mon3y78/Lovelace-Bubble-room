@@ -2117,7 +2117,7 @@ class BubbleRoomEditor extends r {
           <div class="mini-pill glass-pill expanded" style="margin-bottom:18px;">
             <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Room</div>
             <div class="mini-pill-content">
-              <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; flex-direction:column; gap:5px;">
                 <div style="flex:1;">
                   <label>Room name:</label>
                   <input type="text" .value="${this._config.name || ''}" @input="${this._updateName}" />
@@ -2155,7 +2155,7 @@ class BubbleRoomEditor extends r {
           <div class="mini-pill glass-pill expanded" style="margin-bottom:12px;">
             <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Icon</div>
             <div class="mini-pill-content">
-              <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; flex-direction:column; gap:5px;">
                 <div style="flex:1; min-width:170px;">
                   <label>Room Icon:</label>
                   <ha-icon-picker
@@ -2173,7 +2173,7 @@ class BubbleRoomEditor extends r {
                   ${this._renderEntityInput("Presence (ID)", "presence", "entity", "room_presence")}
                 </div>
               </div>
-              <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; flex-direction:column; gap:1px;">
                 <div style="flex:1; min-width:160px;">
                   ${this._renderTapHoldAction("tap")}
                 </div>
@@ -2253,7 +2253,7 @@ class BubbleRoomEditor extends r {
               accent,
               onToggle: () => this._toggleSubButtonExpand(i),
               content: x`
-                <div style="display: flex; gap: 18px; margin-bottom: 18px;">
+                <div style="display:flex; flex-direction:column; gap:5px;">
                   <div class="input-group" style="flex:1; margin-bottom:0;">
                     ${this._renderEntityInput(key, "entity", "subbutton")}
                   </div>
@@ -2266,7 +2266,7 @@ class BubbleRoomEditor extends r {
                   <span style="display:block; font-size:1.13em; font-weight:700; color:#b28fff;">Function:</span>
                 </div>
                 <!-- Tap/Hold -->
-                <div style="display: flex; gap:18px; margin-top:18px;">
+                <div style="display:flex; flex-direction:column; gap:1px;">
                   <div style="flex:1; min-width:160px;">
                     ${this._renderTapHoldAction("tap", this._config.entities?.[key], this._updateActionFieldGeneric(key))}
                   </div>
@@ -2347,7 +2347,7 @@ class BubbleRoomEditor extends r {
               accent,
               onToggle: () => this._toggleMushroomEntityExpand(i),
               content: x`
-                <div style="display: flex; gap: 18px; margin-bottom: 18px;">
+                <div style="display:flex; flex-direction:column; gap:5px;">
                   <div class="input-group" style="flex:1; margin-bottom:0;">
                     <label>Entity:</label>
                     ${this._renderEntityInput(entity.key, "entity", "mushroom")}
@@ -2360,7 +2360,7 @@ class BubbleRoomEditor extends r {
                 <div style="margin-bottom:6px;">
                   <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0;">Function:</span>
                 </div>
-                <div style="display: flex; gap:18px; margin-top:18px;">
+                <div style="display:flex; flex-direction:column; gap:1px;">
                   <div style="flex:1; min-width:160px;">
                     ${this._renderTapHoldAction("tap", this._config.entities?.[entity.key], this._updateActionFieldGeneric(entity.key))}
                   </div>
@@ -2432,7 +2432,7 @@ class BubbleRoomEditor extends r {
               Entity & Icon
             </div>
             <div class="mini-pill-content">
-              <div style="display: flex; gap: 18px; margin-bottom: 18px;">
+              <div style="display:flex; flex-direction:column; gap:5px;">
                 <div class="input-group" style="flex:1; margin-bottom:0;">
                   ${this._renderEntityInput("Camera (ID)", "camera", 'entity', 'camera')}
                 </div>
@@ -2494,7 +2494,7 @@ class BubbleRoomEditor extends r {
               Entity & Icon
             </div>
             <div class="mini-pill-content">
-              <div style="display: flex; gap: 18px; margin-bottom: 18px;">
+              <div style="display:flex; flex-direction:column; gap:5px;">
                 <div class="input-group" style="flex:1; margin-bottom:0;">
                   ${this._renderEntityInput("Climate (ID)", "climate", 'entity', 'climate')}
                 </div>
@@ -2534,7 +2534,7 @@ class BubbleRoomEditor extends r {
       accent,
       onToggle: () => this._toggleSensorExpand(index),
       content: x`
-        <div style="display: flex; gap: 18px; margin-bottom: 8px;">
+        <div style="display:flex; flex-direction:column; gap:5px;">
           <div class="input-group" style="flex:2; margin-bottom:0;">
             <label>Sensor Type</label>
             <select
@@ -2553,7 +2553,7 @@ class BubbleRoomEditor extends r {
             <label>Entity</label>
             ${this._renderEntityInput(key, "entity", "sensor")}
           </div>
-          <div class="input-group" style="flex:1; margin-bottom:0;">
+          <div style="display:flex; flex-direction:column; gap:5px;">
             <label>Unit</label>
             <select
               style="width:100%;"
