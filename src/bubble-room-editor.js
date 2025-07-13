@@ -564,6 +564,9 @@ class BubbleRoomEditor extends LitElement {
         color: #fff;
         border: 2px solid #1976d2;
       }
+      ha-entity-picker {
+        --mdc-menu-min-width: 280px !important; /* larghezza minima maggiore del picker */
+      }
       ha-entity-picker::part(menu) {
         max-width: 90vw !important; /* sfrutta fino al 90% della viewport */
         min-width: 280px !important;
@@ -616,7 +619,7 @@ class BubbleRoomEditor extends LitElement {
     }
     return html`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room <span class="version">v3.2.0</span></h3>
+        <h3>Visual Editor Bubble Room <span class="version">v4.0</span></h3>
       </div>
       ${this._renderRoomPanel()}
       ${this._renderSubButtonPanelGroup()}
