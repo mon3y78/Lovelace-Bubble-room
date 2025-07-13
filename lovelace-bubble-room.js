@@ -940,7 +940,7 @@ class BubbleRoomEditor extends r {
           return ["motion", "occupancy", "presence"].includes(dc);
         }
         return ["light", "switch", "media_player", "fan", "humidifier", "lock", "input_boolean", "scene"].includes(domain);
-  
+     
       case "subbutton":
         return ["light", "switch", "media_player", "fan", "cover", "humidifier", "lock", "input_boolean", "scene"].includes(domain);
   
