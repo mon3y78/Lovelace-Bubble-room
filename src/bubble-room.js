@@ -279,7 +279,6 @@ class BubbleRoom extends LitElement {
         height: 100%;
         min-height: 0;
         min-width: 0;
-        border: 2px dashed white !important;
       }
   
       .left-content {
@@ -288,7 +287,6 @@ class BubbleRoom extends LitElement {
         height: 100%;
         min-height: 0;
         min-width: 0;
-        border: 2px solid blue !important;
         box-sizing: border-box;
       }
   
@@ -310,6 +308,7 @@ class BubbleRoom extends LitElement {
         line-height: 1;
         /* Aggiungi se vuoi, migliora la centratura verticale: */
         vertical-align: middle;
+        border: 2px solid yellow !important;
       }
 
   
@@ -322,7 +321,7 @@ class BubbleRoom extends LitElement {
         min-height: 0;
         min-width: 0;
         height: 100%;
-        border: 2px solid yellow !important;
+
       }
   
       .bubble-icon-container {
@@ -363,7 +362,6 @@ class BubbleRoom extends LitElement {
         min-height: 0;
         min-width: 0;
         padding: 2%;
-        border: 2px solid green !important;
         box-sizing: border-box;
       }
   
@@ -418,7 +416,6 @@ class BubbleRoom extends LitElement {
         padding: 0 2px;
         min-width: 0;
         box-sizing: border-box;
-        border: 2px solid yellow !important;
 }
 
       @media (max-width: 480px) {
