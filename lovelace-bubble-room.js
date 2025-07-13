@@ -793,6 +793,99 @@ const t=globalThis,i$1=t.trustedTypes,s=i$1?i$1.createPolicy("lit-html",{createH
  * SPDX-License-Identifier: BSD-3-Clause
  */class r extends b{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0;}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const s=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=B(s,this.renderRoot,this.renderOptions);}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0);}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1);}render(){return T}}r._$litElement$=!0,r["finalized"]=!0,globalThis.litElementHydrateSupport?.({LitElement:r});const i=globalThis.litElementPolyfillSupport;i?.({LitElement:r});(globalThis.litElementVersions??=[]).push("4.1.1");
 
+function injectBubbleRoomMenuCSS() {
+  const styleId = "bubble-room-menu-css";
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.innerHTML = `
+      mwc-menu,
+      .mdc-menu, 
+      .mdc-menu-surface {
+        min-width: 340px !important;
+        max-width: 98vw !important;
+        width: auto !important;
+        background: #171c22 !important;
+        color: #f3f3f3 !important;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 38px #10104099 !important;
+        font-size: 1.09em !important;
+        z-index: 1302 !important;
+      }
+      mwc-list,
+      .mdc-list {
+        background: transparent !important;
+        color: inherit !important;
+        font-size: 1em !important;
+        padding: 0 !important;
+      }
+      mwc-list-item,
+      .mdc-list-item {
+        min-height: 48px !important;
+        padding: 12px 18px !important;
+        background: transparent !important;
+        color: inherit !important;
+        border-bottom: 1px solid #292e3822 !important;
+        font-size: 1em !important;
+        cursor: pointer !important;
+        transition: background 0.18s;
+      }
+      mwc-list-item:last-child,
+      .mdc-list-item:last-child {
+        border-bottom: none !important;
+      }
+      mwc-list-item[selected],
+      .mdc-list-item--selected,
+      mwc-list-item:active,
+      .mdc-list-item:focus,
+      .mdc-list-item:hover {
+        background: #2366ff2d !important;
+        color: #4da6ff !important;
+      }
+      .mdc-list-item__primary-text,
+      .mdc-list-item__text {
+        font-size: 1.09em !important;
+        color: inherit !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        line-height: 1.4 !important;
+        max-width: 98vw !important;
+        word-break: break-word !important;
+      }
+      .mdc-list-item__secondary-text {
+        font-size: 0.92em !important;
+        color: #b7c1ca !important;
+      }
+      .mdc-list-item__graphic {
+        color: #55afff !important;
+        margin-right: 12px !important;
+        font-size: 1.3em !important;
+      }
+      .mdc-list-item__meta {
+        color: #36e6a0 !important;
+        font-size: 1.2em !important;
+        margin-left: 10px !important;
+      }
+      .mdc-menu-surface {
+        max-height: 65vh !important;
+        overflow-y: auto !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: #444 #232323 !important;
+      }
+      .mdc-menu-surface::-webkit-scrollbar {
+        width: 7px;
+        background: #20262d;
+      }
+      .mdc-menu-surface::-webkit-scrollbar-thumb {
+        background: #505a6a;
+        border-radius: 9px;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
 const DOMAIN_ICON_MAP = {
   light:           'mdi:lightbulb',
   switch:          'mdi:toggle-switch',
@@ -854,6 +947,7 @@ class BubbleRoomEditor extends r {
 
   constructor() {
     super();
+    injectBubbleRoomMenuCSS();
     this._iconList = [
       "mdi:sofa", "mdi:bed", "mdi:home", "mdi:table-furniture", "mdi:television", "mdi:lightbulb",
       "mdi:fan", "mdi:air-conditioner", "mdi:robot-vacuum", "mdi:led-strip-variant", "mdi:lamp",
@@ -1337,109 +1431,6 @@ class BubbleRoomEditor extends r {
         color: #fff;
         border: 2px solid #1976d2;
       }
-      /* Allarga il menu dropdown (popup) */
-      mwc-menu,
-      .mdc-menu, 
-      .mdc-menu-surface {
-        min-width: 340px !important;
-        max-width: 98vw !important;
-        width: auto !important;
-        background: #171c22 !important;           /* Colore sfondo menu */
-        color: #f3f3f3 !important;                /* Colore testo globale */
-        border-radius: 16px !important;           /* Angoli arrotondati */
-        box-shadow: 0 4px 38px #10104099 !important; /* Ombra più soft */
-        font-size: 1.09em !important;
-        z-index: 1302 !important;
-        /* padding: 0 !important; */               /* opzionale */
-        /* border: 2px solid #36e6a0 !important; */ /* opzionale */
-      }
-
-      /* Lista interna del menu */
-      mwc-list,
-      .mdc-list {
-        background: transparent !important;
-        color: inherit !important;
-        font-size: 1em !important;
-        padding: 0 !important;
-      }
-
-      /* Elementi della lista (le singole scelte) */
-      mwc-list-item,
-      .mdc-list-item {
-        min-height: 48px !important;
-        padding: 12px 18px !important;
-        background: transparent !important;
-        color: inherit !important;
-        border-bottom: 1px solid #292e3822 !important;
-        font-size: 1em !important;
-        cursor: pointer !important;
-        transition: background 0.18s;
-      }
-      mwc-list-item:last-child,
-      .mdc-list-item:last-child {
-        border-bottom: none !important;
-      }
-
-      /* Stato selezionato o hover */
-      mwc-list-item[selected],
-      .mdc-list-item--selected,
-      mwc-list-item:active,
-      .mdc-list-item:focus,
-      .mdc-list-item:hover {
-        background: #2366ff2d !important;
-        color: #4da6ff !important;
-      }
-
-      /* Testo primario (nome entità, nome icona) */
-      .mdc-list-item__primary-text,
-      .mdc-list-item__text {
-        font-size: 1.09em !important;
-        color: inherit !important;
-        white-space: normal !important;
-        overflow: visible !important;
-        text-overflow: unset !important;
-        line-height: 1.4 !important;
-        max-width: 98vw !important;
-        word-break: break-word !important;
-      }
-
-      /* Testo secondario */
-      .mdc-list-item__secondary-text {
-        font-size: 0.92em !important;
-        color: #b7c1ca !important;
-      }
-
-      /* Icona a sinistra (se presente) */
-      .mdc-list-item__graphic {
-        color: #55afff !important;
-        margin-right: 12px !important;
-        font-size: 1.3em !important;
-      }
-
-      /* Icona di selezione a destra */
-      .mdc-list-item__meta {
-        color: #36e6a0 !important;
-        font-size: 1.2em !important;
-        margin-left: 10px !important;
-      }
-
-      /* Scrollbar visibile solo su overflow */
-      .mdc-menu-surface {
-        max-height: 65vh !important;
-        overflow-y: auto !important;
-        scrollbar-width: thin !important;
-        scrollbar-color: #444 #232323 !important;
-      }
-      .mdc-menu-surface::-webkit-scrollbar {
-        width: 7px;
-        background: #20262d;
-      }
-      .mdc-menu-surface::-webkit-scrollbar-thumb {
-        background: #505a6a;
-        border-radius: 9px;
-      }
-
-
     `;
   }
   
