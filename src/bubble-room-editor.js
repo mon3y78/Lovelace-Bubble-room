@@ -1927,10 +1927,10 @@ class BubbleRoomEditor extends LitElement {
                 </div>
                 <div style="display: flex; gap:12px;">
                   <div style="${colorBoxStyle}">
-                    ${this._renderColorField('subbutton', 'text_active')}
+                    ${this._renderColorField('subbutton', 'color_on')}
                   </div>
                   <div style="${colorBoxStyle}">
-                    ${this._renderColorField('subbutton', 'text_inactive')}
+                    ${this._renderColorField('subbutton', 'color_off')}
                   </div>
                 </div>
               </div>
@@ -1941,10 +1941,10 @@ class BubbleRoomEditor extends LitElement {
                 </div>
                 <div style="display: flex; gap:12px;">
                   <div style="${colorBoxStyle}">
-                    ${this._renderColorField('subbutton', 'background_active')}
+                    ${this._renderColorField('subbutton', 'background_on')}
                   </div>
                   <div style="${colorBoxStyle}">
-                    ${this._renderColorField('subbutton', 'background_inactive')}
+                    ${this._renderColorField('subbutton', 'background_off')}
                   </div>
                 </div>
               </div>
