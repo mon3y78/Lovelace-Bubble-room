@@ -116,6 +116,7 @@ class BubbleRoom extends LitElement {
     if (container) {
       this._resizeObserver = new ResizeObserver(() => this._resizeNameFont());
       this._resizeObserver.observe(container);
+    }
   }
   
   static get properties() {
