@@ -614,8 +614,8 @@ class BubbleRoom extends LitElement {
               if (!btn) return html``;
               const state = hass.states[btn.entity]?.state || 'off';
               const btnColor = state === 'on'
-                ? subColors.color_on || 'rgba(0,0,255,1)'
-                : subColors.color_off || 'rgba(0,0,255,0.3)';
+                ? (subColors.background_on || subColors.color_on || 'rgba(0,0,255,1)')
+                : (subColors.background_off || subColors.color_off || 'rgba(0,0,255,0.3)');
               const iconColor = state === 'on'
                 ? subColors.icon_on || 'yellow'
                 : subColors.icon_off || '#666';
@@ -2700,10 +2700,10 @@ class BubbleRoomEditor extends r {
                 </div>
                 <div style="display: flex; gap:12px;">
                   <div style="${colorBoxStyle}">
-                    ${this._renderColorField('subbutton', 'text_active')}
+                    ${this._renderColorField('subbutton', 'color_on')}
                   </div>
                   <div style="${colorBoxStyle}">
-                    ${this._renderColorField('subbutton', 'text_inactive')}
+                    ${this._renderColorField('subbutton', 'color_off')}
                   </div>
                 </div>
               </div>
@@ -2714,10 +2714,10 @@ class BubbleRoomEditor extends r {
                 </div>
                 <div style="display: flex; gap:12px;">
                   <div style="${colorBoxStyle}">
-                    ${this._renderColorField('subbutton', 'background_active')}
+                    ${this._renderColorField('subbutton', 'background_on')}
                   </div>
                   <div style="${colorBoxStyle}">
-                    ${this._renderColorField('subbutton', 'background_inactive')}
+                    ${this._renderColorField('subbutton', 'background_off')}
                   </div>
                 </div>
               </div>
