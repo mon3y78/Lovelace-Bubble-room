@@ -407,6 +407,7 @@ class BubbleRoom extends LitElement {
         padding: 0 2px;
         min-width: 0;
         box-sizing: border-box;
+        border: 2px solid yellow !important;
 }
 
       @media (max-width: 480px) {
