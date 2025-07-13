@@ -326,6 +326,7 @@ class BubbleRoom extends LitElement {
         line-height: 1;
         /* Aggiungi se vuoi, migliora la centratura verticale: */
         vertical-align: middle;
+        border: 2px solid red !important;
       }
 
   
