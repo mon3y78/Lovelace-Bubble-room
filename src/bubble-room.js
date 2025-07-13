@@ -1,4 +1,4 @@
-// Bubble Room v3.2.0
+// Bubble Room v4.0
 // https://github.com/mon3y78/Lovelace-Bubble-room
 // Autore: mon3y78 (https://github.com/mon3y78)
 

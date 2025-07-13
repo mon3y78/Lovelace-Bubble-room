@@ -617,7 +617,7 @@ class BubbleRoomEditor extends LitElement {
     }
     return html`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room <span class="version">v3.2.0</span></h3>
+        <h3>Visual Editor Bubble Room <span class="version">4.0</span></h3>
       </div>
       ${this._renderRoomPanel()}
       ${this._renderSubButtonPanelGroup()}
@@ -1576,11 +1576,9 @@ class BubbleRoomEditor extends LitElement {
               content: html`
                 <div style="display:flex; flex-direction:column; gap:5px;">
                   <div class="input-group" style="flex:1; margin-bottom:0;">
-                    <label>Entity:</label>
                     ${this._renderEntityInput(entity.key, "entity", "mushroom")}
                   </div>
                   <div class="input-group" style="flex:1; margin-bottom:0;">
-                    <label>Icon:</label>
                     ${this._renderIconInput("Icon", entity.key)}
                   </div>
                 </div>
@@ -1777,7 +1775,6 @@ class BubbleRoomEditor extends LitElement {
             </select>
           </div>
           <div class="input-group" style="flex:2; margin-bottom:0;">
-            <label>Entity</label>
             ${this._renderEntityInput(key, "entity", "sensor")}
           </div>
           <div style="display:flex; flex-direction:column; gap:5px;">
@@ -1886,20 +1883,6 @@ class BubbleRoomEditor extends LitElement {
             content: html`
               <div class="input-group color-row">
                 <div style="display: flex; gap:12px; margin-bottom:4px;">
-                  <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Icon Active</span></div>
-                  <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Icon Inactive</span></div>
-                </div>
-                <div style="display: flex; gap:12px;">
-                  <div style="${colorBoxStyle}">
-                    ${this._renderColorField('room', 'text_active')}
-                  </div>
-                  <div style="${colorBoxStyle}">
-                    ${this._renderColorField('room', 'text_inactive')}
-                  </div>
-                </div>
-              </div>
-              <div class="input-group color-row">
-                <div style="display: flex; gap:12px; margin-bottom:4px;">
                   <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Background Active</span></div>
                   <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Background Inactive</span></div>
                 </div>
@@ -1936,20 +1919,6 @@ class BubbleRoomEditor extends LitElement {
             accent: "#b28fff",
             onToggle: () => this._toggleColorExpand(1),
             content: html`
-              <div class="input-group color-row">
-                <div style="display: flex; gap:12px; margin-bottom:4px;">
-                  <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Text Active</span></div>
-                  <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Text Inactive</span></div>
-                </div>
-                <div style="display: flex; gap:12px;">
-                  <div style="${colorBoxStyle}">
-                    ${this._renderColorField('subbutton', 'text_active')}
-                  </div>
-                  <div style="${colorBoxStyle}">
-                    ${this._renderColorField('subbutton', 'text_inactive')}
-                  </div>
-                </div>
-              </div>
               <div class="input-group color-row">
                 <div style="display: flex; gap:12px; margin-bottom:4px;">
                   <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Background Active</span></div>
