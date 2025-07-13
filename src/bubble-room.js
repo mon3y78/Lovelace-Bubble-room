@@ -80,7 +80,7 @@ class BubbleRoom extends LitElement {
       document.head.appendChild(link);
     }
   }
-  updated() {
+  async updated() {
     const iconArea = this.renderRoot?.querySelector('.icon-area');
     if (iconArea) {
       const rect = iconArea.getBoundingClientRect();
@@ -99,6 +99,7 @@ class BubbleRoom extends LitElement {
       const rect = subbuttonCol.getBoundingClientRect();
       this._subButtonSize = { w: rect.width, h: rect.height / 4 };
     }
+    await this.updateComplete;
     this._resizeNameFont();
   }
   
