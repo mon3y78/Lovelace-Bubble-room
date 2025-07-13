@@ -617,7 +617,7 @@ class BubbleRoomEditor extends LitElement {
     }
     return html`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room V3.2<span class="version">v3.0</span></h3>
+        <h3>Visual Editor Bubble Room V3.2.0<span class="version">v3.2.0</span></h3>
       </div>
       ${this._renderRoomPanel()}
       ${this._renderSubButtonPanelGroup()}
@@ -668,7 +668,7 @@ class BubbleRoomEditor extends LitElement {
         <input
           type="text"
           .value="${value}"
-          placeholder="Inserisci entity_id"
+          placeholder="Enter entity_id"
           @input="${this._updateEntity(entityKey, field)}" />
       `}
     `;
@@ -732,7 +732,7 @@ class BubbleRoomEditor extends LitElement {
             class="${this._jsonError ? 'error' : ''}"
             .value="${tapAction.service_data ? JSON.stringify(tapAction.service_data) : ''}"
             @input="${this._updateTapActionField('service_data')}"></textarea>
-          ${this._jsonError ? html`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
+          ${this._jsonError ? html`<div style="color: red; font-size: 0.9em;">⚠️ Invalid JSON</div>` : ''}
         ` : ''}
       </div>
   
@@ -780,59 +780,6 @@ class BubbleRoomEditor extends LitElement {
       </ha-expansion-panel>
     `;
   }
-
-  _renderSingleSensorPill(key, label, index) {
-    const sensor = this._config.entities?.[key] || {};
-    const expanded = this._expandedSensors[index];
-    const accent = "#8cff8a";
-    // Genera tutte le opzioni dai tipi presenti in SENSOR_TYPE_MAP
-    const sensorTypeOptions = Object.entries(SENSOR_TYPE_MAP).map(
-      ([type, def]) => html`<option value="${type}">${def.emoji} ${def.label}</option>`
-    );
-    // Unità disponibili
-    const units = sensor.type && SENSOR_TYPE_MAP[sensor.type]?.units
-      ? SENSOR_TYPE_MAP[sensor.type].units
-      : [];
-  
-    return this._renderExpandablePill({
-      label,
-      expanded,
-      accent,
-      onToggle: () => this._toggleSensorExpand(index),
-      content: html`
-        <div style="display: flex; gap: 18px; margin-bottom: 8px;">
-          <div class="input-group" style="flex:2; margin-bottom:0;">
-            <label>Sensor type</label>
-            <select
-              style="width:100%;"
-              .value="${sensor.type || ''}"
-              @change="${e => this._updateSensor(index, 'type', e.target.value)}"
-            >
-              <option value="">-- none --</option>
-              ${sensorTypeOptions}
-            </select>
-          </div>
-          <div class="input-group" style="flex:2; margin-bottom:0;">
-            <label>Entity</label>
-            ${this._renderEntityInput(key, "entity", "sensor")}
-          </div>
-          <div class="input-group" style="flex:1; margin-bottom:0;">
-            <label>Unit</label>
-            <select
-              style="width:100%;"
-              .value="${sensor.unit || (units[0] || '')}"
-              @change="${e => this._updateSensor(index, 'unit', e.target.value)}"
-            >
-              ${units.map(u =>
-                html`<option value="${u}">${u}</option>`
-              )}
-            </select>
-          </div>
-        </div>
-      `
-    });
-  }
-  
 
   _updateSensor(index, field, value) {
     const key = `sensor${index + 1}`;
@@ -1246,7 +1193,7 @@ class BubbleRoomEditor extends LitElement {
       { value: "more-info", label: "🔎 More Info" },
       { value: "navigate", label: "↗️ Navigate" },
       { value: "call-service", label: "⚙️ Call Service" },
-      { value: "none", label: "🚫 Nessuna" }
+      { value: "none", label: "🚫 None" }
     ];
   
     return html`
@@ -1389,7 +1336,7 @@ class BubbleRoomEditor extends LitElement {
                 @change="${e => this._toggleAutoDiscoverySection('room_presence', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>🪄 Auto-scoperta attiva</span>
+              <span>🪄 Auto-discovery</span>
             </label>
           </div>
   
@@ -1431,9 +1378,9 @@ class BubbleRoomEditor extends LitElement {
             </div>
           </div>
   
-          <!-- MINI-PILL "Icona": Room Icon + Presence su una riga, sotto Tap + Hold -->
+          <!-- MINI-PILL "Icon": Room Icon + Presence su una riga, sotto Tap + Hold -->
           <div class="mini-pill glass-pill expanded" style="margin-bottom:12px;">
-            <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Icona</div>
+            <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Icon</div>
             <div class="mini-pill-content">
               <div style="display: flex; gap: 18px; flex-wrap: wrap;">
                 <div style="flex:1; min-width:170px;">
@@ -1520,7 +1467,7 @@ class BubbleRoomEditor extends LitElement {
                 @change="${e => this._toggleAutoDiscoverySection('subbutton', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>🪄 Auto-scoperta attiva</span>
+              <span>🪄 Auto-discovery</span>
             </label>
           </div>
   
@@ -1616,7 +1563,7 @@ class BubbleRoomEditor extends LitElement {
                 @change="${e => this._toggleAutoDiscoverySection('mushroom', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>🪄 Auto-scoperta attiva</span>
+              <span>🪄 Auto-discovery</span>
             </label>
           </div>
           <!-- Entities pills -->
@@ -1705,13 +1652,13 @@ class BubbleRoomEditor extends LitElement {
                 @change="${e => this._toggleAutoDiscoverySection('camera', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>🪄 Auto-scoperta attiva</span>
+              <span>🪄 Auto-discovery</span>
             </label>
           </div>
           <!-- Glass-pill con tutti i campi -->
           <div class="mini-pill glass-pill expanded">
             <div class="mini-pill-header">
-              Entity & Icona
+              Entity & Icon
             </div>
             <div class="mini-pill-content">
               <div style="display: flex; gap: 18px; margin-bottom: 18px;">
@@ -1766,14 +1713,14 @@ class BubbleRoomEditor extends LitElement {
                 @change="${e => this._toggleAutoDiscoverySection('climate', e.target.checked)}"
                 @click="${e => e.stopPropagation()}"
               />
-              <span>🪄 Auto-scoperta attiva</span>
+              <span>🪄 Auto-discovery</span>
             </label>
           </div>
   
           <!-- Unica glass-pill per il gruppo di campi -->
           <div class="mini-pill glass-pill expanded">
             <div class="mini-pill-header">
-              Entity & Icona
+              Entity & Icon
             </div>
             <div class="mini-pill-content">
               <div style="display: flex; gap: 18px; margin-bottom: 18px;">

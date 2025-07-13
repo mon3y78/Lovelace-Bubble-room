@@ -1,3 +1,7 @@
+// Bubble Room v3.2.0
+// https://github.com/mon3y78/Lovelace-Bubble-room
+// Autore: mon3y78 (https://github.com/mon3y78)
+
 import { LitElement, html, css } from 'https://unpkg.com/lit@2.6.1/index.js?module';
 
 // --- MAPPE DI MAPPING CENTRALIZZATE ---
@@ -167,8 +171,8 @@ class BubbleRoom extends LitElement {
 
   setConfig(config) {
     config = JSON.parse(JSON.stringify(config));
-    if (!config || typeof config !== 'object' || Array.isArray(config)) throw new Error("La configurazione deve essere un oggetto valido.");
-    if (!config.entities || typeof config.entities !== 'object') throw new Error("Devi definire almeno la proprietà 'entities' nella configurazione.");
+    if (!config || typeof config !== 'object' || Array.isArray(config)) throw new Error("The configuration must be a valid object.");
+    if (!config.entities || typeof config.entities !== 'object') throw new Error("You must define at least the 'entities' property in the configuration.");
 
     const keysWithIcon = [
       'presence', 'sub-button1', 'sub-button2', 'sub-button3', 'sub-button4',
@@ -308,7 +312,6 @@ class BubbleRoom extends LitElement {
         line-height: 1;
         /* Aggiungi se vuoi, migliora la centratura verticale: */
         vertical-align: middle;
-        border: 2px solid yellow !important;
       }
 
   
@@ -435,7 +438,7 @@ class BubbleRoom extends LitElement {
     const { entities } = this.config;
     const sensorStrings = [];
 
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 6; i++) {
       const sensorKey = `sensor${i}`;
       const sensor = this.config.entities[sensorKey];
       if (!sensor || !sensor.type) continue;
@@ -460,9 +463,6 @@ class BubbleRoom extends LitElement {
       const match = rgba?.match(/rgba\([^,]+,[^,]+,[^,]+,\s*([^)]+)\)/);
       return match ? parseFloat(match[1]) : 1;
     };
-    const sensorOpacity = presenceState === 'on'
-      ? extractAlpha(roomColors.background_active || 'rgba(0,128,0,1)')
-      : extractAlpha(roomColors.background_inactive || 'rgba(0,128,0,0.3)');
     const bubbleBg = presenceState === 'on'
       ? roomColors.background_active || 'rgba(0,128,0,0.5)'
       : roomColors.background_inactive || 'rgba(0,128,0,0.3)';
@@ -693,14 +693,23 @@ class BubbleRoom extends LitElement {
     // 4. Fallback per dominio
     return this._getDomainDefaultIcon(domain, state) || 'mdi:information-outline';
   }  
-  _getDeviceClassIcon(deviceClass, state) { const icons = DEVICE_CLASS_ICON_MAP[deviceClass]; if (!icons) return ''; if (icons.on && icons.off) { return state === 'on' ? icons.on : icons.off; } return icons.on || ''; }
-  _getDomainDefaultIcon(domain, state) { if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP[domain] || ''; }
-  _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP[sensorType]; if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
+  _getDeviceClassIcon(deviceClass, state) { const icons = DEVICE_CLASS_ICON_MAP[deviceClass]; 
+    if (!icons) return ''; 
+    if (icons.on && icons.off) { return state === 'on' ? icons.on : icons.off; } return icons.on || ''; }
+  _getDomainDefaultIcon(domain, state) { 
+    if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; 
+    if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; 
+    if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; 
+    if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; 
+    if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP[domain] || ''; }
+  _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP[sensorType]; 
+    if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
 
   _resizeNameFont() {
     const container = this.renderRoot?.querySelector('#nameArea');
     const text = this.renderRoot?.querySelector('#nameText');
     if (!container || !text) return;
+
   
     // STEP 1: prova con letter-spacing ampio e font massimo
     let maxFont = 300, minFont = 5, fontSize = maxFont;
