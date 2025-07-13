@@ -698,17 +698,26 @@ class BubbleRoom extends LitElement {
     const text = this.renderRoot?.querySelector('#nameText');
     if (!container || !text) return;
   
-    let maxFont = 300; // px, valore limite massimo per evitare loop infiniti
-    let minFont = 10;  // px
-    let fontSize = maxFont;
-  
-    // Step 1: imposta font-size grande, poi scala giù finché sta dentro all'area
+    // STEP 1: prova con letter-spacing ampio e font massimo
+    let maxFont = 300, minFont = 5, fontSize = maxFont;
+    let spacing = 0.01 * maxFont; // 2% della font size (modificabile)
+    text.style.letterSpacing = `${spacing}px`;
     text.style.fontSize = `${fontSize}px`;
-    while ((text.offsetHeight > container.offsetHeight || text.offsetWidth > container.offsetWidth) && fontSize > minFont) {
+  
+    // Se sta dentro, ok. Se no, azzera letter-spacing e riprova
+    if (text.offsetWidth > container.offsetWidth || text.offsetHeight > container.offsetHeight) {
+      spacing = 0;
+      text.style.letterSpacing = `${spacing}px`;
+      text.style.fontSize = `${fontSize}px`;
+    }
+  
+    // Ora scala giù la font-size finché tutto il testo entra (senza mai andare sotto minFont)
+    while ((text.offsetWidth > container.offsetWidth || text.offsetHeight > container.offsetHeight) && fontSize > minFont) {
       fontSize -= 1;
       text.style.fontSize = `${fontSize}px`;
     }
   }
+  
 
   _getIconShapeStyle() {
     return `
