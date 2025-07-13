@@ -163,7 +163,6 @@ class BubbleRoom extends LitElement {
       },
       name: 'Salotto',
       icon: 'mdi:sofa',
-      tap_action: { action: 'navigate', navigation_path: '/lovelace/sala' }
     };
   }
 
@@ -301,6 +300,7 @@ class BubbleRoom extends LitElement {
         font-family: "Bebas Neue", "Arial Narrow", sans-serif;
         text-transform: uppercase;
         overflow: hidden;
+        border: 2px solid yellow !important;
       }
       #nameText {
         display: inline-block;
@@ -1376,7 +1376,7 @@ class BubbleRoomEditor extends r {
     }
     return x`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room V3.2.0<span class="version">v3.2.0</span></h3>
+        <h3>Visual Editor Bubble Room <span class="version">v3.2.0</span></h3>
       </div>
       ${this._renderRoomPanel()}
       ${this._renderSubButtonPanelGroup()}
