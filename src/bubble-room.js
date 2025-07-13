@@ -165,7 +165,6 @@ class BubbleRoom extends LitElement {
       },
       name: 'Salotto',
       icon: 'mdi:sofa',
-      tap_action: { action: 'navigate', navigation_path: '/lovelace/sala' }
     };
   }
 
@@ -303,6 +302,7 @@ class BubbleRoom extends LitElement {
         font-family: "Bebas Neue", "Arial Narrow", sans-serif;
         text-transform: uppercase;
         overflow: hidden;
+        border: 2px solid yellow !important;
       }
       #nameText {
         display: inline-block;

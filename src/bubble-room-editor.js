@@ -617,7 +617,7 @@ class BubbleRoomEditor extends LitElement {
     }
     return html`
       <div class="editor-header">
-        <h3>Visual Editor Bubble Room V3.2.0<span class="version">v3.2.0</span></h3>
+        <h3>Visual Editor Bubble Room <span class="version">v3.2.0</span></h3>
       </div>
       ${this._renderRoomPanel()}
       ${this._renderSubButtonPanelGroup()}
