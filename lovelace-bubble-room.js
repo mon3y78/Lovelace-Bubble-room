@@ -316,7 +316,7 @@ class BubbleRoom extends LitElement {
         font-family: "Bebas Neue", "Arial Narrow", sans-serif;
         text-transform: uppercase;
         overflow: hidden;
-        border: 2px solid yellow !important;
+        border: 2px dashed yellow !important;
       }
       #nameText {
         display: inline-block;
