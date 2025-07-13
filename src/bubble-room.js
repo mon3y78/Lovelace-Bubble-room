@@ -323,12 +323,12 @@ class BubbleRoom extends LitElement {
       #nameText {
         display: inline-block;
         white-space: nowrap;
-        width: 100%;
+        /* width: 100%;   <-- TOGLI questa riga! */
         text-align: center;
         line-height: 1;
-        /* Aggiungi se vuoi, migliora la centratura verticale: */
         vertical-align: middle;
         border: 2px solid red !important;
+        background: rgba(255,0,0,0.1);  /* Opzionale per capire bene le dimensioni */
       }
 
   
