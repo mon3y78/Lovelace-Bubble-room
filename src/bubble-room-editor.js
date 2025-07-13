@@ -23,15 +23,83 @@ const mwcListCustomStyle = `
     max-width: 680px !important;
   }
 `;
-function injectListStyle(mwcList) {
-  if (!mwcList) return;
-  if (mwcList.shadowRoot && !mwcList.shadowRoot.querySelector('#custom-mwc-style')) {
+function injectUniversalPickerStyle(picker) {
+  // --- MWC-List (vecchio Home Assistant) ---
+  const mwcList = picker.shadowRoot?.querySelector('mwc-menu')?.shadowRoot?.querySelector('mwc-list');
+  if (mwcList && !mwcList._customStyled) {
+    mwcList._customStyled = true;
     const style = document.createElement('style');
-    style.id = 'custom-mwc-style';
-    style.textContent = mwcListCustomStyle;
-    mwcList.shadowRoot.appendChild(style);
+    style.textContent = `
+      .mdc-list-item__primary-text {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        display: block !important;
+        max-width: 600px !important;
+        word-break: break-word !important;
+        font-size: 1.09em !important;
+        line-height: 1.32 !important;
+      }
+      .mdc-list-item {
+        min-height: 44px !important;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+        font-size: 1.09em !important;
+      }
+    `;
+    mwcList.appendChild(style);
+  }
+
+  // --- Vaadin ComboBox (nuovo Home Assistant) ---
+  // 1. Trova overlay e scroller nel nuovo picker
+  const vaadinOverlay = picker.shadowRoot?.querySelector('vaadin-combo-box-overlay');
+  const vaadinScroller = vaadinOverlay?.shadowRoot?.querySelector('vaadin-combo-box-scroller');
+  if (vaadinScroller && !vaadinScroller._customStyled) {
+    vaadinScroller._customStyled = true;
+    // Direttamente sugli item
+    vaadinScroller.querySelectorAll('vaadin-combo-box-item').forEach(item => {
+      const headline = item.querySelector('span[slot="headline"]');
+      if (headline) {
+        headline.style.whiteSpace = 'normal';
+        headline.style.overflow = 'visible';
+        headline.style.textOverflow = 'unset';
+        headline.style.display = 'block';
+        headline.style.maxWidth = '600px';
+        headline.style.wordBreak = 'break-word';
+        headline.style.fontSize = '1.09em';
+        headline.style.lineHeight = '1.32';
+      }
+      const support = item.querySelector('span[slot="supporting-text"]');
+      if (support) {
+        support.style.whiteSpace = 'normal';
+        support.style.wordBreak = 'break-word';
+        support.style.fontSize = '0.95em';
+      }
+    });
+    // Inietta anche un <style> generale nel shadowRoot del scroller, se vuoi
+    const style = document.createElement('style');
+    style.textContent = `
+      vaadin-combo-box-item span[slot="headline"] {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        display: block !important;
+        max-width: 600px !important;
+        word-break: break-word !important;
+        font-size: 1.09em !important;
+        line-height: 1.32 !important;
+      }
+      vaadin-combo-box-item span[slot="supporting-text"] {
+        white-space: normal !important;
+        word-break: break-word !important;
+        font-size: 0.95em !important;
+      }
+    `;
+    vaadinScroller.appendChild(style);
   }
 }
+
+
 // --- MAPPE DI MAPPING CENTRALIZZATE ---
 const DEVICE_CLASS_ICON_MAP = {
   door:        { on: 'mdi:door-open', off: 'mdi:door-closed' },
@@ -683,18 +751,13 @@ class BubbleRoomEditor extends LitElement {
   updated(changedProps) {
     super.updated(changedProps);
     this.shadowRoot.querySelectorAll("ha-entity-picker").forEach(picker => {
-      const menu = picker.shadowRoot?.querySelector("mwc-menu");
-      if (!menu) return;
-      if (menu._customStylePatched) return;
-      menu._customStylePatched = true;
-      menu.addEventListener('opened', () => {
-        setTimeout(() => {
-          const mwcList = menu.shadowRoot?.querySelector("mwc-list");
-          injectListStyle(mwcList);
-        }, 25);
-      });
+      // Richiama la funzione universale
+      setTimeout(() => {
+        injectUniversalPickerStyle(picker);
+      }, 25);
     });
   }
+  
   
   
   
