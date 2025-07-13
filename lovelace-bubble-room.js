@@ -316,7 +316,6 @@ class BubbleRoom extends LitElement {
         font-family: "Bebas Neue", "Arial Narrow", sans-serif;
         text-transform: uppercase;
         overflow: hidden;
-        border: 2px dashed yellow !important;
       }
       #nameText {
         display: inline-block;
@@ -325,8 +324,6 @@ class BubbleRoom extends LitElement {
         text-align: center;
         line-height: 1;
         vertical-align: middle;
-        border: 2px solid red !important;
-        background: rgba(255,0,0,0.1);  /* Opzionale per capire bene le dimensioni */
       }
 
   
