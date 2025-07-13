@@ -2695,20 +2695,6 @@ class BubbleRoomEditor extends r {
             content: x`
               <div class="input-group color-row">
                 <div style="display: flex; gap:12px; margin-bottom:4px;">
-                  <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Text Active</span></div>
-                  <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Text Inactive</span></div>
-                </div>
-                <div style="display: flex; gap:12px;">
-                  <div style="${colorBoxStyle}">
-                    ${this._renderColorField('subbutton', 'color_on')}
-                  </div>
-                  <div style="${colorBoxStyle}">
-                    ${this._renderColorField('subbutton', 'color_off')}
-                  </div>
-                </div>
-              </div>
-              <div class="input-group color-row">
-                <div style="display: flex; gap:12px; margin-bottom:4px;">
                   <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Background Active</span></div>
                   <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Background Inactive</span></div>
                 </div>
