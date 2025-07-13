@@ -1,6 +1,28 @@
 import { LitElement, html, css } from 'lit';
 
-
+(function fixHomeAssistantEntityPickerMenuWidth() {
+  const styleId = "bubble-room-global-entity-picker-width";
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.innerHTML = `
+      mwc-menu, mwc-list, .mdc-menu, .mdc-deprecated-list, .mdc-menu-surface {
+        min-width: 340px !important;
+        max-width: 95vw !important;
+        width: auto !important;
+      }
+      mwc-list .mdc-list-item__primary-text, 
+      .mdc-list-item__primary-text {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        display: block !important;
+        max-width: 95vw !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+})();
 // --- MAPPE DI MAPPING CENTRALIZZATE ---
 const DEVICE_CLASS_ICON_MAP = {
   door:        { on: 'mdi:door-open', off: 'mdi:door-closed' },
