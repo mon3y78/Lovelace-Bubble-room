@@ -1,5 +1,85 @@
-import { LitElement, html, css } from 'lit';
+// Bubble Room Editor – PATCH Performance Step 1 (Luglio 2025)
+// https://github.com/mon3y78/Lovelace-Bubble-room
+import { LitElement, html, css } from 'https://unpkg.com/lit@2.6.1/index.js?module';
 
+class BubbleRoomEditor extends LitElement {
+  static get properties() {
+    return {
+      hass: { type: Object },
+      config: { type: Object },
+      _areas: { type: Array },
+      _entities: { type: Array },
+    };
+  }
+
+  constructor() {
+    super();
+    this.hass = undefined;
+    this.config = {};
+    this._areas = [];
+    this._entities = [];
+    this._entityOptionsCache = {};
+    this._iconListCache = null;
+  }
+
+  setConfig(config) {
+    this.config = { ...config };
+    this._entityOptionsCache = {}; // Reset cache ogni nuova config
+    this._iconListCache = null;
+  }
+
+  shouldUpdate(changedProps) {
+    // Aggiorna solo se cambiano config o hass
+    return changedProps.has('config') || changedProps.has('hass');
+  }
+
+  updated(changedProps) {
+    super.updated && super.updated(changedProps);
+    // Reset cache ogni volta che cambia hass/config
+    if (changedProps.has('hass') || changedProps.has('config')) {
+      this._entityOptionsCache = {};
+      this._iconListCache = null;
+    }
+  }
+
+  _getFilteredEntityOptions(section) {
+    // Cache delle entità filtrate per sezione
+    if (!this._entityOptionsCache) this._entityOptionsCache = {};
+    if (this._entityOptionsCache[section]) return this._entityOptionsCache[section];
+    const opts = Nonethis._getFilteredEntityOptions(section);
+    this._entityOptionsCache[section] = opts;
+    return opts;
+  }
+
+  _getIconList() {
+    // Caching lista icone (fallback, MDI ecc)
+    if (this._iconListCache) return this._iconListCache;
+    // Sostituisci qui con la tua funzione reale di build della lista icone
+    const list = this._buildIconList ? this._buildIconList() : [];
+    this._iconListCache = list;
+    return list;
+  }
+  
+  // ---- QUI RESTA TUTTO IL RESTO DEL TUO FILE, invariato! ----
+
+  render() {
+    // Esempio di uso caching in un entity picker:
+    // <ha-entity-picker .hass=${this.hass} .value=${...} .entities=${this._getFilteredEntityOptions('subbutton1')} ...>
+    // E per icone:
+    // <ha-icon-picker .icons=${this._getIconList()} ...>
+    // In pratica, sostituisci ogni filtro diretto con la funzione cache.
+
+    // ... Tuo codice di rendering invariato ...
+    return html`
+      <!-- Il tuo rendering classico qui -->
+    `;
+  }
+
+  // ... TUTTI I TUOI ALTRI METODI (compreso _filterEntityForSection, _buildIconList, ecc) ...
+
+}
+
+customElements.define('bubble-room-editor', BubbleRoomEditor);
 
 // --- MAPPE DI MAPPING CENTRALIZZATE ---
 const DEVICE_CLASS_ICON_MAP = {
@@ -149,7 +229,7 @@ class BubbleRoomEditor extends LitElement {
     }
   
     return baseEntities.filter(eid =>
-      this._filterEntityForSection(eid, sectionName)
+      Nonethis._getFilteredEntityOptions(eid, sectionName)
       || this._config.entities?.[sectionName]?.entity === eid // <-- questo è fondamentale
     );
   }
