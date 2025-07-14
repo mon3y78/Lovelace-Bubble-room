@@ -46,10 +46,12 @@ class BubbleRoomEditor extends LitElement {
     // Cache delle entità filtrate per sezione
     if (!this._entityOptionsCache) this._entityOptionsCache = {};
     if (this._entityOptionsCache[section]) return this._entityOptionsCache[section];
-    const opts = Nonethis._getFilteredEntityOptions(section);
+    // --- Esempio: usa _getFilteredEntities se vuoi la logica reale! ---
+    const opts = this._getFilteredEntities(section); // qui era Nonethis
     this._entityOptionsCache[section] = opts;
     return opts;
   }
+  
 
   _getIconList() {
     // Caching lista icone (fallback, MDI ecc)
@@ -59,163 +61,8 @@ class BubbleRoomEditor extends LitElement {
     this._iconListCache = list;
     return list;
   }
-  
-  // ---- QUI RESTA TUTTO IL RESTO DEL TUO FILE, invariato! ----
-
-  render() {
-    // Esempio di uso caching in un entity picker:
-    // <ha-entity-picker .hass=${this.hass} .value=${...} .entities=${this._getFilteredEntityOptions('subbutton1')} ...>
-    // E per icone:
-    // <ha-icon-picker .icons=${this._getIconList()} ...>
-    // In pratica, sostituisci ogni filtro diretto con la funzione cache.
-
-    // ... Tuo codice di rendering invariato ...
-    return html`
-      <!-- Il tuo rendering classico qui -->
-    `;
-  }
-
-  // ... TUTTI I TUOI ALTRI METODI (compreso _filterEntityForSection, _buildIconList, ecc) ...
-
-}
-
-customElements.define('bubble-room-editor', BubbleRoomEditor);
-
-// --- MAPPE DI MAPPING CENTRALIZZATE ---
-const DEVICE_CLASS_ICON_MAP = {
-  door:        { on: 'mdi:door-open', off: 'mdi:door-closed' },
-  window:      { on: 'mdi:window-open', off: 'mdi:window-closed' },
-  motion:      { on: 'mdi:motion-sensor', off: 'mdi:motion-sensor-off' },
-  moisture:    { on: 'mdi:water-alert', off: 'mdi:water-off' },
-  smoke:       { on: 'mdi:smoke', off: 'mdi:smoke-detector-off' },
-  gas:         { on: 'mdi:gas-cylinder', off: 'mdi:gas-off' },
-  problem:     { on: 'mdi:alert', off: 'mdi:alert' },
-  connectivity:{ on: 'mdi:connection', off: 'mdi:connection' },
-  occupancy:   { on: 'mdi:account-voice', off: 'mdi:account-voice-off' },
-  presence:    { on: 'mdi:account-voice', off: 'mdi:account-voice-off' },
-  tamper:      { on: 'mdi:lock-open-alert', off: 'mdi:lock-open-alert' },
-  vibration:   { on: 'mdi:vibrate', off: 'mdi:vibrate-off' },
-  running:     { on: 'mdi:server-network', off: 'mdi:server-network-off' },
-  shutter:     { on: 'mdi:window-shutter-open', off: 'mdi:window-shutter' },
-  blind:       { on: 'mdi:blinds-horizontal', off: 'mdi:blinds-horizontal-closed' }
-};
-
-const DOMAIN_ICON_MAP = {
-  light:           'mdi:lightbulb',
-  switch:          'mdi:toggle-switch',
-  input_boolean:   'mdi:toggle-switch',
-  fan:             'mdi:fan',
-  climate:         'mdi:thermostat',
-  media_player:    'mdi:speaker',
-  vacuum:          'mdi:robot-vacuum',
-  binary_sensor:   'mdi:motion-sensor',
-  sensor:          'mdi:information-outline',
-  cover:           'mdi:window-shutter',
-  lock:            'mdi:lock',
-  door:            'mdi:door-closed',
-  window:          'mdi:window-closed',
-  alarm_control_panel: 'mdi:shield-home',
-  scene:           'mdi:palette',
-  script:          'mdi:script-text',
-  input_number:    'mdi:ray-vertex',
-  input_select:    'mdi:format-list-bulleted',
-  camera:          'mdi:cctv',
-  humidifier:      'mdi:air-humidifier',
-  weather:         'mdi:weather-partly-cloudy',
-  device_tracker:  'mdi:map-marker',
-  person:          'mdi:account',
-  input_text:      'mdi:text-box-outline'
-};
-
-const SENSOR_TYPE_MAP = {
-  temperature: { emoji: '🌡️', units: ['°C', '°F'], label: 'Temperature' },
-  humidity:    { emoji: '💦', units: ['%'], label: 'Humidity' },
-  co2:         { emoji: '🟢', units: ['ppm'], label: 'CO₂' },
-  illuminance: { emoji: '☀️', units: ['lx'], label: 'Illuminance' },
-  pm1:         { emoji: '🟤', units: ['µg/m³'], label: 'PM1' },
-  pm25:        { emoji: '⚫️', units: ['µg/m³'], label: 'PM2.5' },
-  pm10:        { emoji: '⚪️', units: ['µg/m³'], label: 'PM10' },
-  uv:          { emoji: '🌞', units: ['UV'], label: 'UV Index' },
-  noise:       { emoji: '🔊', units: ['dB'], label: 'Noise' },
-  pressure:    { emoji: '📈', units: ['hPa'], label: 'Pressure' },
-  voc:         { emoji: '🧪', units: ['ppb'], label: 'VOC' },
-  consumption: { emoji: '⚡️', units: ['W', 'kWh', 'Wh'], label: 'Consumption' },
-  production: { emoji: '🔆', units: ['W', 'kWh', 'Wh'], label: 'Production' }
-};
 
 
-
-class BubbleRoomEditor extends LitElement {
-  static get properties() {
-    return {
-      _config: { type: Object },
-      _iconList: { type: Array },
-      _jsonError: { type: Boolean }
-    };
-  }
-
-  static async getConfigElement() {
-    await import('./bubble-room-editor.js');
-    return document.createElement('bubble-room-editor');
-  }
-
-  constructor() {
-    super();
-    this._iconList = [
-      "mdi:sofa", "mdi:bed", "mdi:home", "mdi:table-furniture", "mdi:television", "mdi:lightbulb",
-      "mdi:fan", "mdi:air-conditioner", "mdi:robot-vacuum", "mdi:led-strip-variant", "mdi:lamp",
-      "mdi:window-closed", "mdi:window-open", "mdi:door", "mdi:door-closed", "mdi:speaker",
-      "mdi:volume-high", "mdi:volume-off", "mdi:thermostat", "mdi:fire", "mdi:water", "mdi:shower",
-      "mdi:toilet", "mdi:fridge", "mdi:oven", "mdi:coffee-maker", "mdi:washing-machine",
-      "mdi:vacuum", "mdi:garage", "mdi:garage-open", "mdi:cctv"
-    ];
-    if (!customElements.get("ha-entity-picker")) {
-      import("custom-card-helpers").then(module => {
-        if (module && module.loadHaComponents) {
-          module.loadHaComponents();
-        }
-      }).catch(() => {});
-    }
-    this._expandedPanel = null;
-    this._expandedSubButtons = [false, false, false, false];
-    this._expandedMushroomEntities = [false, false, false, false, false];
-    this._expandedSensors = [false, false, false, false];
-    this._expandedColors = [false, false];
-  }
-
-  async _loadAreaEntities() {
-    if (!this._hass) return;
-  
-    // Recupera devices e entities registrate
-    const devices = await this._hass.callWS({ type: "config/device_registry/list" });
-    const entities = await this._hass.callWS({ type: "config/entity_registry/list" });
-  
-    // Prepara mappa area_id -> lista entità
-    const areaEntities = {};
-  
-    for (const entity of entities) {
-      let areaId = entity.area_id;
-      if (!areaId) {
-        const device = devices.find(d => d.id === entity.device_id);
-        areaId = device?.area_id;
-      }
-      if (areaId) {
-        if (!areaEntities[areaId]) areaEntities[areaId] = [];
-        areaEntities[areaId].push(entity.entity_id);
-      }
-    }
-    this._areaEntities = areaEntities;
-  }
-
-
-  set hass(hass) {
-    this._hass = hass;
-    this.requestUpdate();
-  
-    if (!this._areaEntities) {
-      this._loadAreaEntities();
-    }
-  }
 
   _getFilteredEntities(sectionName) {
     const allEntityIds = this._hass ? Object.keys(this._hass.states) : [];
