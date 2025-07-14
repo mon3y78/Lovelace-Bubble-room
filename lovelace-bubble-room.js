@@ -63,11 +63,15 @@ const SENSOR_TYPE_MAP$1 = {
 };
 
 class BubbleRoom extends LitElement {
+  // Memoization cache per le icone
+  _getBestIconCache = {};
+
   constructor() {
     super();
     this._iconAreaSize = { w: 130, h: 140 };   // area icona principale/mushroom
     this._subButtonSize = { w: 48, h: 48 };    // area di una cella subbutton
     this._resizeObserver = null;
+    this._getBestIconCache = {};
   }
   connectedCallback() {
     super.connectedCallback();
@@ -85,14 +89,11 @@ class BubbleRoom extends LitElement {
       const rect = iconArea.getBoundingClientRect();
       this._iconAreaSize = { w: rect.width, h: rect.height };
     }
-    
-    // AGGIUNGI QUESTO
     const bubbleContainer = this.renderRoot?.querySelector('.bubble-icon-container');
     if (bubbleContainer) {
       const rect = bubbleContainer.getBoundingClientRect();
       this._bubbleContainerSize = { w: rect.width, h: rect.height };
     }
-  
     const subbuttonCol = this.renderRoot?.querySelector('.subbutton-column');
     if (subbuttonCol) {
       const rect = subbuttonCol.getBoundingClientRect();
@@ -106,8 +107,6 @@ class BubbleRoom extends LitElement {
       this._resizeObserver = null;
     }
     super.disconnectedCallback();
-
-  //
   }
   firstUpdated() {
     const container = this.renderRoot?.querySelector('#nameArea');
@@ -116,14 +115,12 @@ class BubbleRoom extends LitElement {
       this._resizeObserver.observe(container);
     }
   }
-  
   static get properties() {
     return {
       config: { type: Object },
       hass: { type: Object },
     };
   }
-  // Supporto all'editor visivo
   static async getConfigElement() {
     await Promise.resolve().then(function () { return bubbleRoomEditor; });
     return document.createElement('bubble-room-editor');
@@ -257,208 +254,73 @@ class BubbleRoom extends LitElement {
       icon: config.icon || "mdi:sofa",
       tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
     };
+
+    // Precalcolo array subButtons, mushroomTemplates e sensorEntities
+    this._subButtons = [
+      entities["sub-button1"],
+      entities["sub-button2"],
+      entities["sub-button3"],
+      entities["sub-button4"],
+    ].filter(Boolean);
+
+    this._mushroomTemplates = [
+      entities.entities1,
+      entities.entities2,
+      entities.entities3,
+      entities.entities4,
+      entities.entities5,
+      entities.climate,
+      entities.camera
+    ].filter(Boolean);
+
+    this._sensorEntities = [];
+    for (let i = 1; i <= 6; i++) {
+      const sensorKey = `sensor${i}`;
+      if (entities[sensorKey]) {
+        this._sensorEntities.push(entities[sensorKey]);
+      }
+    }
   }
 
   getConfig() { return JSON.parse(JSON.stringify(this.config)); }
 
-
-  
   static get styles() {
+    // ... CSS INVARIATO ...
     return css`
-      :host,
-      ha-card,
-      .card,
-      .grid-container {
-        height: 100%;
-        width: 100%;
-        min-height: 0;
-        min-width: 0;
-        margin: 0 !important;
-        padding: 0 !important;
-        box-sizing: border-box;
-        /* flex: 1 1 auto;  // SOLO se il parent è flex, qui puoi toglierlo */
-      }
-  
-      .card {
-        position: relative;
-        overflow: hidden;
-        border-radius: 8px;
-        background: transparent;
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-  
-      .grid-container {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        grid-template-rows: 1fr;
-        align-items: stretch;
-        height: 100%;
-        min-height: 0;
-        min-width: 0;
-      }
-  
-      .left-content {
-        display: grid;
-        grid-template-rows: 0.5fr 2.5fr 7fr;
-        height: 100%;
-        min-height: 0;
-        min-width: 0;
-        box-sizing: border-box;
-      }
-  
-      .name-area {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        width: 100%;
-        font-family: "Bebas Neue", "Arial Narrow", sans-serif;
-        text-transform: uppercase;
-        overflow: hidden;
-      }
-      #nameText {
-        display: inline-block;
-        white-space: nowrap;
-        /* width: 100%;   <-- TOGLI questa riga! */
-        text-align: center;
-        line-height: 1;
-        vertical-align: middle;
-      }
-
-  
-      .icon-area {
-        position: relative;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        padding-left: 0%;
-        min-height: 0;
-        min-width: 0;
-        height: 100%;
-
-      }
-  
-      .bubble-icon-container {
-        width: 100%;
-        height: 100%;
-        min-height: 0;
-        min-width: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-grow: 1;
-        flex-basis: 0;
-        background-color: var(--bubble-bg, rgba(0, 128, 0, 0.3));
-        border-radius: 0; /* o 50% se vuoi un cerchio */
-      }
-  
-      .mushroom-container {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-      }
-  
-      .mushroom-item {
-        position: absolute;
-        transform: translate(-50%, -50%);
-        pointer-events: auto;
-        cursor: pointer;
-      }
-  
-      .subbutton-column {
-        display: grid;
-        grid-template-rows: repeat(4, 1fr);
-        gap: 2%;
-        height: 100%;
-        min-height: 0;
-        min-width: 0;
-        padding: 2%;
-        box-sizing: border-box;
-      }
-  
-      .bubble-sub-button {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 100%;
-        border-radius: 10px;
-        cursor: pointer;
-        background-color: var(--sub-button-color, rgba(0,0,255,0.3));
-        min-height: 0;
-        min-width: 0;
-      }
-  
-      .bubble-icon {
-        transform: scale(1.0);
-        transform-origin: center center;
-      }
-  
-      .mushroom-icon {
-        transform: scale(0.7);
-        transform-origin: center center;
-      }
-  
-      .subbutton-icon {
-        transform: scale(1.4);
-        transform-origin: center center;
-      }
-      .sensor-rows {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        box-sizing: border-box;
-        /* padding: 0;  // metti 0 se vuoi aderente */
-        /* margin: 0;   // idem */
-      }
-      .sensor-row {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        width: 100%;
-        box-sizing: border-box;
-        min-height: 8px;
-        /* padding: 0; */
-        /* margin: 0; */
-      }
-      .sensor {
-        flex: 1 1 0;
-        text-align: center;
-        padding: 0 2px;
-        min-width: 0;
-        box-sizing: border-box;
-}
-
-      @media (max-width: 480px) {
-        .bubble-icon-container { width: 70%; }
-      }
+      :host, ha-card, .card, .grid-container { height: 100%; width: 100%; min-height: 0; min-width: 0; margin: 0 !important; padding: 0 !important; box-sizing: border-box; }
+      .card { position: relative; overflow: hidden; border-radius: 8px; background: transparent; margin: 0 !important; padding: 0 !important; }
+      .grid-container { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr; align-items: stretch; height: 100%; min-height: 0; min-width: 0; }
+      .left-content { display: grid; grid-template-rows: 0.5fr 2.5fr 7fr; height: 100%; min-height: 0; min-width: 0; box-sizing: border-box; }
+      .name-area { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; font-family: "Bebas Neue", "Arial Narrow", sans-serif; text-transform: uppercase; overflow: hidden; }
+      #nameText { display: inline-block; white-space: nowrap; text-align: center; line-height: 1; vertical-align: middle; }
+      .icon-area { position: relative; display: flex; justify-content: flex-start; align-items: center; padding-left: 0%; min-height: 0; min-width: 0; height: 100%; }
+      .bubble-icon-container { width: 100%; height: 100%; min-height: 0; min-width: 0; display: flex; justify-content: center; align-items: center; flex-grow: 1; flex-basis: 0; background-color: var(--bubble-bg, rgba(0, 128, 0, 0.3)); border-radius: 0; }
+      .mushroom-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+      .mushroom-item { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; cursor: pointer; }
+      .subbutton-column { display: grid; grid-template-rows: repeat(4, 1fr); gap: 2%; height: 100%; min-height: 0; min-width: 0; padding: 2%; box-sizing: border-box; }
+      .bubble-sub-button { display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; border-radius: 10px; cursor: pointer; background-color: var(--sub-button-color, rgba(0,0,255,0.3)); min-height: 0; min-width: 0; }
+      .bubble-icon { transform: scale(1.0); transform-origin: center center; }
+      .mushroom-icon { transform: scale(0.7); transform-origin: center center; }
+      .subbutton-icon { transform: scale(1.4); transform-origin: center center; }
+      .sensor-rows { display: flex; flex-direction: column; width: 100%; box-sizing: border-box; }
+      .sensor-row { display: flex; flex-direction: row; align-items: center; width: 100%; box-sizing: border-box; min-height: 8px; }
+      .sensor { flex: 1 1 0; text-align: center; padding: 0 2px; min-width: 0; box-sizing: border-box; }
+      @media (max-width: 480px) { .bubble-icon-container { width: 70%; } }
     `;
   }
   
   render() {
+    this._getBestIconCache = {};
     const mainSize = this._getMainIconSize();
     const mushroomSize = this._getMushroomIconSize();
     const subBtnSize = this._getSubButtonIconSize();
-
+    const subButtons = this._subButtons || [];
+    const mushroomTemplates = this._mushroomTemplates || [];
+    this._sensorEntities || [];
     if (!this.config || !this.hass) {
       return html`<div>Loading...</div>`;
     }
     const { entities } = this.config;
-
-    for (let i = 1; i <= 6; i++) {
-      const sensorKey = `sensor${i}`;
-      const sensor = this.config.entities[sensorKey];
-      if (!sensor || !sensor.type) continue;
-      const entityId = sensor.entity;
-      let state = entityId ? (this.hass.states[entityId]?.state || 'N/A') : '?';
-      if (!isNaN(parseFloat(state))) state = Math.floor(parseFloat(state)).toString();
-      this._getSensorEmojiAndUnit(sensor.type, sensor.unit);
-    }
-
     const { colors, name, icon } = this.config;
     const roomColors = colors?.room || {};
     const subColors = colors?.subbutton || {};
@@ -471,23 +333,6 @@ class BubbleRoom extends LitElement {
     const bubbleIconColor = presenceState === 'on'
       ? roomColors.icon_active || 'orange'
       : roomColors.icon_inactive || '#80808055';
-
-    const subButtons = [
-      entities["sub-button1"],
-      entities["sub-button2"],
-      entities["sub-button3"],
-      entities["sub-button4"],
-    ];
-
-    let mushroomTemplates = [
-      entities.entities1,
-      entities.entities2,
-      entities.entities3,
-      entities.entities4,
-      entities.entities5,
-      entities.climate,
-      entities.camera
-    ].filter(Boolean);
 
     return html`
       <div class="card">
@@ -507,15 +352,10 @@ class BubbleRoom extends LitElement {
                 ${this._renderSensor(6)}
               </div>
             </div>
-
-
-          
             <!-- Riga nome stanza -->
             <div class="name-area" id="nameArea" style="color:${nameColor};">
               <span id="nameText">${name}</span>
             </div>
-
-          
             <!-- Riga icona principale + mushroom entities -->
             <div class="icon-area">
               <!-- Bubble principale -->
@@ -537,17 +377,12 @@ class BubbleRoom extends LitElement {
                           transform: translateX(-20%);
                         ">
                 </ha-icon>
-
-
-
               </div>
-          
               <!-- Mushroom entities -->
               <div class="mushroom-container">
                 ${mushroomTemplates.map((item, i) => {
                   if (!item) return html``;
                   if (!this._bubbleContainerSize) return html``;
-
                   const ratios = [
                     { x: 0.15, y: 0.13 },
                     { x: 0.55, y: 0.13 },
@@ -557,7 +392,6 @@ class BubbleRoom extends LitElement {
                     { x: 0.15, y: 0.87 }, // CLIMATE
                     { x: 0.9, y: 0.05 }, // CAMERA
                   ];
-
                   const sizes = [
                     mushroomSize, // 1
                     mushroomSize, // 2
@@ -567,18 +401,14 @@ class BubbleRoom extends LitElement {
                     Math.round(this._bubbleContainerSize.w * 0.20), // CLIMATE
                     Math.round(this._bubbleContainerSize.w * 0.20), // CAMERA
                   ];
-
                   const ratio = ratios[i] || { x: 0.5, y: 0.5 };
                   const size = sizes[i] || mushroomSize;
-
                   const x = this._bubbleContainerSize.w * ratio.x;
                   const y = this._bubbleContainerSize.h * ratio.y;
-
                   const state = hass.states[item.entity]?.state || 'off';
                   const iconColor = state === 'on'
                     ? (roomColors.mushroom_active || 'orange')
                     : (roomColors.mushroom_inactive || '#80808055');
-
                   return html`
                     <div class="mushroom-item"
                         style="
@@ -604,10 +434,8 @@ class BubbleRoom extends LitElement {
                   `;
                 })}
               </div>
-
             </div>
           </div>
-
           <!-- Colonna Sub-buttons -->
           <div class="subbutton-column">
             ${subButtons.map(btn => {
@@ -634,14 +462,11 @@ class BubbleRoom extends LitElement {
                             height: ${subBtnSize}px;
                           ">
                   </ha-icon>
-
                 </div>
               `;
             })}
           </div>
         </div>
-
-
       </div>
     `;
   }
@@ -660,9 +485,6 @@ class BubbleRoom extends LitElement {
       </div>
     `;
   }
-  
-  // ... (resta invariato: funzioni hold/tap, getIcon, _getDeviceClassIcon, ecc.)
-
   _startHold(e, item) { e.stopPropagation(); this._holdTriggered = false; this._holdTimeout = setTimeout(() => { this._holdTriggered = true; this._handleHoldAction(item); }, 500);}
   _endHold(e, item, clickCallback) { e.stopPropagation(); clearTimeout(this._holdTimeout); if (!this._holdTriggered) clickCallback(); this._holdTriggered = false; }
   _cancelHold(e) { clearTimeout(this._holdTimeout); this._holdTriggered = false; }
@@ -672,67 +494,55 @@ class BubbleRoom extends LitElement {
   _handleSubButtonTap(item) { if (!item.tap_action || item.tap_action.action === 'none') return; const action = item.tap_action.action; if (action === 'toggle') this._toggleEntity(item.entity); else if (action === 'more-info') this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: item.entity }, bubbles: true, composed: true, })); else if (action === 'navigate') { if (item.tap_action.navigation_path) { window.history.pushState({}, '', item.tap_action.navigation_path); window.dispatchEvent(new Event('location-changed')); } } }
   _handleMushroomTap(item) { if (!item.tap_action || item.tap_action.action === 'none') return; const action = item.tap_action.action; if (action === 'toggle') this._toggleEntity(item.entity); else if (action === 'more-info') this.dispatchEvent(new CustomEvent("hass-more-info", {detail: { entityId: item.entity }, bubbles: true, composed: true, })); else if (action === 'navigate') { if (item.tap_action.navigation_path) { window.history.pushState({}, '', item.tap_action.navigation_path); window.dispatchEvent(new Event('location-changed')); } } }
   _getBestIcon(entityId, entityConf) {
-    // 1. Se la config ha una icona, usala!
-    if (entityConf.icon) return entityConf.icon;
-  
-    // 2. Se lo stato dell’entità esiste e ha una icona, usala!
+    // Memoization: chiave unica su entityId + eventuale icon di config
+    const key = entityId + '|' + (entityConf?.icon || '');
+    if (this._getBestIconCache[key]) {
+      return this._getBestIconCache[key];
+    }
+    if (entityConf.icon) {
+      this._getBestIconCache[key] = entityConf.icon;
+      return entityConf.icon;
+    }
     const stateObj = this.hass?.states?.[entityId];
     if (stateObj && stateObj.attributes && stateObj.attributes.icon) {
+      this._getBestIconCache[key] = stateObj.attributes.icon;
       return stateObj.attributes.icon;
     }
-  
-    // 3. Prova con device_class (tipo sensore specifico)
     const deviceClass = stateObj?.attributes?.device_class;
     const domain = entityId ? entityId.split('.')[0] : '';
     const state = stateObj?.state;
-  
     if (deviceClass) {
       const dcIcon = this._getDeviceClassIcon(deviceClass, state);
-      if (dcIcon) return dcIcon;
+      if (dcIcon) {
+        this._getBestIconCache[key] = dcIcon;
+        return dcIcon;
+      }
     }
-  
-    // 4. Fallback per dominio
-    return this._getDomainDefaultIcon(domain, state) || 'mdi:information-outline';
-  }  
-  _getDeviceClassIcon(deviceClass, state) { const icons = DEVICE_CLASS_ICON_MAP[deviceClass]; 
-    if (!icons) return ''; 
-    if (icons.on && icons.off) { return state === 'on' ? icons.on : icons.off; } return icons.on || ''; }
-  _getDomainDefaultIcon(domain, state) { 
-    if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; 
-    if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; 
-    if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; 
-    if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; 
-    if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP$1[domain] || ''; }
-  _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP$1[sensorType]; 
-    if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
-
+    const domainIcon = this._getDomainDefaultIcon(domain, state) || 'mdi:information-outline';
+    this._getBestIconCache[key] = domainIcon;
+    return domainIcon;
+  }
+  _getDeviceClassIcon(deviceClass, state) { const icons = DEVICE_CLASS_ICON_MAP[deviceClass]; if (!icons) return ''; if (icons.on && icons.off) { return state === 'on' ? icons.on : icons.off; } return icons.on || ''; }
+  _getDomainDefaultIcon(domain, state) { if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP$1[domain] || ''; }
+  _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP$1[sensorType]; if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
   _resizeNameFont() {
     const container = this.renderRoot?.querySelector('#nameArea');
     const text = this.renderRoot?.querySelector('#nameText');
     if (!container || !text) return;
-
-  
-    // STEP 1: prova con letter-spacing ampio e font massimo
     let maxFont = 300, minFont = 5, fontSize = maxFont;
-    let spacing = 0.01 * maxFont; // 2% della font size (modificabile)
+    let spacing = 0.01 * maxFont;
     text.style.letterSpacing = `${spacing}px`;
     text.style.fontSize = `${fontSize}px`;
-  
-    // Se sta dentro, ok. Se no, azzera letter-spacing e riprova
     if (text.offsetWidth > container.offsetWidth || text.offsetHeight > container.offsetHeight) {
       spacing = 0;
       text.style.letterSpacing = `${spacing}px`;
       text.style.fontSize = `${fontSize}px`;
     }
-  
-    // Ora scala giù la font-size finché tutto il testo entra (senza mai andare sotto minFont)
     while ((text.offsetWidth > container.offsetWidth || text.offsetHeight > container.offsetHeight) && fontSize > minFont) {
       fontSize -= 1;
       text.style.fontSize = `${fontSize}px`;
     }
   }
-  
-
   _getIconShapeStyle() {
     return `
       width: 100%;
@@ -742,22 +552,17 @@ class BubbleRoom extends LitElement {
       left: 0;
     `;
   }
-
   _getMainIconSize() {
-    return Math.round(Math.min(this._iconAreaSize.w, this._iconAreaSize.h) * 0.65); // 65% dell'area icona
+    return Math.round(Math.min(this._iconAreaSize.w, this._iconAreaSize.h) * 0.65);
   }
   _getMushroomIconSize() {
-    return Math.round(Math.min(this._iconAreaSize.w, this._iconAreaSize.h) * 0.25); // 34%
+    return Math.round(Math.min(this._iconAreaSize.w, this._iconAreaSize.h) * 0.25);
   }
   _getSubButtonIconSize() {
-    return Math.round(Math.min(this._subButtonSize.w, this._subButtonSize.h) * 0.6); // 60% della cella subbutton
+    return Math.round(Math.min(this._subButtonSize.w, this._subButtonSize.h) * 0.6);
   }
-  
-  
 }
-
 customElements.define('bubble-room', BubbleRoom);
-
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: 'bubble-room',
