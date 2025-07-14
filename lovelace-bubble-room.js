@@ -284,7 +284,22 @@ class BubbleRoom extends LitElement {
   }
 
   getConfig() { return JSON.parse(JSON.stringify(this.config)); }
-
+  _getSubButtonStates() {
+    // Restituisce i subbutton con già lo stato corrente calcolato (più efficiente)
+    return (this._subButtons || []).map(btn => ({
+      ...btn,
+      state: this.hass.states[btn.entity]?.state || 'off'
+    }));
+  }
+  _getMushroomTemplatesStates() {
+    // Restituisce mushroom templates con stato corrente già calcolato
+    return (this._mushroomTemplates || []).map(item => ({
+      ...item,
+      state: this.hass.states[item.entity]?.state || 'off'
+    }));
+  }
+  
+  
   static get styles() {
     // ... CSS INVARIATO ...
     return css`
@@ -320,8 +335,8 @@ class BubbleRoom extends LitElement {
     const mainSize = this._getMainIconSize();
     const mushroomSize = this._getMushroomIconSize();
     const subBtnSize = this._getSubButtonIconSize();
-    const subButtons = this._subButtons || [];
-    const mushroomTemplates = this._mushroomTemplates || [];
+    this._subButtons || [];
+    this._mushroomTemplates || [];
     this._sensorEntities || [];
     if (!this.config || !this.hass) {
       return html`<div>Loading...</div>`;
@@ -386,71 +401,62 @@ class BubbleRoom extends LitElement {
               </div>
               <!-- Mushroom entities -->
               <div class="mushroom-container">
-                ${mushroomTemplates.map((item, i) => {
-                  if (!item) return html``;
-                  if (!this._bubbleContainerSize) return html``;
-                  const ratios = [
-                    { x: 0.15, y: 0.13 },
-                    { x: 0.55, y: 0.13 },
-                    { x: 0.81, y: 0.33 },
-                    { x: 0.82, y: 0.65 },
-                    { x: 0.55, y: 0.87 },
-                    { x: 0.15, y: 0.87 }, // CLIMATE
-                    { x: 0.9, y: 0.05 }, // CAMERA
-                  ];
-                  const sizes = [
-                    mushroomSize, // 1
-                    mushroomSize, // 2
-                    mushroomSize, // 3
-                    mushroomSize, // 4
-                    mushroomSize, // 5
-                    Math.round(this._bubbleContainerSize.w * 0.20), // CLIMATE
-                    Math.round(this._bubbleContainerSize.w * 0.20), // CAMERA
-                  ];
-                  const ratio = ratios[i] || { x: 0.5, y: 0.5 };
-                  const size = sizes[i] || mushroomSize;
-                  const x = this._bubbleContainerSize.w * ratio.x;
-                  const y = this._bubbleContainerSize.h * ratio.y;
-                  const state = hass.states[item.entity]?.state || 'off';
-                  const iconColor = state === 'on'
-                    ? (roomColors.mushroom_active || 'orange')
-                    : (roomColors.mushroom_inactive || '#80808055');
-                  return html`
-                    <div class="mushroom-item"
-                        style="
-                          position: absolute;
-                          left: ${x}px;
-                          top: ${y}px;
-                          transform: translate(-50%, -50%);
-                        "
-                        @pointerdown="${(e) => this._startHold(e, item)}"
-                        @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
-                        @pointerleave="${(e) => this._cancelHold(e)}">
-                      <ha-icon
-                        class="mushroom-icon"
-                        icon="${this._getBestIcon(item.entity, item)}"
-                        style="
-                          color: ${iconColor};
-                          --mdc-icon-size: ${size}px;
-                          width: ${size}px;
-                          height: ${size}px;
-                        ">
-                      </ha-icon>
-                    </div>
-                  `;
-                })}
+              ${this._getMushroomTemplatesStates().map((item, i) => {
+                if (!this._bubbleContainerSize) return html``;
+              
+                const ratios = [
+                  { x: 0.15, y: 0.13 },
+                  { x: 0.55, y: 0.13 },
+                  { x: 0.81, y: 0.33 },
+                  { x: 0.82, y: 0.65 },
+                  { x: 0.55, y: 0.87 },
+                  { x: 0.15, y: 0.87 }, // CLIMATE
+                  { x: 0.9, y: 0.05 }, // CAMERA
+                ];
+                const sizes = [
+                  mushroomSize, mushroomSize, mushroomSize,
+                  mushroomSize, mushroomSize,
+                  Math.round(this._bubbleContainerSize.w * 0.20),
+                  Math.round(this._bubbleContainerSize.w * 0.20)
+                ];
+                const ratio = ratios[i] || { x: 0.5, y: 0.5 };
+                const size = sizes[i] || mushroomSize;
+                const x = this._bubbleContainerSize.w * ratio.x;
+                const y = this._bubbleContainerSize.h * ratio.y;
+                const iconColor = item.state === 'on'
+                  ? (roomColors.mushroom_active || 'orange')
+                  : (roomColors.mushroom_inactive || '#80808055');
+              
+                return html`
+                  <div class="mushroom-item"
+                    style="position: absolute; left: ${x}px; top: ${y}px; transform: translate(-50%, -50%);"
+                    @pointerdown="${(e) => this._startHold(e, item)}"
+                    @pointerup="${(e) => this._endHold(e, item, () => this._handleMushroomTap(item))}"
+                    @pointerleave="${(e) => this._cancelHold(e)}">
+                    <ha-icon
+                      class="mushroom-icon"
+                      icon="${this._getBestIcon(item.entity, item)}"
+                      style="
+                        color: ${iconColor};
+                        --mdc-icon-size: ${size}px;
+                        width: ${size}px;
+                        height: ${size}px;
+                      ">
+                    </ha-icon>
+                  </div>
+                `;
+              })}
+              
               </div>
             </div>
           </div>
           <!-- Colonna Sub-buttons -->
           <div class="subbutton-column">
-            ${subButtons.map(btn => {
-              if (!btn) return html``;
-              const state = hass.states[btn.entity]?.state || 'off';
-              const btnColor = state === 'on'
+            ${this._getSubButtonStates().map(btn => {
+              const btnColor = btn.state === 'on'
                 ? (subColors.background_on || subColors.color_on || 'rgba(0,0,255,1)')
                 : (subColors.background_off || subColors.color_off || 'rgba(0,0,255,0.3)');
-              const iconColor = state === 'on'
+              const iconColor = btn.state === 'on'
                 ? subColors.icon_on || 'yellow'
                 : subColors.icon_off || '#666';
               return html`
