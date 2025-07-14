@@ -256,30 +256,10 @@ class BubbleRoom extends LitElement {
     };
 
     // Precalcolo array subButtons, mushroomTemplates e sensorEntities
-    this._subButtons = [
-      entities["sub-button1"],
-      entities["sub-button2"],
-      entities["sub-button3"],
-      entities["sub-button4"],
-    ].filter(Boolean);
+    this._subButtons;
+    this._mushroomTemplates;
+    this._sensorEntities;
 
-    this._mushroomTemplates = [
-      entities.entities1,
-      entities.entities2,
-      entities.entities3,
-      entities.entities4,
-      entities.entities5,
-      entities.climate,
-      entities.camera
-    ].filter(Boolean);
-
-    this._sensorEntities = [];
-    for (let i = 1; i <= 6; i++) {
-      const sensorKey = `sensor${i}`;
-      if (entities[sensorKey]) {
-        this._sensorEntities.push(entities[sensorKey]);
-      }
-    }
   }
 
   getConfig() { return JSON.parse(JSON.stringify(this.config)); }
