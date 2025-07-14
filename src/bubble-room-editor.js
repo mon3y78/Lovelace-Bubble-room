@@ -2,6 +2,69 @@
 // https://github.com/mon3y78/Lovelace-Bubble-room
 import { LitElement, html, css } from 'https://unpkg.com/lit@2.6.1/index.js?module';
 
+// --- MAPPE DI MAPPING CENTRALIZZATE ---
+const DEVICE_CLASS_ICON_MAP = {
+  door:        { on: 'mdi:door-open', off: 'mdi:door-closed' },
+  window:      { on: 'mdi:window-open', off: 'mdi:window-closed' },
+  motion:      { on: 'mdi:motion-sensor', off: 'mdi:motion-sensor-off' },
+  moisture:    { on: 'mdi:water-alert', off: 'mdi:water-off' },
+  smoke:       { on: 'mdi:smoke', off: 'mdi:smoke-detector-off' },
+  gas:         { on: 'mdi:gas-cylinder', off: 'mdi:gas-off' },
+  problem:     { on: 'mdi:alert', off: 'mdi:alert' },
+  connectivity:{ on: 'mdi:connection', off: 'mdi:connection' },
+  occupancy:   { on: 'mdi:account-voice', off: 'mdi:account-voice-off' },
+  presence:    { on: 'mdi:account-voice', off: 'mdi:account-voice-off' },
+  tamper:      { on: 'mdi:lock-open-alert', off: 'mdi:lock-open-alert' },
+  vibration:   { on: 'mdi:vibrate', off: 'mdi:vibrate-off' },
+  running:     { on: 'mdi:server-network', off: 'mdi:server-network-off' },
+  shutter:     { on: 'mdi:window-shutter-open', off: 'mdi:window-shutter' },
+  blind:       { on: 'mdi:blinds-horizontal', off: 'mdi:blinds-horizontal-closed' }
+};
+
+const DOMAIN_ICON_MAP = {
+  light:           'mdi:lightbulb',
+  switch:          'mdi:toggle-switch',
+  input_boolean:   'mdi:toggle-switch',
+  fan:             'mdi:fan',
+  climate:         'mdi:thermostat',
+  media_player:    'mdi:speaker',
+  vacuum:          'mdi:robot-vacuum',
+  binary_sensor:   'mdi:motion-sensor',
+  sensor:          'mdi:information-outline',
+  cover:           'mdi:window-shutter',
+  lock:            'mdi:lock',
+  door:            'mdi:door-closed',
+  window:          'mdi:window-closed',
+  alarm_control_panel: 'mdi:shield-home',
+  scene:           'mdi:palette',
+  script:          'mdi:script-text',
+  input_number:    'mdi:ray-vertex',
+  input_select:    'mdi:format-list-bulleted',
+  camera:          'mdi:cctv',
+  humidifier:      'mdi:air-humidifier',
+  weather:         'mdi:weather-partly-cloudy',
+  device_tracker:  'mdi:map-marker',
+  person:          'mdi:account',
+  input_text:      'mdi:text-box-outline'
+};
+
+const SENSOR_TYPE_MAP = {
+  temperature: { emoji: '🌡️', units: ['°C', '°F'], label: 'Temperature' },
+  humidity:    { emoji: '💦', units: ['%'], label: 'Humidity' },
+  co2:         { emoji: '🟢', units: ['ppm'], label: 'CO₂' },
+  illuminance: { emoji: '☀️', units: ['lx'], label: 'Illuminance' },
+  pm1:         { emoji: '🟤', units: ['µg/m³'], label: 'PM1' },
+  pm25:        { emoji: '⚫️', units: ['µg/m³'], label: 'PM2.5' },
+  pm10:        { emoji: '⚪️', units: ['µg/m³'], label: 'PM10' },
+  uv:          { emoji: '🌞', units: ['UV'], label: 'UV Index' },
+  noise:       { emoji: '🔊', units: ['dB'], label: 'Noise' },
+  pressure:    { emoji: '📈', units: ['hPa'], label: 'Pressure' },
+  voc:         { emoji: '🧪', units: ['ppb'], label: 'VOC' },
+  consumption: { emoji: '⚡️', units: ['W', 'kWh', 'Wh'], label: 'Consumption' },
+  production: { emoji: '🔆', units: ['W', 'kWh', 'Wh'], label: 'Production' }
+};
+
+
 class BubbleRoomEditor extends LitElement {
   static get properties() {
     return {
