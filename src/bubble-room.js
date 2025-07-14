@@ -300,6 +300,16 @@ class BubbleRoom extends LitElement {
       state: this.hass.states[item.entity]?.state || 'off'
     }));
   }
+  _getSensorEntitiesStates() {
+    // Restituisce i sensori con stato e valore già calcolato
+    return (this._sensorEntities || []).map(s => {
+      const entityId = s.entity;
+      let state = entityId ? (this.hass.states[entityId]?.state ?? 'N/A') : '?';
+      if (!isNaN(parseFloat(state))) state = Math.floor(parseFloat(state)).toString();
+      const { emoji, unit } = this._getSensorEmojiAndUnit(s.type, s.unit);
+      return { ...s, value: `${emoji} ${state}${unit}` };
+    });
+  }
   
   
   static get styles() {
