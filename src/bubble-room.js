@@ -256,6 +256,27 @@ class BubbleRoom extends LitElement {
       icon: config.icon || "mdi:sofa",
       tap_action: config.tap_action || { action: 'navigate', navigation_path: '' }
     };
+    // Precalcolo subButtons (accetta solo oggetti con .entity)
+    this._subButtons = [];
+    ["sub-button1", "sub-button2", "sub-button3", "sub-button4"].forEach(key => {
+      const btn = this.config.entities[key];
+      if (btn && typeof btn === "object" && btn.entity) this._subButtons.push(btn);
+    });
+
+    // Precalcolo mushroomTemplates
+    this._mushroomTemplates = [];
+    ["entities1", "entities2", "entities3", "entities4", "entities5", "climate", "camera"].forEach(key => {
+      const ent = this.config.entities[key];
+      if (ent && typeof ent === "object" && ent.entity) this._mushroomTemplates.push(ent);
+    });
+
+    // Precalcolo sensori stanza
+    this._sensorEntities = [];
+    for (let i = 1; i <= 6; i++) {
+      const key = `sensor${i}`;
+      const s = this.config.entities[key];
+      if (s && typeof s === "object" && s.entity) this._sensorEntities.push(s);
+    }
 
     // Precalcolo array subButtons, mushroomTemplates e sensorEntities
     const subButtons = this._subButtons;
