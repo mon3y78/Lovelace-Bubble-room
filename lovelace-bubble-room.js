@@ -627,148 +627,69 @@ window.customCards.push({
   documentationURL: 'https://github.com/mon3y78/Lovelace-Bubble-room'
 });
 
-/**
- * @license
- * Copyright 2019 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-const t$1=globalThis,e$2=t$1.ShadowRoot&&(void 0===t$1.ShadyCSS||t$1.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,s$1=Symbol(),o$2=new WeakMap;class n$2{constructor(t,e,o){if(this._$cssResult$=!0,o!==s$1)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=t,this.t=e;}get styleSheet(){let t=this.o;const s=this.t;if(e$2&&void 0===t){const e=void 0!==s&&1===s.length;e&&(t=o$2.get(s)),void 0===t&&((this.o=t=new CSSStyleSheet).replaceSync(this.cssText),e&&o$2.set(s,t));}return t}toString(){return this.cssText}}const r$3=t=>new n$2("string"==typeof t?t:t+"",void 0,s$1),i$3=(t,...e)=>{const o=1===t.length?t[0]:e.reduce(((e,s,o)=>e+(t=>{if(!0===t._$cssResult$)return t.cssText;if("number"==typeof t)return t;throw Error("Value passed to 'css' function must be a 'css' function result: "+t+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(s)+t[o+1]),t[0]);return new n$2(o,t,s$1)},S$1=(s,o)=>{if(e$2)s.adoptedStyleSheets=o.map((t=>t instanceof CSSStyleSheet?t:t.styleSheet));else for(const e of o){const o=document.createElement("style"),n=t$1.litNonce;void 0!==n&&o.setAttribute("nonce",n),o.textContent=e.cssText,s.appendChild(o);}},c$2=e$2?t=>t:t=>t instanceof CSSStyleSheet?(t=>{let e="";for(const s of t.cssRules)e+=s.cssText;return r$3(e)})(t):t;
+// Bubble Room Editor – PATCH Performance Step 1 (Luglio 2025)
 
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */const{is:i$2,defineProperty:e$1,getOwnPropertyDescriptor:r$2,getOwnPropertyNames:h$1,getOwnPropertySymbols:o$1,getPrototypeOf:n$1}=Object,a$1=globalThis,c$1=a$1.trustedTypes,l$1=c$1?c$1.emptyScript:"",p$1=a$1.reactiveElementPolyfillSupport,d$1=(t,s)=>t,u$1={toAttribute(t,s){switch(s){case Boolean:t=t?l$1:null;break;case Object:case Array:t=null==t?t:JSON.stringify(t);}return t},fromAttribute(t,s){let i=t;switch(s){case Boolean:i=null!==t;break;case Number:i=null===t?null:Number(t);break;case Object:case Array:try{i=JSON.parse(t);}catch(t){i=null;}}return i}},f$1=(t,s)=>!i$2(t,s),y$1={attribute:!0,type:String,converter:u$1,reflect:!1,hasChanged:f$1};Symbol.metadata??=Symbol("metadata"),a$1.litPropertyMetadata??=new WeakMap;class b extends HTMLElement{static addInitializer(t){this._$Ei(),(this.l??=[]).push(t);}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(t,s=y$1){if(s.state&&(s.attribute=!1),this._$Ei(),this.elementProperties.set(t,s),!s.noAccessor){const i=Symbol(),r=this.getPropertyDescriptor(t,i,s);void 0!==r&&e$1(this.prototype,t,r);}}static getPropertyDescriptor(t,s,i){const{get:e,set:h}=r$2(this.prototype,t)??{get(){return this[s]},set(t){this[s]=t;}};return {get(){return e?.call(this)},set(s){const r=e?.call(this);h.call(this,s),this.requestUpdate(t,r,i);},configurable:!0,enumerable:!0}}static getPropertyOptions(t){return this.elementProperties.get(t)??y$1}static _$Ei(){if(this.hasOwnProperty(d$1("elementProperties")))return;const t=n$1(this);t.finalize(),void 0!==t.l&&(this.l=[...t.l]),this.elementProperties=new Map(t.elementProperties);}static finalize(){if(this.hasOwnProperty(d$1("finalized")))return;if(this.finalized=!0,this._$Ei(),this.hasOwnProperty(d$1("properties"))){const t=this.properties,s=[...h$1(t),...o$1(t)];for(const i of s)this.createProperty(i,t[i]);}const t=this[Symbol.metadata];if(null!==t){const s=litPropertyMetadata.get(t);if(void 0!==s)for(const[t,i]of s)this.elementProperties.set(t,i);}this._$Eh=new Map;for(const[t,s]of this.elementProperties){const i=this._$Eu(t,s);void 0!==i&&this._$Eh.set(i,t);}this.elementStyles=this.finalizeStyles(this.styles);}static finalizeStyles(s){const i=[];if(Array.isArray(s)){const e=new Set(s.flat(1/0).reverse());for(const s of e)i.unshift(c$2(s));}else void 0!==s&&i.push(c$2(s));return i}static _$Eu(t,s){const i=s.attribute;return !1===i?void 0:"string"==typeof i?i:"string"==typeof t?t.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=!1,this.hasUpdated=!1,this._$Em=null,this._$Ev();}_$Ev(){this._$ES=new Promise((t=>this.enableUpdating=t)),this._$AL=new Map,this._$E_(),this.requestUpdate(),this.constructor.l?.forEach((t=>t(this)));}addController(t){(this._$EO??=new Set).add(t),void 0!==this.renderRoot&&this.isConnected&&t.hostConnected?.();}removeController(t){this._$EO?.delete(t);}_$E_(){const t=new Map,s=this.constructor.elementProperties;for(const i of s.keys())this.hasOwnProperty(i)&&(t.set(i,this[i]),delete this[i]);t.size>0&&(this._$Ep=t);}createRenderRoot(){const t=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return S$1(t,this.constructor.elementStyles),t}connectedCallback(){this.renderRoot??=this.createRenderRoot(),this.enableUpdating(!0),this._$EO?.forEach((t=>t.hostConnected?.()));}enableUpdating(t){}disconnectedCallback(){this._$EO?.forEach((t=>t.hostDisconnected?.()));}attributeChangedCallback(t,s,i){this._$AK(t,i);}_$EC(t,s){const i=this.constructor.elementProperties.get(t),e=this.constructor._$Eu(t,i);if(void 0!==e&&!0===i.reflect){const r=(void 0!==i.converter?.toAttribute?i.converter:u$1).toAttribute(s,i.type);this._$Em=t,null==r?this.removeAttribute(e):this.setAttribute(e,r),this._$Em=null;}}_$AK(t,s){const i=this.constructor,e=i._$Eh.get(t);if(void 0!==e&&this._$Em!==e){const t=i.getPropertyOptions(e),r="function"==typeof t.converter?{fromAttribute:t.converter}:void 0!==t.converter?.fromAttribute?t.converter:u$1;this._$Em=e,this[e]=r.fromAttribute(s,t.type),this._$Em=null;}}requestUpdate(t,s,i){if(void 0!==t){if(i??=this.constructor.getPropertyOptions(t),!(i.hasChanged??f$1)(this[t],s))return;this.P(t,s,i);}!1===this.isUpdatePending&&(this._$ES=this._$ET());}P(t,s,i){this._$AL.has(t)||this._$AL.set(t,s),!0===i.reflect&&this._$Em!==t&&(this._$Ej??=new Set).add(t);}async _$ET(){this.isUpdatePending=!0;try{await this._$ES;}catch(t){Promise.reject(t);}const t=this.scheduleUpdate();return null!=t&&await t,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??=this.createRenderRoot(),this._$Ep){for(const[t,s]of this._$Ep)this[t]=s;this._$Ep=void 0;}const t=this.constructor.elementProperties;if(t.size>0)for(const[s,i]of t)!0!==i.wrapped||this._$AL.has(s)||void 0===this[s]||this.P(s,this[s],i);}let t=!1;const s=this._$AL;try{t=this.shouldUpdate(s),t?(this.willUpdate(s),this._$EO?.forEach((t=>t.hostUpdate?.())),this.update(s)):this._$EU();}catch(s){throw t=!1,this._$EU(),s}t&&this._$AE(s);}willUpdate(t){}_$AE(t){this._$EO?.forEach((t=>t.hostUpdated?.())),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(t)),this.updated(t);}_$EU(){this._$AL=new Map,this.isUpdatePending=!1;}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(t){return !0}update(t){this._$Ej&&=this._$Ej.forEach((t=>this._$EC(t,this[t]))),this._$EU();}updated(t){}firstUpdated(t){}}b.elementStyles=[],b.shadowRootOptions={mode:"open"},b[d$1("elementProperties")]=new Map,b[d$1("finalized")]=new Map,p$1?.({ReactiveElement:b}),(a$1.reactiveElementVersions??=[]).push("2.0.4");
-
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-const t=globalThis,i$1=t.trustedTypes,s=i$1?i$1.createPolicy("lit-html",{createHTML:t=>t}):void 0,e="$lit$",h=`lit$${Math.random().toFixed(9).slice(2)}$`,o="?"+h,n=`<${o}>`,r$1=document,l=()=>r$1.createComment(""),c=t=>null===t||"object"!=typeof t&&"function"!=typeof t,a=Array.isArray,u=t=>a(t)||"function"==typeof t?.[Symbol.iterator],d="[ \t\n\f\r]",f=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,v=/-->/g,_=/>/g,m=RegExp(`>|${d}(?:([^\\s"'>=/]+)(${d}*=${d}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),p=/'/g,g=/"/g,$=/^(?:script|style|textarea|title)$/i,y=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),x=y(1),T=Symbol.for("lit-noChange"),E=Symbol.for("lit-nothing"),A=new WeakMap,C=r$1.createTreeWalker(r$1,129);function P(t,i){if(!a(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==s?s.createHTML(i):i}const V=(t,i)=>{const s=t.length-1,o=[];let r,l=2===i?"<svg>":3===i?"<math>":"",c=f;for(let i=0;i<s;i++){const s=t[i];let a,u,d=-1,y=0;for(;y<s.length&&(c.lastIndex=y,u=c.exec(s),null!==u);)y=c.lastIndex,c===f?"!--"===u[1]?c=v:void 0!==u[1]?c=_:void 0!==u[2]?($.test(u[2])&&(r=RegExp("</"+u[2],"g")),c=m):void 0!==u[3]&&(c=m):c===m?">"===u[0]?(c=r??f,d=-1):void 0===u[1]?d=-2:(d=c.lastIndex-u[2].length,a=u[1],c=void 0===u[3]?m:'"'===u[3]?g:p):c===g||c===p?c=m:c===v||c===_?c=f:(c=m,r=void 0);const x=c===m&&t[i+1].startsWith("/>")?" ":"";l+=c===f?s+n:d>=0?(o.push(a),s.slice(0,d)+e+s.slice(d)+h+x):s+h+(-2===d?i:x);}return [P(t,l+(t[s]||"<?>")+(2===i?"</svg>":3===i?"</math>":"")),o]};class N{constructor({strings:t,_$litType$:s},n){let r;this.parts=[];let c=0,a=0;const u=t.length-1,d=this.parts,[f,v]=V(t,s);if(this.el=N.createElement(f,n),C.currentNode=this.el.content,2===s||3===s){const t=this.el.content.firstChild;t.replaceWith(...t.childNodes);}for(;null!==(r=C.nextNode())&&d.length<u;){if(1===r.nodeType){if(r.hasAttributes())for(const t of r.getAttributeNames())if(t.endsWith(e)){const i=v[a++],s=r.getAttribute(t).split(h),e=/([.?@])?(.*)/.exec(i);d.push({type:1,index:c,name:e[2],strings:s,ctor:"."===e[1]?H:"?"===e[1]?I:"@"===e[1]?L:k}),r.removeAttribute(t);}else t.startsWith(h)&&(d.push({type:6,index:c}),r.removeAttribute(t));if($.test(r.tagName)){const t=r.textContent.split(h),s=t.length-1;if(s>0){r.textContent=i$1?i$1.emptyScript:"";for(let i=0;i<s;i++)r.append(t[i],l()),C.nextNode(),d.push({type:2,index:++c});r.append(t[s],l());}}}else if(8===r.nodeType)if(r.data===o)d.push({type:2,index:c});else {let t=-1;for(;-1!==(t=r.data.indexOf(h,t+1));)d.push({type:7,index:c}),t+=h.length-1;}c++;}}static createElement(t,i){const s=r$1.createElement("template");return s.innerHTML=t,s}}function S(t,i,s=t,e){if(i===T)return i;let h=void 0!==e?s._$Co?.[e]:s._$Cl;const o=c(i)?void 0:i._$litDirective$;return h?.constructor!==o&&(h?._$AO?.(!1),void 0===o?h=void 0:(h=new o(t),h._$AT(t,s,e)),void 0!==e?(s._$Co??=[])[e]=h:s._$Cl=h),void 0!==h&&(i=S(t,h._$AS(t,i.values),h,e)),i}class M{constructor(t,i){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){const{el:{content:i},parts:s}=this._$AD,e=(t?.creationScope??r$1).importNode(i,!0);C.currentNode=e;let h=C.nextNode(),o=0,n=0,l=s[0];for(;void 0!==l;){if(o===l.index){let i;2===l.type?i=new R(h,h.nextSibling,this,t):1===l.type?i=new l.ctor(h,l.name,l.strings,this,t):6===l.type&&(i=new z(h,this,t)),this._$AV.push(i),l=s[++n];}o!==l?.index&&(h=C.nextNode(),o++);}return C.currentNode=r$1,e}p(t){let i=0;for(const s of this._$AV)void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class R{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(t,i,s,e){this.type=2,this._$AH=E,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cv=e?.isConnected??!0;}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===t?.nodeType&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=S(this,t,i),c(t)?t===E||null==t||""===t?(this._$AH!==E&&this._$AR(),this._$AH=E):t!==this._$AH&&t!==T&&this._(t):void 0!==t._$litType$?this.$(t):void 0!==t.nodeType?this.T(t):u(t)?this.k(t):this._(t);}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t));}_(t){this._$AH!==E&&c(this._$AH)?this._$AA.nextSibling.data=t:this.T(r$1.createTextNode(t)),this._$AH=t;}$(t){const{values:i,_$litType$:s}=t,e="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=N.createElement(P(s.h,s.h[0]),this.options)),s);if(this._$AH?._$AD===e)this._$AH.p(i);else {const t=new M(e,this),s=t.u(this.options);t.p(i),this.T(s),this._$AH=t;}}_$AC(t){let i=A.get(t.strings);return void 0===i&&A.set(t.strings,i=new N(t)),i}k(t){a(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const h of t)e===i.length?i.push(s=new R(this.O(l()),this.O(l()),this,this.options)):s=i[e],s._$AI(h),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,i){for(this._$AP?.(!1,!0,i);t&&t!==this._$AB;){const i=t.nextSibling;t.remove(),t=i;}}setConnected(t){void 0===this._$AM&&(this._$Cv=t,this._$AP?.(t));}}class k{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,i,s,e,h){this.type=1,this._$AH=E,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=h,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=E;}_$AI(t,i=this,s,e){const h=this.strings;let o=!1;if(void 0===h)t=S(this,t,i,0),o=!c(t)||t!==this._$AH&&t!==T,o&&(this._$AH=t);else {const e=t;let n,r;for(t=h[0],n=0;n<h.length-1;n++)r=S(this,e[s+n],i,n),r===T&&(r=this._$AH[n]),o||=!c(r)||r!==this._$AH[n],r===E?t=E:t!==E&&(t+=(r??"")+h[n+1]),this._$AH[n]=r;}o&&!e&&this.j(t);}j(t){t===E?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"");}}class H extends k{constructor(){super(...arguments),this.type=3;}j(t){this.element[this.name]=t===E?void 0:t;}}class I extends k{constructor(){super(...arguments),this.type=4;}j(t){this.element.toggleAttribute(this.name,!!t&&t!==E);}}class L extends k{constructor(t,i,s,e,h){super(t,i,s,e,h),this.type=5;}_$AI(t,i=this){if((t=S(this,t,i,0)??E)===T)return;const s=this._$AH,e=t===E&&s!==E||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,h=t!==E&&(s===E||e);e&&this.element.removeEventListener(this.name,this,s),h&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){"function"==typeof this._$AH?this._$AH.call(this.options?.host??this.element,t):this._$AH.handleEvent(t);}}class z{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){S(this,t);}}const j=t.litHtmlPolyfillSupport;j?.(N,R),(t.litHtmlVersions??=[]).push("3.2.1");const B=(t,i,s)=>{const e=s?.renderBefore??i;let h=e._$litPart$;if(void 0===h){const t=s?.renderBefore??null;e._$litPart$=h=new R(i.insertBefore(l(),t),t,void 0,s??{});}return h._$AI(t),h};
-
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */class r extends b{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0;}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const s=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=B(s,this.renderRoot,this.renderOptions);}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0);}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1);}render(){return T}}r._$litElement$=!0,r["finalized"]=!0,globalThis.litElementHydrateSupport?.({LitElement:r});const i=globalThis.litElementPolyfillSupport;i?.({LitElement:r});(globalThis.litElementVersions??=[]).push("4.1.1");
-
-const DOMAIN_ICON_MAP = {
-  light:           'mdi:lightbulb',
-  switch:          'mdi:toggle-switch',
-  input_boolean:   'mdi:toggle-switch',
-  fan:             'mdi:fan',
-  climate:         'mdi:thermostat',
-  media_player:    'mdi:speaker',
-  vacuum:          'mdi:robot-vacuum',
-  binary_sensor:   'mdi:motion-sensor',
-  sensor:          'mdi:information-outline',
-  cover:           'mdi:window-shutter',
-  lock:            'mdi:lock',
-  door:            'mdi:door-closed',
-  window:          'mdi:window-closed',
-  alarm_control_panel: 'mdi:shield-home',
-  scene:           'mdi:palette',
-  script:          'mdi:script-text',
-  input_number:    'mdi:ray-vertex',
-  input_select:    'mdi:format-list-bulleted',
-  camera:          'mdi:cctv',
-  humidifier:      'mdi:air-humidifier',
-  weather:         'mdi:weather-partly-cloudy',
-  device_tracker:  'mdi:map-marker',
-  person:          'mdi:account',
-  input_text:      'mdi:text-box-outline'
-};
-
-const SENSOR_TYPE_MAP = {
-  temperature: { emoji: '🌡️', units: ['°C', '°F'], label: 'Temperature' },
-  humidity:    { emoji: '💦', units: ['%'], label: 'Humidity' },
-  co2:         { emoji: '🟢', units: ['ppm'], label: 'CO₂' },
-  illuminance: { emoji: '☀️', units: ['lx'], label: 'Illuminance' },
-  pm1:         { emoji: '🟤', units: ['µg/m³'], label: 'PM1' },
-  pm25:        { emoji: '⚫️', units: ['µg/m³'], label: 'PM2.5' },
-  pm10:        { emoji: '⚪️', units: ['µg/m³'], label: 'PM10' },
-  uv:          { emoji: '🌞', units: ['UV'], label: 'UV Index' },
-  noise:       { emoji: '🔊', units: ['dB'], label: 'Noise' },
-  pressure:    { emoji: '📈', units: ['hPa'], label: 'Pressure' },
-  voc:         { emoji: '🧪', units: ['ppb'], label: 'VOC' },
-  consumption: { emoji: '⚡️', units: ['W', 'kWh', 'Wh'], label: 'Consumption' },
-  production: { emoji: '🔆', units: ['W', 'kWh', 'Wh'], label: 'Production' }
-};
-
-
-
-class BubbleRoomEditor extends r {
+class BubbleRoomEditor extends LitElement {
   static get properties() {
     return {
-      _config: { type: Object },
-      _iconList: { type: Array },
-      _jsonError: { type: Boolean }
+      hass: { type: Object },
+      config: { type: Object },
+      _areas: { type: Array },
+      _entities: { type: Array },
     };
-  }
-
-  static async getConfigElement() {
-    await Promise.resolve().then(function () { return bubbleRoomEditor; });
-    return document.createElement('bubble-room-editor');
   }
 
   constructor() {
     super();
-    this._iconList = [
-      "mdi:sofa", "mdi:bed", "mdi:home", "mdi:table-furniture", "mdi:television", "mdi:lightbulb",
-      "mdi:fan", "mdi:air-conditioner", "mdi:robot-vacuum", "mdi:led-strip-variant", "mdi:lamp",
-      "mdi:window-closed", "mdi:window-open", "mdi:door", "mdi:door-closed", "mdi:speaker",
-      "mdi:volume-high", "mdi:volume-off", "mdi:thermostat", "mdi:fire", "mdi:water", "mdi:shower",
-      "mdi:toilet", "mdi:fridge", "mdi:oven", "mdi:coffee-maker", "mdi:washing-machine",
-      "mdi:vacuum", "mdi:garage", "mdi:garage-open", "mdi:cctv"
-    ];
-    if (!customElements.get("ha-entity-picker")) {
-      import('custom-card-helpers').then(module => {
-        if (module && module.loadHaComponents) {
-          module.loadHaComponents();
-        }
-      }).catch(() => {});
-    }
-    this._expandedPanel = null;
-    this._expandedSubButtons = [false, false, false, false];
-    this._expandedMushroomEntities = [false, false, false, false, false];
-    this._expandedSensors = [false, false, false, false];
-    this._expandedColors = [false, false];
+    this.hass = undefined;
+    this.config = {};
+    this._areas = [];
+    this._entities = [];
+    this._entityOptionsCache = {};
+    this._iconListCache = null;
   }
 
-  async _loadAreaEntities() {
-    if (!this._hass) return;
-  
-    // Recupera devices e entities registrate
-    const devices = await this._hass.callWS({ type: "config/device_registry/list" });
-    const entities = await this._hass.callWS({ type: "config/entity_registry/list" });
-  
-    // Prepara mappa area_id -> lista entità
-    const areaEntities = {};
-  
-    for (const entity of entities) {
-      let areaId = entity.area_id;
-      if (!areaId) {
-        const device = devices.find(d => d.id === entity.device_id);
-        areaId = device?.area_id;
-      }
-      if (areaId) {
-        if (!areaEntities[areaId]) areaEntities[areaId] = [];
-        areaEntities[areaId].push(entity.entity_id);
-      }
+  setConfig(config) {
+    this.config = { ...config };
+    this._entityOptionsCache = {}; // Reset cache ogni nuova config
+    this._iconListCache = null;
+  }
+
+  shouldUpdate(changedProps) {
+    // Aggiorna solo se cambiano config o hass
+    return changedProps.has('config') || changedProps.has('hass');
+  }
+
+  updated(changedProps) {
+    super.updated && super.updated(changedProps);
+    // Reset cache ogni volta che cambia hass/config
+    if (changedProps.has('hass') || changedProps.has('config')) {
+      this._entityOptionsCache = {};
+      this._iconListCache = null;
     }
-    this._areaEntities = areaEntities;
+  }
+
+  _getFilteredEntityOptions(section) {
+    // Cache delle entità filtrate per sezione
+    if (!this._entityOptionsCache) this._entityOptionsCache = {};
+    if (this._entityOptionsCache[section]) return this._entityOptionsCache[section];
+    // --- Esempio: usa _getFilteredEntities se vuoi la logica reale! ---
+    const opts = this._getFilteredEntities(section); // qui era Nonethis
+    this._entityOptionsCache[section] = opts;
+    return opts;
+  }
+  
+
+  _getIconList() {
+    // Caching lista icone (fallback, MDI ecc)
+    if (this._iconListCache) return this._iconListCache;
+    // Sostituisci qui con la tua funzione reale di build della lista icone
+    const list = this._buildIconList ? this._buildIconList() : [];
+    this._iconListCache = list;
+    return list;
   }
 
 
-  set hass(hass) {
-    this._hass = hass;
-    this.requestUpdate();
-  
-    if (!this._areaEntities) {
-      this._loadAreaEntities();
-    }
-  }
 
   _getFilteredEntities(sectionName) {
     const allEntityIds = this._hass ? Object.keys(this._hass.states) : [];
@@ -782,7 +703,7 @@ class BubbleRoomEditor extends r {
     }
   
     return baseEntities.filter(eid =>
-      this._filterEntityForSection(eid, sectionName)
+      Nonethis._getFilteredEntityOptions(eid, sectionName)
       || this._config.entities?.[sectionName]?.entity === eid // <-- questo è fondamentale
     );
   }
@@ -903,7 +824,7 @@ class BubbleRoomEditor extends r {
   }
 
   static get styles() {
-    return i$3`
+    return css`
       :host {
         background: transparent !important;
         padding: 0 !important;
@@ -1232,7 +1153,7 @@ class BubbleRoomEditor extends r {
       default: label = key;
     }
     const panelId = `${key}Panel`;
-    return x`
+    return html`
       <ha-expansion-panel id="${panelId}">
         <div slot="header" @click="${() => this._togglePanel(panelId)}">${label}</div>
         <div class="section-content">
@@ -1246,9 +1167,9 @@ class BubbleRoomEditor extends r {
 
   render() {
     if (!this._config) {
-      return x`<div>Caricamento configurazione...</div>`;
+      return html`<div>Caricamento configurazione...</div>`;
     }
-    return x`
+    return html`
       <div class="editor-header">
         <h3>Visual Editor Bubble Room <span class="version">4.0</span></h3>
       </div>
@@ -1287,9 +1208,9 @@ class BubbleRoomEditor extends r {
   
     const hasEntityPicker = customElements.get("ha-entity-picker");
   
-    return x`
+    return html`
       <label>${labelText}:</label>
-      ${hasEntityPicker ? x`
+      ${hasEntityPicker ? html`
         <ha-entity-picker
           .hass="${this._hass}"
           .value="${value}"
@@ -1297,7 +1218,7 @@ class BubbleRoomEditor extends r {
           allow-custom-entity
           @value-changed="${e => this._updateEntity(entityKey, field)({ target: { value: e.detail.value } })}">
         </ha-entity-picker>
-      ` : x`
+      ` : html`
         <input
           type="text"
           .value="${value}"
@@ -1309,7 +1230,7 @@ class BubbleRoomEditor extends r {
 
   _renderIconInput(labelText, entityKey, field = 'icon') {
     const value = this._config.entities?.[entityKey]?.[field] || '';
-    return x`
+    return html`
       <label>${labelText}:</label>
       <ha-icon-picker
         .hass="${this._hass}"
@@ -1340,23 +1261,23 @@ class BubbleRoomEditor extends r {
     const holdAction = this._config.hold_action || { action: 'more-info', navigation_path: '' };
     const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
   
-    return x`
+    return html`
       <div class="input-group">
         <label>Tap:</label>
         <div class="pill-group">
-          ${actions.map(action => x`
+          ${actions.map(action => html`
             <button
               class="pill-button ${tapAction.action === action ? 'active' : ''}"
               @click="${() => this._updateTapActionField('action')({ target: { value: action } })}"
             >${action}</button>
           `)}
         </div>
-        ${tapAction.action === 'navigate' ? x`
+        ${tapAction.action === 'navigate' ? html`
           <label>Navigation Path:</label>
           <input type="text" .value="${tapAction.navigation_path || ''}"
             @input="${this._updateTapActionField('navigation_path')}" />
         ` : ''}
-        ${tapAction.action === 'call-service' ? x`
+        ${tapAction.action === 'call-service' ? html`
           <label>Service:</label>
           <input type="text" .value="${tapAction.service || ''}"
             @input="${this._updateTapActionField('service')}" />
@@ -1365,26 +1286,26 @@ class BubbleRoomEditor extends r {
             class="${this._jsonError ? 'error' : ''}"
             .value="${tapAction.service_data ? JSON.stringify(tapAction.service_data) : ''}"
             @input="${this._updateTapActionField('service_data')}"></textarea>
-          ${this._jsonError ? x`<div style="color: red; font-size: 0.9em;">⚠️ Invalid JSON</div>` : ''}
+          ${this._jsonError ? html`<div style="color: red; font-size: 0.9em;">⚠️ Invalid JSON</div>` : ''}
         ` : ''}
       </div>
   
       <div class="input-group">
         <label>Hold:</label>
         <div class="pill-group">
-          ${actions.map(action => x`
+          ${actions.map(action => html`
             <button
               class="pill-button ${holdAction.action === action ? 'active' : ''}"
               @click="${() => this._updateHoldActionField('action')({ target: { value: action } })}"
             >${action}</button>
           `)}
         </div>
-        ${holdAction.action === 'navigate' ? x`
+        ${holdAction.action === 'navigate' ? html`
           <label>Navigation Path:</label>
           <input type="text" .value="${holdAction.navigation_path || ''}"
             @input="${this._updateHoldActionField('navigation_path')}" />
         ` : ''}
-        ${holdAction.action === 'call-service' ? x`
+        ${holdAction.action === 'call-service' ? html`
           <label>Service:</label>
           <input type="text" .value="${holdAction.service || ''}"
             @input="${this._updateHoldActionField('service')}" />
@@ -1393,7 +1314,7 @@ class BubbleRoomEditor extends r {
             class="${this._jsonError ? 'error' : ''}"
             .value="${holdAction.service_data ? JSON.stringify(holdAction.service_data) : ''}"
             @input="${this._updateHoldActionField('service_data')}"></textarea>
-          ${this._jsonError ? x`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
+          ${this._jsonError ? html`<div style="color: red; font-size: 0.9em;">⚠️ JSON non valido</div>` : ''}
         ` : ''}
       </div>
     `;
@@ -1403,7 +1324,7 @@ class BubbleRoomEditor extends r {
 
   _renderMushroomEntityPanel(key, label) {
     const panelId = `${key}Panel`;
-    return x`
+    return html`
       <ha-expansion-panel id="${panelId}">
         <div slot="header" @click="${() => this._togglePanel(panelId)}">${label}</div>
         <div class="section-content">
@@ -1454,7 +1375,7 @@ class BubbleRoomEditor extends r {
     const rgba = this._config.colors?.[section]?.[key] || 'rgba(0,0,0,1)';
     const [r, g, b, a] = this._parseRGBA(rgba);
     const hex = `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
-    return x`
+    return html`
       <div class="input-group">
         <label>${label}:</label>
         <div style="display: flex; flex-direction: column; align-items: center; gap: 7px;">
@@ -1503,23 +1424,23 @@ class BubbleRoomEditor extends r {
     const holdAction = this._config.entities[key]?.hold_action || { action: 'more-info', navigation_path: '' };
     const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
   
-    return x`
+    return html`
       <div class="input-group">
         <label>Tap:</label>
         <div class="pill-group">
-          ${actions.map(action => x`
+          ${actions.map(action => html`
             <button
               class="pill-button ${tapAction.action === action ? 'active' : ''}"
               @click="${() => this._updateEntityTapAction(key, 'action')({ target: { value: action } })}"
             >${action}</button>
           `)}
         </div>
-        ${tapAction.action === 'navigate' ? x`
+        ${tapAction.action === 'navigate' ? html`
           <label>Navigation Path:</label>
           <input type="text" .value="${tapAction.navigation_path || ''}"
             @input="${this._updateEntityTapAction(key, 'navigation_path')}" />
         ` : ''}
-        ${tapAction.action === 'call-service' ? x`
+        ${tapAction.action === 'call-service' ? html`
           <label>Service:</label>
           <input type="text" .value="${tapAction.service || ''}"
             @input="${this._updateEntityTapAction(key, 'service')}" />
@@ -1533,19 +1454,19 @@ class BubbleRoomEditor extends r {
       <div class="input-group">
         <label>Hold:</label>
         <div class="pill-group">
-          ${actions.map(action => x`
+          ${actions.map(action => html`
             <button
               class="pill-button ${holdAction.action === action ? 'active' : ''}"
               @click="${() => this._updateEntityHoldAction(key, 'action')({ target: { value: action } })}"
             >${action}</button>
           `)}
         </div>
-        ${holdAction.action === 'navigate' ? x`
+        ${holdAction.action === 'navigate' ? html`
           <label>Navigation Path:</label>
           <input type="text" .value="${holdAction.navigation_path || ''}"
             @input="${this._updateEntityHoldAction(key, 'navigation_path')}" />
         ` : ''}
-        ${holdAction.action === 'call-service' ? x`
+        ${holdAction.action === 'call-service' ? html`
           <label>Service:</label>
           <input type="text" .value="${holdAction.service || ''}"
             @input="${this._updateEntityHoldAction(key, 'service')}" />
@@ -1829,7 +1750,7 @@ class BubbleRoomEditor extends r {
       { value: "none", label: "🚫 None" }
     ];
   
-    return x`
+    return html`
       <div class="input-group">
         <label style="min-width:50px;">${actionType === "tap" ? "Tap" : "Hold"}:</label>
         <select style="margin-right:16px;" .value="${config.action || 'none'}"
@@ -1841,9 +1762,9 @@ class BubbleRoomEditor extends r {
                   : this._updateHoldActionField('action')({ target: { value: e.target.value } })
                 )
           }">
-          ${actions.map(a => x`<option value="${a.value}">${a.label}</option>`)}
+          ${actions.map(a => html`<option value="${a.value}">${a.label}</option>`)}
         </select>
-        ${config.action === 'navigate' ? x`
+        ${config.action === 'navigate' ? html`
           <label style="margin-left:12px;">Path:</label>
           <input type="text" .value="${config.navigation_path || ''}" style="width:130px;"
             @input="${e => 
@@ -1855,7 +1776,7 @@ class BubbleRoomEditor extends r {
                   )
             }" />
         ` : ''}
-        ${config.action === 'call-service' ? x`
+        ${config.action === 'call-service' ? html`
           <label style="margin-left:12px;">Service:</label>
           <input type="text" .value="${config.service || ''}" style="width:130px;"
             @input="${e => 
@@ -1913,7 +1834,7 @@ class BubbleRoomEditor extends r {
     
 
   _renderExpandablePill({ label, expanded, onToggle, content, accent }) {
-    return x`
+    return html`
       <div class="mini-pill glass-pill ${expanded ? 'expanded' : ''}">
         <div
           class="mini-pill-header"
@@ -1923,7 +1844,7 @@ class BubbleRoomEditor extends r {
           ${label}
           <span class="chevron">${expanded ? '▼' : '▶'}</span>
         </div>
-        ${expanded ? x`
+        ${expanded ? html`
           <div class="mini-pill-content">
             ${content}
           </div>
@@ -1950,7 +1871,7 @@ class BubbleRoomEditor extends r {
   }
 
   _renderRoomPanel() {
-    return x`
+    return html`
       <ha-expansion-panel
         class="glass-panel room-panel"
         .expanded="${this._expandedPanel === 'room'}"
@@ -2078,7 +1999,7 @@ class BubbleRoomEditor extends r {
       this._expandedSubButtons = [false, false, false, false];
     }
   
-    return x`
+    return html`
       <ha-expansion-panel
         class="glass-panel subbutton-panel"
         .expanded="${this._expandedPanel === 'subbutton'}"
@@ -2112,7 +2033,7 @@ class BubbleRoomEditor extends r {
               expanded,
               accent,
               onToggle: () => this._toggleSubButtonExpand(i),
-              content: x`
+              content: html`
                 <div style="display:flex; flex-direction:column; gap:5px;">
                   <div class="input-group" style="flex:1; margin-bottom:0;">
                     ${this._renderEntityInput("Entities (ID)", key, "entity", "subbutton")}
@@ -2175,7 +2096,7 @@ class BubbleRoomEditor extends r {
     if (!this._expandedMushroomEntities || this._expandedMushroomEntities.length !== 5) {
       this._expandedMushroomEntities = [false, false, false, false, false];
     }
-    return x`
+    return html`
       <ha-expansion-panel
         class="glass-panel mushroom-panel"
         .expanded="${this._expandedPanel === 'mushroom'}"
@@ -2206,7 +2127,7 @@ class BubbleRoomEditor extends r {
               expanded,
               accent,
               onToggle: () => this._toggleMushroomEntityExpand(i),
-              content: x`
+              content: html`
                 <div style="display:flex; flex-direction:column; gap:5px;">
                   <div class="input-group" style="flex:1; margin-bottom:0;">
                     ${this._renderEntityInput("Entity", entity.key, "entity", "mushroom")}
@@ -2263,7 +2184,7 @@ class BubbleRoomEditor extends r {
 
 
   _renderCameraPanel() {
-    return x`
+    return html`
       <ha-expansion-panel
         class="glass-panel camera-panel"
         .expanded="${this._expandedPanel === 'camera'}"
@@ -2324,7 +2245,7 @@ class BubbleRoomEditor extends r {
 
 
   _renderClimatePanel() {
-    return x`
+    return html`
       <ha-expansion-panel
         class="glass-panel climate-panel"
         .expanded="${this._expandedPanel === 'climate'}"
@@ -2392,7 +2313,7 @@ class BubbleRoomEditor extends r {
       expanded,
       accent,
       onToggle: () => this._toggleSensorExpand(index),
-      content: x`
+      content: html`
         <div style="display:flex; flex-direction:column; gap:5px;">
           <div class="input-group" style="flex:2; margin-bottom:0;">
             <label>Sensor Type</label>
@@ -2404,7 +2325,7 @@ class BubbleRoomEditor extends r {
               <option value="">-- none --</option>
               ${Object.entries(SENSOR_TYPE_MAP).map(
                 ([type, { emoji, label }]) =>
-                  x`<option value="${type}">${emoji} ${label}</option>`
+                  html`<option value="${type}">${emoji} ${label}</option>`
               )}
             </select>
           </div>
@@ -2419,7 +2340,7 @@ class BubbleRoomEditor extends r {
               @change="${e => this._updateSensor(index, 'unit', e.target.value)}"
             >
               ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(u =>
-                x`<option value="${u}">${u}</option>`
+                html`<option value="${u}">${u}</option>`
               )}
             </select>
           </div>
@@ -2436,7 +2357,7 @@ class BubbleRoomEditor extends r {
     }
     const sensorKeys = ['sensor1', 'sensor2', 'sensor3', 'sensor4', 'sensor5', 'sensor6'];
   
-    return x`
+    return html`
       <ha-expansion-panel
         class="glass-panel sensor-panel"
         .expanded="${this._expandedPanel === 'sensor'}"
@@ -2501,7 +2422,7 @@ class BubbleRoomEditor extends r {
     // Valore larghezza massima per ogni box (puoi regolarlo)
     const colorBoxStyle = "flex:1 1 0; max-width: 250px; min-width: 0;";
   
-    return x`
+    return html`
       <ha-expansion-panel
         class="glass-panel colors-panel"
         .expanded="${this._expandedPanel === 'colors'}"
@@ -2514,7 +2435,7 @@ class BubbleRoomEditor extends r {
             expanded: this._expandedColors[0],
             accent: "#55afff",
             onToggle: () => this._toggleColorExpand(0),
-            content: x`
+            content: html`
               <div class="input-group color-row">
                 <div style="display: flex; gap:12px; margin-bottom:4px;">
                   <div style="flex:1;"><span style="font-weight:700; color:#55afff;">Background Active</span></div>
@@ -2552,7 +2473,7 @@ class BubbleRoomEditor extends r {
             expanded: this._expandedColors[1],
             accent: "#b28fff",
             onToggle: () => this._toggleColorExpand(1),
-            content: x`
+            content: html`
               <div class="input-group color-row">
                 <div style="display: flex; gap:12px; margin-bottom:4px;">
                   <div style="flex:1;"><span style="font-weight:700; color:#b28fff;">Background Active</span></div>
