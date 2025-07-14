@@ -286,7 +286,14 @@ class BubbleRoom extends LitElement {
   }
 
   getConfig() { return JSON.parse(JSON.stringify(this.config)); }
-
+  _getSubButtonStates() {
+    // Restituisce i subbutton con già lo stato corrente calcolato (più efficiente)
+    return (this._subButtons || []).map(btn => ({
+      ...btn,
+      state: this.hass.states[btn.entity]?.state || 'off'
+    }));
+  }
+  
   static get styles() {
     // ... CSS INVARIATO ...
     return css`
@@ -446,13 +453,11 @@ class BubbleRoom extends LitElement {
           </div>
           <!-- Colonna Sub-buttons -->
           <div class="subbutton-column">
-            ${subButtons.map(btn => {
-              if (!btn) return html``;
-              const state = hass.states[btn.entity]?.state || 'off';
-              const btnColor = state === 'on'
+            ${this._getSubButtonStates().map(btn => {
+              const btnColor = btn.state === 'on'
                 ? (subColors.background_on || subColors.color_on || 'rgba(0,0,255,1)')
                 : (subColors.background_off || subColors.color_off || 'rgba(0,0,255,0.3)');
-              const iconColor = state === 'on'
+              const iconColor = btn.state === 'on'
                 ? subColors.icon_on || 'yellow'
                 : subColors.icon_off || '#666';
               return html`
@@ -474,6 +479,7 @@ class BubbleRoom extends LitElement {
               `;
             })}
           </div>
+
         </div>
       </div>
     `;
