@@ -309,7 +309,12 @@ class BubbleRoom extends LitElement {
       @media (max-width: 480px) { .bubble-icon-container { width: 70%; } }
     `;
   }
-  
+// Aggiungi all'interno della classe BubbleRoom
+  shouldUpdate(changedProps) {
+    // Aggiorna solo se cambiano config o hass (stato Home Assistant)
+    return changedProps.has('config') || changedProps.has('hass');
+  }
+
   render() {
     this._getBestIconCache = {};
     const mainSize = this._getMainIconSize();
