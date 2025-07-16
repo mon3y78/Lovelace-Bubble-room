@@ -27,3 +27,23 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BASE="${{ github.event.inputs.base_version }}"
+          MATCHING_TAGS=$(gh api repos/${{ github.repository }}/releases --paginate \
+            | jq -r --arg BASE "v$BASE" '.[] | select(.tag_name | startswith($BASE)) | select(.prerelease == true) | .tag_name')
+
+          COUNT=0
+          if [ -z "$MATCHING_TAGS" ]; then
+            echo "✅ Nessuna pre-release trovata con prefisso v$BASE"
+            exit 0
+          fi
+
+          echo "🔍 Trovate le seguenti pre-release:"
+          echo "$MATCHING_TAGS"
+
+          for TAG in $MATCHING_TAGS; do
+            echo "🗑️ Eliminando pre-release e tag: $TAG"
+            gh release delete "$TAG" --yes || echo "⚠️ Release non trovata"
+            git push origin --delete "$TAG" || echo "⚠️ Tag Git non trovato"
+            COUNT=$((COUNT + 1))
+          done
+
+          echo "✅ Eliminazione completata. Totale rimosse: $COUNT"
