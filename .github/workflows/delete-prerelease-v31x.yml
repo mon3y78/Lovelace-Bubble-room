@@ -1,10 +1,15 @@
-name: Delete pre-releases v3.1.x
+name: Delete matching pre-releases
 
 on:
   workflow_dispatch:
+    inputs:
+      base_version:
+        description: 'Versione base (es. 3.1)'
+        required: true
+        default: '3.1'
 
 jobs:
-  delete-prereleases:
+  delete-matching-prereleases:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -23,14 +28,15 @@ jobs:
         run: |
           echo "${GH_TOKEN}" | gh auth login --with-token
 
-      - name: Delete pre-releases v3.1.x
+      - name: Delete matching pre-releases
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "🔍 Cercando pre-release con tag v3.1.x..."
+          BASE="${{ github.event.inputs.base_version }}"
+          echo "🔍 Cercando pre-release con tag che iniziano per ${BASE}..."
 
           gh api repos/${{ github.repository }}/releases --paginate \
-          | jq -r '.[] | select(.tag_name | test("^v3\\.1\\.[0-9]+$")) | select(.prerelease == true) | .tag_name' \
+          | jq -r --arg BASE "$BASE" '.[] | select(.tag_name | test("^" + $BASE)) | select(.prerelease == true) | .tag_name' \
           | while read TAG; do
               echo "🗑️ Eliminando pre-release e tag: $TAG"
               gh release delete "$TAG" --yes || echo "⚠️ Release non trovata"
