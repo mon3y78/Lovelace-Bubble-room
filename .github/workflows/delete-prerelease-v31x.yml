@@ -1,7 +1,7 @@
 name: Delete pre-releases v3.1.x
 
 on:
-  workflow_dispatch:  # Permette di eseguirla manualmente da GitHub
+  workflow_dispatch:
 
 jobs:
   delete-prereleases:
@@ -10,10 +10,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup GitHub CLI
-        uses: cli/cli-action@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+          sudo apt-add-repository https://cli.github.com/packages
+          sudo apt update
+          sudo apt install gh -y
+
+      - name: Authenticate GitHub CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "${GH_TOKEN}" | gh auth login --with-token
 
       - name: Delete pre-releases v3.1.x
         env:
