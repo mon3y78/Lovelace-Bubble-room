@@ -601,7 +601,7 @@ class BubbleRoom extends LitElement {
     el.style.fontSize = ""; // reset
   
     const maxWidth = el.offsetWidth || el.parentElement.offsetWidth;
-    let fontSize = 28;
+    let fontSize = 64;
     el.style.fontSize = fontSize + "px";
   
     // Esci subito se già ci sta!
