@@ -1,0 +1,34 @@
+name: Delete pre-releases v3.1.x
+
+on:
+  workflow_dispatch:  # Permette di avviare manualmente il workflow
+
+jobs:
+  delete-prereleases:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup GitHub CLI
+        uses: cli/cli-action@v2
+
+      - name: Authenticate GitHub CLI
+        run: gh auth setup-git
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete pre-releases v3.1.x
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🔍 Cercando pre-release v3.1.x..."
+          gh api repos/${{ github.repository }}/releases --paginate \
+          | jq -r '.[] | select(.tag_name | test("^v3\\.1\\.[0-9]+$")) | select(.prerelease == true) | .tag_name' \
+          | while read TAG; do
+              echo "🗑️ Eliminando pre-release e tag: $TAG"
+              gh release delete "$TAG" --yes || echo "⚠️ Release non trovata"
+              git push origin --delete "$TAG" || echo "⚠️ Tag Git non trovato"
+            done
+
+          echo "✅ Completato."
