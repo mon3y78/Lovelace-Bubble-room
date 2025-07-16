@@ -22,25 +22,8 @@ jobs:
           curl -fsSL -o gh.deb https://github.com/cli/cli/releases/download/v2.45.0/gh_2.45.0_linux_amd64.deb
           sudo dpkg -i gh.deb
 
-      - name: Authenticate GitHub CLI
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "${GH_TOKEN}" | gh auth login --with-token
-
       - name: Delete matching pre-releases
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BASE="${{ github.event.inputs.base_version }}"
-          echo "🔍 Cercando pre-release con tag che iniziano per ${BASE}..."
-
-          gh api repos/${{ github.repository }}/releases --paginate \
-          | jq -r --arg BASE "$BASE" '.[] | select(.tag_name | test("^" + $BASE)) | select(.prerelease == true) | .tag_name' \
-          | while read TAG; do
-              echo "🗑️ Eliminando pre-release e tag: $TAG"
-              gh release delete "$TAG" --yes || echo "⚠️ Release non trovata"
-              git push origin --delete "$TAG" || echo "⚠️ Tag Git non trovato"
-            done
-
-          echo "✅ Completato."
