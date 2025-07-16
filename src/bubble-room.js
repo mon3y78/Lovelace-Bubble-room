@@ -77,6 +77,8 @@ class BubbleRoom extends LitElement {
   }
   connectedCallback() {
     super.connectedCallback();
+    this._resizeNameFontDebounced = this._debounce(this._resizeNameFont.bind(this), 150);
+    window.addEventListener('resize', this._resizeNameFontDebounced);
     if (!document.getElementById('bubble-room-bebas-font')) {
       const link = document.createElement('link');
       link.id = 'bubble-room-bebas-font';
@@ -101,22 +103,28 @@ class BubbleRoom extends LitElement {
       const rect = subbuttonCol.getBoundingClientRect();
       this._subButtonSize = { w: rect.width, h: rect.height / 4 };
     }
-    this._resizeNameFont();
+    if (changedProperties.has('config')) {
+      this._resizeNameFont();
+    }
+
   }
   disconnectedCallback() {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
       this._resizeObserver = null;
     }
+    if (this._resizeNameFontDebounced) {
+      window.removeEventListener('resize', this._resizeNameFontDebounced);
+    }
     super.disconnectedCallback();
   }
   firstUpdated() {
-    const container = this.renderRoot?.querySelector('#nameArea');
-    if (container) {
-      this._resizeObserver = new ResizeObserver(() => this._resizeNameFont());
-      this._resizeObserver.observe(container);
-    }
+    super.firstUpdated && super.firstUpdated();
+    this._resizeObserver = new ResizeObserver(() => this._resizeNameFont());
+    const container = this.shadowRoot.querySelector('.room-name')?.parentElement;
+    if (container) this._resizeObserver.observe(container);
   }
+
   static get properties() {
     return {
       config: { type: Object },
@@ -583,23 +591,41 @@ class BubbleRoom extends LitElement {
   _getDomainDefaultIcon(domain, state) { if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP[domain] || ''; }
   _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP[sensorType]; if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
   _resizeNameFont() {
-    const container = this.renderRoot?.querySelector('#nameArea');
-    const text = this.renderRoot?.querySelector('#nameText');
-    if (!container || !text) return;
-    let maxFont = 300, minFont = 5, fontSize = maxFont;
-    let spacing = 0.01 * maxFont;
-    text.style.letterSpacing = `${spacing}px`;
-    text.style.fontSize = `${fontSize}px`;
-    if (text.offsetWidth > container.offsetWidth || text.offsetHeight > container.offsetHeight) {
-      spacing = 0;
-      text.style.letterSpacing = `${spacing}px`;
-      text.style.fontSize = `${fontSize}px`;
+    const el = this.shadowRoot.querySelector('.room-name');
+    if (!el) return;
+  
+    // Blocca chiamate inutili se il nome è identico a prima
+    if (this._lastRoomName === el.textContent) return;
+    this._lastRoomName = el.textContent;
+  
+    el.style.fontSize = ""; // reset
+  
+    const maxWidth = el.offsetWidth || el.parentElement.offsetWidth;
+    let fontSize = 28;
+    el.style.fontSize = fontSize + "px";
+  
+    // Esci subito se già ci sta!
+    if (el.scrollWidth <= maxWidth) return;
+  
+    while (el.scrollWidth > maxWidth && fontSize > 12) {
+      fontSize -= 2;
+      el.style.fontSize = fontSize + "px";
     }
-    while ((text.offsetWidth > container.offsetWidth || text.offsetHeight > container.offsetHeight) && fontSize > minFont) {
+    while (el.scrollWidth > maxWidth && fontSize > 12) {
       fontSize -= 1;
-      text.style.fontSize = `${fontSize}px`;
+      el.style.fontSize = fontSize + "px";
     }
   }
+
+
+  _debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+  }
+
   _getIconShapeStyle() {
     return `
       width: 100%;
