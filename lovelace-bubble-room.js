@@ -366,7 +366,7 @@ class BubbleRoom extends LitElement {
       .grid-container { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr; align-items: stretch; height: 100%; min-height: 0; min-width: 0; }
       .left-content { display: grid; grid-template-rows: 0.5fr 2.5fr 7fr; height: 100%; min-height: 0; min-width: 0; box-sizing: border-box; }
       .name-area { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; font-family: "Bebas Neue", "Arial Narrow", sans-serif; text-transform: uppercase; overflow: hidden; border: 2px solid red; }
-      #nameText { display: block; white-space: nowrap; text-align: center; line-height: 1; vertical-align: middle; width: 100 %; height: 100 %; background: rgba(255,0,0,0.1); font-size: 200px; }
+      #nameText { display: block; white-space: nowrap; text-align: center; line-height: 1; vertical-align: middle; width: 100 %; height: 100 %; background: rgba(255,0,0,0.1); }
       .icon-area { position: relative; display: flex; justify-content: flex-start; align-items: center; padding-left: 0%; min-height: 0; min-width: 0; height: 100%; }
       .bubble-icon-container { width: 100%; height: 100%; min-height: 0; min-width: 0; display: flex; justify-content: center; align-items: center; flex-grow: 1; flex-basis: 0; background-color: var(--bubble-bg, rgba(0, 128, 0, 0.3)); border-radius: 0; }
       .mushroom-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -589,32 +589,41 @@ class BubbleRoom extends LitElement {
   _getDomainDefaultIcon(domain, state) { if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP$1[domain] || ''; }
   _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP$1[sensorType]; if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
   _resizeNameFont() {
-    // name-text = il vero elemento della scritta
-    const textEl = this.shadowRoot.querySelector('.name-text');
-    // name-area = il vero bubble/container
-    const areaEl = this.shadowRoot.querySelector('.name-area');
-    
-    if (!textEl || !areaEl) return;
-    
-    textEl.style.display = 'block';
-    textEl.style.width = '100%';
-    textEl.style.fontSize = "";
-    
-    // Parti da un font grande
-    let fontSize = 80;
-    textEl.style.fontSize = fontSize + "px";
-    
-    const maxWidth = areaEl.clientWidth;
-    const maxHeight = areaEl.clientHeight;
-    
-    // Riduci finché ci sta sia in larghezza che in altezza
-    while ((textEl.scrollWidth > maxWidth || textEl.scrollHeight > maxHeight) && fontSize > 12) {
-      fontSize -= 2;
-      textEl.style.fontSize = fontSize + "px";
+    const container = this.renderRoot?.querySelector('#nameArea');
+    const text = this.renderRoot?.querySelector('#nameText');
+    if (!container || !text) return;
+  
+    let maxFont = 300, minFont = 5, fontSize = maxFont;
+    let spacing = 0.01 * maxFont; // 2% della font size
+    text.style.letterSpacing = `${spacing}px`;
+    text.style.fontSize = `${fontSize}px`;
+  
+    // LOG DEBUG iniziale
+    console.log('INIZIO', {
+      containerW: container.offsetWidth,
+      containerH: container.offsetHeight,
+      textW: text.offsetWidth,
+      textH: text.offsetHeight,
+      fontSize
+    });
+  
+    if (text.offsetWidth > container.offsetWidth || text.offsetHeight > container.offsetHeight) {
+      spacing = 0;
+      text.style.letterSpacing = `${spacing}px`;
+      text.style.fontSize = `${fontSize}px`;
     }
-    while ((textEl.scrollWidth > maxWidth || textEl.scrollHeight > maxHeight) && fontSize > 12) {
+  
+    while ((text.offsetWidth > container.offsetWidth || text.offsetHeight > container.offsetHeight) && fontSize > minFont) {
       fontSize -= 1;
-      textEl.style.fontSize = fontSize + "px";
+      text.style.fontSize = `${fontSize}px`;
+      // LOG DEBUG ad ogni step
+      console.log('CICLO', {
+        containerW: container.offsetWidth,
+        containerH: container.offsetHeight,
+        textW: text.offsetWidth,
+        textH: text.offsetHeight,
+        fontSize
+      });
     }
   }
 
