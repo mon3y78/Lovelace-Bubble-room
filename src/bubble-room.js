@@ -108,7 +108,6 @@ class BubbleRoom extends LitElement {
     }
   }
 
-  }
   disconnectedCallback() {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
