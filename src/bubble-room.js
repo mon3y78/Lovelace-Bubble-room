@@ -368,7 +368,7 @@ class BubbleRoom extends LitElement {
       .grid-container { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr; align-items: stretch; height: 100%; min-height: 0; min-width: 0; }
       .left-content { display: grid; grid-template-rows: 0.5fr 2.5fr 7fr; height: 100%; min-height: 0; min-width: 0; box-sizing: border-box; }
       .name-area { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; font-family: "Bebas Neue", "Arial Narrow", sans-serif; text-transform: uppercase; overflow: hidden; border: 2px solid red; }
-      #nameText { display: inline-block; white-space: nowrap; text-align: center; line-height: 1; vertical-align: middle; border: 2px solid yellow; }
+      #nameText { display: inline-block; white-space: nowrap; text-align: center; line-height: 1; vertical-align: middle; width: 100 %; height: 100 %; }
       .icon-area { position: relative; display: flex; justify-content: flex-start; align-items: center; padding-left: 0%; min-height: 0; min-width: 0; height: 100%; }
       .bubble-icon-container { width: 100%; height: 100%; min-height: 0; min-width: 0; display: flex; justify-content: center; align-items: center; flex-grow: 1; flex-basis: 0; background-color: var(--bubble-bg, rgba(0, 128, 0, 0.3)); border-radius: 0; }
       .mushroom-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -595,20 +595,20 @@ class BubbleRoom extends LitElement {
     const textEl = this.shadowRoot.querySelector('.name-text');
     // name-area = il vero bubble/container
     const areaEl = this.shadowRoot.querySelector('.name-area');
-  
+    
     if (!textEl || !areaEl) return;
-  
+    
     textEl.style.display = 'block';
     textEl.style.width = '100%';
     textEl.style.fontSize = "";
-  
+    
     // Parti da un font grande
     let fontSize = 80;
     textEl.style.fontSize = fontSize + "px";
-  
+    
     const maxWidth = areaEl.clientWidth;
     const maxHeight = areaEl.clientHeight;
-  
+    
     // Riduci finché ci sta sia in larghezza che in altezza
     while ((textEl.scrollWidth > maxWidth || textEl.scrollHeight > maxHeight) && fontSize > 12) {
       fontSize -= 2;
