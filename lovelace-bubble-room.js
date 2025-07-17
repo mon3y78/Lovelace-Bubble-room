@@ -85,7 +85,7 @@ class BubbleRoom extends LitElement {
       document.head.appendChild(link);
     }
   }
-  updated() {
+  updated(changedProperties) {
     const iconArea = this.renderRoot?.querySelector('.icon-area');
     if (iconArea) {
       const rect = iconArea.getBoundingClientRect();
@@ -104,8 +104,8 @@ class BubbleRoom extends LitElement {
     if (changedProperties.has('config')) {
       this._resizeNameFont();
     }
-
   }
+
   disconnectedCallback() {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
