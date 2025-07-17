@@ -588,32 +588,63 @@ class BubbleRoom extends LitElement {
   _getDeviceClassIcon(deviceClass, state) { const icons = DEVICE_CLASS_ICON_MAP[deviceClass]; if (!icons) return ''; if (icons.on && icons.off) { return state === 'on' ? icons.on : icons.off; } return icons.on || ''; }
   _getDomainDefaultIcon(domain, state) { if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed'; if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open'; if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed'; if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed'; if (domain === 'binary_sensor') return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off'; return DOMAIN_ICON_MAP$1[domain] || ''; }
   _getSensorEmojiAndUnit(sensorType, unit = 'C') { const data = SENSOR_TYPE_MAP$1[sensorType]; if (!data) return { emoji: '❓', unit: '' }; const unitFinal = sensorType === 'temperature' ? (unit === 'F' ? data.unitF : data.unitC) : data.unit; return { emoji: data.emoji, unit: unitFinal }; }
+_resizeNameFont() {
+  const el = this.shadowRoot.querySelector('.room-name');
+  if (!el) return;
+
+  // Imposta larghezza piena temporaneamente per la misura
+  el.style.display = 'block';
+  el.style.width = '100%';
+  el.style.fontSize = ""; // reset
+
+  // Parti dal massimo
+  let fontSize = 80;
+  el.style.fontSize = fontSize + "px";
+
+  // Ottieni la larghezza massima dal parent più ampio (bubble)
+  const parent = el.parentElement;
+  const maxWidth = parent ? parent.clientWidth : el.offsetWidth;
+  const maxHeight = parent ? parent.clientHeight : el.offsetHeight;
+
+  // Riduci il font finché il testo non ci sta sia in larghezza che in altezza
+  while ((el.scrollWidth > maxWidth || el.scrollHeight > maxHeight) && fontSize > 12) {
+    fontSize -= 2;
+    el.style.fontSize = fontSize + "px";
+  }
+  while ((el.scrollWidth > maxWidth || el.scrollHeight > maxHeight) && fontSize > 12) {
+    fontSize -= 1;
+    el.style.fontSize = fontSize + "px";
+  }
+}
   _resizeNameFont() {
     const el = this.shadowRoot.querySelector('.room-name');
     if (!el) return;
   
-    // Blocca chiamate inutili se il nome è identico a prima
-    if (this._lastRoomName === el.textContent) return;
-    this._lastRoomName = el.textContent;
-  
+    // Imposta larghezza piena temporaneamente per la misura
+    el.style.display = 'block';
+    el.style.width = '100%';
     el.style.fontSize = ""; // reset
   
-    const maxWidth = el.offsetWidth || el.parentElement.offsetWidth;
-    let fontSize = 64;
+    // Parti dal massimo
+    let fontSize = 80;
     el.style.fontSize = fontSize + "px";
   
-    // Esci subito se già ci sta!
-    if (el.scrollWidth <= maxWidth) return;
+    // Ottieni la larghezza massima dal parent più ampio (bubble)
+    const parent = el.parentElement;
+    const maxWidth = parent ? parent.clientWidth : el.offsetWidth;
+    const maxHeight = parent ? parent.clientHeight : el.offsetHeight;
   
-    while (el.scrollWidth > maxWidth && fontSize > 12) {
+    // Riduci il font finché il testo non ci sta sia in larghezza che in altezza
+    while ((el.scrollWidth > maxWidth || el.scrollHeight > maxHeight) && fontSize > 12) {
       fontSize -= 2;
       el.style.fontSize = fontSize + "px";
     }
-    while (el.scrollWidth > maxWidth && fontSize > 12) {
+    while ((el.scrollWidth > maxWidth || el.scrollHeight > maxHeight) && fontSize > 12) {
       fontSize -= 1;
       el.style.fontSize = fontSize + "px";
     }
   }
+  
 
 
   _debounce(func, wait) {
