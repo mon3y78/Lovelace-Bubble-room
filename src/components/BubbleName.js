@@ -2,17 +2,22 @@
  * BubbleName.js
  * Componente per la visualizzazione del nome della stanza nella Bubble Room card.
  * -----------------------------------------------------------
- * - Visualizza il nome della stanza ridimensionando dinamicamente il font per adattarsi al contenitore.
- * - Gestisce azioni tap/hold centralizzate usando helpers/utils.js.
- * - Supporta configurazione per azioni e hass per interazioni.
- * - Layout responsive e pulito.
+ * - Mostra il nome della stanza con testo dinamicamente ridimensionato
+ *   per occupare tutto lo spazio disponibile nel contenitore.
+ * - Usa la funzione centralizzata autoResizeFont da utils.js per
+ *   adattare la dimensione del font in base a larghezza e altezza.
+ * - Supporta la configurazione del testo (es. testo, colore).
+ * - Non gestisce azioni tap o hold.
+ * - Layout responsive, senza overflow o scroll.
  * 
  * PROPRIETÀ:
- *  - name: String          (Testo del nome della stanza)
- *  - config: Object        (Configurazione con tap_action e hold_action)
- *  - hass: Object          (Home Assistant, necessario per azioni)
- *  - containerWidth: Number (Larghezza disponibile per il componente)
- *  - containerHeight: Number (Altezza disponibile per il componente)
+ *  - name: String          (Testo da visualizzare, nome stanza)
+ *  - color: String         (Colore del testo)
+ *  - containerWidth: Number (Larghezza disponibile)
+ *  - containerHeight: Number (Altezza disponibile)
+ * 
+ * DIPENDENZE:
+ *  - helpers/utils.js      (Funzione autoResizeFont(container, text, options))
  * 
  * AUTORE:
  *  - mon3y78 - https://github.com/mon3y78/Lovelace-Bubble-room
@@ -21,98 +26,79 @@
  */
 
 import { LitElement, html, css } from 'lit';
-import { autoResizeFont, onPointerDown, onPointerUp, onPointerLeave, doTapAction, doHoldAction } from '../helpers/utils.js';
+import { autoResizeFont } from '../helpers/utils.js';
 
 export class BubbleName extends LitElement {
   static properties = {
     name: { type: String },
-    config: { type: Object },
-    hass: { type: Object },
+    color: { type: String },
     containerWidth: { type: Number },
     containerHeight: { type: Number },
   };
-  
+
   static styles = css`
     :host {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: block;
       width: 100%;
       height: 100%;
       overflow: hidden;
     }
-    .name-text {
+    .name-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis;
-      user-select: none;
-      cursor: pointer;
-      font-family: "Bebas Neue", "Arial Narrow", sans-serif;
-      text-transform: uppercase;
-      line-height: 1;
+    }
+    .name-text {
       display: inline-block;
+      white-space: nowrap;
+      line-height: 1;
+      vertical-align: middle;
+      user-select: none;
+      color: var(--name-text-color, inherit);
     }
   `;
-  
+
   constructor() {
     super();
     this.name = '';
-    this.config = {};
-    this.hass = null;
-    this.containerWidth = 200;
+    this.color = 'inherit';
+    this.containerWidth = 100;
     this.containerHeight = 40;
   }
-  
-  firstUpdated() {
-    this._resizeFont();
-  }
-  
+
   updated(changedProps) {
-    if (changedProps.has('name') || changedProps.has('containerWidth') || changedProps.has('containerHeight')) {
-      this._resizeFont();
+    if (
+      changedProps.has('name') ||
+      changedProps.has('containerWidth') ||
+      changedProps.has('containerHeight')
+    ) {
+      this.updateComplete.then(() => this._resizeText());
     }
   }
-  
+
   render() {
     return html`
       <div
-        class="name-text"
-        id="nameText"
-        @pointerdown=${this._onPointerDown}
-        @pointerup=${this._onPointerUp}
-        @pointerleave=${this._onPointerLeave}
+        class="name-container"
+        style="color: ${this.color}; width:${this.containerWidth}px; height:${this.containerHeight}px;"
       >
-        ${this.name}
+        <span class="name-text" id="nameText">${this.name}</span>
       </div>
     `;
   }
-  
-  _resizeFont() {
-    const container = this.renderRoot.host; // o altro wrapper se serve
-    const textElem = this.renderRoot.getElementById('nameText');
-    if (container && textElem) {
-      autoResizeFont(container, textElem, { minFont: 8, maxFont: 120, letterSpacing: 1 });
+
+  _resizeText() {
+    const container = this.renderRoot.querySelector('.name-container');
+    const text = this.renderRoot.querySelector('#nameText');
+    if (container && text) {
+      autoResizeFont(container, text, { minFont: 8, maxFont: 200 });
     }
-  }
-  
-  _onPointerDown(e) {
-    onPointerDown(e, this.config, this.hass, this._onTap.bind(this), this._onHold.bind(this));
-  }
-  
-  _onPointerUp(e) {
-    onPointerUp(e, this.config, this.hass, this._onTap.bind(this), this._onHold.bind(this));
-  }
-  
-  _onPointerLeave(e) {
-    onPointerLeave();
-  }
-  
-  _onTap(conf, hass) {
-    doTapAction(conf, hass);
-  }
-  
-  _onHold(conf, hass) {
-    doHoldAction(conf, hass);
   }
 }
 
