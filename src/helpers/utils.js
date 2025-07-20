@@ -76,3 +76,59 @@ export function autoResizeFont(container, text, options = {}) {
 export function getScaledIconSize(width, height, scale = 0.7) {
   return Math.round(Math.min(width, height) * scale);
 }
+
+// --- Azioni tap/hold centralizzate Bubble Room ---
+const HOLD_DELAY = 500;
+let holdTimeout = null;
+let holdTriggered = false;
+
+export function onPointerDown(e, conf, hass, onTap, onHold) {
+  e.stopPropagation();
+  holdTriggered = false;
+  holdTimeout = setTimeout(() => {
+    holdTriggered = true;
+    if (onHold) onHold(conf, hass);
+  }, HOLD_DELAY);
+}
+export function onPointerUp(e, conf, hass, onTap, onHold) {
+  e.stopPropagation();
+  clearTimeout(holdTimeout);
+  if (!holdTriggered && onTap) onTap(conf, hass);
+  holdTriggered = false;
+}
+export function onPointerLeave() {
+  clearTimeout(holdTimeout);
+  holdTriggered = false;
+}
+
+export function doTapAction(conf, hass) {
+  if (!conf?.tap_action || conf.tap_action.action === 'none') return;
+  const action = conf.tap_action.action;
+  if (action === 'toggle') hass.callService('homeassistant', 'toggle', { entity_id: conf.entity });
+  else if (action === 'more-info')
+    window.dispatchEvent(new CustomEvent('hass-more-info', { detail: { entityId: conf.entity }, bubbles: true, composed: true }));
+  else if (action === 'navigate' && conf.tap_action.navigation_path) {
+    window.history.pushState({}, '', conf.tap_action.navigation_path);
+    window.dispatchEvent(new Event('location-changed'));
+  }
+}
+export function doHoldAction(conf, hass) {
+  if (!conf?.hold_action || conf.hold_action.action === 'none') {
+    window.dispatchEvent(new CustomEvent('hass-more-info', { detail: { entityId: conf.entity }, bubbles: true, composed: true }));
+    return;
+  }
+  const action = conf.hold_action.action;
+  if (action === 'toggle') hass.callService('homeassistant', 'toggle', { entity_id: conf.entity });
+  else if (action === 'more-info')
+    window.dispatchEvent(new CustomEvent('hass-more-info', { detail: { entityId: conf.entity }, bubbles: true, composed: true }));
+  else if (action === 'navigate' && conf.hold_action.navigation_path) {
+    window.history.pushState({}, '', conf.hold_action.navigation_path);
+    window.dispatchEvent(new Event('location-changed'));
+  }
+  else if (action === 'call-service' && conf.hold_action.service) {
+    const [domain, serviceName] = conf.hold_action.service.split('.');
+    const serviceData = conf.hold_action.service_data || {};
+    if (!serviceData.entity_id) serviceData.entity_id = conf.entity;
+    hass.callService(domain, serviceName, serviceData);
+  }
+}
