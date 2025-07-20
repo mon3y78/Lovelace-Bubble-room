@@ -8,6 +8,7 @@
  *  - Fallback icone (getDefaultIcon)
  *  - Clamp di valori numerici
  *  - Funzioni di auto-ridimensionamento testo e icone per adattarsi ai contenitori
+ *  - Gestione tap/hold centralizzata e azioni tap/hold compatibili Home Assistant
  * Autore: mon3y78 (https://github.com/mon3y78)
  */
 
@@ -77,11 +78,20 @@ export function getScaledIconSize(width, height, scale = 0.7) {
   return Math.round(Math.min(width, height) * scale);
 }
 
-// --- Azioni tap/hold centralizzate Bubble Room ---
+// --- Gestione tap/hold centralizzate per Bubble Room ---
+
 const HOLD_DELAY = 500;
 let holdTimeout = null;
 let holdTriggered = false;
 
+/**
+ * Da chiamare on pointer down
+ * @param {PointerEvent} e 
+ * @param {Object} conf configurazione entità (per azioni)
+ * @param {Object} hass istanza hass
+ * @param {Function} onTap callback tap
+ * @param {Function} onHold callback hold
+ */
 export function onPointerDown(e, conf, hass, onTap, onHold) {
   e.stopPropagation();
   holdTriggered = false;
@@ -90,17 +100,28 @@ export function onPointerDown(e, conf, hass, onTap, onHold) {
     if (onHold) onHold(conf, hass);
   }, HOLD_DELAY);
 }
+
+/**
+ * Da chiamare on pointer up
+ */
 export function onPointerUp(e, conf, hass, onTap, onHold) {
   e.stopPropagation();
   clearTimeout(holdTimeout);
   if (!holdTriggered && onTap) onTap(conf, hass);
   holdTriggered = false;
 }
+
+/**
+ * Da chiamare on pointer leave
+ */
 export function onPointerLeave() {
   clearTimeout(holdTimeout);
   holdTriggered = false;
 }
 
+/**
+ * Esegue azione tap configurata
+ */
 export function doTapAction(conf, hass) {
   if (!conf?.tap_action || conf.tap_action.action === 'none') return;
   const action = conf.tap_action.action;
@@ -112,6 +133,10 @@ export function doTapAction(conf, hass) {
     window.dispatchEvent(new Event('location-changed'));
   }
 }
+
+/**
+ * Esegue azione hold configurata
+ */
 export function doHoldAction(conf, hass) {
   if (!conf?.hold_action || conf.hold_action.action === 'none') {
     window.dispatchEvent(new CustomEvent('hass-more-info', { detail: { entityId: conf.entity }, bubbles: true, composed: true }));
