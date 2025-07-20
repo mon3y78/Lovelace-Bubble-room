@@ -1,8 +1,29 @@
 /**
  * icon-mapping.js
- * Mappatura centralizzata delle icone per Bubble Room
- * Usare solo come import nei componenti!
- * Autore: mon3y78 (https://github.com/mon3y78)
+ * 
+ * Helper centralizzato per la gestione delle icone dinamiche nella card Bubble Room.
+ * Gestisce il mapping delle icone MDI in base a:
+ *   - device_class (porta, finestra, presenza, fumo, ecc.)
+ *   - dominio dell’entità (light, switch, climate, cover, ecc.)
+ *   - stato attuale dell’entità (on/off, open/closed, locked/unlocked, ecc.)
+ * 
+ * Ordine di priorità (fallback):
+ *   1. Icona personalizzata da config
+ *   2. Icona definita nello stato dell’entità (attributo .icon di Home Assistant)
+ *   3. Icona specifica per device_class
+ *   4. Icona di default per dominio e stato
+ *   5. Fallback universale: mdi:information-outline
+ * 
+ * Questo modulo esporta:
+ *   - DEVICE_CLASS_ICON_MAP: mapping icone per device_class principali
+ *   - DOMAIN_ICON_MAP: mapping icone per dominio
+ *   - getDomainDefaultIcon(domain, state): funzione fallback per alcuni domini chiave
+ *   - getBestIcon(hass, entityId, entityConf): funzione universale che restituisce l’icona migliore
+ * 
+ * Da importare nei componenti che visualizzano icone dinamiche, come BubbleSensor, SubButton, ecc.
+ * 
+ * https://github.com/mon3y78/Lovelace-Bubble-room
+ * Autore: mon3y78
  */
 
 export const DEVICE_CLASS_ICON_MAP = {
@@ -49,3 +70,33 @@ export const DOMAIN_ICON_MAP = {
   person: 'mdi:account',
   input_text: 'mdi:text-box-outline'
 };
+
+export function getDomainDefaultIcon(domain, state) {
+  if (domain === 'cover') return state === 'open' ? 'mdi:blinds-open' : 'mdi:blinds-closed';
+  if (domain === 'lock') return state === 'locked' ? 'mdi:lock' : 'mdi:lock-open';
+  if (domain === 'door') return state === 'open' ? 'mdi:door-open' : 'mdi:door-closed';
+  if (domain === 'window') return state === 'open' ? 'mdi:window-open' : 'mdi:window-closed';
+  if (domain === 'binary_sensor')
+    return state === 'on' ? 'mdi:motion-sensor' : 'mdi:motion-sensor-off';
+  return DOMAIN_ICON_MAP[domain] || '';
+}
+
+export function getBestIcon(hass, entityId, entityConf = {}) {
+  if (entityConf.icon) return entityConf.icon;
+  const stateObj = hass?.states?.[entityId];
+  if (stateObj?.attributes?.icon) return stateObj.attributes.icon;
+  const deviceClass = stateObj?.attributes?.device_class;
+  const domain = entityId ? entityId.split('.')[0] : '';
+  const state = stateObj?.state;
+  if (deviceClass) {
+    const dcIcons = DEVICE_CLASS_ICON_MAP[deviceClass];
+    if (dcIcons) {
+      if (typeof dcIcons === 'string') return dcIcons;
+      if (dcIcons.on && dcIcons.off) return state === 'on' ? dcIcons.on : dcIcons.off;
+      return dcIcons.on || '';
+    }
+  }
+  const fallback = getDomainDefaultIcon(domain, state);
+  if (fallback) return fallback;
+  return 'mdi:information-outline';
+}
