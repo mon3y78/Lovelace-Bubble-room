@@ -1,3 +1,5 @@
+//prova
+
 const overrideIcon =
   this.icon ||
   (this.stateObj && this.hass?.entities[this.stateObj.entity_id]?.icon) ||
