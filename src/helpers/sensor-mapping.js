@@ -1,7 +1,21 @@
-// Lovelace Bubble Room - Sensor Mapping
-// https://github.com/mon3y78/Lovelace-Bubble-room
-// Autore: mon3y78 (https://github.com/mon3y78)
-// Mappa centralizzata emoji/unit/icona per tutti i tipi di sensore supportati dalla card
+// src/helpers/sensor-mapping.js
+
+/**
+ * Bubble Room Card – Sensor Mapping
+ * ---------------------------------
+ * Definisce la mappatura centralizzata di tutti i tipi di sensori utilizzabili nella card Bubble Room.
+ * Ogni tipo di sensore comprende:
+ *  - Emoji identificativa
+ *  - Unità di misura (°C/°F o altro)
+ *  - Icona MDI predefinita
+ *  - device_class Home Assistant
+ *  - Entity di default suggerita
+ * 
+ * Fornisce anche la funzione di utilità getSensorEmojiAndUnit() per ottenere dinamicamente emoji e unità.
+ * 
+ * Repository ufficiale: https://github.com/mon3y78/Lovelace-Bubble-room
+ * Autore: mon3y78
+ 
 
 export const SENSOR_TYPE_MAP = {
   temperature: {
