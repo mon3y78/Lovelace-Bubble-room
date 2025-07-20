@@ -2,13 +2,28 @@
  * BubbleMushroom.js
  * 
  * Componente per la visualizzazione delle entità "mushroom" (icone secondarie) nella Bubble Room card.
+ * -----------------------------------------------------------
  * - Visualizza un'icona dinamica in posizione e dimensione corretta, usando i mapping icone.
- * - Esegue azioni tap/hold come da configurazione.
+ * - Esegue azioni tap/hold come da configurazione, centralizzate in utils.js.
  * - Il ridimensionamento dell'icona usa getScaledIconSize da utils.js.
  * - Compatibile con entità di qualsiasi dominio supportato.
- * - Usa funzioni centralizzate tap/hold da helpers/utils.js.
  * 
- * AUTORE: mon3y78 - https://github.com/mon3y78
+ * PROPRIETÀ:
+ *  - entityConf: Object     (Configurazione dell'entità mushroom)
+ *  - hass: Object          (Istanza Home Assistant)
+ *  - containerWidth: Number (Larghezza contenitore icona)
+ *  - containerHeight: Number (Altezza contenitore icona)
+ *  - colorOn: String        (Colore icona attiva)
+ *  - colorOff: String       (Colore icona inattiva)
+ * 
+ * DIPENDENZE:
+ *  - helpers/icon-mapping.js  (Funzione getBestIcon)
+ *  - helpers/utils.js         (Funzioni onPointerDown, onPointerUp, onPointerLeave, doTapAction, doHoldAction, getScaledIconSize)
+ * 
+ * AUTORE:
+ *  - mon3y78 - https://github.com/mon3y78/Lovelace-Bubble-room
+ * 
+ * LICENZA: MIT
  */
 
 import { LitElement, html, css } from 'lit';
@@ -25,7 +40,7 @@ export class BubbleMushroom extends LitElement {
     colorOff: { type: String },
     state: { type: String },
   };
-  
+
   static styles = css`
     .mushroom-item {
       display: flex;
@@ -39,7 +54,7 @@ export class BubbleMushroom extends LitElement {
       filter: brightness(1.1);
     }
   `;
-  
+
   constructor() {
     super();
     this.entityConf = {};
@@ -50,13 +65,13 @@ export class BubbleMushroom extends LitElement {
     this.colorOff = '#80808055';
     this.state = 'off';
   }
-  
+
   updated(changedProps) {
     if (changedProps.has('hass') || changedProps.has('entityConf')) {
       this._updateState();
     }
   }
-  
+
   _updateState() {
     if (!this.entityConf?.entity || !this.hass?.states) {
       this.state = 'off';
@@ -65,19 +80,19 @@ export class BubbleMushroom extends LitElement {
     const stateObj = this.hass.states[this.entityConf.entity];
     this.state = stateObj?.state ?? 'off';
   }
-  
+
   render() {
     const icon = getBestIcon(this.entityConf.entity, this.entityConf, this.hass);
     const iconSize = getScaledIconSize(this.containerWidth, this.containerHeight, 0.25);
     const color = this.state === 'on' ? (this.colorOn || 'orange') : (this.colorOff || '#80808055');
-    
+
     return html`
       <div
         class="mushroom-item"
         style="width:${iconSize}px; height:${iconSize}px;"
-        @pointerdown=${e => onPointerDown(e, this.entityConf, this.hass, this._tapAction.bind(this), this._holdAction.bind(this))}
-        @pointerup=${e => onPointerUp(e, this.entityConf, this.hass, this._tapAction.bind(this), this._holdAction.bind(this))}
-        @pointerleave=${e => onPointerLeave(e)}
+        @pointerdown=${e => onPointerDown(e, this.entityConf, this.hass, this._onTap.bind(this), this._onHold.bind(this))}
+        @pointerup=${e => onPointerUp(e, this.entityConf, this.hass, this._onTap.bind(this), this._onHold.bind(this))}
+        @pointerleave=${_ => onPointerLeave()}
       >
         <ha-icon
           icon="${icon}"
@@ -91,12 +106,12 @@ export class BubbleMushroom extends LitElement {
       </div>
     `;
   }
-  
-  _tapAction(conf, hass) {
+
+  _onTap(conf, hass) {
     doTapAction(conf, hass);
   }
-  
-  _holdAction(conf, hass) {
+
+  _onHold(conf, hass) {
     doHoldAction(conf, hass);
   }
 }
