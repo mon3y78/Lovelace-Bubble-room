@@ -1,122 +1,148 @@
-// src/components/BubbleSensor.js
+/**
+ * BubbleSensor.js
+ * 
+ * Componente per la visualizzazione dei sensori nella Bubble Room card.
+ * -----------------------------------------------------------
+ * - Mostra un sensore con icona e valore testuale.
+ * - Ridimensiona dinamicamente icona e testo in base allo spazio disponibile.
+ * - Usa mapping icone centralizzato (icon-mapping.js).
+ * - Al click apre finestra "more-info" per la storia del sensore.
+ * - Supporta colori personalizzati in base allo stato.
+ * 
+ * PROPRIETÀ:
+ *  - entityConf: Object      (Configurazione del sensore, con chiavi: entity, icon, unit, ecc.)
+ *  - hass: Object            (Home Assistant, stato entità)
+ *  - containerWidth: Number  (Larghezza disponibile)
+ *  - containerHeight: Number (Altezza disponibile)
+ *  - colors: Object          (color_active, color_inactive, text_color, etc.)
+ * 
+ * DIPENDENZE:
+ *  - helpers/icon-mapping.js
+ *  - helpers/utils.js
+ * 
+ * AUTORE:
+ *  - mon3y78 - https://github.com/mon3y78/Lovelace-Bubble-room
+ * 
+ * LICENZA: MIT
+ */
 
 import { LitElement, html, css } from 'lit';
-import { SENSOR_TYPE_MAP } from '../helpers/sensor-mapping.js';
+import { getBestIcon } from '../helpers/icon-mapping.js';
+import { getScaledIconSize, autoResizeFont } from '../helpers/utils.js';
 
 export class BubbleSensor extends LitElement {
   static properties = {
-    type: { type: String },
-    value: { type: String },
-    unit: { type: String },
-    icon: { type: String }
+    entityConf: { type: Object },
+    hass: { type: Object },
+    containerWidth: { type: Number },
+    containerHeight: { type: Number },
+    colors: { type: Object },
   };
 
   static styles = css`
-    .sensor-container {
-      width: 100%;
-      height: 100%;
+    :host {
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      user-select: none;
+      height: 100%;
+      width: 100%;
     }
-    .sensor-content {
+    .sensor-container {
       display: flex;
       align-items: center;
       justify-content: center;
       width: 100%;
       height: 100%;
+      cursor: pointer;
+      user-select: none;
     }
-    .sensor-icon,
-    .sensor-emoji {
-      display: inline-block;
-      vertical-align: middle;
+    .sensor-icon {
+      flex-shrink: 0;
       margin-right: 4px;
-      /* font-size and icon-size are set dynamically */
-      transition: font-size 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .sensor-text {
-      display: inline-block;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+      line-height: 1;
       vertical-align: middle;
-      /* font-size is set dynamically */
-      transition: font-size 0.1s;
+      font-family: "Bebas Neue", "Arial Narrow", sans-serif;
+      text-transform: uppercase;
+      color: var(--text-color, #000);
     }
   `;
 
   constructor() {
     super();
-    this.type = '';
-    this.value = '';
-    this.unit = '';
-    this.icon = '';
-    this._resizeObserver = null;
+    this.entityConf = {};
+    this.hass = null;
+    this.containerWidth = 80;
+    this.containerHeight = 40;
+    this.colors = {};
   }
 
   firstUpdated() {
-    this._resizeObserver = new ResizeObserver(() => this._resizeFont());
-    this._resizeObserver.observe(this.shadowRoot.querySelector('.sensor-container'));
-    this._resizeFont();
+    this._resizeText();
   }
 
-  disconnectedCallback() {
-    if (this._resizeObserver) {
-      this._resizeObserver.disconnect();
-      this._resizeObserver = null;
+  updated(changedProps) {
+    if (changedProps.has('containerWidth') || changedProps.has('containerHeight') || changedProps.has('entityConf') || changedProps.has('hass')) {
+      this._resizeText();
     }
-    super.disconnectedCallback();
   }
 
-  _resizeFont() {
-    const container = this.shadowRoot.querySelector('.sensor-container');
-    const content = this.shadowRoot.querySelector('.sensor-content');
-    if (!container || !content) return;
-
-    // Imposta dimensioni massime/minime
-    let maxFont = 60, minFont = 10, fontSize = maxFont;
-    content.style.fontSize = `${fontSize}px`;
-
-    // Riduci font finché non entra tutto
-    while (
-      (content.scrollWidth > container.clientWidth || content.scrollHeight > container.clientHeight)
-      && fontSize > minFont
-    ) {
-      fontSize -= 1;
-      content.style.fontSize = `${fontSize}px`;
-    }
-
-    // Ridimensiona anche l’icona, emoji o ha-icon
-    const icon = this.shadowRoot.querySelector('.sensor-icon') || this.shadowRoot.querySelector('.sensor-emoji');
-    if (icon) {
-      icon.style.fontSize = `${fontSize}px`;
-      icon.style.width = `${fontSize}px`;
-      icon.style.height = `${fontSize}px`;
-    }
-    const text = this.shadowRoot.querySelector('.sensor-text');
-    if (text) {
-      text.style.fontSize = `${fontSize}px`;
+  _resizeText() {
+    const container = this.renderRoot.querySelector('.sensor-text-container');
+    const textEl = this.renderRoot.querySelector('.sensor-text');
+    if (container && textEl) {
+      autoResizeFont(container, textEl, { maxFont: 32, minFont: 8 });
     }
   }
 
   render() {
-    // Supporta sia emoji che icona (mdi)
-    let emoji = '';
-    let unit = this.unit || '';
-    if (SENSOR_TYPE_MAP[this.type]) {
-      emoji = SENSOR_TYPE_MAP[this.type].emoji;
-      if (!unit) unit = SENSOR_TYPE_MAP[this.type].unit || '';
+    if (!this.entityConf?.entity || !this.hass?.states) {
+      return html``;
     }
+    const stateObj = this.hass.states[this.entityConf.entity];
+    const state = stateObj?.state ?? 'unavailable';
+    const isActive = state !== 'off' && state !== 'unavailable';
+
+    const icon = getBestIcon(this.entityConf.entity, this.entityConf, this.hass);
+    const iconSize = getScaledIconSize(this.containerHeight, this.containerHeight, 0.8);
+    const color = isActive ? (this.colors.color_active || '#ff9900') : (this.colors.color_inactive || '#888');
+
+    const value = stateObj?.state ?? '';
+    const unit = this.entityConf.unit || (stateObj?.attributes?.unit_of_measurement ?? '');
+
     return html`
-      <div class="sensor-container">
-        <div class="sensor-content">
-          ${this.icon
-            ? html`<ha-icon class="sensor-icon" .icon="${this.icon}"></ha-icon>`
-            : html`<span class="sensor-emoji">${emoji}</span>`
-          }
-          <span class="sensor-text">${this.value}${unit}</span>
+      <div
+        class="sensor-container"
+        style="color: ${color};"
+        @click=${this._openMoreInfo}
+      >
+        <div class="sensor-icon" style="width:${iconSize}px; height:${iconSize}px;">
+          <ha-icon icon="${icon}" style="width:${iconSize}px; height:${iconSize}px; color:${color};"></ha-icon>
+        </div>
+        <div class="sensor-text-container" style="height:${this.containerHeight}px; flex-grow:1; overflow:hidden;">
+          <span class="sensor-text">${value}${unit ? ' ' + unit : ''}</span>
         </div>
       </div>
     `;
+  }
+
+  _openMoreInfo() {
+    if (!this.entityConf?.entity) return;
+    this.dispatchEvent(new CustomEvent('hass-more-info', {
+      detail: { entityId: this.entityConf.entity },
+      bubbles: true,
+      composed: true,
+    }));
   }
 }
 
