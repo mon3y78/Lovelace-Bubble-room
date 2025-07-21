@@ -1,3 +1,20 @@
+/**
+ * bubble-room-editor.js – Editor principale Bubble Room Card
+ *
+ * Bubble Room Custom Card – Visual Editor (Entrypoint)
+ * -----------------------------------------------------
+ * Gestisce l’interfaccia grafica di configurazione avanzata della card Bubble Room.
+ * Importa e compone tutte le sezioni modulari dell’editor (Room, Subbutton, Mushroom, Camera, Climate, Sensor, Colors).
+ * Centralizza la gestione della configurazione, la propagazione degli eventi e l’integrazione con Home Assistant.
+ *
+ * Utilizza helpers centralizzati (icon-mapping, sensor-mapping, utils) e utility specifiche dell’editor.
+ * Responsabile solo dell’assemblaggio e delle logiche di alto livello, la logica di rendering delle singole sezioni è demandata ai moduli in src/editor/.
+ *
+ * Repository ufficiale: https://github.com/mon3y78/Lovelace-Bubble-room
+ * Autore: mon3y78 (https://github.com/mon3y78)
+ * Ultima modifica: [DATA]
+ */
+
 // Bubble Room Editor – PATCH Performance Step 1 (Luglio 2025)
 // https://github.com/mon3y78/Lovelace-Bubble-room
 import { LitElement, html, css } from 'https://unpkg.com/lit@2.6.1/index.js?module';
