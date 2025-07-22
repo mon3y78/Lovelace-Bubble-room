@@ -27,126 +27,204 @@
  * Ultima modifica: 2025-07-21
  */
 
-import { html } from 'lit';
-
 /**
- * Render della sezione Room dell’editor Bubble Room.
- * @param {Object} ctx - Contesto principale del BubbleRoomEditor (this)
- * @returns {TemplateResult}
+ * src/editor/room.js – Room Settings Editor Bubble Room Card
+ *
+ * Bubble Room Custom Card – Sezione Room
+ * --------------------------------------
+ * Editor della sezione "Room" della Bubble Room Card:
+ *  - Nome stanza, selezione area
+ *  - Icona stanza (ha-icon-picker)
+ *  - Presenza (ha-entity-picker) e tap/hold action stanza
+ *  - Auto-discovery e reset
+ *
+ * Usa helper UI centralizzati (src/editor/ui-helpers.js) per azioni, reset e box autodiscovery.
+ *
+ * Repository ufficiale: https://github.com/mon3y78/Lovelace-Bubble-room
+ * Autore: mon3y78 (https://github.com/mon3y78)
+ * Ultima modifica: 22 luglio 2025
  */
-export function renderRoomPanel(ctx) {
- const {
-  _config,
-  _hass,
-  _expandedPanel,
-  _onPanelExpanded,
-  _toggleAutoDiscoverySection,
-  _updateName,
-  _updateIcon,
-  _renderEntityInput,
-  _renderTapHoldAction,
-  _resetRoomConfig
- } = ctx;
- 
- return html`
-    <ha-expansion-panel
-      class="glass-panel room-panel"
-      .expanded="${_expandedPanel === 'room'}"
-      @expanded-changed="${e => _onPanelExpanded('room', e)}">
-      <div slot="header" class="glass-header room-header">🛋️ Room Settings</div>
-      <div class="glass-content room-content">
-        <!-- Auto-scoperta -->
-        <div class="autodiscover-box" @click="${() => {
-            const curr = _config.auto_discovery_sections?.room_presence ?? false;
-            _toggleAutoDiscoverySection('room_presence', !curr);
-          }}">
-          <label>
-            <input
-              type="checkbox"
-              .checked="${_config.auto_discovery_sections?.room_presence ?? false}"
-              @change="${e => _toggleAutoDiscoverySection('room_presence', e.target.checked)}"
-              @click="${e => e.stopPropagation()}"
-            />
-            <span>🪄 Auto-discovery</span>
-          </label>
-        </div>
 
-        <!-- MINI-PILL "Room": contiene Room name e Area su una riga -->
-        <div class="mini-pill glass-pill expanded" style="margin-bottom:18px;">
-          <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Room</div>
-          <div class="mini-pill-content">
-            <div style="display:flex; flex-direction:column; gap:5px;">
-              <div style="flex:1;">
-                <label>Room name:</label>
-                <input type="text" .value="${_config.name || ''}" @input="${_updateName}" />
-              </div>
-              <div style="flex:1;">
-                <label>Area:</label>
-                <ha-area-picker
-                  .hass="${_hass}"
-                  .value="${_config.area || ''}"
-                  @value-changed="${e => {
-                    const newArea = e.detail.value;
-                    const autoDiscovery = {
-                      room_presence: true,
-                      subbutton: true,
-                      mushroom: true,
-                      camera: true,
-                      climate: true,
-                      sensor: true
-                    };
-                    ctx._config = {
-                      ...ctx._config,
-                      area: newArea,
-                      auto_discovery_sections: autoDiscovery
-                    };
-                    ctx.requestUpdate();
-                    ctx._fireConfigChanged();
-                  }}">
-                </ha-area-picker>
+import { LitElement, html, css } from 'https://unpkg.com/lit@2.6.1/index.js?module';
+import { renderTapHoldAction, renderAutoDiscoveryBox, renderResetButton } from './ui-helpers.js';
+
+export class BubbleRoomEditorRoom extends LitElement {
+  static get properties() {
+    return {
+      hass: { type: Object },
+      config: { type: Object },
+      _expanded: { type: Boolean },
+    };
+  }
+
+  constructor() {
+    super();
+    this.hass = undefined;
+    this.config = {};
+    this._expanded = true;
+  }
+
+  setConfig(config) {
+    this.config = { ...config };
+  }
+
+  // Patch su campi (anche profondi)
+  _patchConfig(pathArray, value) {
+    const conf = JSON.parse(JSON.stringify(this.config));
+    let ref = conf;
+    for (let i = 0; i < pathArray.length - 1; i++) {
+      const key = pathArray[i];
+      if (typeof ref[key] !== "object" || ref[key] === null) ref[key] = {};
+      ref = ref[key];
+    }
+    ref[pathArray[pathArray.length - 1]] = value;
+    this.config = conf;
+    this._fireConfigChanged();
+  }
+
+  _fireConfigChanged() {
+    this.dispatchEvent(new CustomEvent('config-changed', {
+      detail: { config: this.config },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  _updateName(e) {
+    this._patchConfig(['name'], e.target.value);
+  }
+  _updateArea(e) {
+    this._patchConfig(['area'], e.detail.value);
+  }
+  _updateIcon(e) {
+    this._patchConfig(['icon'], e.detail.value);
+  }
+  _updatePresence(e) {
+    this._patchConfig(['entities', 'presence', 'entity'], e.detail.value);
+  }
+
+  _handleAutoDiscovery(checked) {
+    const autoSections = { ...(this.config.auto_discovery_sections || {}) };
+    autoSections.room_presence = checked;
+    this._patchConfig(['auto_discovery_sections'], autoSections);
+  }
+
+  _handleReset() {
+    this.config = {
+      ...this.config,
+      name: '',
+      icon: '',
+      area: '',
+      entities: { ...this.config.entities, presence: {} },
+      tap_action: { action: 'none' },
+      hold_action: { action: 'none' }
+    };
+    this.requestUpdate();
+    this._fireConfigChanged();
+  }
+
+  static get styles() {
+    return css`
+      :host { display: block; }
+      .glass-panel { border-radius: 40px; margin: 0; background: rgba(73,164,255,0.14); }
+      .glass-header { font-size: 1.2rem; font-weight: 700; color: #55afff; padding: 22px 0 18px 0; text-align: center; }
+      .glass-content { padding: 20px 12px 15px 12px; }
+      .mini-pill { background: rgba(44,70,100,0.23); border-radius: 24px; margin-bottom: 16px; }
+      .mini-pill-header { font-size:1.09em; color:#55afff; padding: 15px 22px 12px 26px; font-weight:800; }
+      .mini-pill-content { padding: 12px 22px 16px 22px; }
+      .input-group { margin-bottom: 12px; }
+      label { font-weight:700; color:#55afff; display:block; margin-bottom:6px; }
+    `;
+  }
+
+  render() {
+    return html`
+      <div class="glass-panel room-panel">
+        <div class="glass-header">🛋️ Room Settings</div>
+        <div class="glass-content room-content">
+
+          <!-- Auto-discovery box -->
+          ${renderAutoDiscoveryBox({
+            checked: this.config.auto_discovery_sections?.room_presence ?? false,
+            onToggle: checked => this._handleAutoDiscovery(checked)
+          })}
+
+          <!-- Pill: Nome e area -->
+          <div class="mini-pill glass-pill expanded">
+            <div class="mini-pill-header">Room</div>
+            <div class="mini-pill-content">
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div>
+                  <label>Room name:</label>
+                  <input type="text" .value="${this.config.name || ''}" @input="${this._updateName}" />
+                </div>
+                <div>
+                  <label>Area:</label>
+                  <ha-area-picker
+                    .hass="${this.hass}"
+                    .value="${this.config.area || ''}"
+                    @value-changed="${this._updateArea}">
+                  </ha-area-picker>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- MINI-PILL "Icon": Room Icon + Presence su una riga, sotto Tap + Hold -->
-        <div class="mini-pill glass-pill expanded" style="margin-bottom:12px;">
-          <div class="mini-pill-header" style="font-size:1.09em; color:#55afff;">Icon</div>
-          <div class="mini-pill-content">
-            <div style="display:flex; flex-direction:column; gap:5px;">
-              <div style="flex:1; min-width:170px;">
-                <label>Room Icon:</label>
-                <ha-icon-picker
-                  .hass="${_hass}"
-                  .value="${_config.icon || ''}"
-                  allow-custom-icon
-                  @value-changed="${e => {
-                    ctx._config = { ...ctx._config, icon: e.detail.value };
-                    ctx.requestUpdate();
-                    ctx._fireConfigChanged();
-                  }}">
-                </ha-icon-picker>
-              </div>
-              <div style="flex:2; min-width:170px;">
-                ${_renderEntityInput("Presence (ID)", "presence", "entity", "room_presence")}
-              </div>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:1px;">
-              <div style="flex:1; min-width:160px;">
-                ${_renderTapHoldAction("tap")}
-              </div>
-              <div style="flex:1; min-width:160px;">
-                ${_renderTapHoldAction("hold")}
+          <!-- Pill: Icona e presence -->
+          <div class="mini-pill glass-pill expanded">
+            <div class="mini-pill-header">Icon</div>
+            <div class="mini-pill-content">
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div>
+                  <label>Room Icon:</label>
+                  <ha-icon-picker
+                    .hass="${this.hass}"
+                    .value="${this.config.icon || ''}"
+                    allow-custom-icon
+                    @value-changed="${this._updateIcon}">
+                  </ha-icon-picker>
+                </div>
+                <div>
+                  <label>Presence (entity):</label>
+                  <ha-entity-picker
+                    .hass="${this.hass}"
+                    .value="${this.config.entities?.presence?.entity || ''}"
+                    .includeEntities="${Object.keys(this.hass?.states || {}).filter(eid => eid.startsWith('binary_sensor.') || eid.startsWith('person.'))}"
+                    allow-custom-entity
+                    @value-changed="${this._updatePresence}">
+                  </ha-entity-picker>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- RESET -->
-        <div style="margin-top:1.2em; text-align:center;">
-          <button class="reset-button" @click="${_resetRoomConfig}">🧹 Reset Room Settings</button>
+          <!-- Pill: Tap/Hold action -->
+          <div class="mini-pill glass-pill expanded">
+            <div class="mini-pill-header">Actions</div>
+            <div class="mini-pill-content">
+              ${renderTapHoldAction({
+                actionType: "tap",
+                configObj: this.config,
+                patchFn: (path, value) => this._patchConfig(path, value)
+              })}
+              ${renderTapHoldAction({
+                actionType: "hold",
+                configObj: this.config,
+                patchFn: (path, value) => this._patchConfig(path, value)
+              })}
+            </div>
+          </div>
+
+          <!-- Reset button -->
+          ${renderResetButton({
+            label: "Reset Room Settings",
+            onClick: () => this._handleReset()
+          })}
         </div>
       </div>
-    </ha-expansion-panel>
-  `;
+    `;
+  }
 }
+
+customElements.define('bubble-room-editor-room', BubbleRoomEditorRoom);
+export default BubbleRoomEditorRoom;

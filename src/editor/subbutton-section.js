@@ -27,121 +27,110 @@
  * Ultima modifica: 2025-07-21
  */
 
-import { html } from 'lit';
-
-/**
- * Render della sezione Subbutton dell’editor Bubble Room.
- * @param {Object} ctx - Contesto principale del BubbleRoomEditor (this)
- * @returns {TemplateResult}
- */
-export function renderSubButtonPanel(ctx) {
- const {
-  _config,
-  _expandedPanel,
-  _expandedSubButtons,
-  _onPanelExpanded,
-  _toggleAutoDiscoverySection,
-  _renderEntityInput,
-  _renderIconInput,
-  _renderTapHoldAction,
-  _updateActionFieldGeneric,
-  _resetSubButtonConfig,
-  _toggleSubButtonExpand
- } = ctx;
+ import { html } from 'lit';
+ import { renderAutoDiscoveryToggle, renderResetButton, renderTapHoldAction } from './ui-helpers.js';
  
- // Assicurati che lo stato sia sempre lungo 4
- const expandedArr = Array.isArray(_expandedSubButtons) && _expandedSubButtons.length === 4 ?
-  _expandedSubButtons :
-  [false, false, false, false];
+ const SUBBUTTON_KEYS = ['sub-button1', 'sub-button2', 'sub-button3', 'sub-button4'];
+ const SUBBUTTON_LABELS = ['Sub-button 1', 'Sub-button 2', 'Sub-button 3', 'Sub-button 4'];
  
- return html`
-    <ha-expansion-panel
-      class="glass-panel subbutton-panel"
-      .expanded="${_expandedPanel === 'subbutton'}"
-      @expanded-changed="${e => _onPanelExpanded('subbutton', e)}">
-      <div slot="header" class="glass-header subbutton-header">🎛️ Subbuttons</div>
-      <div class="glass-content subbutton-content">
-
-        <!-- Auto-scoperta -->
-        <div class="autodiscover-box" @click="${() => {
-            const curr = _config.auto_discovery_sections?.subbutton ?? false;
-            _toggleAutoDiscoverySection('subbutton', !curr);
-          }}">
-          <label>
-            <input
-              type="checkbox"
-              .checked="${_config.auto_discovery_sections?.subbutton ?? false}"
-              @change="${e => _toggleAutoDiscoverySection('subbutton', e.target.checked)}"
-              @click="${e => e.stopPropagation()}"
-            />
-            <span>🪄 Auto-discovery</span>
-          </label>
-        </div>
-
-        <!-- Subbutton pills -->
-        ${["sub-button1", "sub-button2", "sub-button3", "sub-button4"].map((key, i) => {
-          const label = `Sub-button ${i+1}`;
-          const expanded = expandedArr[i];
-          const accent = "#b28fff";
-          return renderExpandablePill({
-            label,
-            expanded,
-            accent,
-            onToggle: () => _toggleSubButtonExpand(i),
-            content: html`
-              <div style="display:flex; flex-direction:column; gap:5px;">
-                <div class="input-group" style="flex:1; margin-bottom:0;">
-                  ${_renderEntityInput("Entities (ID)", key, "entity", "subbutton")}
-                </div>
-                <div class="input-group" style="flex:1; margin-bottom:0;">
-                  ${_renderIconInput("Icon", key)}
-                </div>
-              </div>
-              <div style="margin-bottom:6px;">
-                <span style="display:block; font-size:1.13em; font-weight:700; color:#b28fff;">Function:</span>
-              </div>
-              <div style="display:flex; flex-direction:column; gap:1px;">
-                <div style="flex:1; min-width:160px;">
-                  ${_renderTapHoldAction("tap", _config.entities?.[key], _updateActionFieldGeneric(key))}
-                </div>
-                <div style="flex:1; min-width:160px;">
-                  ${_renderTapHoldAction("hold", _config.entities?.[key], _updateActionFieldGeneric(key))}
-                </div>
-              </div>
-            `
-          });
-        })}
-
-        <!-- Reset -->
-        <div style="margin-top:1.2em; text-align:center;">
-          <button class="reset-button" @click="${_resetSubButtonConfig}">🧹 Reset Sub-buttons</button>
-        </div>
-      </div>
-    </ha-expansion-panel>
-  `;
-}
-
-/**
- * Wrapper pill espandibile riutilizzabile (stile Bubble Room)
- * @param {Object} params - { label, expanded, onToggle, content, accent }
- * @returns {TemplateResult}
- */
-function renderExpandablePill({ label, expanded, onToggle, content, accent }) {
- return html`
-    <div class="mini-pill glass-pill ${expanded ? 'expanded' : ''}">
-      <div
-        class="mini-pill-header"
-        style="${accent ? `--section-accent: ${accent}` : ''}"
-        @click="${onToggle}"
-      >
-        ${label}
-        <span class="chevron">${expanded ? '▼' : '▶'}</span>
-      </div>
-      ${expanded ? html`
-        <div class="mini-pill-content">
-          ${content}
-        </div>
-      ` : ''}
-    </div>
-  `;
-}
+ export function renderSubbuttonSection({ hass, config, onConfigChange, expanded, onExpand }) {
+   const subConf = config.entities || {};
+ 
+   // Handlers
+   const onEntityChange = (key, entity) => {
+     const entities = { ...config.entities, [key]: { ...subConf[key], entity } };
+     onConfigChange({ ...config, entities });
+   };
+   const onIconChange = (key, icon) => {
+     const entities = { ...config.entities, [key]: { ...subConf[key], icon } };
+     onConfigChange({ ...config, entities });
+   };
+   const onTapHoldChange = (key, type, field, value) => {
+     const sb = subConf[key] || {};
+     const actionConf = { ...(sb[`${type}_action`] || {}) };
+     actionConf[field] = value;
+     const entities = {
+       ...config.entities,
+       [key]: { ...sb, [`${type}_action`]: actionConf }
+     };
+     onConfigChange({ ...config, entities });
+   };
+   const onReset = () => {
+     const entities = { ...config.entities };
+     SUBBUTTON_KEYS.forEach(k => delete entities[k]);
+     onConfigChange({ ...config, entities });
+   };
+   const onAutoDiscovery = (enabled) => {
+     const auto = { ...(config.auto_discovery_sections || {}) };
+     auto.subbutton = enabled;
+     onConfigChange({ ...config, auto_discovery_sections: auto });
+   };
+ 
+   return html`
+     <ha-expansion-panel
+       class="glass-panel subbutton-panel"
+       .expanded="${expanded}"
+       @expanded-changed="${(e) => onExpand(e.detail.expanded)}"
+     >
+       <div slot="header" class="glass-header subbutton-header">🎛️ Subbuttons</div>
+       <div class="glass-content subbutton-content">
+         <!-- Auto-discovery toggle -->
+         ${renderAutoDiscoveryToggle({
+           checked: config.auto_discovery_sections?.subbutton ?? false,
+           onToggle: onAutoDiscovery,
+           accent: '#b28fff',
+         })}
+ 
+         <!-- Subbutton Pills -->
+         <div style="display:flex; flex-direction:column; gap:18px;">
+         ${SUBBUTTON_KEYS.map((key, i) => {
+           const sb = subConf[key] || {};
+           return html`
+             <div class="mini-pill glass-pill expanded">
+               <div class="mini-pill-header" style="color:#b28fff;">${SUBBUTTON_LABELS[i]}</div>
+               <div class="mini-pill-content">
+                 <div style="display:flex; flex-direction:column; gap:12px;">
+                   <div class="input-group">
+                     <label>Entity</label>
+                     <ha-entity-picker
+                       .hass="${hass}"
+                       .value="${sb.entity || ''}"
+                       allow-custom-entity
+                       @value-changed="${e => onEntityChange(key, e.detail.value)}"
+                       include-domains="light,switch,media_player,fan,cover,humidifier,lock,input_boolean,scene"
+                     ></ha-entity-picker>
+                   </div>
+                   <div class="input-group">
+                     <label>Icon</label>
+                     <ha-icon-picker
+                       .hass="${hass}"
+                       .value="${sb.icon || ''}"
+                       allow-custom-icon
+                       @value-changed="${e => onIconChange(key, e.detail.value)}"
+                     ></ha-icon-picker>
+                   </div>
+                   <div style="margin-top:6px;">
+                     ${renderTapHoldAction({
+                       tapAction: sb.tap_action,
+                       holdAction: sb.hold_action,
+                       onChange: (type, field, value) => onTapHoldChange(key, type, field, value),
+                       accent: '#b28fff',
+                     })}
+                   </div>
+                 </div>
+               </div>
+             </div>
+           `;
+         })}
+         </div>
+         <!-- Reset Button -->
+         <div style="margin-top:1.2em; text-align:center;">
+           ${renderResetButton({
+             label: '🧹 Reset Sub-buttons',
+             onClick: onReset,
+           })}
+         </div>
+       </div>
+     </ha-expansion-panel>
+   `;
+ }

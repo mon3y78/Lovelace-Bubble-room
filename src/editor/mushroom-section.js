@@ -27,128 +27,134 @@
  * Ultima modifica: 2025-07-21
  */
 
-import { html } from 'lit';
 
-/**
- * Render della sezione Mushroom Entities dell’editor Bubble Room.
- * @param {Object} ctx - Context principale del BubbleRoomEditor (this)
- * @returns {TemplateResult}
- */
-export function renderMushroomPanel(ctx) {
- const {
-  _config,
-  _expandedPanel,
-  _expandedMushroomEntities,
-  _onPanelExpanded,
-  _toggleAutoDiscoverySection,
-  _renderEntityInput,
-  _renderIconInput,
-  _renderTapHoldAction,
-  _updateActionFieldGeneric,
-  _resetMushroomEntitiesConfig,
-  _toggleMushroomEntityExpand
- } = ctx;
+ import { html } from 'lit';
+ import {
+   renderTapHoldAction,
+   renderAutoDiscoveryToggle,
+   renderResetButton,
+ } from './ui-helpers.js';
  
- // Defensive: sempre array di 5
- const expandedArr = Array.isArray(_expandedMushroomEntities) && _expandedMushroomEntities.length === 5 ?
-  _expandedMushroomEntities :
-  [false, false, false, false, false];
+ export function renderMushroomSection({ hass, config, onConfigChange, expanded, onExpand }) {
+   // Assicurati che lo stato sia sempre lungo 7
+   if (!config._expandedMushroom || config._expandedMushroom.length !== 7) {
+     config._expandedMushroom = [false, false, false, false, false, false, false];
+   }
  
- const entityKeys = [
-  { key: "entities1", label: "Entity 1" },
-  { key: "entities2", label: "Entity 2" },
-  { key: "entities3", label: "Entity 3" },
-  { key: "entities4", label: "Entity 4" },
-  { key: "entities5", label: "Entity 5" }
- ];
+   const entityKeys = Array.from({ length: 7 }, (_, i) => ({
+     key: `mushroom${i + 1}`,
+     label: `Entity ${i + 1}`,
+   }));
  
- return html`
-    <ha-expansion-panel
-      class="glass-panel mushroom-panel"
-      .expanded="${_expandedPanel === 'mushroom'}"
-      @expanded-changed="${e => _onPanelExpanded('mushroom', e)}">
-      <div slot="header" class="glass-header mushroom-header">🍄 Mushroom Entities</div>
-      <div class="glass-content mushroom-content">
-
-        <!-- Auto-scoperta -->
-        <div class="autodiscover-box" @click="${() => {
-            const curr = _config.auto_discovery_sections?.mushroom ?? false;
-            _toggleAutoDiscoverySection('mushroom', !curr);
-          }}">
-          <label>
-            <input
-              type="checkbox"
-              .checked="${_config.auto_discovery_sections?.mushroom ?? false}"
-              @change="${e => _toggleAutoDiscoverySection('mushroom', e.target.checked)}"
-              @click="${e => e.stopPropagation()}"
-            />
-            <span>🪄 Auto-discovery</span>
-          </label>
-        </div>
-
-        <!-- Mushroom Pills -->
-        ${entityKeys.map((entity, i) => {
-          const expanded = expandedArr[i];
-          const accent = "#36e6a0";
-          return renderExpandablePill({
-            label: entity.label,
-            expanded,
-            accent,
-            onToggle: () => _toggleMushroomEntityExpand(i),
-            content: html`
-              <div style="display:flex; flex-direction:column; gap:5px;">
-                <div class="input-group" style="flex:1; margin-bottom:0;">
-                  ${_renderEntityInput("Entity", entity.key, "entity", "mushroom")}
-                </div>
-                <div class="input-group" style="flex:1; margin-bottom:0;">
-                  ${_renderIconInput("Icon", entity.key)}
-                </div>
-              </div>
-              <div style="margin-bottom:6px;">
-                <span style="display:block; font-size:1.13em; font-weight:700; color:#36e6a0;">Function:</span>
-              </div>
-              <div style="display:flex; flex-direction:column; gap:1px;">
-                <div style="flex:1; min-width:160px;">
-                  ${_renderTapHoldAction("tap", _config.entities?.[entity.key], _updateActionFieldGeneric(entity.key))}
-                </div>
-                <div style="flex:1; min-width:160px;">
-                  ${_renderTapHoldAction("hold", _config.entities?.[entity.key], _updateActionFieldGeneric(entity.key))}
-                </div>
-              </div>
-            `
-          });
-        })}
-
-        <!-- Reset -->
-        <div style="margin-top:1.2em; text-align:center;">
-          <button class="reset-button" @click="${_resetMushroomEntitiesConfig}">🧹 Reset Mushroom Entities</button>
-        </div>
-      </div>
-    </ha-expansion-panel>
-  `;
-}
-
-/**
- * Wrapper pill espandibile riutilizzabile (stile Bubble Room)
- * @param {Object} params - { label, expanded, onToggle, content, accent }
- * @returns {TemplateResult}
- */
-function renderExpandablePill({ label, expanded, onToggle, content, accent }) {
- return html`
-    <div class="mini-pill glass-pill ${expanded ? 'expanded' : ''}">
-      <div
-        class="mini-pill-header"
-        style="${accent ? `--section-accent: ${accent}` : ''}"
-        @click="${onToggle}"
-      >
-        ${label}
-        <span class="chevron">${expanded ? '▼' : '▶'}</span>
-      </div>
-      ${expanded ? html`
-        <div class="mini-pill-content">
-          ${content}
-        </div>
-      ` : ''}
-    </div>
-  `;
-}
+   const toggleExpand = (idx) => {
+     config._expandedMushroom = config._expandedMushroom.map((v, i) => (i === idx ? !v : false));
+     onConfigChange({ ...config });
+   };
+ 
+   // Per reset
+   const onReset = () => {
+     const entities = { ...config.entities };
+     entityKeys.forEach(({ key }) => delete entities[key]);
+     onConfigChange({ ...config, entities });
+   };
+ 
+   // Per autodiscovery
+   const onAutoDiscovery = (enabled) => {
+     const auto = { ...(config.auto_discovery_sections || {}) };
+     auto.mushroom = enabled;
+     onConfigChange({ ...config, auto_discovery_sections: auto });
+   };
+ 
+   return html`
+     <ha-expansion-panel
+       class="glass-panel mushroom-panel"
+       .expanded="${expanded}"
+       @expanded-changed="${(e) => onExpand(e.detail.expanded)}"
+     >
+       <div slot="header" class="glass-header mushroom-header">🍄 Mushroom Entities</div>
+       <div class="glass-content mushroom-content">
+         <!-- Auto-discovery toggle -->
+         ${renderAutoDiscoveryToggle({
+           checked: config.auto_discovery_sections?.mushroom ?? false,
+           onToggle: onAutoDiscovery,
+           accent: '#36e6a0',
+         })}
+ 
+         <!-- Entità Mushroom (pill expandable) -->
+         <div style="display:flex; flex-direction:column; gap:10px;">
+           ${entityKeys.map((entity, i) => {
+             const entConf = config.entities?.[entity.key] || {};
+             const expandedPill = config._expandedMushroom[i];
+             return html`
+               <div class="mini-pill glass-pill ${expandedPill ? 'expanded' : ''}">
+                 <div
+                   class="mini-pill-header"
+                   style="--section-accent:#36e6a0"
+                   @click="${() => toggleExpand(i)}"
+                 >
+                   ${entity.label}
+                   <span class="chevron">${expandedPill ? '▼' : '▶'}</span>
+                 </div>
+                 ${expandedPill
+                   ? html`
+                       <div class="mini-pill-content">
+                         <div style="display:flex; flex-direction:column; gap:8px;">
+                           <div class="input-group">
+                             <label>Entity</label>
+                             <ha-entity-picker
+                               .hass="${hass}"
+                               .value="${entConf.entity || ''}"
+                               @value-changed="${(e) => {
+                                 const entities = { ...config.entities, [entity.key]: { ...entConf, entity: e.detail.value } };
+                                 onConfigChange({ ...config, entities });
+                               }}"
+                               allow-custom-entity
+                             ></ha-entity-picker>
+                           </div>
+                           <div class="input-group">
+                             <label>Icon</label>
+                             <ha-icon-picker
+                               .hass="${hass}"
+                               .value="${entConf.icon || ''}"
+                               allow-custom-icon
+                               @value-changed="${(e) => {
+                                 const entities = { ...config.entities, [entity.key]: { ...entConf, icon: e.detail.value } };
+                                 onConfigChange({ ...config, entities });
+                               }}"
+                             ></ha-icon-picker>
+                           </div>
+                         </div>
+                         <div style="margin-top:7px;">
+                           ${renderTapHoldAction({
+                             config: entConf,
+                             onChange: (actionType, field, value) => {
+                               const actions = { ...entConf[`${actionType}_action`] || {}, [field]: value };
+                               const entities = {
+                                 ...config.entities,
+                                 [entity.key]: {
+                                   ...entConf,
+                                   [`${actionType}_action`]: actions,
+                                 },
+                               };
+                               onConfigChange({ ...config, entities });
+                             },
+                           })}
+                         </div>
+                       </div>
+                     `
+                   : ''}
+               </div>
+             `;
+           })}
+         </div>
+         <!-- Reset Button -->
+         <div style="margin-top:1.2em; text-align:center;">
+           ${renderResetButton({
+             label: '🧹 Reset Mushroom Entities',
+             onClick: onReset,
+           })}
+         </div>
+       </div>
+     </ha-expansion-panel>
+   `;
+ }

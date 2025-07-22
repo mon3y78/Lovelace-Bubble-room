@@ -28,67 +28,84 @@
  * Ultima modifica: 2025-07-21
  */
 
-import { html } from 'lit';
-
-/**
- * Render della sezione Camera dell’editor Bubble Room.
- * @param {Object} ctx - Context principale del BubbleRoomEditor (this)
- * @returns {TemplateResult}
- */
-export function renderCameraPanel(ctx) {
- const {
-  _config,
-  _expandedPanel,
-  _onPanelExpanded,
-  _toggleAutoDiscoverySection,
-  _renderEntityInput,
-  _renderIconInput,
-  _resetCameraConfig
- } = ctx;
+ import { html } from 'lit';
+ import { renderAutoDiscoveryToggle, renderResetButton } from './ui-helpers.js';
  
- return html`
-    <ha-expansion-panel
-      class="glass-panel camera-panel"
-      .expanded="${_expandedPanel === 'camera'}"
-      @expanded-changed="${e => _onPanelExpanded('camera', e)}">
-      <div slot="header" class="glass-header camera-header">📷 Camera</div>
-      <div class="glass-content camera-content">
-        <!-- Auto-discovery -->
-        <div class="autodiscover-box" @click="${() => {
-            const curr = _config.auto_discovery_sections?.camera ?? false;
-            _toggleAutoDiscoverySection('camera', !curr);
-          }}">
-          <label>
-            <input
-              type="checkbox"
-              .checked="${_config.auto_discovery_sections?.camera ?? false}"
-              @change="${e => _toggleAutoDiscoverySection('camera', e.target.checked)}"
-              @click="${e => e.stopPropagation()}"
-            />
-            <span>🪄 Auto-discovery</span>
-          </label>
-        </div>
-        <!-- Glass-pill: Entity & Icon -->
-        <div class="mini-pill glass-pill expanded">
-          <div class="mini-pill-header">
-            Entity & Icon
-          </div>
-          <div class="mini-pill-content">
-            <div style="display:flex; flex-direction:column; gap:5px;">
-              <div class="input-group" style="flex:1; margin-bottom:0;">
-                ${_renderEntityInput("Camera (ID)", "camera", "entity", "camera")}
-              </div>
-              <div class="input-group" style="flex:1; margin-bottom:0;">
-                ${_renderIconInput("Camera Icon", "camera")}
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Reset -->
-        <div style="margin-top:1.2em; text-align:center;">
-          <button class="reset-button" @click="${_resetCameraConfig}">🧹 Reset Camera</button>
-        </div>
-      </div>
-    </ha-expansion-panel>
-  `;
-}
+ export function renderCameraSection({ hass, config, onConfigChange, expanded, onExpand }) {
+   // Stato pill unica, sempre expanded (o puoi renderlo dinamico)
+   const cameraConf = config.entities?.camera || {};
+ 
+   // Handlers
+   const onEntityChange = (entity) => {
+     const entities = { ...config.entities, camera: { ...cameraConf, entity } };
+     onConfigChange({ ...config, entities });
+   };
+   const onIconChange = (icon) => {
+     const entities = { ...config.entities, camera: { ...cameraConf, icon } };
+     onConfigChange({ ...config, entities });
+   };
+   const onReset = () => {
+     const entities = { ...config.entities };
+     delete entities.camera;
+     onConfigChange({ ...config, entities });
+   };
+   const onAutoDiscovery = (enabled) => {
+     const auto = { ...(config.auto_discovery_sections || {}) };
+     auto.camera = enabled;
+     onConfigChange({ ...config, auto_discovery_sections: auto });
+   };
+ 
+   return html`
+     <ha-expansion-panel
+       class="glass-panel camera-panel"
+       .expanded="${expanded}"
+       @expanded-changed="${(e) => onExpand(e.detail.expanded)}"
+     >
+       <div slot="header" class="glass-header camera-header">📷 Camera</div>
+       <div class="glass-content camera-content">
+         <!-- Auto-discovery toggle -->
+         ${renderAutoDiscoveryToggle({
+           checked: config.auto_discovery_sections?.camera ?? false,
+           onToggle: onAutoDiscovery,
+           accent: '#50d2ff',
+         })}
+ 
+         <!-- Pill unica camera -->
+         <div class="mini-pill glass-pill expanded" style="margin-bottom:18px;">
+           <div class="mini-pill-header" style="color:#50d2ff">Camera</div>
+           <div class="mini-pill-content">
+             <div style="display:flex; flex-direction:column; gap:14px;">
+               <div class="input-group">
+                 <label>Entity</label>
+                 <ha-entity-picker
+                   .hass="${hass}"
+                   .value="${cameraConf.entity || ''}"
+                   allow-custom-entity
+                   @value-changed="${(e) => onEntityChange(e.detail.value)}"
+                   include-domains="camera"
+                 ></ha-entity-picker>
+               </div>
+               <div class="input-group">
+                 <label>Icon</label>
+                 <ha-icon-picker
+                   .hass="${hass}"
+                   .value="${cameraConf.icon || ''}"
+                   allow-custom-icon
+                   @value-changed="${(e) => onIconChange(e.detail.value)}"
+                 ></ha-icon-picker>
+               </div>
+             </div>
+           </div>
+         </div>
+ 
+         <!-- Reset Button -->
+         <div style="margin-top:1.2em; text-align:center;">
+           ${renderResetButton({
+             label: '🧹 Reset Camera',
+             onClick: onReset,
+           })}
+         </div>
+       </div>
+     </ha-expansion-panel>
+   `;
+ }
