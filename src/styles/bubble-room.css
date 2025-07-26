@@ -1,0 +1,35 @@
+/* bubble-room.css
+   Tutti gli stili centralizzati per la card Bubble Room.
+   File completo e pronto. */
+
+:root {
+  --bubble-main-bg: rgba(44, 49, 60, 0.88);
+  --bubble-main-radius: 38px;
+  --bubble-entity-bg: rgba(32, 38, 55, 0.19);
+  --bubble-gradient: linear-gradient(110deg, #4e87fa 0%, #51e3a0 100%);
+  --bubble-subbutton-active: #b0ffc5;
+  --bubble-subbutton-inactive: #555;
+}
+
+.bubble-room-container {
+  background: var(--bubble-main-bg);
+  border-radius: var(--bubble-main-radius);
+  box-shadow: 0 2px 18px 0 rgba(20,22,30,0.18);
+  padding: 28px 20px 18px 20px;
+  margin: 0 auto;
+  max-width: 520px;
+  min-width: 290px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+@media (max-width: 480px) {
+  .bubble-room-container {
+    padding: 14px 5px 11px 5px;
+    min-width: unset;
+    max-width: 100vw;
+  }
+}
+
+/* Spaziatore per altri componenti, non lasciare "aggiungi qui" */
