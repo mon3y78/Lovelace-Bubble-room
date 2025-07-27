@@ -537,7 +537,7 @@ class BubbleRoom extends r {
       background: transparent;
       border-radius: 38px;
       overflow: visible;
-      border: 2px solid var(--bubble-main-bg);
+      border: 2px dashed yellow;
     }
     .main-area {
       position: relative;
