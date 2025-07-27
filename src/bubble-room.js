@@ -1,10 +1,3 @@
-/**
- * bubble-room.js
- *
- * Entrypoint della card principale Bubble Room.
- * File completo, import pronto di tutto.
- */
-
 import { LitElement, html, css } from 'lit';
 import './components/BubbleIcon.js';
 import './components/BubbleMushroom.js';
@@ -27,6 +20,11 @@ export class BubbleRoom extends LitElement {
     this.hass = {};
   }
 
+  // *** ECCO IL METODO CHE SERVE ***
+  setConfig(config) {
+    this.config = config;
+  }
+
   static styles = css`
     :host {
       --bubble-main-bg: rgba(44, 49, 60, 0.88);
@@ -36,7 +34,6 @@ export class BubbleRoom extends LitElement {
       --bubble-subbutton-active: #b0ffc5;
       --bubble-subbutton-inactive: #555;
     }
-
     .bubble-room-container {
       background: var(--bubble-main-bg);
       border-radius: var(--bubble-main-radius);
@@ -49,7 +46,6 @@ export class BubbleRoom extends LitElement {
       flex-direction: column;
       align-items: stretch;
     }
-
     @media (max-width: 480px) {
       .bubble-room-container {
         padding: 14px 5px 11px 5px;
