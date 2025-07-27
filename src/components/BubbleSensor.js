@@ -9,9 +9,9 @@ export class BubbleSensors extends LitElement {
   
   static styles = css`
     : host {
-    border: 2 px solid #00e676 !important; /* verde brillante */
-      display: block;
-      margin-bottom: 8px;
+      border: 2px solid #00e676 !important; /* verde brillante */
+      display: block !important;
+      margin-bottom: 8px !important;
     }
     .sensor-row {
       display: flex;

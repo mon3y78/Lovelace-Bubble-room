@@ -30,9 +30,9 @@ export class BubbleIcon extends LitElement {
       bottom: 0;
       z-index: 1;
       pointer-events: auto;
-      border: 2 px solid #00bcd4 !important; /* azzurro acqua */
-      display: block;
-      margin-bottom: 6px;
+      border: 2px solid #00bcd4 !important; /* azzurro acqua */
+      display: block !important;
+      margin-bottom: 6px !important;
     }
     .main-icon {
       font-size: 8.7em;       /* icona gigante! */

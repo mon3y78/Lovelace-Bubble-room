@@ -21,9 +21,9 @@ export class BubbleMushroom extends LitElement {
 
   static styles = css`
     : host {
-      border: 2 px solid #d500f9!important; /* viola */
-      display: block;
-      margin - bottom: 6 px;
+      border: 2px solid #d500f9 !important; /* viola */
+      display: block !important;
+      margin-bottom: 6px !important;
     }
     .mushroom-container {
       position: absolute;

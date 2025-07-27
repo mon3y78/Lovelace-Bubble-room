@@ -20,9 +20,9 @@ export class BubbleName extends LitElement {
   
   static styles = css`
     : host {
-      border: 2 px solid #ffd600!important; /* giallo forte */
-      display: block;
-      margin - bottom: 6 px;
+      border: 2px solid #ffd600 !important; /* giallo forte */
+      display: block !important;
+      margin-bottom: 6px !important;
     }
     .bubble-name {
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
