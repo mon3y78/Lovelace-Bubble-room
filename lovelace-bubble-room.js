@@ -27,8 +27,8 @@ const t=globalThis,i$1=t.trustedTypes,s=i$1?i$1.createPolicy("lit-html",{createH
 /**
  * BubbleIcon.js
  * 
- * Componente che gestisce l'icona principale della stanza nella card Bubble Room.
- * File completo, pronto per essere usato.
+ * Icona principale stanza, gigante e posizionata assoluta in basso a sinistra.
+ * Replica stile pixel-perfect dell’originale Bubble Room.
  */
 
 class BubbleIcon extends r {
@@ -38,32 +38,49 @@ class BubbleIcon extends r {
     colorActive: { type: String },
     colorInactive: { type: String }
   };
-
+  
   constructor() {
     super();
     this.icon = '';
     this.active = false;
-    this.colorActive = '#00FF00';
-    this.colorInactive = '#555';
+    this.colorActive = '#21df73'; // verde acceso (default originale)
+    this.colorInactive = '#173c16'; // verde scuro sbiadito (default originale)
   }
-
+  
   static styles = i$3`
+    :host {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: 1;
+      pointer-events: auto;
+    }
     .main-icon {
-      font-size: 3.2em;
-      transition: color 0.2s;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 8.7em;       /* icona gigante! */
+      opacity: 0.18;          /* molto trasparente */
+      color: var(--icon-color, #173c16);
+      transition: color 0.2s, opacity 0.2s;
+      filter: drop-shadow(1px 1.5px 0px rgba(34,54,15,0.07));
+      user-select: none;
+    }
+    .main-icon.active {
+      opacity: 0.26;
+      filter: drop-shadow(2px 4px 6px rgba(33,223,115,0.07));
+    }
+    @media (max-width: 600px) {
+      .main-icon {
+        font-size: 5.7em;
+      }
     }
   `;
-
+  
   render() {
+    const iconColor = this.active ? this.colorActive : this.colorInactive;
     return x`
       <ha-icon
-        class="main-icon"
+        class="main-icon ${this.active ? 'active' : ''}"
         .icon="${this.icon}"
-        style="color: ${this.active ? this.colorActive : this.colorInactive}"
+        style="--icon-color: ${iconColor}"
         @click="${() => this.dispatchEvent(new CustomEvent('main-icon-click'))}"
       ></ha-icon>
     `;
@@ -75,8 +92,8 @@ customElements.define('bubble-icon', BubbleIcon);
 /**
  * BubbleMushroom.js
  * 
- * Componente per la sezione "mushroom entities" della card Bubble Room.
- * File completo, senza placeholder.
+ * Mushroom entities disposte a raggera attorno all'icona principale.
+ * Comportamento, overlay e stile come in Bubble Room originale.
  */
 
 class BubbleMushroom extends r {
@@ -92,33 +109,73 @@ class BubbleMushroom extends r {
   }
 
   static styles = i$3`
+    .mushroom-container {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
     .mushroom-entity {
-      font-size: 2.1em;
-      margin: 0 4px;
-      transition: color 0.18s, background 0.18s;
+      position: absolute;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
+      background: rgba(23,60,22,0.13);
+      box-shadow: 0 0 6px 0 rgba(40,80,46,0.08);
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 2.15em;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: color 0.18s, background 0.18s, box-shadow 0.16s;
+      z-index: 2;
+      user-select: none;
     }
     .mushroom-entity.active {
-      filter: brightness(1.2);
+      background: #21df73;
+      color: #fff !important;
+      box-shadow: 0 0 12px 2px rgba(33,223,115,0.14);
+      filter: brightness(1.18);
     }
   `;
 
+  /**
+   * Posizioni a raggera (percentuali rispetto a containerSize)
+   * - Puoi personalizzare queste per le tue 6 mushroom entity!
+   */
+  _entityRatios() {
+    // max 6 posizioni, modifica se ne vuoi di più
+    return [
+      { x: 0.20, y: 0.09 },
+      { x: 0.54, y: 0.05 },
+      { x: 0.81, y: 0.33 },
+      { x: 0.82, y: 0.67 },
+      { x: 0.54, y: 0.92 },
+      { x: 0.20, y: 0.87 },
+    ];
+  }
+
   render() {
+    const { width, height } = this.containerSize || { width: 200, height: 200 };
+    const ratios = this._entityRatios();
     return x`
-      <div class="mushroom-entities" style="display: flex; gap: 0.8em;">
-        ${this.entities.map(
-          (entity, idx) => x`
+      <div class="mushroom-container" style="width:${width}px;height:${height}px;">
+        ${this.entities.map((entity, idx) => {
+          const r = ratios[idx] || { x: 0.5, y: 0.5 };
+          const left = `${Math.round(r.x * width) - 26}px`;
+          const top = `${Math.round(r.y * height) - 26}px`;
+          return x`
             <ha-icon
               class="mushroom-entity ${entity.state === 'on' ? 'active' : ''}"
               .icon="${entity.icon}"
-              style="color: ${entity.color || '#888'}"
+              style="left: ${left}; top: ${top}; color: ${entity.color || '#888'}"
               @click="${() => this.dispatchEvent(new CustomEvent('mushroom-entity-click', { detail: idx }))}"
             ></ha-icon>
-          `
-        )}
+          `;
+        })}
       </div>
     `;
   }
@@ -129,8 +186,7 @@ customElements.define('bubble-mushroom', BubbleMushroom);
 /**
  * BubbleName.js
  * 
- * Componente che visualizza il nome della stanza nella card Bubble Room.
- * File completo e chiuso.
+ * Visualizza il nome della stanza, uppercased, grande e bold, allineato a sinistra.
  */
 
 class BubbleName extends r {
@@ -138,39 +194,51 @@ class BubbleName extends r {
     name: { type: String },
     area: { type: String }
   };
-
+  
   constructor() {
     super();
     this.name = '';
     this.area = '';
   }
-
+  
   static styles = i$3`
     .bubble-name {
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       text-transform: uppercase;
-      letter-spacing: 0.03em;
-      font-size: 2.1em;
+      letter-spacing: -0.03em;
+      font-size: 3.9em;
+      font-weight: 900;
+      color: #173c16;
+      line-height: 0.92em;
       width: 100%;
-      text-align: center;
+      text-align: left;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      margin-bottom: 0.3em;
+      margin-bottom: 0.13em;
+      text-shadow: 1px 1.2px 0 rgba(34,54,15,0.08);
+      /* Responsive: riduce su schermi piccoli */
     }
     .bubble-area {
-      font-size: 0.89em;
+      font-size: 0.47em;
       color: #66bbff;
       opacity: 0.6;
+      margin-left: 0.45em;
+      font-weight: 400;
+    }
+    @media (max-width: 480px) {
+      .bubble-name {
+        font-size: 2.2em;
+      }
     }
   `;
-
+  
   render() {
     return x`
       <div class="bubble-name">
         ${this.name}
         ${this.area
-          ? x`<span class="bubble-area">&nbsp;(${this.area})</span>`
+          ? x`<span class="bubble-area">(${this.area})</span>`
           : ''}
       </div>
     `;
@@ -179,133 +247,187 @@ class BubbleName extends r {
 
 customElements.define('bubble-name', BubbleName);
 
-/**
- * BubbleSensor.js
- * 
- * Componente che visualizza i sensori della stanza nella card Bubble Room.
- * File completo.
- */
+// src/components/BubbleSensors.js
 
-class BubbleSensor extends r {
+class BubbleSensors extends r {
   static properties = {
-    sensors: { type: Array }
+    sensors: { type: Array }, // [{icon, label, value, unit, color}]
   };
-
-  constructor() {
-    super();
-    this.sensors = [];
-  }
-
+  
   static styles = i$3`
     .sensor-row {
       display: flex;
-      gap: 14px;
-      justify-content: center;
-      align-items: baseline;
-      margin-bottom: 0.2em;
+      gap: 18px;
+      justify-content: flex-start;
+      margin-bottom: 2px;
+      margin-left: 2px;
     }
     .sensor-pill {
-      background: rgba(40,40,40,0.10);
+      background: rgba(32,38,55,0.12);
       border-radius: 18px;
-      padding: 0.2em 0.8em 0.2em 0.55em;
+      padding: 0.27em 1.01em 0.27em 0.73em;
       display: flex;
       align-items: center;
-      gap: 0.45em;
-      font-size: 1.11em;
-      min-width: 45px;
+      gap: 0.5em;
+      font-size: 1.09em;
+      font-family: "Bebas Neue", "Arial Narrow", sans-serif;
+      font-weight: 700;
+      color: #e3f6ff;
+      min-width: 52px;
+      max-width: 132px;
+      letter-spacing: 0.01em;
     }
     .sensor-icon {
-      font-size: 1.2em;
+      font-size: 1.14em;
+      opacity: 0.81;
+    }
+    .sensor-label {
       opacity: 0.78;
+      font-size: 0.98em;
+      margin-right: 0.28em;
+      font-weight: 600;
     }
     .sensor-value {
-      font-weight: bold;
+      font-weight: 700;
+      font-size: 1.07em;
       font-variant-numeric: tabular-nums;
+      letter-spacing: 0.01em;
     }
     .sensor-unit {
-      opacity: 0.6;
-      font-size: 0.92em;
-      margin-left: 0.13em;
+      opacity: 0.75;
+      font-size: 0.89em;
+      margin-left: 0.12em;
+      font-weight: 600;
     }
   `;
-
+  
   render() {
+    // Divide in due righe (3+3 sensori)
+    const row1 = this.sensors?.slice(0, 3) || [];
+    const row2 = this.sensors?.slice(3, 6) || [];
     return x`
       <div class="sensor-row">
-        ${this.sensors.map(
-          (sensor) => x`
-            <div class="sensor-pill" style="color: ${sensor.color || '#fff'}">
+        ${row1.map(sensor => x`
+          <div class="sensor-pill" style="color: ${sensor.color || '#e3f6ff'}">
+            <ha-icon class="sensor-icon" .icon="${sensor.icon}"></ha-icon>
+            <span class="sensor-label">${sensor.label || ''}</span>
+            <span class="sensor-value">${sensor.value ?? '--'}</span>
+            <span class="sensor-unit">${sensor.unit || ''}</span>
+          </div>
+        `)}
+      </div>
+      ${row2.length ? x`
+        <div class="sensor-row">
+          ${row2.map(sensor => x`
+            <div class="sensor-pill" style="color: ${sensor.color || '#e3f6ff'}">
               <ha-icon class="sensor-icon" .icon="${sensor.icon}"></ha-icon>
+              <span class="sensor-label">${sensor.label || ''}</span>
               <span class="sensor-value">${sensor.value ?? '--'}</span>
               <span class="sensor-unit">${sensor.unit || ''}</span>
             </div>
-          `
-        )}
-      </div>
+          `)}
+        </div>
+      ` : ''}
     `;
   }
 }
 
-customElements.define('bubble-sensor', BubbleSensor);
+customElements.define('bubble-sensors', BubbleSensors);
 
 /**
  * BubbleSubButton.js
  * 
- * Componente che visualizza i subbutton della stanza nella card Bubble Room.
- * File completo.
+ * Visualizza i subbutton verticali a destra, quadrati e con label sotto (come nell’originale Bubble Room).
  */
 
 class BubbleSubButton extends r {
   static properties = {
     subbuttons: { type: Array }
   };
-
+  
   constructor() {
     super();
     this.subbuttons = [];
   }
-
+  
   static styles = i$3`
-    .subbutton-row {
+    .subbutton-column {
       display: flex;
-      gap: 13px;
-      justify-content: center;
-      margin-top: 0.3em;
+      flex-direction: column;
+      gap: 20px;
+      align-items: flex-end;
+      margin-top: 12px;
+      margin-bottom: 8px;
+      height: 100%;
+      min-width: 96px;
+      position: relative;
     }
     .subbutton {
-      background: rgba(50,50,50,0.12);
-      border-radius: 50%;
-      width: 2.6em;
-      height: 2.6em;
+      background: #455a64;
+      border-radius: 16px;
+      width: 92px;
+      height: 92px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: box-shadow 0.16s, background 0.13s;
-      box-shadow: 0 1px 6px 0 rgba(0,0,0,0.08);
+      box-shadow: 0 2px 10px 0 rgba(0,0,0,0.10);
+      transition: background 0.15s, box-shadow 0.15s;
+      border: none;
+      outline: none;
+      position: relative;
+      user-select: none;
     }
     .subbutton.active {
-      background: rgba(120, 240, 120, 0.19);
-      box-shadow: 0 1px 8px 0 rgba(30,230,60,0.15);
+      background: #21df73;
+      box-shadow: 0 2px 18px 0 rgba(33,223,115,0.18);
     }
     .subbutton-icon {
-      font-size: 1.46em;
-      opacity: 0.91;
+      font-size: 2.9em;
+      opacity: 0.95;
+      margin-bottom: 0.16em;
+      color: #fff;
+      transition: color 0.16s;
+    }
+    .subbutton.active .subbutton-icon {
+      color: #fff700;
+    }
+    .subbutton-label {
+      font-family: "Bebas Neue", "Arial Narrow", sans-serif;
+      font-size: 1.21em;
+      color: #fff;
+      opacity: 0.75;
+      margin-top: 0.21em;
+      letter-spacing: 0.02em;
+      text-align: center;
+      width: 92px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .subbutton.active .subbutton-label {
+      color: #fff700;
+      opacity: 1;
     }
   `;
-
+  
   render() {
     return x`
-      <div class="subbutton-row">
+      <div class="subbutton-column">
         ${this.subbuttons.map(
           (sub, idx) => x`
             <div
               class="subbutton ${sub.active ? 'active' : ''}"
-              style="color: ${sub.active ? sub.colorOn : sub.colorOff};"
               @click="${() => this.dispatchEvent(new CustomEvent('subbutton-click', { detail: idx }))}"
               title="${sub.label || ''}"
+              style="background:${sub.active ? '#21df73' : '#455a64'};"
             >
               <ha-icon class="subbutton-icon" .icon="${sub.icon}"></ha-icon>
+              ${sub.label
+                ? x`<span class="subbutton-label">${sub.label}</span>`
+                : ''}
             </div>
           `
         )}
@@ -337,89 +459,149 @@ const SENSOR_TYPE_ICON_MAP = {
 
 const DEFAULT_ICON = 'mdi:sofa';
 
+/**
+ * utils.js
+ * 
+ * Funzioni comuni e utility per la card Bubble Room.
+ * File chiuso, non lasciare placeholder!
+ */
+
+function capitalize(str) {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 class BubbleRoom extends r {
   static properties = {
     config: { type: Object },
     hass: { type: Object }
   };
-
+  
   constructor() {
     super();
     this.config = {};
     this.hass = {};
   }
-
-  // *** ECCO IL METODO CHE SERVE ***
+  
   setConfig(config) {
     this.config = config;
   }
-
+  
   static styles = i$3`
-    :host {
-      --bubble-main-bg: rgba(44, 49, 60, 0.88);
-      --bubble-main-radius: 38px;
-      --bubble-entity-bg: rgba(32, 38, 55, 0.19);
-      --bubble-gradient: linear-gradient(110deg, #4e87fa 0%, #51e3a0 100%);
-      --bubble-subbutton-active: #b0ffc5;
-      --bubble-subbutton-inactive: #555;
+    .bubble-room-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 0;
+      width: 100%;
+      min-width: 360px;
+      max-width: 740px;
+      min-height: 312px;
+      position: relative;
+      background: transparent;
+      border-radius: 38px;
+      overflow: visible;
     }
-    .bubble-room-container {
-      background: var(--bubble-main-bg);
-      border-radius: var(--bubble-main-radius);
-      box-shadow: 0 2px 18px 0 rgba(20,22,30,0.18);
-      padding: 28px 20px 18px 20px;
-      margin: 0 auto;
-      max-width: 520px;
-      min-width: 290px;
+    .main-area {
+      position: relative;
+      padding: 30px 0 18px 34px;
       display: flex;
       flex-direction: column;
-      align-items: stretch;
+      justify-content: flex-start;
+      min-height: 300px;
+      z-index: 1;
     }
-    @media (max-width: 480px) {
-      .bubble-room-container {
-        padding: 14px 5px 11px 5px;
-        min-width: unset;
-        max-width: 100vw;
+    .icon-mushroom-area {
+      position: relative;
+      width: 240px;
+      height: 190px;
+      margin-top: 12px;
+      margin-left: -10px;
+      margin-bottom: 12px;
+    }
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-start;
+      padding: 28px 8px 8px 0;
+      min-width: 120px;
+      position: relative;
+      z-index: 3;
+    }
+    @media (max-width: 600px) {
+      .bubble-room-grid {
+        min-width: 100vw;
+        grid-template-columns: 1fr 90px;
+        border-radius: 19px;
+      }
+      .main-area {
+        padding: 14px 0 6px 8px;
+      }
+      .icon-mushroom-area {
+        width: 136px;
+        height: 108px;
+        margin-left: -5px;
+      }
+      .sidebar {
+        padding: 12px 4px 4px 0;
       }
     }
   `;
-
+  
   render() {
     const mainIcon = this.config.icon || DEFAULT_ICON;
     const iconActive = this.config.icon_active || '#21df73';
-    const iconInactive = this.config.icon_inactive || '#555';
+    const iconInactive = this.config.icon_inactive || '#173c16';
     const name = this.config.name || 'Room';
     const area = this.config.area || '';
     const sensors = this._getSensors();
     const mushroomEntities = this._getMushroomEntities();
     const subbuttons = this._getSubButtons();
-
+    
+    // Per BubbleMushroom: la size dell'area
+    const mushroomContainerSize = { width: 240, height: 190 };
+    
     return x`
-      <div class="bubble-room-container">
-        <bubble-name .name="${name}" .area="${area}"></bubble-name>
-        <bubble-icon
-          .icon="${mainIcon}"
-          .active="${this._isMainIconActive()}"
-          .colorActive="${iconActive}"
-          .colorInactive="${iconInactive}"
-          @main-icon-click="${this._onMainIconClick}"
-        ></bubble-icon>
-        <bubble-sensor .sensors="${sensors}"></bubble-sensor>
-        <bubble-mushroom .entities="${mushroomEntities}"></bubble-mushroom>
-        <bubble-subbutton .subbuttons="${subbuttons}" @subbutton-click="${this._onSubButtonClick}"></bubble-subbutton>
+      <div class="bubble-room-grid">
+        <div class="main-area">
+          <bubble-sensors .sensors="${sensors}"></bubble-sensors>
+          <bubble-name .name="${name}" .area="${area}"></bubble-name>
+          <div class="icon-mushroom-area">
+            <bubble-icon
+              .icon="${mainIcon}"
+              .active="${this._isMainIconActive()}"
+              .colorActive="${iconActive}"
+              .colorInactive="${iconInactive}"
+              @main-icon-click="${this._onMainIconClick}"
+            ></bubble-icon>
+            <bubble-mushroom
+              .entities="${mushroomEntities}"
+              .containerSize="${mushroomContainerSize}"
+              @mushroom-entity-click="${this._onMushroomEntityClick}"
+            ></bubble-mushroom>
+          </div>
+        </div>
+        <div class="sidebar">
+          <bubble-subbutton
+            .subbuttons="${subbuttons}"
+            @subbutton-click="${this._onSubButtonClick}"
+          ></bubble-subbutton>
+        </div>
       </div>
     `;
   }
-
+  
   _getSensors() {
+    // Mappa sensori con label visibile!
     return (this.config.sensors || []).map(s => ({
       icon: SENSOR_TYPE_ICON_MAP[s.type]?.icon || 'mdi:help-circle',
+      label: s.label || capitalize(s.type || ''),
       value: this.hass.states?.[s.entity_id]?.state ?? '--',
       unit: SENSOR_TYPE_ICON_MAP[s.type]?.unit || '',
-      color: s.color || '#fff'
+      color: s.color || '#e3f6ff'
     }));
   }
-
+  
   _getMushroomEntities() {
     return (this.config.mushrooms || []).map(e => ({
       icon: e.icon || 'mdi:flash',
@@ -427,7 +609,7 @@ class BubbleRoom extends r {
       color: e.color || '#999'
     }));
   }
-
+  
   _getSubButtons() {
     return (this.config.subbuttons || []).map((sub, idx) => ({
       icon: sub.icon || 'mdi:light-switch',
@@ -437,15 +619,20 @@ class BubbleRoom extends r {
       label: sub.label || '',
     }));
   }
-
+  
   _isMainIconActive() {
     return !!this.config.active;
   }
-
+  
   _onMainIconClick() {
-    // Gestione click sull'icona principale
+    // Gestione click icona principale
   }
-
+  
+  _onMushroomEntityClick(e) {
+    e.detail;
+    // Gestione click su mushroom entity
+  }
+  
   _onSubButtonClick(e) {
     e.detail;
     // Gestione click su subbutton
