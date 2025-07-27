@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'lit';
 import './components/BubbleIcon.js';
 import './components/BubbleMushroom.js';
 import './components/BubbleName.js';
-import './components/BubbleSensors.js';
+import './components/BubbleSensor.js';
 import './components/BubbleSubButton.js';
 import { DEVICE_CLASS_ICON_MAP, SENSOR_TYPE_ICON_MAP, DEFAULT_ICON } from './helpers/icon-mapping.js';
 import { SENSOR_TYPES } from './helpers/sensor-mapping.js';
