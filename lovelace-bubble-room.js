@@ -54,9 +54,6 @@ class BubbleIcon extends r {
       bottom: 0;
       z-index: 1;
       pointer-events: auto;
-      border: 2px solid #00bcd4 !important; /* azzurro acqua */
-      display: block !important;
-      margin-bottom: 6px !important;
     }
     .main-icon {
       font-size: 8.7em;       /* icona gigante! */
@@ -65,6 +62,7 @@ class BubbleIcon extends r {
       transition: color 0.2s, opacity 0.2s;
       filter: drop-shadow(1px 1.5px 0px rgba(34,54,15,0.07));
       user-select: none;
+      border: 2px solid #00bcd4 !important;
     }
     .main-icon.active {
       opacity: 0.26;
@@ -112,11 +110,6 @@ class BubbleMushroom extends r {
   }
 
   static styles = i$3`
-    : host {
-      border: 2px solid #d500f9 !important; /* viola */
-      display: block !important;
-      margin-bottom: 6px !important;
-    }
     .mushroom-container {
       position: absolute;
       left: 0;
@@ -124,6 +117,7 @@ class BubbleMushroom extends r {
       width: 100%;
       height: 100%;
       pointer-events: none;
+      border: 2px solid #d500f9 !important;
     }
     .mushroom-entity {
       position: absolute;
@@ -210,11 +204,6 @@ class BubbleName extends r {
   }
   
   static styles = i$3`
-    : host {
-      border: 2px solid #ffd600 !important; /* giallo forte */
-      display: block !important;
-      margin-bottom: 6px !important;
-    }
     .bubble-name {
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       text-transform: uppercase;
@@ -231,6 +220,7 @@ class BubbleName extends r {
       margin-bottom: 0.13em;
       text-shadow: 1px 1.2px 0 rgba(34,54,15,0.08);
       /* Responsive: riduce su schermi piccoli */
+      border: 2px solid #ffd600 !important;
     }
     .bubble-area {
       font-size: 0.47em;
@@ -268,17 +258,13 @@ class BubbleSensors extends r {
   };
   
   static styles = i$3`
-    : host {
-      border: 2px solid #00e676 !important; /* verde brillante */
-      display: block !important;
-      margin-bottom: 8px !important;
-    }
     .sensor-row {
       display: flex;
       gap: 18px;
       justify-content: flex-start;
       margin-bottom: 2px;
       margin-left: 2px;
+      border: 2px solid #00e676 !important;
     }
     .sensor-pill {
       background: rgba(32,38,55,0.12);
@@ -369,11 +355,6 @@ class BubbleSubButton extends r {
   }
   
   static styles = i$3`
-    : host {
-      border: 2px solid #e65100 !important; /* arancio */
-      display: block !important;
-      margin-top: 10px !important;
-    }
     .subbutton-column {
       display: flex;
       flex-direction: column;
@@ -384,6 +365,7 @@ class BubbleSubButton extends r {
       height: 100%;
       min-width: 96px;
       position: relative;
+      border: 2px solid #e65100 !important;
     }
     .subbutton {
       background: #455a64;
