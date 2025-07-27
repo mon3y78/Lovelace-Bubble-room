@@ -54,6 +54,9 @@ class BubbleIcon extends r {
       bottom: 0;
       z-index: 1;
       pointer-events: auto;
+      border: 2 px solid #00bcd4 !important; /* azzurro acqua */
+      display: block;
+      margin-bottom: 6px;
     }
     .main-icon {
       font-size: 8.7em;       /* icona gigante! */
@@ -109,6 +112,11 @@ class BubbleMushroom extends r {
   }
 
   static styles = i$3`
+    : host {
+      border: 2 px solid #d500f9!important; /* viola */
+      display: block;
+      margin - bottom: 6 px;
+    }
     .mushroom-container {
       position: absolute;
       left: 0;
@@ -202,6 +210,11 @@ class BubbleName extends r {
   }
   
   static styles = i$3`
+    : host {
+      border: 2 px solid #ffd600!important; /* giallo forte */
+      display: block;
+      margin - bottom: 6 px;
+    }
     .bubble-name {
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       text-transform: uppercase;
@@ -255,6 +268,11 @@ class BubbleSensors extends r {
   };
   
   static styles = i$3`
+    : host {
+    border: 2 px solid #00e676 !important; /* verde brillante */
+      display: block;
+      margin-bottom: 8px;
+    }
     .sensor-row {
       display: flex;
       gap: 18px;
@@ -351,6 +369,11 @@ class BubbleSubButton extends r {
   }
   
   static styles = i$3`
+    : host {
+      border: 2 px solid #e65100!important; /* arancio */
+      display: block;
+      margin - top: 10 px;
+    }
     .subbutton-column {
       display: flex;
       flex-direction: column;
@@ -534,33 +557,7 @@ class BubbleRoom extends r {
         grid-template-columns: 1fr 90px;
         border-radius: 19px;
       }
-    .main-area {
-      padding: 14px 0 6px 8px;
-    }
-    .icon-mushroom-area {
-      width: 136px;
-      height: 108px;
-      margin-left: -5px;
-    }
-    .sidebar {
-      padding: 12px 4px 4px 0;
-    }
-    .bubble - room - grid {
-      border: 3 px dashed #60a4ff !important;
-      background: rgba(40,80,200,0.07);
-    }
-    .main-area {
-      border: 2px solid # 1 de9b6!important;
-      background: rgba(30, 200, 140, 0.08);
-    }
-    .sidebar {
-      border: 2 px solid #e65100!important;
-      background: rgba(255, 160, 20, 0.07);
-      }
-    .icon - mushroom - area {
-      border: 2 px dashed #d500f9!important;
-      background: rgba(190, 40, 250, 0.06);
-    }
+    }  
   `;
 
   
