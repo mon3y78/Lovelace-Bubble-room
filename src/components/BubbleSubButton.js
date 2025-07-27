@@ -17,6 +17,11 @@ export class BubbleSubButton extends LitElement {
   }
   
   static styles = css`
+    : host {
+      border: 2 px solid #e65100!important; /* arancio */
+      display: block;
+      margin - top: 10 px;
+    }
     .subbutton-column {
       display: flex;
       flex-direction: column;

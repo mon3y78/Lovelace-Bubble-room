@@ -71,33 +71,7 @@ export class BubbleRoom extends LitElement {
         grid-template-columns: 1fr 90px;
         border-radius: 19px;
       }
-    .main-area {
-      padding: 14px 0 6px 8px;
-    }
-    .icon-mushroom-area {
-      width: 136px;
-      height: 108px;
-      margin-left: -5px;
-    }
-    .sidebar {
-      padding: 12px 4px 4px 0;
-    }
-    .bubble - room - grid {
-      border: 3 px dashed #60a4ff !important;
-      background: rgba(40,80,200,0.07);
-    }
-    .main-area {
-      border: 2px solid # 1 de9b6!important;
-      background: rgba(30, 200, 140, 0.08);
-    }
-    .sidebar {
-      border: 2 px solid #e65100!important;
-      background: rgba(255, 160, 20, 0.07);
-      }
-    .icon - mushroom - area {
-      border: 2 px dashed #d500f9!important;
-      background: rgba(190, 40, 250, 0.06);
-    }
+    }  
   `;
 
   

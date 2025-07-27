@@ -8,6 +8,11 @@ export class BubbleSensors extends LitElement {
   };
   
   static styles = css`
+    : host {
+    border: 2 px solid #00e676 !important; /* verde brillante */
+      display: block;
+      margin-bottom: 8px;
+    }
     .sensor-row {
       display: flex;
       gap: 18px;
