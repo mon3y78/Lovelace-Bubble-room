@@ -487,7 +487,39 @@ class BubbleRoom extends r {
     this.config = {};
     this.hass = {};
   }
-  
+    static getStubConfig() {
+    return {
+      type: 'custom:bubble-room',
+      name: 'Salotto',
+      icon: 'mdi:sofa',
+      sensors: [
+        { entity_id: 'sensor.some_sensor1', type: 'temperature', label: 'Temperatura', color: '#e3f6ff' }
+      ],
+      mushrooms: [
+        { entity_id: 'switch.lampada', icon: 'mdi:lightbulb', color: '#ffeb3b' }
+      ],
+      subbuttons: [
+        { entity_id: 'light.luce_tavolo', icon: 'mdi:lamp', label: 'Tavolo', colorOn: '#00d46d', colorOff: '#999' }
+      ],
+      colors: {
+        room: {
+          background_active:   'rgba(var(--color-green),1)',
+          background_inactive: 'rgba(var(--color-green),0.3)',
+          icon_active:         'orange',
+          icon_inactive:       '#80808055',
+          mushroom_active:     'rgba(var(--color-green),1)',
+          mushroom_inactive:   '#80808055'
+        },
+        subbutton: {
+          background_on:  'rgba(var(--color-blue),1)',
+          background_off: 'rgba(var(--color-blue),0.3)',
+          icon_on:        'yellow',
+          icon_off:       '#666'
+        }
+      }
+    };
+  }
+
   setConfig(config) {
     this.config = config;
   }
@@ -505,6 +537,7 @@ class BubbleRoom extends r {
       background: transparent;
       border-radius: 38px;
       overflow: visible;
+      border: 2px solid var(--bubble-main-bg);
     }
     .main-area {
       position: relative;
