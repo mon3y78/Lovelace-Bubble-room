@@ -76,6 +76,7 @@ export class BubbleRoom extends LitElement {
 
   
   render() {
+    console.log('BubbleRoom config:', this.config);
     const mainIcon = this.config.icon || DEFAULT_ICON;
     const iconActive = this.config.icon_active || '#21df73';
     const iconInactive = this.config.icon_inactive || '#173c16';
