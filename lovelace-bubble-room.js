@@ -337,13 +337,6 @@ const SENSOR_TYPE_ICON_MAP = {
 
 const DEFAULT_ICON = 'mdi:sofa';
 
-/**
- * bubble-room.js
- *
- * Entrypoint della card principale Bubble Room.
- * File completo, import pronto di tutto.
- */
-
 class BubbleRoom extends r {
   static properties = {
     config: { type: Object },
@@ -356,6 +349,11 @@ class BubbleRoom extends r {
     this.hass = {};
   }
 
+  // *** ECCO IL METODO CHE SERVE ***
+  setConfig(config) {
+    this.config = config;
+  }
+
   static styles = i$3`
     :host {
       --bubble-main-bg: rgba(44, 49, 60, 0.88);
@@ -365,7 +363,6 @@ class BubbleRoom extends r {
       --bubble-subbutton-active: #b0ffc5;
       --bubble-subbutton-inactive: #555;
     }
-
     .bubble-room-container {
       background: var(--bubble-main-bg);
       border-radius: var(--bubble-main-radius);
@@ -378,7 +375,6 @@ class BubbleRoom extends r {
       flex-direction: column;
       align-items: stretch;
     }
-
     @media (max-width: 480px) {
       .bubble-room-container {
         padding: 14px 5px 11px 5px;
