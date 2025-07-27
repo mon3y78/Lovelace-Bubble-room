@@ -30,9 +30,6 @@ export class BubbleIcon extends LitElement {
       bottom: 0;
       z-index: 1;
       pointer-events: auto;
-      border: 2px solid #00bcd4 !important; /* azzurro acqua */
-      display: block !important;
-      margin-bottom: 6px !important;
     }
     .main-icon {
       font-size: 8.7em;       /* icona gigante! */
@@ -41,6 +38,7 @@ export class BubbleIcon extends LitElement {
       transition: color 0.2s, opacity 0.2s;
       filter: drop-shadow(1px 1.5px 0px rgba(34,54,15,0.07));
       user-select: none;
+      border: 2px solid #00bcd4 !important;
     }
     .main-icon.active {
       opacity: 0.26;

@@ -19,11 +19,6 @@ export class BubbleName extends LitElement {
   }
   
   static styles = css`
-    : host {
-      border: 2px solid #ffd600 !important; /* giallo forte */
-      display: block !important;
-      margin-bottom: 6px !important;
-    }
     .bubble-name {
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       text-transform: uppercase;
@@ -40,6 +35,7 @@ export class BubbleName extends LitElement {
       margin-bottom: 0.13em;
       text-shadow: 1px 1.2px 0 rgba(34,54,15,0.08);
       /* Responsive: riduce su schermi piccoli */
+      border: 2px solid #ffd600 !important;
     }
     .bubble-area {
       font-size: 0.47em;
