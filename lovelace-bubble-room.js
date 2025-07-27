@@ -54,9 +54,9 @@ class BubbleIcon extends r {
       bottom: 0;
       z-index: 1;
       pointer-events: auto;
-      border: 2 px solid #00bcd4 !important; /* azzurro acqua */
-      display: block;
-      margin-bottom: 6px;
+      border: 2px solid #00bcd4 !important; /* azzurro acqua */
+      display: block !important;
+      margin-bottom: 6px !important;
     }
     .main-icon {
       font-size: 8.7em;       /* icona gigante! */
@@ -113,9 +113,9 @@ class BubbleMushroom extends r {
 
   static styles = i$3`
     : host {
-      border: 2 px solid #d500f9!important; /* viola */
-      display: block;
-      margin - bottom: 6 px;
+      border: 2px solid #d500f9 !important; /* viola */
+      display: block !important;
+      margin-bottom: 6px !important;
     }
     .mushroom-container {
       position: absolute;
@@ -211,9 +211,9 @@ class BubbleName extends r {
   
   static styles = i$3`
     : host {
-      border: 2 px solid #ffd600!important; /* giallo forte */
-      display: block;
-      margin - bottom: 6 px;
+      border: 2px solid #ffd600 !important; /* giallo forte */
+      display: block !important;
+      margin-bottom: 6px !important;
     }
     .bubble-name {
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
@@ -269,9 +269,9 @@ class BubbleSensors extends r {
   
   static styles = i$3`
     : host {
-    border: 2 px solid #00e676 !important; /* verde brillante */
-      display: block;
-      margin-bottom: 8px;
+      border: 2px solid #00e676 !important; /* verde brillante */
+      display: block !important;
+      margin-bottom: 8px !important;
     }
     .sensor-row {
       display: flex;
@@ -370,9 +370,9 @@ class BubbleSubButton extends r {
   
   static styles = i$3`
     : host {
-      border: 2 px solid #e65100!important; /* arancio */
-      display: block;
-      margin - top: 10 px;
+      border: 2px solid #e65100 !important; /* arancio */
+      display: block !important;
+      margin-top: 10px !important;
     }
     .subbutton-column {
       display: flex;
