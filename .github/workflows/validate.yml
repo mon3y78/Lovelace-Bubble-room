@@ -1,26 +1,29 @@
 name: Validate HACS Plugin
 
+# Scatta solo sulle pull_request verso main
 on:
   pull_request:
+    branches:
+      - main
     paths:
       - 'src/**'
-      - 'rollup.config.js'
+      - 'panels/**'
+      - 'helpers/**'
       - 'package.json'
+      - 'rollup.config.js'
       - '.github/workflows/validate.yml'
 
 jobs:
   validate:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Run HACS validation
         uses: ghcr.io/hacs/action@main
         with:
-          # Se serve, puoi configurare input_*
-          # INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # INPUT_IGNORE: ...
-          category: plugin
-          
+          # categoria plugin (bubble-room)
+          INPUT_CATEGORY: plugin
+          # opzionale: se ci sono cambi solo nel bundle, ignora
+          INPUT_IGNORE: 'lovelace-bubble-room.js'
