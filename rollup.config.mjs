@@ -18,6 +18,7 @@ export default {
     // escludi solo i componenti HA che sono già caricati globalmente
     'home-assistant-frontend/src/components/ha-entity-picker.js',
     'home-assistant-frontend/src/components/ha-expansion-panel.js',
+    'fs', 'path', 'os', 'url', 'module', 'util', 'child_process',
   ],
   plugins: [
     json(),
