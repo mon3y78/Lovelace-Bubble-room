@@ -6,11 +6,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Fetch full history so che i commit vengano correttamente pushati
           fetch-depth: 0
 
       - name: Set up Node.js
@@ -20,24 +20,28 @@ jobs:
 
       - name: Install dependencies and ensure JSON plugin
         run: |
-          # Aggiunge @rollup/plugin-json a devDependencies (se non c'è già)
           npm install --save-dev @rollup/plugin-json
-          # Installa il resto delle dipendenze, compreso il plugin appena aggiunto
           npm install
 
       - name: Build lovelace-bubble-room bundle
         run: npm run build
 
+      # —————— DEBUG: controlla l’head del bundle
+      - name: Dump head of built bundle
+        run: head -n 30 lovelace-bubble-room.js
+
+      # —————— DEBUG: cerca import “path”
+      - name: Check for stray “path” import
+        run: grep -n "from ['\"]path['\"]" lovelace-bubble-room.js || echo "✅ no path import found"
+
       - name: Commit generated files
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
-          # Aggiungi package.json/package-lock.json se sono cambiati, più il bundle
           git add package.json package-lock.json lovelace-bubble-room.js
           git commit -m "Auto-build: update bundle and dependencies" || echo "No changes to commit"
 
       - name: Push changes back to repo
-        # spinge nel branch da cui hai lanciato workflow_dispatch
         run: git push origin HEAD:${{ github.ref_name }}
 
       - name: Upload build artifact
@@ -45,8 +49,3 @@ jobs:
         with:
           name: bubble-room-bundle
           path: lovelace-bubble-room.js
-  - name: Dump head of built bundle
-    run: head -n 30 lovelace-bubble-room.js
-
-  - name: Check for stray “path” import
-    run: grep -n "from ['\"]path['\"]" -n lovelace-bubble-room.js || echo "✅ no path import found"
