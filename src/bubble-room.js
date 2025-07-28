@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import './components/bubble-room-editor.js';
+import './bubble-room-editor.js';
 import './components/BubbleIcon.js';
 import './components/BubbleMushroom.js';
 import './components/BubbleName.js';
@@ -58,7 +58,7 @@ export class BubbleRoom extends LitElement {
  */
   static async getConfigElement() {
     // Carica dinamicamente il file
-    await import('./components/bubble-room-editor.js');
+    await import('./bubble-room-editor.js');
     // Ritorna un'istanza del custom element
     return document.createElement('bubble-room-editor');
   }
