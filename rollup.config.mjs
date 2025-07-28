@@ -18,11 +18,8 @@ export default {
   ],
   plugins: [
     // risolve lit, fitty, @material e i tuoi helper locali
-    nodeResolve({ browser: true }),
-    // converte eventuali CommonJS (per es. fitty)
-    commonjs(),
-    // permette di importare JSON (necessario per evitare l’errore su core.json)
+    nodeResolve({ browser: true, preferBuiltins: false }),
     json(),
-    // terser(),
+    commonjs(),
   ],
 };
