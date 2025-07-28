@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import '@material/mwc-icon';
+import 'https://unpkg.com/@material/mwc-icon?module';
 
 export class MushroomsPanel extends LitElement {
   static properties = {
