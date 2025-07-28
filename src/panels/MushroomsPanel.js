@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'lit';
-import '@material/mwc-icon';
 
 export class MushroomsPanel extends LitElement {
   static properties = {
