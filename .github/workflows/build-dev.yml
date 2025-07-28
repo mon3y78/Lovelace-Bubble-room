@@ -8,33 +8,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
 
-      - name: Install dependencies
+      - name: Install npm dependencies
         run: npm ci
 
-      - name: Install Rollup JSON plugin
+      - name: Ensure Rollup JSON plugin is present
         run: npm install --save-dev @rollup/plugin-json
 
-      - name: Build bundle
+      - name: Build lovelace-bubble-room bundle
         run: npm run build
 
-      - name: Commit build file
+      - name: Commit generated bundle
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
           git add lovelace-bubble-room.js
-          git commit -m "Auto-build: add lovelace-bubble-room.js" || echo "No changes to commit"
+          git commit -m "Auto-build: update lovelace-bubble-room.js" || echo "No changes to commit"
 
-      - name: Push build file to current branch
-        run: |
-          git push origin HEAD:${{ github.ref_name }}
-
+      - name: Push changes
+        run: git push origin HEAD:${{ github.ref_name }}
+      
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
