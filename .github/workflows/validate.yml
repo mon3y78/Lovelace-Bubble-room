@@ -1,0 +1,26 @@
+name: Validate HACS Plugin
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'rollup.config.js'
+      - 'package.json'
+      - '.github/workflows/validate.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run HACS validation
+        uses: ghcr.io/hacs/action@main
+        with:
+          # Se serve, puoi configurare input_*
+          # INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # INPUT_IGNORE: ...
+          category: plugin
+          
