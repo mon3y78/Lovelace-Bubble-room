@@ -1,93 +1,105 @@
-/**
- * bubble-room-editor.js
- *
- * Entrypoint dell'editor visuale Bubble Room.
- * File completo, pronto per la configurazione.
- */
-
+// src/components/bubble-room-editor.js
 import { LitElement, html, css } from 'lit';
-import './components/BubbleIcon.js';
-import './components/BubbleMushroom.js';
-import './components/BubbleName.js';
-import './components/BubbleSensor.js';
-import './components/BubbleSubButton.js';
-import './styles/bubble-room.css';
-import { DEVICE_CLASS_ICON_MAP, SENSOR_TYPE_ICON_MAP, DEFAULT_ICON } from './helpers/icon-mapping.js';
-import { SENSOR_TYPES } from './helpers/sensor-mapping.js';
-import { capitalize } from './helpers/utils.js';
+
+// Import dei pannelli modulari
+import './panels/RoomPanel.js';
+import './panels/SensorsPanel.js';
+import './panels/MushroomsPanel.js';
+import './panels/SubButtonsPanel.js';
+import './panels/ColorsPanel.js';
 
 export class BubbleRoomEditor extends LitElement {
   static properties = {
+    hass: { type: Object },
     config: { type: Object },
-    hass: { type: Object }
   };
-
+  
   constructor() {
     super();
+    this.hass = null;
     this.config = {};
-    this.hass = {};
   }
-
+  
+  /**
+   * Inizializza la configurazione dell'editor, garantendo array e oggetti di default.
+   */
+  setConfig(config) {
+    this.config = {
+      ...config,
+      sensors: Array.isArray(config.sensors) ? config.sensors : [],
+      mushrooms: Array.isArray(config.mushrooms) ? config.mushrooms : [],
+      subbuttons: Array.isArray(config.subbuttons) ? config.subbuttons : [],
+      colors: config.colors ? config.colors : { room: {}, subbutton: {} },
+    };
+  }
+  
+  /**
+   * Restituisce la configurazione corrente.
+   */
+  getConfig() {
+    return { ...this.config };
+  }
+  
   static styles = css`
-    @import './styles/bubble-room.css';
+    :host {
+      display: block;
+      padding: 0;
+      margin: 0;
+    }
+    .editor-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 16px;
+      box-sizing: border-box;
+    }
   `;
-
+  
   render() {
     return html`
-      <div class="bubble-room-container">
-        <h3>Room Name</h3>
-        <input type="text" .value="${this.config.name || ''}" @input="${e => this._updateConfig('name', e.target.value)}" />
+      <div class="editor-container">
+        <room-panel
+          .hass="${this.hass}"
+          .config="${this.config}"
+          @config-changed="${this._onConfigChanged}"
+        ></room-panel>
 
-        <h3>Icon</h3>
-        <bubble-icon
-          .icon="${this.config.icon || DEFAULT_ICON}"
-          .active="${this.config.active || false}"
-          .colorActive="${this.config.icon_active || '#21df73'}"
-          .colorInactive="${this.config.icon_inactive || '#555'}"
-        ></bubble-icon>
+        <sensors-panel
+          .hass="${this.hass}"
+          .config="${this.config}"
+          @config-changed="${this._onConfigChanged}"
+        ></sensors-panel>
 
-        <h3>Sensors</h3>
-        <bubble-sensor .sensors="${this._getEditorSensors()}"></bubble-sensor>
+        <mushrooms-panel
+          .hass="${this.hass}"
+          .config="${this.config}"
+          @config-changed="${this._onConfigChanged}"
+        ></mushrooms-panel>
 
-        <h3>Mushroom Entities</h3>
-        <bubble-mushroom .entities="${this._getEditorMushrooms()}"></bubble-mushroom>
+        <subbuttons-panel
+          .hass="${this.hass}"
+          .config="${this.config}"
+          @config-changed="${this._onConfigChanged}"
+        ></subbuttons-panel>
 
-        <h3>SubButtons</h3>
-        <bubble-subbutton .subbuttons="${this._getEditorSubButtons()}"></bubble-subbutton>
+        <colors-panel
+          .config="${this.config}"
+          @config-changed="${this._onConfigChanged}"
+        ></colors-panel>
       </div>
     `;
   }
-
-  _getEditorSensors() {
-    return (this.config.sensors || []).map(s => ({
-      icon: SENSOR_TYPE_ICON_MAP[s.type]?.icon || 'mdi:help-circle',
-      value: '••',
-      unit: SENSOR_TYPE_ICON_MAP[s.type]?.unit || '',
-      color: s.color || '#fff'
+  
+  /**
+   * Propaga l'evento di cambio configurazione ai listener esterni.
+   */
+  _onConfigChanged(e) {
+    this.config = e.detail.config;
+    this.dispatchEvent(new CustomEvent('config-changed', {
+      detail: { config: this.getConfig() },
+      bubbles: true,
+      composed: true,
     }));
-  }
-
-  _getEditorMushrooms() {
-    return (this.config.mushrooms || []).map(e => ({
-      icon: e.icon || 'mdi:flash',
-      state: 'off',
-      color: e.color || '#999'
-    }));
-  }
-
-  _getEditorSubButtons() {
-    return (this.config.subbuttons || []).map((sub, idx) => ({
-      icon: sub.icon || 'mdi:light-switch',
-      active: false,
-      colorOn: sub.colorOn || '#00d46d',
-      colorOff: sub.colorOff || '#999',
-      label: sub.label || '',
-    }));
-  }
-
-  _updateConfig(key, value) {
-    this.config = { ...this.config, [key]: value };
-    this.dispatchEvent(new CustomEvent('config-changed', { detail: { config: this.config } }));
   }
 }
 
