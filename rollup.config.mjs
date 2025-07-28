@@ -1,8 +1,7 @@
-// rollup.config.js
 import { nodeResolve } from '@rollup/plugin-node-resolve';
-import commonjs        from '@rollup/plugin-commonjs';
-import json            from '@rollup/plugin-json';
-// import { terser }    from 'rollup-plugin-terser';  // riattiva se vuoi minimizzare
+import commonjs      from '@rollup/plugin-commonjs';
+
+import { builtinModules } from 'module';
 
 export default {
   input: 'src/bubble-room.js',
@@ -11,15 +10,17 @@ export default {
     format: 'esm',
     inlineDynamicImports: true,
   },
-  external: [
-    // escludi solo i componenti HA già caricati globalmente
-    'home-assistant-frontend/src/components/ha-entity-picker.js',
-    'home-assistant-frontend/src/components/ha-expansion-panel.js',
-  ],
+  external: id => {
+    // 1) Componenti HASS già globali
+    if (id.startsWith('home-assistant-frontend/src/components/')) return true;
+    // 2) @material/mwc-icon
+    if (id === '@material/mwc-icon') return true;
+    // 3) Tutti i built‑in di Node
+    if (builtinModules.includes(id)) return true;
+    return false;
+  },
   plugins: [
-    // risolve lit, fitty, @material e i tuoi helper locali
     nodeResolve({ browser: true, preferBuiltins: false }),
-    json(),
     commonjs(),
   ],
 };
