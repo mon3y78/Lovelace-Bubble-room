@@ -2,6 +2,8 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
+import json from '@rollup/plugin-json';
+
 
 export default {
   input: 'src/bubble-room.js',
@@ -18,6 +20,7 @@ export default {
     'home-assistant-frontend/src/components/ha-expansion-panel.js',
   ],
   plugins: [
+    json(),
     // risolve i pacchetti node_modules, inclusi lit e fitty
     nodeResolve({ browser: true }),
     // converte eventuali CommonJS (per es. fitty)
