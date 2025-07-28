@@ -1,20 +1,22 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs      from '@rollup/plugin-commonjs';
+import json          from '@rollup/plugin-json';
 
 export default {
   input: 'src/bubble-room.js',
   output: {
     file: 'lovelace-bubble-room.js',
     format: 'esm',
-    inlineDynamicImports: true
+    inlineDynamicImports: true,
   },
-  external: id =>
-    // escludi solo i componenti Home Assistant già presenti nel frontend
+  // Escludi solo i componenti HA già nel frontend + built‑in Node
+  external: id => (
     id.startsWith('home-assistant-frontend/src/components/') ||
-    // escludi eventuali altri moduli che vuoi caricare direttamente da CDN o frontend
-    id === '@material/mwc-icon',
+    ['fs','path','module','url','util'].includes(id)
+  ),
   plugins: [
     nodeResolve({ browser: true, preferBuiltins: false }),
-    commonjs()
-  ]
+    json(),
+    commonjs({ transformMixedEsModules: true }),
+  ],
 };
