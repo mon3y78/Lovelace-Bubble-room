@@ -1,19 +1,65 @@
 {
   "name": "bubble_room",
+  "description": "Bubble Room Card è una Lovelace card per Home Assistant basata sui solidi principi della Bubble Card e sulla versatilità dei Mushroom Templates. Progettata per offrire una visione d'insieme della stanza, questa card consente di monitorare e gestire in maniera centralizzata tutti i dispositivi e le entità con un'interfaccia moderna, intuitiva e altamente personalizzabile.",
   "version": "1.0.0",
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c"
   },
   "dependencies": {
+    "acorn": "^8.14.0",
+    "buffer-from": "^1.1.2",
+    "commander": "^2.20.3",
+    "commondir": "^1.0.1",
+    "deepmerge": "^4.3.1",
+    "estree-walker": "^2.0.2",
+    "fdir": "^6.4.3",
+    "fitty": "^2.4.2",
+    "function-bind": "^1.1.2",
+    "has-flag": "^4.0.0",
+    "hasown": "^2.0.2",
+    "is-core-module": "^2.16.1",
+    "is-module": "^1.0.0",
+    "is-reference": "^1.2.1",
+    "jest-worker": "^26.6.2",
+    "js-tokens": "^4.0.0",
     "lit": "^3.2.1",
-    "fitty": "^2.4.2"
+    "magic-string": "^0.30.17",
+    "merge-stream": "^2.0.0",
+    "path-parse": "^1.0.7",
+    "picocolors": "^1.1.1",
+    "picomatch": "^4.0.2",
+    "randombytes": "^2.1.0",
+    "resolve": "^1.22.10",
+    "safe-buffer": "^5.2.1",
+    "serialize-javascript": "^4.0.0",
+    "source-map": "^0.6.1",
+    "source-map-support": "^0.5.21",
+    "supports-color": "^7.2.0",
+    "supports-preserve-symlinks-flag": "^1.0.0",
+    "terser": "^5.38.2",
+    "undici-types": "^6.20.0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.2",
-    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.0",
-    "rollup": "^2.79.2"
+    "rollup": "^2.79.2",
+    "rollup-plugin-terser": "^7.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mon3y78/Lovelace-Bubble-room.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mon3y78/Lovelace-Bubble-room/issues"
+  },
+  "homepage": "https://github.com/mon3y78/Lovelace-Bubble-room#readme",
+  "optionalDependencies": {
+    "fsevents": "^2.3.3"
   }
 }
