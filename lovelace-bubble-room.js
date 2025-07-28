@@ -12384,3 +12384,4 @@ class BubbleRoom extends r {
 customElements.define('bubble-room', BubbleRoom);
 
 export { BubbleRoom };
+//# sourceMappingURL=lovelace-bubble-room.js.map
