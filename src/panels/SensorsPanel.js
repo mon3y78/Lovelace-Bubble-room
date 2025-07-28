@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { SENSOR_TYPE_MAP } from '../helpers/sensor-mapping.js';
+import { SENSOR_TYPE } from '../helpers/sensor-mapping.js';
 
 export class SensorsPanel extends LitElement {
   static properties = {
