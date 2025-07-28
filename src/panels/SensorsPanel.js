@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { SENSOR_TYPE } from '../helpers/sensor-mapping.js';
+import { SENSOR_TYPES } from '../helpers/sensor-mapping.js';
 const SENSOR_TYPE_MAP = SENSOR_TYPES.reduce((map, { type, label, emoji, unit }) => {
   map[type] = { label, emoji, units: [unit] };
   return map;
