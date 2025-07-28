@@ -197,6 +197,10 @@ class RoomPanel extends r {
 
 customElements.define('room-panel', RoomPanel);
 
+const SENSOR_TYPE_MAP = SENSOR_TYPES.reduce((map, { type, label, emoji, unit }) => {
+  map[type] = { label, emoji, units: [unit] };
+  return map;
+}, {});
 class SensorsPanel extends r {
   static properties = {
     hass: { type: Object },
