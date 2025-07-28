@@ -1,3 +1,5 @@
+import '@material/mwc-icon';
+
 /**
  * @license
  * Copyright 2019 Google LLC
@@ -23,6 +25,805 @@ const t=globalThis,i$1=t.trustedTypes,s=i$1?i$1.createPolicy("lit-html",{createH
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */class r extends b{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0;}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const s=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=B(s,this.renderRoot,this.renderOptions);}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0);}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1);}render(){return T}}r._$litElement$=!0,r["finalized"]=!0,globalThis.litElementHydrateSupport?.({LitElement:r});const i=globalThis.litElementPolyfillSupport;i?.({LitElement:r});(globalThis.litElementVersions??=[]).push("4.1.1");
+
+class RoomPanel extends r {
+  static properties = {
+    hass: { type: Object },
+    config: { type: Object },
+    _expanded: { type: Boolean },
+  };
+
+  constructor() {
+    super();
+    this.hass = {};
+    this.config = {};
+    this._expanded = false;
+  }
+
+  static styles = i$3`
+    :host { display: block; }
+    .glass-panel {
+      margin: 0 !important;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 40px;
+      position: relative;
+      border: none;
+      z-index: 0;
+      --glass-bg: rgba(73,164,255,0.38);
+      --glass-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
+      --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.26),rgba(255,255,255,0.11) 70%,transparent 100%);
+      background: var(--glass-bg);
+      box-shadow: var(--glass-shadow);
+    }
+    .glass-panel::after {
+      content: ''; position: absolute; inset: 0; border-radius: inherit;
+      background: var(--glass-sheen); pointer-events: none; z-index:0;
+    }
+    .glass-header {
+      position: relative; z-index: 1; background: none!important; box-shadow:none!important;
+      padding: 22px 0 18px; margin:0; text-align:center;
+      font-size:1.2rem; font-weight:700; color:#fff;
+    }
+    .mini-pill {
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      box-shadow: 0 3px 22px 0 rgba(70,120,220,0.13);
+      backdrop-filter: blur(10px) saturate(1.2);
+      border-radius: 24px;
+      margin-bottom:18px;
+      overflow:hidden;
+    }
+    .mini-pill-header {
+      display:flex; align-items:center; padding:15px 22px;
+      font-size:1.09em; font-family:'Inter',sans-serif; font-weight:800;
+      color:#55afff; cursor:pointer; user-select:none; position:relative; z-index:1;
+    }
+    .mini-pill-header .chevron { margin-left:auto; font-size:1.22em; opacity:0.64; transition:transform 0.18s; }
+    .mini-pill.expanded .mini-pill-header .chevron { transform: rotate(90deg); }
+    .mini-pill-content {
+      padding:15px 22px; background:transparent; position:relative; z-index:1;
+    }
+    .autodiscover-box {
+      margin:0 auto 18px; padding:18px 0; display:flex; align-items:center; justify-content:center;
+      font-size:1.17rem; color:#fff; font-weight:700; letter-spacing:0.02em; cursor:pointer;
+      border:2.5px solid #FFD600; box-shadow:0 2px 24px 0 #FFD60033;
+      border-radius:24px; backdrop-filter: blur(7px) saturate(1.2);
+    }
+    .input-group {
+      background: rgba(44,70,100,0.23);
+      border:1.5px solid rgba(255,255,255,0.13);
+      box-shadow:0 2px 14px 0 rgba(70,120,220,0.10);
+      border-radius:18px; margin-bottom:13px; padding:14px 18px 10px;
+    }
+    label { display:block; font-size:1.13rem; font-weight:700; color:#55afff; margin-bottom:6px; }
+    input[type="text"] {
+      width:100%; border:1px solid #444; border-radius:6px; padding:8px;
+      background:#202020; color:#f1f1f1; font-size:0.97rem;
+    }
+  `;
+
+  render() {
+    return x`
+      <ha-expansion-panel
+        class="glass-panel"
+        .expanded="${this._expanded}"
+        @expanded-changed="${e => this._expanded = e.detail.expanded}"
+      >
+        <div slot="header" class="glass-header">🛋️ Room Settings</div>
+        <div class="mini-pill expanded">
+          <div class="mini-pill-header">Room</div>
+          <div class="mini-pill-content">
+            <div class="input-group">
+              <label>Room name:</label>
+              <input type="text" .value="${this.config.name||''}" @input="${this._updateName}">
+            </div>
+            <div class="input-group">
+              <label>Area:</label>
+              <ha-area-picker
+                .hass="${this.hass}"
+                .value="${this.config.area||''}"
+                @value-changed="${this._updateArea}"
+              ></ha-area-picker>
+            </div>
+          </div>
+        </div>
+
+        <div class="mini-pill expanded">
+          <div class="mini-pill-header">Icon</div>
+          <div class="mini-pill-content">
+            <div class="input-group">
+              <label>Room Icon:</label>
+              <ha-icon-picker
+                .hass="${this.hass}"
+                .value="${this.config.icon||''}"
+                allow-custom-icon
+                @value-changed="${this._updateIcon}"
+              ></ha-icon-picker>
+            </div>
+            <div class="input-group">
+              <label>Presence (ID):</label>
+              <ha-entity-picker
+                .hass="${this.hass}"
+                .value="${this.config.entities?.presence?.entity||''}"
+                @value-changed="${e=>this._updateEntity('presence',e.detail.value)}"
+              ></ha-entity-picker>
+            </div>
+            <!-- tap/hold actions -->
+            ${this._renderActions('tap')}
+            ${this._renderActions('hold')}
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-top:1.2em;">
+          <button class="reset-button" @click="${this._reset}">🧹 Reset Room</button>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+
+  _updateName(e) {
+    this._fire('name', e.target.value);
+  }
+  _updateArea(e) {
+    this._fire('area', e.detail.value);
+  }
+  _updateIcon(e) {
+    this._fire('icon', e.detail.value);
+  }
+  _updateEntity(key, val) {
+    this._fire(`entities.${key}.entity`, val);
+  }
+  _renderActions(type) {
+    this.config[`${type}_action`] || {};
+    const labels = { tap: 'Tap', hold: 'Hold' };
+    return x`
+      <div class="input-group">
+        <label>${labels[type]} Action:</label>
+        <!-- replica esattamente il _renderTapHoldAction del sorgente -->
+        ...qui copi esattamente il blocco di codice di ${type} come in originale...
+      </div>
+    `;
+  }
+  _reset() {
+    this._fire('resetRoom', true);
+  }
+  _fire(prop, val) {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop, val }, bubbles: true, composed: true
+    }));
+  }
+}
+
+customElements.define('room-panel', RoomPanel);
+
+class SensorsPanel extends r {
+  static properties = {
+    hass: { type: Object },
+    config: { type: Object },
+    _expanded: { type: Boolean },
+    _expandedSensors: { type: Array },
+  };
+
+  constructor() {
+    super();
+    this.hass = {};
+    this.config = {};
+    this._expanded = false;
+    this._expandedSensors = Array(6).fill(false);
+  }
+
+  static styles = i$3`
+    /* riporta qui i CSS di .glass-panel, .glass-header, .mini-pill, .input-group ecc */
+  `;
+
+  render() {
+    return x`
+      <ha-expansion-panel
+        class="glass-panel"
+        .expanded="${this._expanded}"
+        @expanded-changed="${e=>this._expanded=e.detail.expanded}"
+      >
+        <div slot="header" class="glass-header">🧭 Sensors</div>
+        <div class="glass-content">
+          <div class="autodiscover-box" @click="${()=>this._toggleAuto('sensor')}">
+            <label>
+              <input type="checkbox"
+                     .checked="${this.config.auto_discovery_sections?.sensor||false}"
+                     @change="${e=>this._toggleAuto('sensor', e.target.checked)}"
+                     @click="${e=>e.stopPropagation()}">
+              <span>🪄 Auto-discovery enabled</span>
+            </label>
+          </div>
+          ${['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'].map((key,i)=>x`
+            ${this._renderSingle(i, key)}
+          `)}
+          <div style="text-align:center; margin-top:1.2em;">
+            <button class="reset-button" @click="${this._resetAll}">🧹 Reset Sensors</button>
+          </div>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+
+  _renderSingle(index, key) {
+    const sensor = this.config.entities?.[key]||{};
+    const expanded = this._expandedSensors[index];
+    return x`
+      <div class="mini-pill ${expanded?'expanded':''}" @click="${()=>this._toggleOne(index)}">
+        <div class="mini-pill-header">
+          ${SENSOR_TYPE_MAP[sensor.type]?.emoji||'❔'} ${sensor.type||`Sensor ${index+1}`}
+          <span class="chevron">${expanded?'▼':'▶'}</span>
+        </div>
+        ${expanded? x`
+          <div class="mini-pill-content">
+            <div class="input-group">
+              <label>Sensor Type</label>
+              <select .value="${sensor.type||''}"
+                      @change="${e=>this._update(index,'type',e.target.value)}">
+                <option value="">-- none --</option>
+                ${Object.entries(SENSOR_TYPE_MAP).map(([type,{emoji,label}])=>x`
+                  <option value="${type}">${emoji} ${label}</option>
+                `)}
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Entity ID</label>
+              <ha-entity-picker
+                .hass="${this.hass}"
+                .value="${sensor.entity||''}"
+                @value-changed="${e=>this._update(index,'entity',e.detail.value)}"
+              ></ha-entity-picker>
+            </div>
+            <div class="input-group">
+              <label>Unit</label>
+              <select .value="${sensor.unit||(SENSOR_TYPE_MAP[sensor.type]?.units[0]||'')}"
+                      @change="${e=>this._update(index,'unit',e.target.value)}">
+                ${(SENSOR_TYPE_MAP[sensor.type]?.units||[]).map(u=>x`<option>${u}</option>`)}
+              </select>
+            </div>
+          </div>
+        `:''}
+      </div>
+    `;
+  }
+
+  _toggleAuto(section, val) { this._fire(`auto_discovery_sections.${section}`, !this.config.auto_discovery_sections?.[section]); }
+  _toggleOne(i) { this._expandedSensors = this._expandedSensors.map((_,j)=>j===i); }
+  _update(i, field, value) { this._fire(`entities.sensor${i+1}.${field}`, value); }
+  _resetAll() { ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'].forEach(k=>this._fire(`entities.${k}`, undefined)); }
+  _fire(prop, val) { this.dispatchEvent(new CustomEvent('panel-changed',{detail:{prop,val},bubbles:true,composed:true})); }
+}
+
+customElements.define('sensors-panel', SensorsPanel);
+
+class MushroomsPanel extends r {
+  static properties = {
+    hass: { type: Object },
+    config: { type: Object },
+    _expanded: { type: Boolean },
+    _expandedItems: { type: Array },
+  };
+
+  constructor() {
+    super();
+    this.hass = undefined;
+    this.config = {};
+    this._expanded = false;
+    this._expandedItems = Array(7).fill(false);
+  }
+
+  setConfig(config) {
+    this.config = config;
+  }
+
+  getConfig() {
+    return this.config;
+  }
+
+  static styles = i$3`
+    :host { display: block; }
+    .glass-panel {
+      margin: 0!important;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 40px;
+      background: var(--glass-bg, rgba(80,235,175,0.28));
+      box-shadow: var(--glass-shadow, 0 2px 24px 0 rgba(40,220,145,0.18));
+      position: relative;
+      border: none;
+      --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.18),rgba(255,255,255,0.10) 70%,transparent 100%);
+    }
+    .glass-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: var(--glass-sheen);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glass-header {
+      position: relative;
+      z-index: 1;
+      background: none!important;
+      box-shadow: none!important;
+      border-radius: 0!important;
+      padding: 22px 0 18px;
+      margin: 0;
+      text-align: center;
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .mini-pill {
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      box-shadow: 0 2px 14px 0 rgba(70,120,220,0.10);
+      backdrop-filter: blur(7px) saturate(1.2);
+      border-radius: 24px;
+      margin-bottom: 13px;
+      overflow: hidden;
+    }
+    .mini-pill-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 22px;
+      font-size: 1.12rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      color: #36e6a0;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 7px #0004;
+    }
+    .mini-pill-header .chevron {
+      margin-left: auto;
+      font-size: 1.22em;
+      opacity: 0.64;
+      transition: transform 0.18s;
+    }
+    .mini-pill.expanded .mini-pill-header .chevron {
+      transform: rotate(90deg);
+    }
+    .mini-pill-content {
+      padding: 15px 22px;
+      background: transparent;
+      position: relative;
+      z-index: 1;
+    }
+    .autodiscover-box {
+      z-index: 2!important;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+      padding: 18px 0;
+      font-size: 1.17rem;
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-align: center;
+      border: 1.5px solid #66baff!important;
+      box-shadow: 0 4px 24px 0 rgba(73,164,255,0.26)!important;
+      border-radius: 24px!important;
+      transition: box-shadow 0.18s, border 0.18s;
+      cursor: pointer;
+      max-width: 88%;
+    }
+    .autodiscover-box:hover {
+      border: 1.5px solid #4dabf7!important;
+    }
+    .input-group {
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.13);
+      box-shadow: 0 2px 14px 0 rgba(70,120,220,0.10);
+      border-radius: 18px;
+      margin-bottom: 13px;
+      padding: 14px 18px 10px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1.11rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      color: #36e6a0;
+      letter-spacing: 0.03em;
+    }
+    input, select {
+      width: 100%;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 8px;
+      background: #202020;
+      color: #f1f1f1;
+      font-size: 0.97rem;
+    }
+    ha-entity-picker, ha-icon-picker {
+      width: 100%;
+      margin-bottom: 12px;
+    }
+    .reset-button {
+      border: 3.5px solid #ff4c6a!important;
+      color: #ff4c6a!important;
+      font-size: 1.15rem;
+      font-weight: 700;
+      box-shadow: 0 2px 24px 0 #ff4c6a44;
+      padding: 12px 38px!important;
+      margin: 20px auto 0 auto!important;
+      display: block;
+      background: rgba(255,214,0,0.08);
+      border-radius: 24px!important;
+      transition: background 0.18s, color 0.18s, border 0.18s, box-shadow 0.18s;
+    }
+    .reset-button:hover {
+      background: rgba(255,76,106,0.18)!important;
+      color: #fff!important;
+      border-color: #ff1744!important;
+      box-shadow: 0 6px 32px 0 #ff4c6abf;
+    }
+  `;
+
+  render() {
+    const cfg = this.config;
+    return x`
+      <ha-expansion-panel
+        class="glass-panel"
+        .expanded="${this._expanded}"
+        @expanded-changed="${e => this._expanded = e.detail.expanded}"
+      >
+        <div slot="header" class="glass-header">🍄 Mushroom Entities</div>
+        <div class="glass-content">
+          <div class="autodiscover-box" @click="${() => this._fire('auto_discovery_sections.mushroom', !cfg.auto_discovery_sections?.mushroom)}">
+            <label>
+              <input type="checkbox"
+                     .checked="${cfg.auto_discovery_sections?.mushroom || false}"
+                     @change="${e => this._fire('auto_discovery_sections.mushroom', e.target.checked)}"
+                     @click="${e => e.stopPropagation()}">
+              <span>🪄 Auto-discovery</span>
+            </label>
+          </div>
+          ${['entities1','entities2','entities3','entities4','entities5','climate','camera'].map((key, i) => x`
+            <div class="mini-pill ${this._expandedItems[i] ? 'expanded' : ''}" @click="${() => this._toggleOne(i)}">
+              <div class="mini-pill-header">Entity ${i+1}
+                <span class="chevron">${this._expandedItems[i] ? '▼' : '▶'}</span>
+              </div>
+              ${this._expandedItems[i] ? x`
+                <div class="mini-pill-content">
+                  <div class="input-group">
+                    <label>Entity</label>
+                    <ha-entity-picker
+                      .hass="${this.hass}"
+                      .value="${cfg.entities?.[key]?.entity || ''}"
+                      @value-changed="${e => this._fire(`entities.${key}.entity`, e.detail.value)}"
+                    ></ha-entity-picker>
+                  </div>
+                  <div class="input-group">
+                    <label>Icon</label>
+                    <ha-icon-picker
+                      .hass="${this.hass}"
+                      .value="${cfg.entities?.[key]?.icon || ''}"
+                      allow-custom-icon
+                      @value-changed="${e => this._fire(`entities.${key}.icon`, e.detail.value)}"
+                    ></ha-icon-picker>
+                  </div>
+                  ${this._renderActions('tap', key)}
+                  ${this._renderActions('hold', key)}
+                </div>
+              ` : ''}
+            </div>`)}
+          <button class="reset-button" @click="${() => this._resetAll()}">🧹 Reset Mushroom Entities</button>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+
+  _toggleOne(idx) {
+    this._expandedItems = this._expandedItems.map((_, i) => i === idx);
+    this.requestUpdate();
+  }
+
+  _renderActions(actionType, key) {
+    const cfg = this.config.entities?.[key] || {};
+    const actCfg = cfg[`${actionType}_action`] || {};
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+    return x`
+      <div class="input-group">
+        <label>${actionType === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
+        <div class="pill-group">
+          ${actions.map(a => x`
+            <paper-button
+              class="pill-button ${actCfg.action === a ? 'active' : ''}"
+              @click="${() => this._fire(`entities.${key}.${actionType}_action.action`, a)}"
+            >${a}</paper-button>
+          `)}
+        </div>
+        ${actCfg.action === 'navigate' ? x`
+          <input type="text" placeholder="Path" .value="${actCfg.navigation_path || ''}" @input="${e => this._fire(`entities.${key}.${actionType}_action.navigation_path`, e.target.value)}">
+        ` : ''}
+      </div>
+    `;
+  }
+
+  _fire(prop, value) {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop, val: value }, bubbles: true, composed: true
+    }));
+  }
+
+  _resetAll() {
+    ['entities1','entities2','entities3','entities4','entities5','climate','camera'].forEach(k => this._fire(`entities.${k}`, undefined));
+  }
+}
+
+customElements.define('mushrooms-panel', MushroomsPanel);
+
+class SubButtonsPanel extends r {
+  static properties = {
+    hass: { type: Object },
+    config: { type: Object },
+    _expanded: { type: Boolean },
+    _expandedBtns: { type: Array },
+  };
+
+  constructor() {
+    super();
+    this.hass = {};
+    this.config = {};
+    this._expanded = false;
+    this._expandedBtns = Array(4).fill(false);
+  }
+
+  static styles = i$3`
+    /* stili glass-panel, mini-pill, input-group ecc */
+  `;
+
+  render() {
+    return x`
+      <ha-expansion-panel
+        class="glass-panel"
+        .expanded="${this._expanded}"
+        @expanded-changed="${e=>this._expanded=e.detail.expanded}"
+      >
+        <div slot="header" class="glass-header">🎛️ Subbuttons</div>
+        <div class="glass-content">
+          <div class="autodiscover-box" @click="${()=>this._toggleAuto('subbutton')}">
+            <label>
+              <input type="checkbox"
+                     .checked="${this.config.auto_discovery_sections?.subbutton||false}"
+                     @change="${e=>this._toggleAuto('subbutton', e.target.checked)}"
+                     @click="${e=>e.stopPropagation()}">
+              <span>🪄 Auto-discovery</span>
+            </label>
+          </div>
+          ${['sub-button1','sub-button2','sub-button3','sub-button4'].map((key,i)=>x`
+            <div class="mini-pill ${this._expandedBtns[i]?'expanded':''}" @click="${()=>this._toggleOne(i)}">
+              <div class="mini-pill-header">Sub-button ${i+1}<span class="chevron">${this._expandedBtns[i]?'▼':'▶'}</span></div>
+              ${this._expandedBtns[i]? x`
+                <div class="mini-pill-content">
+                  <div class="input-group">
+                    <label>Entity ID</label>
+                    <ha-entity-picker
+                      .hass="${this.hass}"
+                      .value="${this.config.entities?.[key]?.entity||''}"
+                      @value-changed="${e=>this._fire(`entities.${key}.entity`,e.detail.value)}"
+                    ></ha-entity-picker>
+                  </div>
+                  <div class="input-group">
+                    <label>Icon</label>
+                    <ha-icon-picker
+                      .hass="${this.hass}"
+                      .value="${this.config.entities?.[key]?.icon||''}"
+                      @value-changed="${e=>this._fire(`entities.${key}.icon`,e.detail.value)}"
+                    ></ha-icon-picker>
+                  </div>
+                  ${this._renderActions('tap', key)}
+                  ${this._renderActions('hold', key)}
+                </div>
+              `:''}
+            </div>
+          `)}
+          <div style="text-align:center; margin-top:1.2em;">
+            <button class="reset-button" @click="${this._resetAll}">🧹 Reset Sub-buttons</button>
+          </div>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+
+  _toggleAuto(section,val){this._fire(`auto_discovery_sections.${section}`,!this.config.auto_discovery_sections?.[section]);}
+  _toggleOne(i){this._expandedBtns=this._expandedBtns.map((_,j)=>j===i);}
+  _renderActions(type, key) { /* come sopra */ }
+  _resetAll(){['sub-button1','sub-button2','sub-button3','sub-button4'].forEach(k=>this._fire(`entities.${k}`,undefined));}
+  _fire(prop,val){this.dispatchEvent(new CustomEvent('panel-changed',{detail:{prop,val},bubbles:true,composed:true}));}
+}
+
+customElements.define('subbuttons-panel', SubButtonsPanel);
+
+class ColorsPanel extends r {
+  static properties = {
+    config: { type: Object },
+    _expanded: { type: Boolean },
+    _expandedColors: { type: Array },
+  };
+  
+  constructor() {
+    super();
+    this.config = {};
+    this._expanded = false;
+    this._expandedColors = [false, false];
+  }
+  
+  static styles = i$3`
+    /* glass-panel, mini-pill/header, input-group, color-row etc. */
+  `;
+  
+  render() {
+    return x`
+      <ha-expansion-panel
+        class="glass-panel"
+        .expanded="${this._expanded}"
+        @expanded-changed="${e=>this._expanded=e.detail.expanded}"
+      >
+        <div slot="header" class="glass-header">🎨 Colors</div>
+        <div class="glass-content">
+          ${this._renderColorPill(0,'Room','#55afff',[
+            {label:'Background Active','field':'background_active'},
+            {label:'Background Inactive','field':'background_inactive'},
+            {label:'Icon Active','field':'icon_active'},
+            {label:'Icon Inactive','field':'icon_inactive'},
+          ])}
+          ${this._renderColorPill(1,'Subbutton','#b28fff',[
+            {label:'Background On','field':'background_on'},
+            {label:'Background Off','field':'background_off'},
+            {label:'Icon On','field':'icon_on'},
+            {label:'Icon Off','field':'icon_off'},
+          ])}
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+  
+  _renderColorPill(idx, label, accent, fields) {
+    return x`
+      <div class="mini-pill ${this._expandedColors[idx]?'expanded':''}" @click="${()=>this._expandedColors[idx]=!this._expandedColors[idx]}">
+        <div class="mini-pill-header" style="--section-accent:${accent}">${label}<span class="chevron">${this._expandedColors[idx]?'▼':'▶'}</span></div>
+        ${this._expandedColors[idx]? x`
+          <div class="mini-pill-content">
+            ${fields.map(f=>x`
+              <div class="input-group color-row">
+                <label>${f.label}</label>
+                <input type="color"
+                       .value="${this._toHex(this.config.colors[label.toLowerCase()]?.[f.field]||'#000')}"
+                       @input="${e=>this._updateColor(label.toLowerCase(),f.field,e.target.value)}">
+                <input type="range" min="0" max="1" step="0.01"
+                       .value="${parseFloat((this.config.colors[label.toLowerCase()]?.[f.field]||'1').split(',').pop())}"
+                       @input="${e=>this._updateColor(label.toLowerCase(),f.field,e.target.value,true)}">
+              </div>
+            `)}
+          </div>
+        `:''}
+      </div>
+    `;
+  }
+  
+  _toHex(color) { /* estrai dal fonte originale */ }
+  _updateColor(section, key, hex, alpha = false) {
+    /* copia _updateColorField dal sorgente */
+  }
+}
+
+customElements.define('colors-panel', ColorsPanel);
+
+// src/components/bubble-room-editor.js
+
+class BubbleRoomEditor extends r {
+  static properties = {
+    hass: { type: Object },
+    config: { type: Object },
+  };
+  
+  constructor() {
+    super();
+    this.hass = null;
+    this.config = {};
+  }
+  
+  /**
+   * Inizializza la configurazione dell'editor, garantendo array e oggetti di default.
+   */
+  setConfig(config) {
+    this.config = {
+      ...config,
+      sensors: Array.isArray(config.sensors) ? config.sensors : [],
+      mushrooms: Array.isArray(config.mushrooms) ? config.mushrooms : [],
+      subbuttons: Array.isArray(config.subbuttons) ? config.subbuttons : [],
+      colors: config.colors ? config.colors : { room: {}, subbutton: {} },
+    };
+  }
+  
+  /**
+   * Restituisce la configurazione corrente.
+   */
+  getConfig() {
+    return { ...this.config };
+  }
+  
+  static styles = i$3`
+    :host {
+      display: block;
+      padding: 0;
+      margin: 0;
+    }
+    .editor-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+  `;
+  
+  render() {
+    return x`
+      <div class="editor-container">
+        <room-panel
+          .hass="${this.hass}"
+          .config="${this.config}"
+          @config-changed="${this._onConfigChanged}"
+        ></room-panel>
+
+        <sensors-panel
+          .hass="${this.hass}"
+          .config="${this.config}"
+          @config-changed="${this._onConfigChanged}"
+        ></sensors-panel>
+
+        <mushrooms-panel
+          .hass="${this.hass}"
+          .config="${this.config}"
+          @config-changed="${this._onConfigChanged}"
+        ></mushrooms-panel>
+
+        <subbuttons-panel
+          .hass="${this.hass}"
+          .config="${this.config}"
+          @config-changed="${this._onConfigChanged}"
+        ></subbuttons-panel>
+
+        <colors-panel
+          .config="${this.config}"
+          @config-changed="${this._onConfigChanged}"
+        ></colors-panel>
+      </div>
+    `;
+  }
+  
+  /**
+   * Propaga l'evento di cambio configurazione ai listener esterni.
+   */
+  _onConfigChanged(e) {
+    this.config = e.detail.config;
+    this.dispatchEvent(new CustomEvent('config-changed', {
+      detail: { config: this.getConfig() },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
+
+customElements.define('bubble-room-editor', BubbleRoomEditor);
+
+var bubbleRoomEditor = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  BubbleRoomEditor: BubbleRoomEditor
+});
 
 /**
  * BubbleIcon.js
@@ -520,6 +1321,15 @@ class BubbleRoom extends r {
     };
   }
 
+/**
+ * Home Assistant chiamerà questo per montare l'editor visuale
+ */
+  static async getConfigElement() {
+    // Carica dinamicamente il file
+    await Promise.resolve().then(function () { return bubbleRoomEditor; });
+    // Ritorna un'istanza del custom element
+    return document.createElement('bubble-room-editor');
+  }
   setConfig(config) {
     this.config = config;
   }
