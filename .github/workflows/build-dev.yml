@@ -1,36 +1,39 @@
-name: Build and Commit Bubble Room main
+name: Build and Commit Bubble Room
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-dev:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code from main
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20.x'
 
       - name: Install dependencies
         run: npm ci
-        env:
-          npm_config_ignore_optional: true
 
-      - name: Run Rollup build
-        run: npm run build        
+      - name: Build bundle
+        run: npm run build
 
-      - name: Commit JS build files
+      - name: Commit build file
         run: |
           git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
+          git config --global user.email "actions@github.com"
           git add lovelace-bubble-room.js
-          git commit -m "Auto-build: build and move file to dist for HACS compliance" || echo "Nothing to commit"
-          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/mon3y78/Lovelace-Bubble-room.git main
+          git commit -m "Auto‑build: add lovelace-bubble-room.js" || echo "No changes to commit"
+
+      - name: Push build file to current branch
+        run: |
+          git push origin HEAD:${{ github.ref_name }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bubble-room-bundle
+          path: lovelace-bubble-room.js
