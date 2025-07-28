@@ -8,13 +8,21 @@ export default {
     format: 'esm',
     inlineDynamicImports: true,
   },
-  // Escludi solo i componenti HA già nel frontend + built‑in Node
-  external: id => (
+  // Esternalizziamo solo i componenti Home Assistant (già caricati) e @material/mwc-icon
+  external: id =>
     id.startsWith('home-assistant-frontend/src/components/') ||
-    ['fs','path','module','url','util'].includes(id)
-  ),
+    id === '@material/mwc-icon',
+
   plugins: [
-    nodeResolve({ browser: true, preferBuiltins: false }),
-    commonjs({ transformMixedEsModules: true }),
+    // 1) risolve lit, fitty, i tuoi helper locali
+    nodeResolve({
+      browser: true,
+      preferBuiltins: false,
+    }),
+    // 2) converte solo il tuo codice CommonJS (esclude node_modules)
+    commonjs({
+      include: 'src/**',
+      exclude: 'node_modules/**',
+    }),
   ],
 };
