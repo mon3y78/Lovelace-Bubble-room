@@ -13,18 +13,13 @@ export default {
     // inietta dentro questo file TUTTI i vostri import(...) dinamici
     inlineDynamicImports: true,
   },
-  external: [
-    // escludi solo i componenti HA che sono già caricati globalmente
-    'home-assistant-frontend/src/components/ha-entity-picker.js',
-    'home-assistant-frontend/src/components/ha-expansion-panel.js',
-    '@material/mwc-icon',
-  ],
+  external: id => (
+    id.startsWith('home-assistant-frontend/src/components/') ||
+    id === '@material/mwc-icon'
+  ),
   plugins: [
-    // risolve i pacchetti node_modules, inclusi lit e fitty
-    nodeResolve({ browser: true }),
-    // converte eventuali CommonJS (per es. fitty)
+    // risolve lit, fitty, e tutti i tuoi helper locali
+    nodeResolve({ browser: true, preferBuiltins: false }),
     commonjs(),
-    // minimizza
-    //terser(),
   ],
 };
