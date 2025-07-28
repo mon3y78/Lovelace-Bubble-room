@@ -45,3 +45,8 @@ jobs:
         with:
           name: bubble-room-bundle
           path: lovelace-bubble-room.js
+  - name: Dump head of built bundle
+    run: head -n 30 lovelace-bubble-room.js
+
+  - name: Check for stray “path” import
+    run: grep -n "from ['\"]path['\"]" -n lovelace-bubble-room.js || echo "✅ no path import found"
