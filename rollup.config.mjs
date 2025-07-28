@@ -1,32 +1,28 @@
+// rollup.config.js
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs        from '@rollup/plugin-commonjs';
 import json            from '@rollup/plugin-json';
-import { terser }      from 'rollup-plugin-terser';
+// import { terser }    from 'rollup-plugin-terser';  // riattiva se vuoi minimizzare
 
 export default {
   input: 'src/bubble-room.js',
   output: {
-    // Un unico file ESM con dentro tutti i dynamic import
     file: 'lovelace-bubble-room.js',
     format: 'esm',
     inlineDynamicImports: true,
   },
-  // Escludi solo i componenti HA già presenti nel frontend
   external: [
+    // escludi solo i componenti HA già caricati globalmente
     'home-assistant-frontend/src/components/ha-entity-picker.js',
     'home-assistant-frontend/src/components/ha-expansion-panel.js',
   ],
   plugins: [
-    // 1) Risolve lit, fitty e i tuoi helper locali
+    // risolve lit, fitty, @material e i tuoi helper locali
     nodeResolve({ browser: true }),
-    // 2) Permette di importare JSON da node_modules
+    // converte eventuali CommonJS (per es. fitty)
+    commonjs(),
+    // permette di importare JSON (necessario per evitare l’errore su core.json)
     json(),
-    // 3) Converte ogni CommonJS in ESM (incluso picomatch, source‑map codec, ecc.)
-    commonjs({
-      include: /node_modules/,
-      transformMixedEsModules: true,
-    }),
-    // 4) (Opzionale) minimizza l’output
     // terser(),
   ],
 };
