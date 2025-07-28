@@ -9,7 +9,6 @@
     "build": "rollup -c"
   },
   "dependencies": {
-    "@material/mwc-icon": "^0.27.0",
     "acorn": "^8.14.0",
     "buffer-from": "^1.1.2",
     "commander": "^2.20.3",
