@@ -1,4 +1,4 @@
-import 'https://unpkg.com/@material/mwc-icon?module';
+import '@material/mwc-icon';
 
 /**
  * @license
