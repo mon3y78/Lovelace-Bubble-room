@@ -86,7 +86,7 @@ export class RoomPanel extends LitElement {
         .expanded="${this._expanded}"
         @expanded-changed="${e => this._expanded = e.detail.expanded}"
       >
-        <div slot="header" class="glass-header">🛋️ Room Settings</div>
+        <div slot="header" class="glass-header">🛋️ Room Settings 2</div>
         <div class="mini-pill expanded">
           <div class="mini-pill-header">Room</div>
           <div class="mini-pill-content">
