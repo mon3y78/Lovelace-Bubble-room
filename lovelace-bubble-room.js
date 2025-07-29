@@ -33,13 +33,13 @@ class RoomPanel extends i$1 {
     hass: { type: Object },
     config: { type: Object },
   };
-  
+
   constructor() {
     super();
     this.hass = {};
     this.config = {};
   }
-  
+
   static styles = i$4`
     :host { display: block; }
     .section { margin: 8px 0 16px; padding: 12px; border-radius: 12px; background: var(--card-background-color); }
@@ -47,11 +47,11 @@ class RoomPanel extends i$1 {
     ha-textfield, ha-area-picker, ha-icon-picker, ha-entity-picker { width: 100%; }
     h3 { margin: 0 0 8px; font-weight: 600; }
   `;
-  
+
   render() {
     const area = this.config?.area || '';
     const presenceValue = (this.config?.entities?.presence?.entity || this.config?.presence_entity || '');
-    
+
     return x`
       <div class="section">
         <h3>Room</h3>
@@ -95,28 +95,28 @@ class RoomPanel extends i$1 {
       </div>
     `;
   }
-  
+
   _getPresenceCandidates() {
     const hass = this.hass;
     if (!hass || !hass.states) return [];
-    
+
     const allowed = new Set([
-      'person', 'device_tracker', 'binary_sensor', 'light', 'switch',
-      'media_player', 'fan', 'humidifier', 'lock', 'input_boolean', 'scene'
+      'person','device_tracker','binary_sensor','light','switch',
+      'media_player','fan','humidifier','lock','input_boolean','scene'
     ]);
-    
+
     const ids = Object.keys(hass.states).filter(
       (id) => allowed.has(id.split('.')[0])
     );
-    
+
     // binary_sensor: solo motion/occupancy/presence
     const byClass = ids.filter((id) => {
       const domain = id.split('.')[0];
       if (domain !== 'binary_sensor') return true;
       const dc = hass.states[id]?.attributes?.device_class;
-      return ['motion', 'occupancy', 'presence'].includes(dc || '');
+      return ['motion','occupancy','presence'].includes(dc || '');
     });
-    
+
     // filtro per Area se disponibile
     const area = this.config?.area;
     let res = byClass;
@@ -129,11 +129,11 @@ class RoomPanel extends i$1 {
       });
       if (inArea.length) res = inArea;
     }
-    
+
     // mantieni l'eventuale selezionata
     const selected = this.config?.entities?.presence?.entity || this.config?.presence_entity;
     if (selected && !res.includes(selected)) res.push(selected);
-    
+
     if (DEBUG$1) {
       console.info('[RoomPanel][Presence]', {
         area,
@@ -143,10 +143,10 @@ class RoomPanel extends i$1 {
         sample: res.slice(0, 5),
       });
     }
-    
+
     return res;
   }
-  
+
   _emit(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop, val },
@@ -791,13 +791,13 @@ class BubbleRoomEditor extends i$1 {
     hass: { type: Object },
     config: { type: Object },
   };
-  
+
   constructor() {
     super();
     this.hass = {};
     this.config = {};
   }
-  
+
   setConfig(config) {
     this.config = {
       ...config,
@@ -807,14 +807,16 @@ class BubbleRoomEditor extends i$1 {
       colors: config?.colors ? config.colors : { room: {}, subbutton: {} },
     };
   }
-  
+
   getConfig() {
     return { ...this.config };
   }
-  
+
   render() {
     return x`
       <div class="editor-container">
+        <h2 class="title">ð§­ Room Settings 2</h2>
+
         <room-panel
           .hass=${this.hass}
           .config=${this.config}
@@ -846,7 +848,7 @@ class BubbleRoomEditor extends i$1 {
       </div>
     `;
   }
-  
+
   _onPanelChanged(e) {
     const { prop, val } = e.detail || {};
     if (!prop) return;
@@ -860,30 +862,30 @@ class BubbleRoomEditor extends i$1 {
       composed: true,
     }));
   }
-  
+
   // Mappa i path emessi dai pannelli al formato usato dalla card
   _mapLegacyPath(p) {
     if (p && p.startsWith('entities.')) {
       const key = p.slice('entities.'.length);
-      
+
       // sensors: entities.sensor1 -> sensors[0]
       let m = key.match(/^sensor(\d+)$/);
       if (m) return `sensors[${parseInt(m[1], 10) - 1}]`;
-      
+
       // sub-buttons: entities.sub-button2 -> subbuttons[1]
       m = key.match(/^sub-button(\d+)$/);
       if (m) return `subbuttons[${parseInt(m[1], 10) - 1}]`;
-      
+
       // mushrooms: entities1..entities6 -> mushrooms[0..5]
       m = key.match(/^entities(\d+)$/);
       if (m) return `mushrooms[${parseInt(m[1], 10) - 1}]`;
-      
+
       // tutti gli altri (es. presence.entity) restano sotto "entities"
       return `entities.${key}`;
     }
     return p;
   }
-  
+
   _setByPath(obj, path, value) {
     const parts = String(path).replace(/\[(\d+)\]/g, '.$1').split('.');
     let cur = obj;
@@ -895,7 +897,7 @@ class BubbleRoomEditor extends i$1 {
     }
     cur[parts[parts.length - 1]] = value;
   }
-  
+
   static styles = i$4`
     :host {
       display: block;
@@ -909,6 +911,7 @@ class BubbleRoomEditor extends i$1 {
       padding: 16px;
       box-sizing: border-box;
     }
+    .title { margin: 0 0 8px; font-weight: 700; }
   `;
 }
 
