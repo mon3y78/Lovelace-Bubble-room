@@ -1,4 +1,6 @@
 import { LitElement, html, css } from 'lit';
+import { FILTERS } from '../helpers/entity-filters.js';
+
 import { SENSOR_TYPES } from '../helpers/sensor-mapping.js';
 
 const SENSOR_TYPE_MAP = SENSOR_TYPES.reduce((map, { type, label, emoji, unit }) => {
@@ -77,10 +79,15 @@ export class SensorsPanel extends LitElement {
             <div class="input-group">
               <label>Entity ID</label>
               <ha-entity-picker
-                .hass="${this.hass}"
-                .value="${sensor.entity || ''}"
-                @value-changed="${e => this._update(index, 'entity', e.detail.value)}">
-              </ha-entity-picker>
+  .hass="${this.hass}"
+  .area="${this.config.area || ''}"
+  .includeDomains=${FILTERS.sensorByType(s.type).includeDomains}
+  .includeDeviceClasses=${FILTERS.sensorByType(s.type).includeDeviceClasses}
+  .entityFilter=${(st) => FILTERS.sensorByType(s.type).entityFilter(st, this.hass)}
+  .value="${s.entity_id || ''}"
+  allow-custom-entity
+  @value-changed="${e => this._fire(`sensors[${i}].entity_id`, e.detail.value)}"
+></ha-entity-picker>
             </div>
             <div class="input-group">
               <label>Unit</label>

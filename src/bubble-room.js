@@ -179,20 +179,28 @@ export class BubbleRoom extends LitElement {
   }
   
   _getMushroomEntities() {
-    return (this.config.mushrooms || []).map(e => ({
-      icon: e.icon || 'mdi:flash',
-      state: this.hass.states?.[e.entity_id]?.state,
-      color: e.color || '#999'
+
+return (this.config.mushrooms || []).map(e => ({
+  icon: e.icon || 'mdi:flash',
+  state: this.hass.states?.[e.entity_id]?.state,
+  color: e.color ?? (this.config.colors?.room?.mushroom_inactive ?? '#999')
+}));
+
     }));
   }
   
   _getSubButtons() {
-    return (this.config.subbuttons || []).map((sub, idx) => ({
-      icon: sub.icon || 'mdi:light-switch',
-      active: this.hass.states?.[sub.entity_id]?.state === 'on',
-      colorOn: sub.colorOn || '#00d46d',
-      colorOff: sub.colorOff || '#999',
-      label: sub.label || '',
+
+const defOn  = this.config.colors?.subbutton?.background_on  ?? '#00d46d';
+const defOff = this.config.colors?.subbutton?.background_off ?? '#999';
+return (this.config.subbuttons || []).map((sub, idx) => ({
+  icon: sub.icon || 'mdi:light-switch',
+  active: this.hass.states?.[sub.entity_id]?.state === 'on',
+  colorOn: sub.colorOn ?? defOn,
+  colorOff: sub.colorOff ?? defOff,
+  label: sub.label || '',
+}));
+
     }));
   }
   

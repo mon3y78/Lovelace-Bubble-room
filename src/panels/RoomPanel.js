@@ -1,4 +1,6 @@
 import { LitElement, html, css } from 'lit';
+import { FILTERS } from '../helpers/entity-filters.js';
+
 
 export class RoomPanel extends LitElement {
   static properties = {
@@ -119,7 +121,12 @@ export class RoomPanel extends LitElement {
               <label>Presence (ID):</label>
               <ha-entity-picker
                 .hass="${this.hass}"
-                .value="${this.config.entities?.presence?.entity||''}"
+                .area="${this.config.area || ''}"
+                .includeDomains=${FILTERS.presence.includeDomains}
+                .includeDeviceClasses=${FILTERS.presence.includeDeviceClasses}
+                .entityFilter=${(s) => FILTERS.presence.entityFilter(s, this.hass)}
+                .value="${this.config.entities?.presence?.entity || this.config.presence_entity || ''}"
+                allow-custom-entity
                 @value-changed="${e=>this._updateEntity('presence',e.detail.value)}"
               ></ha-entity-picker>
             </div>

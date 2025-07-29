@@ -84,7 +84,7 @@ export class BubbleRoomEditor extends LitElement {
 
   // Converte path legacy dei pannelli in path sugli array usati dalla card
   _mapLegacyPath(p) {
-    if (p.startsWith('entities.')) {
+    if (p && p.startsWith('entities.')) {
       const key = p.slice('entities.'.length);
       // sensors: entities.sensor1 -> sensors[0]
       let m = key.match(/^sensor(\d+)$/);
@@ -95,7 +95,7 @@ export class BubbleRoomEditor extends LitElement {
       // mushrooms: entities1..entities6 -> mushrooms[0..5]
       m = key.match(/^entities(\d+)$/);
       if (m) return `mushrooms[${parseInt(m[1],10)-1}]`;
-      // altri casi: ritorna il resto com'Ã¨
+      // altri casi: ritorna il resto com'è
       return key;
     }
     return p;

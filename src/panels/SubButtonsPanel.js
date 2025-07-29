@@ -1,4 +1,6 @@
 import { LitElement, html, css } from 'lit';
+import { FILTERS } from '../helpers/entity-filters.js';
+
 
 export class SubButtonsPanel extends LitElement {
   static properties = {
@@ -46,10 +48,14 @@ export class SubButtonsPanel extends LitElement {
                   <div class="input-group">
                     <label>Entity ID</label>
                     <ha-entity-picker
-                      .hass="${this.hass}"
-                      .value="${this.config.entities?.[key]?.entity||''}"
-                      @value-changed="${e=>this._fire(`entities.${key}.entity`,e.detail.value)}"
-                    ></ha-entity-picker>
+  .hass="${this.hass}"
+  .area="${this.config.area || ''}"
+  .includeDomains=${FILTERS.subbutton.includeDomains}
+  .entityFilter=${(st) => FILTERS.subbutton.entityFilter(st, this.hass)}
+  .value="${btn.entity_id || ''}"
+  allow-custom-entity
+  @value-changed="${e => this._updateSubButtonEntity(i, e.detail.value)}"
+></ha-entity-picker>
                   </div>
                   <div class="input-group">
                     <label>Icon</label>

@@ -1,4 +1,6 @@
 import { LitElement, html, css } from 'lit';
+import { FILTERS } from '../helpers/entity-filters.js';
+
 
 export class MushroomsPanel extends LitElement {
   static properties = {
@@ -202,10 +204,14 @@ export class MushroomsPanel extends LitElement {
                   <div class="input-group">
                     <label>Entity</label>
                     <ha-entity-picker
-                      .hass="${this.hass}"
-                      .value="${cfg.entities?.[key]?.entity || ''}"
-                      @value-changed="${e => this._fire(`entities.${key}.entity`, e.detail.value)}"
-                    ></ha-entity-picker>
+  .hass="${this.hass}"
+  .area="${this.config.area || ''}"
+  .includeDomains=${FILTERS.mushroom.includeDomains}
+  .entityFilter=${(st) => FILTERS.mushroom.entityFilter(st, this.hass)}
+  .value="${ent.entity_id || ''}"
+  allow-custom-entity
+  @value-changed="${e => this._updateMushroomEntity(i, e.detail.value)}"
+></ha-entity-picker>
                   </div>
                   <div class="input-group">
                     <label>Icon</label>
