@@ -1,3 +1,4 @@
+/* ==== src/bubble-room.js  (ver. 29-lug-22:13 patched) ==== */
 import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
 import './components/BubbleIcon.js';
@@ -20,7 +21,7 @@ export class BubbleRoom extends LitElement {
     this.config = {};
     this.hass = {};
   }
-  
+
   static getStubConfig() {
     return {
       type: 'custom:bubble-room',
@@ -54,21 +55,17 @@ export class BubbleRoom extends LitElement {
       }
     };
   }
-  
-  /**
-   * Home Assistant chiamerà questo per montare l'editor visuale
-   */
+
+  /* ------- HA editor hook ------- */
   static async getConfigElement() {
-    // Carica dinamicamente il file
     await import('./bubble-room-editor.js');
-    // Ritorna un'istanza del custom element
     return document.createElement('bubble-room-editor');
   }
-  
   setConfig(config) {
     this.config = config;
   }
-  
+
+  /* ------- CSS ------- */
   static styles = css`
     .bubble-room-grid {
       display: grid;
@@ -117,30 +114,27 @@ export class BubbleRoom extends LitElement {
         grid-template-columns: 1fr 90px;
         border-radius: 19px;
       }
-    }  
+    }
   `;
-  
+
   render() {
-    console.log('BubbleRoom config:', this.config);
     const mainIcon = this.config.icon || DEFAULT_ICON;
-    
+
     const iconActive =
       this.config.colors?.room?.icon_active ??
       this.config.icon_active ?? '#21df73';
-    
+
     const iconInactive =
       this.config.colors?.room?.icon_inactive ??
       this.config.icon_inactive ?? '#173c16';
-    
-    const name = this.config.name || 'Room';
-    const area = this.config.area || '';
-    const sensors = this._getSensors();
-    const mushroomEntities = this._getMushroomEntities();
-    const subbuttons = this._getSubButtons();
-    
-    // Per BubbleMushroom: la size dell'area
-    const mushroomContainerSize = { width: 240, height: 190 };
-    
+
+    const name  = this.config.name  || 'Room';
+    const area  = this.config.area  || '';
+    const sensors           = this._getSensors();
+    const mushroomEntities  = this._getMushroomEntities();
+    const subbuttons        = this._getSubButtons();
+    const mushroomSize      = { width: 240, height: 190 };
+
     return html`
       <div class="bubble-room-grid">
         <div class="main-area">
@@ -156,7 +150,7 @@ export class BubbleRoom extends LitElement {
             ></bubble-icon>
             <bubble-mushroom
               .entities="${mushroomEntities}"
-              .containerSize="${mushroomContainerSize}"
+              .containerSize="${mushroomSize}"
               @mushroom-entity-click="${this._onMushroomEntityClick}"
             ></bubble-mushroom>
           </div>
@@ -170,30 +164,31 @@ export class BubbleRoom extends LitElement {
       </div>
     `;
   }
-  
+
+  /* ------- helpers ------- */
   _getSensors() {
-    // Mappa sensori con label visibile!
     return (this.config.sensors || []).map(s => ({
       icon: SENSOR_TYPE_ICON_MAP[s.type]?.icon || 'mdi:help-circle',
       label: s.label || capitalize(s.type || ''),
       value: this.hass.states?.[s.entity_id]?.state ?? '--',
-      unit: SENSOR_TYPE_ICON_MAP[s.type]?.unit || '',
+      unit:  SENSOR_TYPE_ICON_MAP[s.type]?.unit || '',
       color: s.color || '#e3f6ff'
     }));
   }
-  
+
   _getMushroomEntities() {
-    return (this.config.mushrooms || []).map((e) => ({
+    const def = this.config.colors?.room?.mushroom_inactive ?? '#999';
+    return (this.config.mushrooms || []).map(e => ({
       icon: e.icon || 'mdi:flash',
       state: this.hass.states?.[e.entity_id]?.state,
-      color: e.color ?? (this.config.colors?.room?.mushroom_inactive ?? '#999'),
+      color: e.color ?? def,
     }));
   }
-  
+
   _getSubButtons() {
-    const defOn = this.config.colors?.subbutton?.background_on ?? '#00d46d';
+    const defOn  = this.config.colors?.subbutton?.background_on  ?? '#00d46d';
     const defOff = this.config.colors?.subbutton?.background_off ?? '#999';
-    return (this.config.subbuttons || []).map((sub) => ({
+    return (this.config.subbuttons || []).map(sub => ({
       icon: sub.icon || 'mdi:light-switch',
       active: this.hass.states?.[sub.entity_id]?.state === 'on',
       colorOn: sub.colorOn ?? defOn,
@@ -201,24 +196,16 @@ export class BubbleRoom extends LitElement {
       label: sub.label || '',
     }));
   }
-  
+
   _isMainIconActive() {
     return !!this.config.active;
   }
-  
-  _onMainIconClick() {
-    // Gestione click icona principale
-  }
-  
-  _onMushroomEntityClick(e) {
-    const idx = e.detail;
-    // Gestione click su mushroom entity
-  }
-  
-  _onSubButtonClick(e) {
-    const idx = e.detail;
-    // Gestione click su subbutton
-  }
+
+  /* ------- event stub (da completare) ------- */
+  _onMainIconClick() {/* ... */}
+  _onMushroomEntityClick(e) {/* ... */}
+  _onSubButtonClick(e)     {/* ... */}
 }
 
 customElements.define('bubble-room', BubbleRoom);
+/* ==== fine bubble-room.js ==== */
