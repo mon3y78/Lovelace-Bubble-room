@@ -128,7 +128,7 @@ export class BubbleRoomEditor extends LitElement {
     }
   `;
   
-    _getPresenceCandidates() {
+  _getPresenceCandidates() {
     const hass = this.hass;
     if (!hass || !hass.states) return [];
 
