@@ -749,31 +749,39 @@ class ColorsPanel extends i {
     `;
   }
   
-  _toHex(color) { /* estrai dal fonte originale */ }
-  _updateColor(section, key, hex, alpha = false) {
-    /* copia _updateColorField dal sorgente */
+  _toHex(color) {
+    if (!color) return '#000000';
+    if (color.startsWith('#')) return color.length===7 ? color.slice(0,7) : color;
+    const m = /rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i.exec(color);
+    if (!m) return '#000000';
+    const [r,g,b] = m.slice(1).map(n => Math.max(0, Math.min(255, parseInt(n,10)||0)));
+    return '#' + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join('');
+  }
+  _updateColor(section, key, value, alpha = false) {
+    const hex = this._toHex(value);
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: `colors.${section}.${key}`, val: hex },
+      bubbles: true, composed: true
+    }));
   }
 }
 
 customElements.define('colors-panel', ColorsPanel);
 
-// src/components/bubble-room-editor.js
+// src/bubble-room-editor.js
 
 class BubbleRoomEditor extends i {
   static properties = {
     hass: { type: Object },
     config: { type: Object },
   };
-  
+
   constructor() {
     super();
-    this.hass = null;
+    this.hass = {};
     this.config = {};
   }
-  
-  /**
-   * Inizializza la configurazione dell'editor, garantendo array e oggetti di default.
-   */
+
   setConfig(config) {
     this.config = {
       ...config,
@@ -783,14 +791,90 @@ class BubbleRoomEditor extends i {
       colors: config.colors ? config.colors : { room: {}, subbutton: {} },
     };
   }
-  
-  /**
-   * Restituisce la configurazione corrente.
-   */
+
   getConfig() {
     return { ...this.config };
   }
-  
+
+  render() {
+    return x`
+      <div class="editor-container">
+        <room-panel
+          .hass="${this.hass}"
+          .config="${this.config}"
+          @panel-changed="${this._onPanelChanged}"
+        ></room-panel>
+
+        <sensors-panel
+          .hass="${this.hass}"
+          .config="${this.config}"
+          @panel-changed="${this._onPanelChanged}"
+        ></sensors-panel>
+
+        <mushrooms-panel
+          .hass="${this.hass}"
+          .config="${this.config}"
+          @panel-changed="${this._onPanelChanged}"
+        ></mushrooms-panel>
+
+        <subbuttons-panel
+          .hass="${this.hass}"
+          .config="${this.config}"
+          @panel-changed="${this._onPanelChanged}"
+        ></subbuttons-panel>
+
+        <colors-panel
+          .config="${this.config}"
+          @panel-changed="${this._onPanelChanged}"
+        ></colors-panel>
+      </div>
+    `;
+  }
+
+  _onPanelChanged(e) {
+    const { prop, val } = e.detail || {};
+    if (!prop) return;
+    const mapped = this._mapLegacyPath(prop);
+    this._setByPath(this.config, mapped, val);
+    this.requestUpdate();
+    this.dispatchEvent(new CustomEvent('config-changed', {
+      detail: { config: this.getConfig() },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  // Converte path legacy dei pannelli in path sugli array usati dalla card
+  _mapLegacyPath(p) {
+    if (p.startsWith('entities.')) {
+      const key = p.slice('entities.'.length);
+      // sensors: entities.sensor1 -> sensors[0]
+      let m = key.match(/^sensor(\d+)$/);
+      if (m) return `sensors[${parseInt(m[1],10)-1}]`;
+      // sub-buttons: entities.sub-button2 -> subbuttons[1]
+      m = key.match(/^sub-button(\d+)$/);
+      if (m) return `subbuttons[${parseInt(m[1],10)-1}]`;
+      // mushrooms: entities1..entities6 -> mushrooms[0..5]
+      m = key.match(/^entities(\d+)$/);
+      if (m) return `mushrooms[${parseInt(m[1],10)-1}]`;
+      // altri casi: ritorna il resto com'Ã¨
+      return key;
+    }
+    return p;
+  }
+
+  _setByPath(obj, path, value) {
+    const parts = path.replace(/\[(\d+)\]/g, '.$1').split('.');
+    let cur = obj;
+    for (let i = 0; i < parts.length - 1; i++) {
+      const k = parts[i];
+      const nextIsIndex = /^\d+$/.test(parts[i + 1]);
+      if (cur[k] == null) cur[k] = nextIsIndex ? [] : {};
+      cur = cur[k];
+    }
+    cur[parts[parts.length - 1]] = value;
+  }
+
   static styles = i$3`
     :host {
       display: block;
@@ -805,53 +889,6 @@ class BubbleRoomEditor extends i {
       box-sizing: border-box;
     }
   `;
-  
-  render() {
-    return x`
-      <div class="editor-container">
-        <room-panel
-          .hass="${this.hass}"
-          .config="${this.config}"
-          @config-changed="${this._onConfigChanged}"
-        ></room-panel>
-
-        <sensors-panel
-          .hass="${this.hass}"
-          .config="${this.config}"
-          @config-changed="${this._onConfigChanged}"
-        ></sensors-panel>
-
-        <mushrooms-panel
-          .hass="${this.hass}"
-          .config="${this.config}"
-          @config-changed="${this._onConfigChanged}"
-        ></mushrooms-panel>
-
-        <subbuttons-panel
-          .hass="${this.hass}"
-          .config="${this.config}"
-          @config-changed="${this._onConfigChanged}"
-        ></subbuttons-panel>
-
-        <colors-panel
-          .config="${this.config}"
-          @config-changed="${this._onConfigChanged}"
-        ></colors-panel>
-      </div>
-    `;
-  }
-  
-  /**
-   * Propaga l'evento di cambio configurazione ai listener esterni.
-   */
-  _onConfigChanged(e) {
-    this.config = e.detail.config;
-    this.dispatchEvent(new CustomEvent('config-changed', {
-      detail: { config: this.getConfig() },
-      bubbles: true,
-      composed: true,
-    }));
-  }
 }
 
 customElements.define('bubble-room-editor', BubbleRoomEditor);
@@ -1264,7 +1301,7 @@ class BubbleSubButton extends i {
               class="subbutton ${sub.active ? 'active' : ''}"
               @click="${() => this.dispatchEvent(new CustomEvent('subbutton-click', { detail: idx }))}"
               title="${sub.label || ''}"
-              style="background:${sub.active ? '#21df73' : '#455a64'};"
+              style="background:${sub.active ? (sub.colorOn || '#21df73') : (sub.colorOff || '#455a64')};"
             >
               <ha-icon class="subbutton-icon" .icon="${sub.icon}"></ha-icon>
               ${sub.label
@@ -1359,7 +1396,7 @@ class BubbleRoom extends i {
   }
   
   /**
-   * Home Assistant chiamerÃ  questo per montare l'editor visuale
+   * Home Assistant chiamerà questo per montare l'editor visuale
    */
   static async getConfigElement() {
     // Carica dinamicamente il file
@@ -1428,12 +1465,10 @@ class BubbleRoom extends i {
     const mainIcon = this.config.icon || DEFAULT_ICON;
     const iconActive =
       this.config.colors?.room?.icon_active ??
-      this.config.icon_active ??
-      '#21df73';
+      this.config.icon_active ?? '#21df73';
     const iconInactive =
       this.config.colors?.room?.icon_inactive ??
-      this.config.icon_inactive ??
-      '#173c16';
+      this.config.icon_inactive ?? '#173c16';
     const name = this.config.name || 'Room';
     const area = this.config.area || '';
     const sensors = this._getSensors();
@@ -1485,27 +1520,21 @@ class BubbleRoom extends i {
   }
   
   _getMushroomEntities() {
-    
     return (this.config.mushrooms || []).map(e => ({
       icon: e.icon || 'mdi:flash',
       state: this.hass.states?.[e.entity_id]?.state,
-      color: e.color ?? (this.config.colors?.room?.mushroom_inactive ?? '#999')
+      color: e.color || '#999'
     }));
-    
   }
   
   _getSubButtons() {
-    
-    const defOn = this.config.colors?.subbutton?.background_on ?? '#00d46d';
-    const defOff = this.config.colors?.subbutton?.background_off ?? '#999';
     return (this.config.subbuttons || []).map((sub, idx) => ({
       icon: sub.icon || 'mdi:light-switch',
       active: this.hass.states?.[sub.entity_id]?.state === 'on',
-      colorOn: sub.colorOn ?? defOn,
-      colorOff: sub.colorOff ?? defOff,
+      colorOn: sub.colorOn || '#00d46d',
+      colorOff: sub.colorOff || '#999',
       label: sub.label || '',
     }));
-    
   }
   
   _isMainIconActive() {
