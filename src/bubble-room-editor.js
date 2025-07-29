@@ -15,13 +15,13 @@ export class BubbleRoomEditor extends LitElement {
     hass: { type: Object },
     config: { type: Object },
   };
-  
+
   constructor() {
     super();
     this.hass = {};
     this.config = {};
   }
-  
+
   setConfig(config) {
     this.config = {
       ...config,
@@ -31,14 +31,16 @@ export class BubbleRoomEditor extends LitElement {
       colors: config?.colors ? config.colors : { room: {}, subbutton: {} },
     };
   }
-  
+
   getConfig() {
     return { ...this.config };
   }
-  
+
   render() {
     return html`
       <div class="editor-container">
+        <h2 class="title">ð§­ Room Settings 2</h2>
+
         <room-panel
           .hass=${this.hass}
           .config=${this.config}
@@ -70,7 +72,7 @@ export class BubbleRoomEditor extends LitElement {
       </div>
     `;
   }
-  
+
   _onPanelChanged(e) {
     const { prop, val } = e.detail || {};
     if (!prop) return;
@@ -84,30 +86,30 @@ export class BubbleRoomEditor extends LitElement {
       composed: true,
     }));
   }
-  
+
   // Mappa i path emessi dai pannelli al formato usato dalla card
   _mapLegacyPath(p) {
     if (p && p.startsWith('entities.')) {
       const key = p.slice('entities.'.length);
-      
+
       // sensors: entities.sensor1 -> sensors[0]
       let m = key.match(/^sensor(\d+)$/);
       if (m) return `sensors[${parseInt(m[1], 10) - 1}]`;
-      
+
       // sub-buttons: entities.sub-button2 -> subbuttons[1]
       m = key.match(/^sub-button(\d+)$/);
       if (m) return `subbuttons[${parseInt(m[1], 10) - 1}]`;
-      
+
       // mushrooms: entities1..entities6 -> mushrooms[0..5]
       m = key.match(/^entities(\d+)$/);
       if (m) return `mushrooms[${parseInt(m[1], 10) - 1}]`;
-      
+
       // tutti gli altri (es. presence.entity) restano sotto "entities"
       return `entities.${key}`;
     }
     return p;
   }
-  
+
   _setByPath(obj, path, value) {
     const parts = String(path).replace(/\[(\d+)\]/g, '.$1').split('.');
     let cur = obj;
@@ -119,7 +121,7 @@ export class BubbleRoomEditor extends LitElement {
     }
     cur[parts[parts.length - 1]] = value;
   }
-  
+
   static styles = css`
     :host {
       display: block;
@@ -133,6 +135,7 @@ export class BubbleRoomEditor extends LitElement {
       padding: 16px;
       box-sizing: border-box;
     }
+    .title { margin: 0 0 8px; font-weight: 700; }
   `;
 }
 

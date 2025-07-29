@@ -8,13 +8,13 @@ export class RoomPanel extends LitElement {
     hass: { type: Object },
     config: { type: Object },
   };
-  
+
   constructor() {
     super();
     this.hass = {};
     this.config = {};
   }
-  
+
   static styles = css`
     :host { display: block; }
     .section { margin: 8px 0 16px; padding: 12px; border-radius: 12px; background: var(--card-background-color); }
@@ -22,11 +22,11 @@ export class RoomPanel extends LitElement {
     ha-textfield, ha-area-picker, ha-icon-picker, ha-entity-picker { width: 100%; }
     h3 { margin: 0 0 8px; font-weight: 600; }
   `;
-  
+
   render() {
     const area = this.config?.area || '';
     const presenceValue = (this.config?.entities?.presence?.entity || this.config?.presence_entity || '');
-    
+
     return html`
       <div class="section">
         <h3>Room</h3>
@@ -70,28 +70,28 @@ export class RoomPanel extends LitElement {
       </div>
     `;
   }
-  
+
   _getPresenceCandidates() {
     const hass = this.hass;
     if (!hass || !hass.states) return [];
-    
+
     const allowed = new Set([
-      'person', 'device_tracker', 'binary_sensor', 'light', 'switch',
-      'media_player', 'fan', 'humidifier', 'lock', 'input_boolean', 'scene'
+      'person','device_tracker','binary_sensor','light','switch',
+      'media_player','fan','humidifier','lock','input_boolean','scene'
     ]);
-    
+
     const ids = Object.keys(hass.states).filter(
       (id) => allowed.has(id.split('.')[0])
     );
-    
+
     // binary_sensor: solo motion/occupancy/presence
     const byClass = ids.filter((id) => {
       const domain = id.split('.')[0];
       if (domain !== 'binary_sensor') return true;
       const dc = hass.states[id]?.attributes?.device_class;
-      return ['motion', 'occupancy', 'presence'].includes(dc || '');
+      return ['motion','occupancy','presence'].includes(dc || '');
     });
-    
+
     // filtro per Area se disponibile
     const area = this.config?.area;
     let res = byClass;
@@ -104,11 +104,11 @@ export class RoomPanel extends LitElement {
       });
       if (inArea.length) res = inArea;
     }
-    
+
     // mantieni l'eventuale selezionata
     const selected = this.config?.entities?.presence?.entity || this.config?.presence_entity;
     if (selected && !res.includes(selected)) res.push(selected);
-    
+
     if (DEBUG) {
       console.info('[RoomPanel][Presence]', {
         area,
@@ -118,10 +118,10 @@ export class RoomPanel extends LitElement {
         sample: res.slice(0, 5),
       });
     }
-    
+
     return res;
   }
-  
+
   _emit(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop, val },
