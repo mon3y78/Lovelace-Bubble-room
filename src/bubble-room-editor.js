@@ -128,26 +128,32 @@ export class BubbleRoomEditor extends LitElement {
     }
   `;
   
-  
-  _getPresenceCandidates() {
+    _getPresenceCandidates() {
     const hass = this.hass;
     if (!hass || !hass.states) return [];
-    const allowed = new Set(['person', 'device_tracker', 'binary_sensor', 'light', 'switch', 'media_player', 'fan', 'humidifier', 'lock', 'input_boolean', 'scene']);
-    const ids = Object.keys(hass.states).filter(id => allowed.has(id.split('.')[0]));
-    
+
+    const allowed = new Set([
+      'person','device_tracker','binary_sensor','light','switch',
+      'media_player','fan','humidifier','lock','input_boolean','scene'
+    ]);
+
+    const ids = Object.keys(hass.states).filter(
+      (id) => allowed.has(id.split('.')[0])
+    );
+
     // binary_sensor: solo motion/occupancy/presence
-    const byClass = ids.filter(id => {
+    const byClass = ids.filter((id) => {
       const domain = id.split('.')[0];
       if (domain !== 'binary_sensor') return true;
       const dc = hass.states[id]?.attributes?.device_class;
-      return ['motion', 'occupancy', 'presence'].includes(dc || '');
+      return ['motion','occupancy','presence'].includes(dc || '');
     });
-    
+
     // filtro per Area se disponibile
     const area = this.config?.area;
     let res = byClass;
     if (area) {
-      const inArea = byClass.filter(id => {
+      const inArea = byClass.filter((id) => {
         const st = hass.states[id];
         const a1 = st?.attributes?.area_id;
         const a2 = st?.attributes?.area;
@@ -155,19 +161,21 @@ export class BubbleRoomEditor extends LitElement {
       });
       if (inArea.length) res = inArea;
     }
-    
+
     // mantieni l'eventuale selezionata
     const selected = this.config?.entities?.presence?.entity || this.config?.presence_entity;
     if (selected && !res.includes(selected)) res.push(selected);
-    return res;
-  }
-  console.info('[BubbleRoomEditor][Presence]',
-    {
+
+    // DEBUG (tienilo o rimuovilo a piacere)
+    console.info('[BubbleRoomEditor][Presence]', {
       area,
       total: ids.length,
       byClass: byClass.length,
-      result: res.length
+      result: res.length,
     });
-}
+
+    return res;
+  }
+
 
 customElements.define('bubble-room-editor', BubbleRoomEditor);
