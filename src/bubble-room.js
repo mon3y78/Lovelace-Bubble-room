@@ -20,6 +20,7 @@ export class BubbleRoom extends LitElement {
     this.config = {};
     this.hass = {};
   }
+  
   static getStubConfig() {
     return {
       type: 'custom:bubble-room',
@@ -63,6 +64,7 @@ export class BubbleRoom extends LitElement {
     // Ritorna un'istanza del custom element
     return document.createElement('bubble-room-editor');
   }
+  
   setConfig(config) {
     this.config = config;
   }
@@ -118,16 +120,18 @@ export class BubbleRoom extends LitElement {
     }  
   `;
   
-  
   render() {
     console.log('BubbleRoom config:', this.config);
     const mainIcon = this.config.icon || DEFAULT_ICON;
+    
     const iconActive =
       this.config.colors?.room?.icon_active ??
       this.config.icon_active ?? '#21df73';
+    
     const iconInactive =
       this.config.colors?.room?.icon_inactive ??
       this.config.icon_inactive ?? '#173c16';
+    
     const name = this.config.name || 'Room';
     const area = this.config.area || '';
     const sensors = this._getSensors();
@@ -179,28 +183,22 @@ export class BubbleRoom extends LitElement {
   }
   
   _getMushroomEntities() {
-
-return (this.config.mushrooms || []).map(e => ({
-  icon: e.icon || 'mdi:flash',
-  state: this.hass.states?.[e.entity_id]?.state,
-  color: e.color ?? (this.config.colors?.room?.mushroom_inactive ?? '#999')
-}));
-
+    return (this.config.mushrooms || []).map((e) => ({
+      icon: e.icon || 'mdi:flash',
+      state: this.hass.states?.[e.entity_id]?.state,
+      color: e.color ?? (this.config.colors?.room?.mushroom_inactive ?? '#999'),
     }));
   }
   
   _getSubButtons() {
-
-const defOn  = this.config.colors?.subbutton?.background_on  ?? '#00d46d';
-const defOff = this.config.colors?.subbutton?.background_off ?? '#999';
-return (this.config.subbuttons || []).map((sub, idx) => ({
-  icon: sub.icon || 'mdi:light-switch',
-  active: this.hass.states?.[sub.entity_id]?.state === 'on',
-  colorOn: sub.colorOn ?? defOn,
-  colorOff: sub.colorOff ?? defOff,
-  label: sub.label || '',
-}));
-
+    const defOn = this.config.colors?.subbutton?.background_on ?? '#00d46d';
+    const defOff = this.config.colors?.subbutton?.background_off ?? '#999';
+    return (this.config.subbuttons || []).map((sub) => ({
+      icon: sub.icon || 'mdi:light-switch',
+      active: this.hass.states?.[sub.entity_id]?.state === 'on',
+      colorOn: sub.colorOn ?? defOn,
+      colorOff: sub.colorOff ?? defOff,
+      label: sub.label || '',
     }));
   }
   
