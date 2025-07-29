@@ -68,9 +68,20 @@ export class ColorsPanel extends LitElement {
     `;
   }
   
-  _toHex(color) { /* estrai dal fonte originale */ }
-  _updateColor(section, key, hex, alpha = false) {
-    /* copia _updateColorField dal sorgente */
+  _toHex(color) {
+    if (!color) return '#000000';
+    if (color.startsWith('#')) return color.length===7 ? color.slice(0,7) : color;
+    const m = /rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i.exec(color);
+    if (!m) return '#000000';
+    const [r,g,b] = m.slice(1).map(n => Math.max(0, Math.min(255, parseInt(n,10)||0)));
+    return '#' + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join('');
+  }
+  _updateColor(section, key, value, alpha = false) {
+    const hex = this._toHex(value);
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: `colors.${section}.${key}`, val: hex },
+      bubbles: true, composed: true
+    }));
   }
 }
 

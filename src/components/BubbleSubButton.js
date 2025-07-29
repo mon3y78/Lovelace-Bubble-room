@@ -89,7 +89,7 @@ export class BubbleSubButton extends LitElement {
               class="subbutton ${sub.active ? 'active' : ''}"
               @click="${() => this.dispatchEvent(new CustomEvent('subbutton-click', { detail: idx }))}"
               title="${sub.label || ''}"
-              style="background:${sub.active ? '#21df73' : '#455a64'};"
+              style="background:${sub.active ? (sub.colorOn || '#21df73') : (sub.colorOff || '#455a64')};"
             >
               <ha-icon class="subbutton-icon" .icon="${sub.icon}"></ha-icon>
               ${sub.label

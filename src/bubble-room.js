@@ -55,7 +55,7 @@ export class BubbleRoom extends LitElement {
   }
   
   /**
-   * Home Assistant chiamerÃ  questo per montare l'editor visuale
+   * Home Assistant chiamerà questo per montare l'editor visuale
    */
   static async getConfigElement() {
     // Carica dinamicamente il file
@@ -124,12 +124,10 @@ export class BubbleRoom extends LitElement {
     const mainIcon = this.config.icon || DEFAULT_ICON;
     const iconActive =
       this.config.colors?.room?.icon_active ??
-      this.config.icon_active ??
-      '#21df73';
+      this.config.icon_active ?? '#21df73';
     const iconInactive =
       this.config.colors?.room?.icon_inactive ??
-      this.config.icon_inactive ??
-      '#173c16';
+      this.config.icon_inactive ?? '#173c16';
     const name = this.config.name || 'Room';
     const area = this.config.area || '';
     const sensors = this._getSensors();
@@ -181,27 +179,21 @@ export class BubbleRoom extends LitElement {
   }
   
   _getMushroomEntities() {
-    
     return (this.config.mushrooms || []).map(e => ({
       icon: e.icon || 'mdi:flash',
       state: this.hass.states?.[e.entity_id]?.state,
-      color: e.color ?? (this.config.colors?.room?.mushroom_inactive ?? '#999')
+      color: e.color || '#999'
     }));
-    
   }
   
   _getSubButtons() {
-    
-    const defOn = this.config.colors?.subbutton?.background_on ?? '#00d46d';
-    const defOff = this.config.colors?.subbutton?.background_off ?? '#999';
     return (this.config.subbuttons || []).map((sub, idx) => ({
       icon: sub.icon || 'mdi:light-switch',
       active: this.hass.states?.[sub.entity_id]?.state === 'on',
-      colorOn: sub.colorOn ?? defOn,
-      colorOff: sub.colorOff ?? defOff,
+      colorOn: sub.colorOn || '#00d46d',
+      colorOff: sub.colorOff || '#999',
       label: sub.label || '',
     }));
-    
   }
   
   _isMainIconActive() {
