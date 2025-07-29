@@ -20,10 +20,11 @@ export class BubbleRoom extends LitElement {
     this.config = {};
     this.hass = {};
   }
-    static getStubConfig() {
+  static getStubConfig() {
     return {
       type: 'custom:bubble-room',
       name: 'Salotto',
+      area: 'Zona Giorno',
       icon: 'mdi:sofa',
       sensors: [
         { entity_id: 'sensor.some_sensor1', type: 'temperature', label: 'Temperatura', color: '#e3f6ff' }
@@ -36,26 +37,26 @@ export class BubbleRoom extends LitElement {
       ],
       colors: {
         room: {
-          background_active:   'rgba(var(--color-green),1)',
+          background_active: 'rgba(var(--color-green),1)',
           background_inactive: 'rgba(var(--color-green),0.3)',
-          icon_active:         'orange',
-          icon_inactive:       '#80808055',
-          mushroom_active:     'rgba(var(--color-green),1)',
-          mushroom_inactive:   '#80808055'
+          icon_active: 'orange',
+          icon_inactive: '#80808055',
+          mushroom_active: 'rgba(var(--color-green),1)',
+          mushroom_inactive: '#80808055'
         },
         subbutton: {
-          background_on:  'rgba(var(--color-blue),1)',
+          background_on: 'rgba(var(--color-blue),1)',
           background_off: 'rgba(var(--color-blue),0.3)',
-          icon_on:        'yellow',
-          icon_off:       '#666'
+          icon_on: 'yellow',
+          icon_off: '#666'
         }
       }
     };
   }
-
-/**
- * Home Assistant chiamerà questo per montare l'editor visuale
- */
+  
+  /**
+   * Home Assistant chiamerÃ  questo per montare l'editor visuale
+   */
   static async getConfigElement() {
     // Carica dinamicamente il file
     await import('./bubble-room-editor.js');
@@ -116,13 +117,19 @@ export class BubbleRoom extends LitElement {
       }
     }  
   `;
-
+  
   
   render() {
     console.log('BubbleRoom config:', this.config);
     const mainIcon = this.config.icon || DEFAULT_ICON;
-    const iconActive = this.config.icon_active || '#21df73';
-    const iconInactive = this.config.icon_inactive || '#173c16';
+    const iconActive =
+      this.config.colors?.room?.icon_active ??
+      this.config.icon_active ??
+      '#21df73';
+    const iconInactive =
+      this.config.colors?.room?.icon_inactive ??
+      this.config.icon_inactive ??
+      '#173c16';
     const name = this.config.name || 'Room';
     const area = this.config.area || '';
     const sensors = this._getSensors();
@@ -174,21 +181,27 @@ export class BubbleRoom extends LitElement {
   }
   
   _getMushroomEntities() {
+    
     return (this.config.mushrooms || []).map(e => ({
       icon: e.icon || 'mdi:flash',
       state: this.hass.states?.[e.entity_id]?.state,
-      color: e.color || '#999'
+      color: e.color ?? (this.config.colors?.room?.mushroom_inactive ?? '#999')
     }));
+    
   }
   
   _getSubButtons() {
+    
+    const defOn = this.config.colors?.subbutton?.background_on ?? '#00d46d';
+    const defOff = this.config.colors?.subbutton?.background_off ?? '#999';
     return (this.config.subbuttons || []).map((sub, idx) => ({
       icon: sub.icon || 'mdi:light-switch',
       active: this.hass.states?.[sub.entity_id]?.state === 'on',
-      colorOn: sub.colorOn || '#00d46d',
-      colorOff: sub.colorOff || '#999',
+      colorOn: sub.colorOn ?? defOn,
+      colorOff: sub.colorOff ?? defOff,
       label: sub.label || '',
     }));
+    
   }
   
   _isMainIconActive() {
