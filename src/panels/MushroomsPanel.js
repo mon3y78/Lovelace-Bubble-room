@@ -3,7 +3,6 @@ import { LitElement, html, css } from 'lit';
 const DEBUG = !!window.__BUBBLE_DEBUG__;
 import { FILTERS, candidatesFor } from '../helpers/entity-filters.js';
 
-
 export class MushroomsPanel extends LitElement {
   static properties = {
     hass: { type: Object },
@@ -14,10 +13,10 @@ export class MushroomsPanel extends LitElement {
 
   constructor() {
     super();
-    this.hass = undefined;
+    this.hass = {};
     this.config = {};
     this._expanded = false;
-    this._expandedItems = Array(7).fill(false);
+    this._expandedItems = Array(7).fill(false); // entities1..5 + climate + camera
   }
 
   setConfig(config) {
@@ -78,7 +77,6 @@ export class MushroomsPanel extends LitElement {
       gap: 14px;
       padding: 15px 22px;
       font-size: 1.12rem;
-      font-family: 'Inter', sans-serif;
       font-weight: 800;
       color: #36e6a0;
       letter-spacing: 0.03em;
@@ -87,6 +85,7 @@ export class MushroomsPanel extends LitElement {
       position: relative;
       z-index: 1;
       text-shadow: 0 2px 7px #0004;
+      font-family: 'Inter', sans-serif;
     }
     .mini-pill-header .chevron {
       margin-left: auto;
@@ -104,7 +103,6 @@ export class MushroomsPanel extends LitElement {
       z-index: 1;
     }
     .autodiscover-box {
-      z-index: 2!important;
       position: relative;
       display: flex;
       align-items: center;
@@ -138,23 +136,13 @@ export class MushroomsPanel extends LitElement {
       display: block;
       margin-bottom: 6px;
       font-size: 1.11rem;
-      font-family: 'Inter', sans-serif;
       font-weight: 700;
       color: #36e6a0;
       letter-spacing: 0.03em;
+      font-family: 'Inter', sans-serif;
     }
-    input, select {
+    input, select, ha-entity-picker, ha-icon-picker {
       width: 100%;
-      border: 1px solid #444;
-      border-radius: 6px;
-      padding: 8px;
-      background: #202020;
-      color: #f1f1f1;
-      font-size: 0.97rem;
-    }
-    ha-entity-picker, ha-icon-picker {
-      width: 100%;
-      margin-bottom: 12px;
     }
     .reset-button {
       border: 3.5px solid #ff4c6a!important;
@@ -182,55 +170,76 @@ export class MushroomsPanel extends LitElement {
     return html`
       <ha-expansion-panel
         class="glass-panel"
-        .expanded="${this._expanded}"
-        @expanded-changed="${e => this._expanded = e.detail.expanded}"
+        .expanded=${this._expanded}
+        @expanded-changed=${(e) => (this._expanded = e.detail.expanded)}
       >
         <div slot="header" class="glass-header">🍄 Mushroom Entities</div>
+
         <div class="glass-content">
-          <div class="autodiscover-box" @click="${() => this._fire('auto_discovery_sections.mushroom', !cfg.auto_discovery_sections?.mushroom)}">
+          <div
+            class="autodiscover-box"
+            @click=${() => this._fire('auto_discovery_sections.mushroom', !cfg.auto_discovery_sections?.mushroom)}
+          >
             <label>
-              <input type="checkbox"
-                     .checked="${cfg.auto_discovery_sections?.mushroom || false}"
-                     @change="${e => this._fire('auto_discovery_sections.mushroom', e.target.checked)}"
-                     @click="${e => e.stopPropagation()}">
+              <input
+                type="checkbox"
+                .checked=${cfg.auto_discovery_sections?.mushroom || false}
+                @change=${(e) => this._fire('auto_discovery_sections.mushroom', e.target.checked)}
+                @click=${(e) => e.stopPropagation()}
+              />
               <span>🪄 Auto-discovery</span>
             </label>
           </div>
-          ${['entities1','entities2','entities3','entities4','entities5','climate','camera'].map((key, i) => html`
-            <div class="mini-pill ${this._expandedItems[i] ? 'expanded' : ''}" @click="${() => this._toggleOne(i)}">
-              <div class="mini-pill-header">Entity ${i+1}
-                <span class="chevron">${this._expandedItems[i] ? '▼' : '▶'}</span>
-              </div>
-              ${this._expandedItems[i] ? html`
-                <div class="mini-pill-content">
-                  <div class="input-group">
-                    <label>Entity</label>
-                    <ha-entity-picker
-  .hass="${this.hass}"
-  .area="${this.config.area || ''}"
-  .includeEntities=${candidatesFor(this.hass, this.config, 'mushroom')}
-  .value="${ent.entity_id || ''}"
-  allow-custom-entity
-  @value-changed="${e => this._updateMushroomEntity(i, e.detail.value)}"
-></ha-entity-picker>
-                  </div>
-                  <div class="input-group">
-                    <label>Icon</label>
-                    <ha-icon-picker
-                      .hass="${this.hass}"
-                      .value="${cfg.entities?.[key]?.icon || ''}"
-                      allow-custom-icon
-                      @value-changed="${e => this._fire(`entities.${key}.icon`, e.detail.value)}"
-                    ></ha-icon-picker>
-                  </div>
-                  ${this._renderActions('tap', key)}
-                  ${this._renderActions('hold', key)}
-                </div>
-              ` : ''}
-            </div>`)}
-          <button class="reset-button" @click="${() => this._resetAll()}">🧹 Reset Mushroom Entities</button>
+
+          ${['entities1','entities2','entities3','entities4','entities5','climate','camera'].map(
+            (key, i) => this._renderSingle(i, key)
+          )}
+
+          <button class="reset-button" @click=${this._resetAll}>🧹 Reset Mushroom Entities</button>
         </div>
       </ha-expansion-panel>
+    `;
+  }
+
+  _renderSingle(index, key) {
+    const item = this.config.entities?.[key] || {};
+    const expanded = this._expandedItems[index];
+
+    return html`
+      <div class="mini-pill ${expanded ? 'expanded' : ''}" @click=${() => this._toggleOne(index)}>
+        <div class="mini-pill-header">
+          ${item.icon || '🔘'} ${item.label || 'Entity ' + (index + 1)}
+          <span class="chevron">${expanded ? '▼' : '▶'}</span>
+        </div>
+
+        ${expanded ? html`
+          <div class="mini-pill-content">
+            <div class="input-group">
+              <label>Entity</label>
+              <ha-entity-picker
+                .hass=${this.hass}
+                .includeEntities=${this._getMushroomCandidates()}
+                .value=${item.entity || ''}
+                allow-custom-entity
+                @value-changed=${(e) => this._fire('entities.' + key + '.entity', e.detail.value)}
+              ></ha-entity-picker>
+            </div>
+
+            <div class="input-group">
+              <label>Icon</label>
+              <ha-icon-picker
+                .hass=${this.hass}
+                .value=${item.icon || ''}
+                allow-custom-icon
+                @value-changed=${(e) => this._fire('entities.' + key + '.icon', e.detail.value)}
+              ></ha-icon-picker>
+            </div>
+
+            ${this._renderActions('tap', key)}
+            ${this._renderActions('hold', key)}
+          </div>
+        ` : ''}
+      </div>
     `;
   }
 
@@ -241,21 +250,27 @@ export class MushroomsPanel extends LitElement {
 
   _renderActions(actionType, key) {
     const cfg = this.config.entities?.[key] || {};
-    const actCfg = cfg[`${actionType}_action`] || {};
+    const actCfg = cfg[actionType + '_action'] || {};
     const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
     return html`
       <div class="input-group">
         <label>${actionType === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
         <div class="pill-group">
-          ${actions.map(a => html`
+          ${actions.map((a) => html`
             <paper-button
               class="pill-button ${actCfg.action === a ? 'active' : ''}"
-              @click="${() => this._fire(`entities.${key}.${actionType}_action.action`, a)}"
+              @click=${() => this._fire('entities.' + key + '.' + actionType + '_action.action', a)}
             >${a}</paper-button>
           `)}
         </div>
+
         ${actCfg.action === 'navigate' ? html`
-          <input type="text" placeholder="Path" .value="${actCfg.navigation_path || ''}" @input="${e => this._fire(`entities.${key}.${actionType}_action.navigation_path`, e.target.value)}">
+          <input
+            type="text"
+            placeholder="Path"
+            .value=${actCfg.navigation_path || ''}
+            @input=${(e) => this._fire('entities.' + key + '.' + actionType + '_action.navigation_path', e.target.value)}
+          />
         ` : ''}
       </div>
     `;
@@ -263,35 +278,30 @@ export class MushroomsPanel extends LitElement {
 
   _fire(prop, value) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val: value }, bubbles: true, composed: true
+      detail: { prop, val: value },
+      bubbles: true,
+      composed: true,
     }));
   }
 
   _resetAll() {
-    ['entities1','entities2','entities3','entities4','entities5','climate','camera'].forEach(k => this._fire(`entities.${k}`, undefined));
+    ['entities1','entities2','entities3','entities4','entities5','climate','camera']
+      .forEach((k) => this._fire('entities.' + k, undefined));
+  }
+
+  // --- Wrapper locale: calcola candidati + log ---
+  _getMushroomCandidates() {
+    // Usa la logica centralizzata, ma aggiunge log locale (Opzione A)
+    const list = candidatesFor(this.hass, this.config, 'mushroom');
+    if (DEBUG) {
+      console.info('[MushroomsPanel][Candidates]', {
+        area: this.config?.area || null,
+        count: list.length,
+        sample: list.slice(0, 8),
+      });
+    }
+    return list;
   }
 }
-
-
-      _getMushroomCandidates() {
-        const hass = this.hass;
-        if (!hass || !hass.states) return [];
-        const allowed = new Set(['light','switch','media_player','fan','cover','humidifier','lock','scene','input_boolean','script','button','sensor','binary_sensor','climate']);
-        let res = Object.keys(hass.states || {}).filter((id) => allowed.has(id.split('.')[0]));
-        const area = this.config?.area;
-        if (area) {
-          const inArea = res.filter((id) => {
-            const st = hass.states[id];
-            const a1 = st?.attributes?.area_id;
-            const a2 = st?.attributes?.area;
-            return a1 === area || a2 === area;
-          });
-          if (inArea.length) res = inArea;
-        }
-        if (DEBUG) {
-          console.info('[MushroomsPanel][Candidates]', { area, count: res.length, sample: res.slice(0,8) });
-        }
-        return res;
-      }
 
 customElements.define('mushrooms-panel', MushroomsPanel);
