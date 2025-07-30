@@ -5,9 +5,9 @@ const DEBUG = !!window.__BUBBLE_DEBUG__;
 
 export class RoomPanel extends LitElement {
   static properties = {
-    hass: { type: Object },
-    config: { type: Object },
-    _expanded: { type: Boolean },
+    hass:       { type: Object },
+    config:     { type: Object },
+    _expanded:  { type: Boolean },
   };
 
   constructor() {
@@ -21,7 +21,7 @@ export class RoomPanel extends LitElement {
     :host { display: block; }
 
     .glass-panel {
-      margin: 0 !important;
+      margin: 0!important;
       width: 100%;
       box-sizing: border-box;
       border-radius: 40px;
@@ -50,8 +50,8 @@ export class RoomPanel extends LitElement {
     .glass-header {
       position: relative;
       z-index: 1;
-      background: none !important;
-      box-shadow: none !important;
+      background: none!important;
+      box-shadow: none!important;
       padding: 22px 0 18px;
       margin: 0;
       text-align: center;
@@ -139,10 +139,10 @@ export class RoomPanel extends LitElement {
       color: #55afff;
     }
 
-    /* evita collasso dei picker HA */
+    /* Assicura che il picker non venga nascosto */
     ha-entity-picker,
-    ha-icon-picker,
-    ha-area-picker {
+    ha-area-picker,
+    ha-icon-picker {
       display: block;
       width: 100%;
       min-height: 56px;
@@ -155,40 +155,32 @@ export class RoomPanel extends LitElement {
   `;
 
   render() {
-    const area = this.config?.area || '';
-    const name = this.config?.name || '';
-    const icon = this.config?.icon || '';
-    const presence =
+    const area   = this.config?.area || '';
+    const name   = this.config?.name || '';
+    const icon   = this.config?.icon || '';
+    const pres   =
       this.config?.entities?.presence?.entity ||
       this.config?.presence_entity ||
       '';
-    const adPresence = this.config?.auto_discovery_sections?.presence || false;
+    const adPres = this.config?.auto_discovery_sections?.presence || false;
 
     return html`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
-        @expanded-changed=${(e) => (this._expanded = e.detail.expanded)}
+        @expanded-changed=${e => this._expanded = e.detail.expanded}
       >
-        <div slot="header" class="glass-header">
-          🛋️ Room Settings 2
-        </div>
+        <div slot="header" class="glass-header">🛋️ Room Settings 2</div>
 
-        <!-- Toggle Auto‑discovery Presence -->
+        <!-- Auto-discovery Presence toggle -->
         <div class="input-group ad-top">
-          <label
-            style="display:flex;align-items:center;gap:8px;margin:0;"
-          >
+          <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input
               type="checkbox"
-              .checked=${adPresence}
-              @change=${(e) =>
-                this._fire(
-                  'auto_discovery_sections.presence',
-                  e.target.checked
-                )}
+              .checked=${adPres}
+              @change=${e => this._fire('auto_discovery_sections.presence', e.target.checked)}
             />
-            <span>🪄 Auto‑discovery Presence</span>
+            <span>🪄 Auto-discovery Presence</span>
           </label>
         </div>
 
@@ -200,7 +192,7 @@ export class RoomPanel extends LitElement {
               <input
                 type="text"
                 .value=${name}
-                @input=${(e) => this._fire('name', e.target.value)}
+                @input=${e => this._fire('name', e.target.value)}
               />
             </div>
             <div class="input-group">
@@ -208,7 +200,7 @@ export class RoomPanel extends LitElement {
               <ha-area-picker
                 .hass=${this.hass}
                 .value=${area}
-                @value-changed=${(e) => this._fire('area', e.detail.value)}
+                @value-changed=${e => this._fire('area', e.detail.value)}
               ></ha-area-picker>
             </div>
           </div>
@@ -223,23 +215,18 @@ export class RoomPanel extends LitElement {
                 .hass=${this.hass}
                 .value=${icon}
                 allow-custom-icon
-                @value-changed=${(e) => this._fire('icon', e.detail.value)}
+                @value-changed=${e => this._fire('icon', e.detail.value)}
               ></ha-icon-picker>
             </div>
 
             <div class="input-group">
               <label>Presence (ID):</label>
               <ha-entity-picker
-                class="presence-picker"
                 .hass=${this.hass}
-                .value=${presence}
+                .value=${pres}
                 .includeEntities=${this._getPresenceCandidates()}
                 allow-custom-entity
-                @value-changed=${(e) =>
-                  this._fire(
-                    'entities.presence.entity',
-                    e.detail.value
-                  )}
+                @value-changed=${e => this._fire('entities.presence.entity', e.detail.value)}
               ></ha-entity-picker>
             </div>
 
@@ -249,14 +236,8 @@ export class RoomPanel extends LitElement {
         </div>
 
         <div style="text-align:center; margin-top:1.2em;">
-          <button
-            class="reset-button"
-            @click=${() =>
-              this._fire('__panel_cmd__', {
-                cmd: 'reset',
-                section: 'room',
-              })}
-          >
+          <button class="reset-button"
+                  @click=${() => this._fire('__panel_cmd__', { cmd:'reset', section:'room' })}>
             🧹 Reset Room
           </button>
         </div>
@@ -264,134 +245,73 @@ export class RoomPanel extends LitElement {
     `;
   }
 
-  _renderActions(action) {
-    const cfg = this.config?.[`${action}_action`] || {};
-    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+  _renderActions(type) {
+    const cfg = this.config?.[`${type}_action`] || {};
+    const opts = ['toggle','more-info','navigate','call-service','none'];
     return html`
       <div class="input-group">
-        <label>
-          ${action === 'tap' ? 'Tap Action' : 'Hold Action'}
-        </label>
+        <label>${type==='tap'?'Tap Action':'Hold Action'}</label>
         <div class="pill-group">
-          ${actions.map(
-            (a) => html`
-              <paper-button
-                class="pill-button ${cfg.action === a ? 'active' : ''}"
-                @click=${() => this._fire(`${action}_action.action`, a)}
-              >
-                ${a}
-              </paper-button>
-            `
-          )}
+          ${opts.map(o => html`
+            <paper-button
+              class="pill-button ${cfg.action===o?'active':''}"
+              @click=${()=>this._fire(`${type}_action.action`, o)}
+            >${o}</paper-button>
+          `)}
         </div>
-        ${cfg.action === 'navigate'
-          ? html`
-              <input
-                type="text"
-                placeholder="Path"
-                .value=${cfg.navigation_path || ''}
-                @input=${(e) =>
-                  this._fire(
-                    `${action}_action.navigation_path`,
-                    e.target.value
-                  )}
-              />
-            `
-          : ''}
-        ${cfg.action === 'call-service'
-          ? html`
-              <input
-                type="text"
-                placeholder="domain.service"
-                .value=${cfg.service || ''}
-                @input=${(e) =>
-                  this._fire(`${action}_action.service`, e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder='service_data (JSON)'
-                .value=${cfg.service_data
-                  ? JSON.stringify(cfg.service_data)
-                  : ''}
-                @input=${(e) => {
-                  let v = e.target.value;
-                  try {
-                    v = v ? JSON.parse(v) : undefined;
-                  } catch {
-                    v = undefined;
-                  }
-                  this._fire(
-                    `${action}_action.service_data`,
-                    v
-                  );
-                }}
-              />
-            `
-          : ''}
+        ${cfg.action==='navigate'?html`
+          <input type="text" placeholder="Path"
+                 .value=${cfg.navigation_path||''}
+                 @input=${e=>this._fire(`${type}_action.navigation_path`, e.target.value)} />
+        `:''}
+        ${cfg.action==='call-service'?html`
+          <input type="text" placeholder="domain.service"
+                 .value=${cfg.service||''}
+                 @input=${e=>this._fire(`${type}_action.service`, e.target.value)} />
+          <input type="text" placeholder='service_data (JSON)'
+                 .value=${cfg.service_data?JSON.stringify(cfg.service_data):''}
+                 @input=${e=>{
+                   let v=e.target.value; try{v=v?JSON.parse(v):undefined}catch{v=undefined}
+                   this._fire(`${type}_action.service_data`,v);
+                 }} />
+        `:''}
       </div>
     `;
   }
 
   _getPresenceCandidates() {
     const hass = this.hass;
-    if (!hass || !hass.states) return [];
+    if(!hass||!hass.states) return [];
     const allowed = new Set([
-      'person',
-      'device_tracker',
-      'binary_sensor',
-      'light',
-      'switch',
-      'media_player',
-      'fan',
-      'humidifier',
-      'lock',
-      'input_boolean',
-      'scene',
+      'person','device_tracker','binary_sensor','light','switch',
+      'media_player','fan','humidifier','lock','input_boolean','scene'
     ]);
-    let list = Object.keys(hass.states).filter((id) =>
-      allowed.has(id.split('.')[0])
-    );
-    // binary_sensor: solo motion/occupancy/presence
-    list = list.filter((id) => {
-      const dom = id.split('.')[0];
-      if (dom !== 'binary_sensor') return true;
-      const dc = hass.states[id]?.attributes?.device_class;
-      return ['motion', 'occupancy', 'presence'].includes(dc || '');
+    let list = Object.keys(hass.states).filter(id=>allowed.has(id.split('.')[0]));
+    list = list.filter(id=>{
+      const d=id.split('.')[0];
+      if(d!=='binary_sensor') return true;
+      const dc=hass.states[id]?.attributes?.device_class;
+      return ['motion','occupancy','presence'].includes(dc||'');
     });
-    // area filter
-    const area = this.config?.area;
-    if (area) {
-      const inA = list.filter((id) => {
-        const st = hass.states[id];
-        return (
-          st?.attributes?.area_id === area ||
-          st?.attributes?.area === area
-        );
+    const area=this.config?.area;
+    if(area){
+      const ia=list.filter(id=>{
+        const st=hass.states[id];
+        return st?.attributes?.area_id===area||st?.attributes?.area===area;
       });
-      if (inA.length) list = inA;
+      if(ia.length) list=ia;
     }
-    // mantieni la selezionata anche se fuori filtro
-    const sel =
-      this.config?.entities?.presence?.entity ||
-      this.config?.presence_entity;
-    if (sel && !list.includes(sel)) list.push(sel);
-    if (DEBUG)
-      console.info('[RoomPanel] Presence candidates:', {
-        area,
-        count: list.length,
-        sample: list.slice(0, 8),
-      });
+    const sel=this.config?.entities?.presence?.entity||this.config?.presence_entity;
+    if(sel&&!list.includes(sel)) list.push(sel);
+    if(DEBUG) console.info('[RoomPanel] Presence candidates:',list.length,list.slice(0,8));
     return list;
   }
 
-  _fire(prop, val) {
-    this.dispatchEvent(
-      new CustomEvent('panel-changed', {
-        detail: { prop, val },
-        bubbles: true,
-        composed: true,
-      })
-    );
+  _fire(prop,val){
+    this.dispatchEvent(new CustomEvent('panel-changed',{
+      detail:{prop,val},
+      bubbles:true,composed:true
+    }));
   }
 }
 
