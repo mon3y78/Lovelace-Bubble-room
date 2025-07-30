@@ -162,6 +162,7 @@ export class RoomPanel extends LitElement {
             <div class="input-group">
               <label>Presence (ID):</label>
               <ha-entity-picker
+                style="display:block;min-height:56px;width:100%;box-sizing:border-box"
                 .hass=${this.hass}
                 .value=${presenceValue}
                 .includeEntities=${this._getPresenceCandidates()}
