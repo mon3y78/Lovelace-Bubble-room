@@ -24,324 +24,6 @@ const t=globalThis,i$1=t.trustedTypes,s$1=i$1?i$1.createPolicy("lit-html",{creat
  * SPDX-License-Identifier: BSD-3-Clause
  */const s=globalThis;class i extends y$1{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0;}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const r=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=B(r,this.renderRoot,this.renderOptions);}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0);}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1);}render(){return T}}i._$litElement$=!0,i["finalized"]=!0,s.litElementHydrateSupport?.({LitElement:i});const o=s.litElementPolyfillSupport;o?.({LitElement:i});(s.litElementVersions??=[]).push("4.2.1");
 
-// src/panels/RoomPanel.js
-
-const DEBUG$4 = !!window.__BUBBLE_DEBUG__;
-
-class RoomPanel extends i {
-  static properties = {
-    hass:       { type: Object },
-    config:     { type: Object },
-    _expanded:  { type: Boolean },
-  };
-
-  constructor() {
-    super();
-    this.hass = {};
-    this.config = {};
-    this._expanded = false;
-  }
-
-  static styles = i$3`
-    :host { display: block; }
-
-    .glass-panel {
-      margin: 0!important;
-      width: 100%;
-      box-sizing: border-box;
-      border-radius: 40px;
-      position: relative;
-      border: none;
-      z-index: 0;
-      --glass-bg: rgba(73,164,255,0.38);
-      --glass-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
-      --glass-sheen:
-        linear-gradient(120deg,
-                        rgba(255,255,255,0.26),
-                        rgba(255,255,255,0.11) 70%,
-                        transparent 100%);
-      background: var(--glass-bg);
-      box-shadow: var(--glass-shadow);
-    }
-    .glass-panel::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: var(--glass-sheen);
-      pointer-events: none;
-      z-index: 0;
-    }
-    .glass-header {
-      position: relative;
-      z-index: 1;
-      background: none!important;
-      box-shadow: none!important;
-      padding: 22px 0 18px;
-      margin: 0;
-      text-align: center;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #fff;
-    }
-    .mini-pill {
-      background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.12);
-      box-shadow: 0 3px 22px 0 rgba(70,120,220,0.13);
-      backdrop-filter: blur(10px) saturate(1.2);
-      border-radius: 24px;
-      margin-bottom: 18px;
-      overflow: hidden;
-    }
-    .mini-pill-header {
-      display: flex;
-      align-items: center;
-      padding: 15px 22px;
-      font-size: 1.09em;
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      color: #55afff;
-      cursor: pointer;
-      user-select: none;
-      position: relative;
-      z-index: 1;
-    }
-    .mini-pill-content {
-      padding: 15px 22px;
-      background: transparent;
-      position: relative;
-      z-index: 1;
-    }
-    .input-group {
-      background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.13);
-      box-shadow: 0 2px 14px 0 rgba(70,120,220,0.10);
-      border-radius: 18px;
-      margin-bottom: 13px;
-      padding: 14px 18px 10px;
-    }
-    .ad-top {
-      margin: 0 16px 14px;
-    }
-    label {
-      display: block;
-      font-size: 1.13rem;
-      font-weight: 700;
-      color: #55afff;
-      margin-bottom: 6px;
-    }
-    input[type="text"] {
-      width: 100%;
-      border: 1px solid #444;
-      border-radius: 6px;
-      padding: 8px;
-      background: #202020;
-      color: #f1f1f1;
-      font-size: 0.97rem;
-    }
-    .reset-button {
-      border: 2px solid #ff4c6a;
-      color: #ff4c6a;
-      border-radius: 12px;
-      padding: 8px 16px;
-      background: transparent;
-      cursor: pointer;
-    }
-    .pill-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 6px;
-    }
-    .pill-button {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #555;
-      cursor: pointer;
-    }
-    .pill-button.active {
-      border-color: #55afff;
-      color: #55afff;
-    }
-
-    /* Assicura che il picker non venga nascosto */
-    ha-entity-picker,
-    ha-area-picker,
-    ha-icon-picker {
-      display: block;
-      width: 100%;
-      min-height: 56px;
-      box-sizing: border-box;
-    }
-    ha-entity-picker::part(text-field),
-    ha-entity-picker::part(combobox) {
-      min-height: 56px;
-    }
-  `;
-
-  render() {
-    const area   = this.config?.area || '';
-    const name   = this.config?.name || '';
-    const icon   = this.config?.icon || '';
-    const pres   =
-      this.config?.entities?.presence?.entity ||
-      this.config?.presence_entity ||
-      '';
-    const adPres = this.config?.auto_discovery_sections?.presence || false;
-
-    return x`
-      <ha-expansion-panel
-        class="glass-panel"
-        .expanded=${this._expanded}
-        @expanded-changed=${e => this._expanded = e.detail.expanded}
-      >
-        <div slot="header" class="glass-header">🛋️ Room Settings 2</div>
-
-        <!-- Auto-discovery Presence toggle -->
-        <div class="input-group ad-top">
-          <label style="display:flex;align-items:center;gap:8px;margin:0;">
-            <input
-              type="checkbox"
-              .checked=${adPres}
-              @change=${e => this._fire('auto_discovery_sections.presence', e.target.checked)}
-            />
-            <span>🪄 Auto-discovery Presence</span>
-          </label>
-        </div>
-
-        <div class="mini-pill">
-          <div class="mini-pill-header">Room</div>
-          <div class="mini-pill-content">
-            <div class="input-group">
-              <label>Room name:</label>
-              <input
-                type="text"
-                .value=${name}
-                @input=${e => this._fire('name', e.target.value)}
-              />
-            </div>
-            <div class="input-group">
-              <label>Area:</label>
-              <ha-area-picker
-                .hass=${this.hass}
-                .value=${area}
-                @value-changed=${e => this._fire('area', e.detail.value)}
-              ></ha-area-picker>
-            </div>
-          </div>
-        </div>
-
-        <div class="mini-pill">
-          <div class="mini-pill-header">Icon & Presence</div>
-          <div class="mini-pill-content">
-            <div class="input-group">
-              <label>Room Icon:</label>
-              <ha-icon-picker
-                .hass=${this.hass}
-                .value=${icon}
-                allow-custom-icon
-                @value-changed=${e => this._fire('icon', e.detail.value)}
-              ></ha-icon-picker>
-            </div>
-
-            <div class="input-group">
-              <label>Presence (ID):</label>
-              <ha-entity-picker
-                .hass=${this.hass}
-                .value=${pres}
-                .includeEntities=${this._getPresenceCandidates()}
-                allow-custom-entity
-                @value-changed=${e => this._fire('entities.presence.entity', e.detail.value)}
-              ></ha-entity-picker>
-            </div>
-
-            ${this._renderActions('tap')}
-            ${this._renderActions('hold')}
-          </div>
-        </div>
-
-        <div style="text-align:center; margin-top:1.2em;">
-          <button class="reset-button"
-                  @click=${() => this._fire('__panel_cmd__', { cmd:'reset', section:'room' })}>
-            🧹 Reset Room
-          </button>
-        </div>
-      </ha-expansion-panel>
-    `;
-  }
-
-  _renderActions(type) {
-    const cfg = this.config?.[`${type}_action`] || {};
-    const opts = ['toggle','more-info','navigate','call-service','none'];
-    return x`
-      <div class="input-group">
-        <label>${type==='tap'?'Tap Action':'Hold Action'}</label>
-        <div class="pill-group">
-          ${opts.map(o => x`
-            <paper-button
-              class="pill-button ${cfg.action===o?'active':''}"
-              @click=${()=>this._fire(`${type}_action.action`, o)}
-            >${o}</paper-button>
-          `)}
-        </div>
-        ${cfg.action==='navigate'?x`
-          <input type="text" placeholder="Path"
-                 .value=${cfg.navigation_path||''}
-                 @input=${e=>this._fire(`${type}_action.navigation_path`, e.target.value)} />
-        `:''}
-        ${cfg.action==='call-service'?x`
-          <input type="text" placeholder="domain.service"
-                 .value=${cfg.service||''}
-                 @input=${e=>this._fire(`${type}_action.service`, e.target.value)} />
-          <input type="text" placeholder='service_data (JSON)'
-                 .value=${cfg.service_data?JSON.stringify(cfg.service_data):''}
-                 @input=${e=>{
-                   let v=e.target.value; try{v=v?JSON.parse(v):undefined;}catch{v=undefined;}
-                   this._fire(`${type}_action.service_data`,v);
-                 }} />
-        `:''}
-      </div>
-    `;
-  }
-
-  _getPresenceCandidates() {
-    const hass = this.hass;
-    if(!hass||!hass.states) return [];
-    const allowed = new Set([
-      'person','device_tracker','binary_sensor','light','switch',
-      'media_player','fan','humidifier','lock','input_boolean','scene'
-    ]);
-    let list = Object.keys(hass.states).filter(id=>allowed.has(id.split('.')[0]));
-    list = list.filter(id=>{
-      const d=id.split('.')[0];
-      if(d!=='binary_sensor') return true;
-      const dc=hass.states[id]?.attributes?.device_class;
-      return ['motion','occupancy','presence'].includes(dc||'');
-    });
-    const area=this.config?.area;
-    if(area){
-      const ia=list.filter(id=>{
-        const st=hass.states[id];
-        return st?.attributes?.area_id===area||st?.attributes?.area===area;
-      });
-      if(ia.length) list=ia;
-    }
-    const sel=this.config?.entities?.presence?.entity||this.config?.presence_entity;
-    if(sel&&!list.includes(sel)) list.push(sel);
-    if(DEBUG$4) console.info('[RoomPanel] Presence candidates:',list.length,list.slice(0,8));
-    return list;
-  }
-
-  _fire(prop,val){
-    this.dispatchEvent(new CustomEvent('panel-changed',{
-      detail:{prop,val},
-      bubbles:true,composed:true
-    }));
-  }
-}
-
-customElements.define('room-panel', RoomPanel);
-
 const FILTERS = {
   presence: {
     includeDomains: ['person','device_tracker','binary_sensor','light','switch','media_player','fan','humidifier','lock','input_boolean','scene'],
@@ -432,6 +114,479 @@ function candidatesFor(hass, config, sectionOrOpts) {
 
   return res;
 }
+
+// src/helpers/auto-discovery.js
+
+const DEBUG$3 = !!window.__BUBBLE_DEBUG__;
+const pickFirstFree = (list, used) => list.find((id) => !used.has(id)) || null;
+
+/* =========================
+ *   AUTO-FILL (per sezione)
+ * ========================= */
+
+// Sensors: sensor1..sensor6 – riempi solo slot vuoti, rispetta type & area, evita duplicati
+function autoFillSensors(hass, config) {
+  const keys = ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'];
+  const entities = { ...(config.entities || {}) };
+  const used = new Set(keys.map((k) => entities[k]?.entity_id).filter(Boolean));
+
+  for (const k of keys) {
+    const ent = entities[k] || (entities[k] = {});
+    if (ent.entity_id) continue; // non sovrascrivere scelte utente
+    const type = ent.type || '';
+    const list = candidatesFor(hass, config, { section: 'sensor', type });
+    const pick = pickFirstFree(list, used);
+    if (pick) { ent.entity_id = pick; used.add(pick); }
+  }
+  return { ...config, entities };
+}
+
+// Mushrooms: entities1..5 + climate + camera – priorità al dominio degli slot dedicati
+function autoFillMushrooms(hass, config) {
+  const order = ['climate','camera','entities1','entities2','entities3','entities4','entities5'];
+  const entities = { ...(config.entities || {}) };
+  const used = new Set(order.map((k) => entities[k]?.entity).filter(Boolean));
+  const all = candidatesFor(hass, config, 'mushroom');
+
+  // slot dedicati
+  const climate = entities.climate || (entities.climate = {});
+  if (!climate.entity) {
+    const pick = all.find((id) => id.startsWith('climate.') && !used.has(id));
+    if (pick) { climate.entity = pick; used.add(pick); }
+  }
+  const camera = entities.camera || (entities.camera = {});
+  if (!camera.entity) {
+    const pick = all.find((id) => id.startsWith('camera.') && !used.has(id));
+    if (pick) { camera.entity = pick; used.add(pick); }
+  }
+  // slot generici
+  for (const k of ['entities1','entities2','entities3','entities4','entities5']) {
+    const ent = entities[k] || (entities[k] = {});
+    if (ent.entity) continue;
+    const pick = pickFirstFree(all, used);
+    if (pick) { ent.entity = pick; used.add(pick); }
+  }
+  return { ...config, entities };
+}
+
+// SubButtons: sub-button1..6 – domini controllabili, filtro area, evita duplicati
+function autoFillSubButtons(hass, config) {
+  const keys = ['sub-button1','sub-button2','sub-button3','sub-button4','sub-button5','sub-button6'];
+  const entities = { ...(config.entities || {}) };
+  const used = new Set(keys.map((k) => entities[k]?.entity).filter(Boolean));
+  const list = candidatesFor(hass, config, 'subbutton');
+
+  for (const k of keys) {
+    const ent = entities[k] || (entities[k] = {});
+    if (ent.entity) continue;
+    const pick = pickFirstFree(list, used);
+    if (pick) { ent.entity = pick; used.add(pick); }
+  }
+  return { ...config, entities };
+}
+
+// Presence (Room): presence entity – scegli se vuoto, filtra per domini ammessi + device_class + area
+function presenceCandidatesLocal(hass, config) {
+  if (!hass || !hass.states) return [];
+  const allowed = new Set([
+    'person','device_tracker','binary_sensor','light','switch',
+    'media_player','fan','humidifier','lock','input_boolean','scene'
+  ]);
+
+  let ids = Object.keys(hass.states).filter((id) => allowed.has(id.split('.')[0]));
+  // binary_sensor: solo motion/occupancy/presence
+  ids = ids.filter((id) => {
+    const domain = id.split('.')[0];
+    if (domain !== 'binary_sensor') return true;
+    const dc = hass.states[id]?.attributes?.device_class;
+    return ['motion','occupancy','presence'].includes(dc || '');
+  });
+
+  // filtro Area
+  const area = config?.area;
+  if (area) {
+    const inArea = ids.filter((id) => {
+      const st = hass.states[id];
+      const a1 = st?.attributes?.area_id;
+      const a2 = st?.attributes?.area;
+      return a1 === area || a2 === area;
+    });
+    if (inArea.length) ids = inArea;
+  }
+
+  // mantieni selezionata anche se fuori filtro
+  const selected = config?.entities?.presence?.entity || config?.presence_entity;
+  if (selected && !ids.includes(selected)) ids.push(selected);
+
+  if (DEBUG$3) console.info('[AutoDiscovery][presence candidates]', { area, count: ids.length, sample: ids.slice(0,8) });
+  return ids;
+}
+
+function autoFillPresence(hass, config) {
+  const entities = { ...(config.entities || {}) };
+  const ent = entities.presence || (entities.presence = {});
+  if (!ent.entity) {
+    // Se hai aggiunto 'presence' in entity-filters, puoi usare: candidatesFor(hass, config, 'presence')
+    const list = presenceCandidatesLocal(hass, config);
+    if (list.length) ent.entity = list[0];
+  }
+  return { ...config, entities };
+}
+
+/* =========================
+ *           RESET
+ * ========================= */
+
+function resetSensors(config) {
+  const entities = { ...(config.entities || {}) };
+  ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'].forEach((k) => delete entities[k]);
+  return { ...config, entities };
+}
+function resetMushrooms(config) {
+  const entities = { ...(config.entities || {}) };
+  ['entities1','entities2','entities3','entities4','entities5','climate','camera'].forEach((k) => delete entities[k]);
+  return { ...config, entities };
+}
+function resetSubButtons(config) {
+  const entities = { ...(config.entities || {}) };
+  ['sub-button1','sub-button2','sub-button3','sub-button4','sub-button5','sub-button6'].forEach((k) => delete entities[k]);
+  return { ...config, entities };
+}
+function resetRoom(config) {
+  const entities = { ...(config.entities || {}) };
+  delete entities.presence;                 // pulisci presence
+  const next = { ...config, entities };
+  delete next.name;                         // pulisci campi base Room
+  delete next.icon;
+  delete next.area;
+  delete next.presence_entity;             // legacy
+  return next;
+}
+
+/* =========================
+ *   TRIGGER CENTRALE
+ * ========================= */
+function maybeAutoDiscover(hass, config, changedProp, debug = false) {
+  const ad = config.auto_discovery_sections || {};
+  const isAreaChange = changedProp === 'area';
+  const isADChange   = changedProp && changedProp.startsWith('auto_discovery_sections.');
+  if (!isAreaChange && !isADChange) return config;
+
+  let next = config;
+  if (ad.sensor)    next = autoFillSensors(hass, next);
+  if (ad.mushroom)  next = autoFillMushrooms(hass, next);
+  if (ad.subbutton) next = autoFillSubButtons(hass, next);
+  if (ad.presence)  next = autoFillPresence(hass, next);
+
+  if (debug && typeof window !== 'undefined' && window.__BUBBLE_DEBUG__) {
+    console.info('[AutoDiscovery] applied after', changedProp, { sections: ad });
+  }
+  return next;
+}
+
+// src/panels/RoomPanel.js
+
+class RoomPanel extends i {
+  static properties = {
+    hass: { type: Object },
+    config: { type: Object },
+    _expanded: { type: Boolean },
+  };
+
+  constructor() {
+    super();
+    this.hass = {};
+    this.config = {};
+    this._expanded = false;
+  }
+
+  updated(changedProps) {
+    if (changedProps.has('config') || changedProps.has('hass')) {
+      // trigger auto-discovery on area or toggle change
+      maybeAutoDiscover(this.hass, this.config, 'area');
+      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
+    }
+  }
+
+  static styles = i$3`
+    :host { display: block; }
+    .glass-panel {
+      margin: 0 !important;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 40px;
+      position: relative;
+      border: none;
+      --glass-bg: rgba(73,164,255,0.38);
+      --glass-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
+      --glass-sheen: linear-gradient(
+        120deg,
+        rgba(255,255,255,0.26),
+        rgba(255,255,255,0.11) 70%,
+        transparent 100%
+      );
+      background: var(--glass-bg);
+      box-shadow: var(--glass-shadow);
+    }
+    .glass-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: var(--glass-sheen);
+      pointer-events: none;
+    }
+    .glass-header {
+      position: relative;
+      z-index: 1;
+      padding: 22px 0 18px;
+      margin: 0;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .mini-pill {
+      background: rgba(44, 70, 100, 0.23);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 3px 22px 0 rgba(70, 120, 220, 0.13);
+      backdrop-filter: blur(10px) saturate(1.2);
+      border-radius: 24px;
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+    .mini-pill-header {
+      display: flex;
+      align-items: center;
+      padding: 15px 22px;
+      font-size: 1.09em;
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      color: #55afff;
+      cursor: pointer;
+      user-select: none;
+    }
+    .mini-pill-content {
+      padding: 15px 22px;
+    }
+    .input-group {
+      background: rgba(44, 70, 100, 0.23);
+      border: 1.5px solid rgba(255, 255, 255, 0.13);
+      box-shadow: 0 2px 14px 0 rgba(70, 120, 220, 0.10);
+      border-radius: 18px;
+      margin-bottom: 13px;
+      padding: 14px 18px 10px;
+    }
+    .ad-top { margin: 0 16px 14px; }
+    label {
+      display: block;
+      font-size: 1.13rem;
+      font-weight: 700;
+      color: #55afff;
+      margin-bottom: 6px;
+    }
+    /* rendiamo il picker HA sempre visibile */
+    ha-entity-picker, ha-icon-picker, ha-area-picker {
+      display: block;
+      width: 100%;
+      min-height: 56px;
+      box-sizing: border-box;
+    }
+    ha-entity-picker::part(combobox) {
+      min-height: 56px;
+    }
+    .reset-button {
+      border: 2px solid #ff4c6a;
+      color: #ff4c6a;
+      border-radius: 12px;
+      padding: 8px 16px;
+      background: transparent;
+      cursor: pointer;
+    }
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .pill-button {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #555;
+      cursor: pointer;
+    }
+    .pill-button.active {
+      border-color: #55afff;
+      color: #55afff;
+    }
+
+    /* fix globale overlay Vaadin */
+    vaadin-combo-box-overlay,
+    vaadin-combo-box-item,
+    vaadin-combo-box-item::part(content) {
+      color: var(--primary-text-color, #eaeef8) !important;
+    }
+  `;
+
+  render() {
+    const cfg = this.config;
+    const area = cfg.area || '';
+    const name = cfg.name || '';
+    const icon = cfg.icon || '';
+    const pres = cfg.entities?.presence?.entity || cfg.presence_entity || '';
+    const ad = cfg.auto_discovery_sections?.presence || false;
+
+    return x`
+      <ha-expansion-panel
+        class="glass-panel"
+        .expanded=${this._expanded}
+        @expanded-changed=${e => (this._expanded = e.detail.expanded)}
+      >
+        <div slot="header" class="glass-header">🛋️ Room Settings 2</div>
+
+        <!-- Auto-discover subito sotto il titolo -->
+        <div class="input-group ad-top">
+          <label style="display:flex;align-items:center;gap:8px;margin:0;">
+            <input
+              type="checkbox"
+              .checked=${ad}
+              @change=${e => this._emit('auto_discovery_sections.presence', e.target.checked)}
+            />
+            <span>🔍 Auto-discover Presence</span>
+          </label>
+        </div>
+
+        <div class="mini-pill">
+          <div class="mini-pill-header">Room</div>
+          <div class="mini-pill-content">
+            <div class="input-group">
+              <label>Room name:</label>
+              <input
+                type="text"
+                .value=${name}
+                @input=${e => this._fire('name', e.target.value)}
+              />
+            </div>
+            <div class="input-group">
+              <label>Area:</label>
+              <ha-area-picker
+                .hass=${this.hass}
+                .value=${area}
+                @value-changed=${e => this._fire('area', e.detail.value)}
+              ></ha-area-picker>
+            </div>
+          </div>
+        </div>
+
+        <div class="mini-pill">
+          <div class="mini-pill-header">Icon & Presence</div>
+          <div class="mini-pill-content">
+            <div class="input-group">
+              <label>Room Icon:</label>
+              <ha-icon-picker
+                .hass=${this.hass}
+                .value=${icon}
+                allow-custom-icon
+                @value-changed=${e => this._fire('icon', e.detail.value)}
+              ></ha-icon-picker>
+            </div>
+            <div class="input-group">
+              <label>Presence (ID):</label>
+              <ha-entity-picker
+                .hass=${this.hass}
+                .value=${pres}
+                .includeEntities=${this._getPresenceCandidates()}
+                allow-custom-entity
+                @value-changed=${e => this._emit('entities.presence.entity', e.detail.value)}
+              ></ha-entity-picker>
+            </div>
+            ${this._renderActions('tap')}
+            ${this._renderActions('hold')}
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:1.2em;">
+          <button class="reset-button" @click=${this._resetRoom}>
+            🧹 Reset Room
+          </button>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+
+  _renderActions(type) {
+    const cfg = this.config?.[`${type}_action`] || {};
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+    return x`
+      <div class="input-group">
+        <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
+        <div class="pill-group">
+          ${actions.map(a => x`
+            <paper-button
+              class="pill-button ${cfg.action === a ? 'active' : ''}"
+              @click=${() => this._fire(`${type}_action.action`, a)}
+            >${a}</paper-button>
+          `)}
+        </div>
+        ${cfg.action === 'navigate' ? x`
+          <input
+            type="text"
+            placeholder="Path"
+            .value=${cfg.navigation_path || ''}
+            @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
+          />
+        ` : ''}
+        ${cfg.action === 'call-service' ? x`
+          <input
+            type="text"
+            placeholder="service: domain.service_name"
+            .value=${cfg.service || ''}
+            @input=${e => this._fire(`${type}_action.service`, e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder='service_data (JSON)'
+            .value=${cfg.service_data ? JSON.stringify(cfg.service_data) : ''}
+            @input=${e => {
+              let v = e.target.value;
+              try { v = v ? JSON.parse(v) : undefined; } catch { v = undefined; }
+              this._fire(`${type}_action.service_data`, v);
+            }}
+          />
+        ` : ''}
+      </div>
+    `;
+  }
+
+  _getPresenceCandidates() {
+    const h = this.hass?.states || {};
+    return Object.keys(h)
+      .filter(id => ['person','device_tracker','binary_sensor'].includes(id.split('.')[0]))
+      .filter(id => {
+        if (id.split('.')[0] !== 'binary_sensor') return true;
+        const dc = h[id]?.attributes?.device_class;
+        return ['motion','occupancy','presence'].includes(dc);
+      });
+  }
+
+  _resetRoom() {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' } },
+      bubbles: true, composed: true,
+    }));
+  }
+
+  _emit(prop, val) {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop, val },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+  _fire(prop, val) { this._emit(prop, val); }
+}
+
+customElements.define('room-panel', RoomPanel);
 
 // src/panels/SensorsPanel.js
 // Se hai un mapping tipi/etichette, puoi importarlo. Qui rendo opzionale.
@@ -633,7 +788,7 @@ ha-entity-picker::part(combobox) {
 
 customElements.define('sensors-panel', SensorsPanel);
 
-const DEBUG$3 = !!window.__BUBBLE_DEBUG__;
+const DEBUG$2 = !!window.__BUBBLE_DEBUG__;
 
 class MushroomsPanel extends i {
   static properties = {
@@ -948,7 +1103,7 @@ ha-entity-picker::part(combobox) {
   _getMushroomCandidates() {
     // Usa la logica centralizzata, ma aggiunge log locale (Opzione A)
     const list = candidatesFor(this.hass, this.config, 'mushroom');
-    if (DEBUG$3) {
+    if (DEBUG$2) {
       console.info('[MushroomsPanel][Candidates]', {
         area: this.config?.area || null,
         count: list.length,
@@ -961,7 +1116,7 @@ ha-entity-picker::part(combobox) {
 
 customElements.define('mushrooms-panel', MushroomsPanel);
 
-const DEBUG$2 = !!window.__BUBBLE_DEBUG__;
+const DEBUG$1 = !!window.__BUBBLE_DEBUG__;
 
 class SubButtonsPanel extends i {
   static properties = {
@@ -1236,7 +1391,7 @@ _fire(prop, value) {
       }
     }
     
-    if (DEBUG$2) {
+    if (DEBUG$1) {
       console.info('[SubButtonsPanel][Candidates]', {
         area: this.config?.area || null,
         count: list.length,
@@ -1334,175 +1489,6 @@ class ColorsPanel extends i {
 }
 
 customElements.define('colors-panel', ColorsPanel);
-
-// src/helpers/auto-discovery.js
-
-const DEBUG$1 = !!window.__BUBBLE_DEBUG__;
-const pickFirstFree = (list, used) => list.find((id) => !used.has(id)) || null;
-
-/* =========================
- *   AUTO-FILL (per sezione)
- * ========================= */
-
-// Sensors: sensor1..sensor6 – riempi solo slot vuoti, rispetta type & area, evita duplicati
-function autoFillSensors(hass, config) {
-  const keys = ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'];
-  const entities = { ...(config.entities || {}) };
-  const used = new Set(keys.map((k) => entities[k]?.entity_id).filter(Boolean));
-
-  for (const k of keys) {
-    const ent = entities[k] || (entities[k] = {});
-    if (ent.entity_id) continue; // non sovrascrivere scelte utente
-    const type = ent.type || '';
-    const list = candidatesFor(hass, config, { section: 'sensor', type });
-    const pick = pickFirstFree(list, used);
-    if (pick) { ent.entity_id = pick; used.add(pick); }
-  }
-  return { ...config, entities };
-}
-
-// Mushrooms: entities1..5 + climate + camera – priorità al dominio degli slot dedicati
-function autoFillMushrooms(hass, config) {
-  const order = ['climate','camera','entities1','entities2','entities3','entities4','entities5'];
-  const entities = { ...(config.entities || {}) };
-  const used = new Set(order.map((k) => entities[k]?.entity).filter(Boolean));
-  const all = candidatesFor(hass, config, 'mushroom');
-
-  // slot dedicati
-  const climate = entities.climate || (entities.climate = {});
-  if (!climate.entity) {
-    const pick = all.find((id) => id.startsWith('climate.') && !used.has(id));
-    if (pick) { climate.entity = pick; used.add(pick); }
-  }
-  const camera = entities.camera || (entities.camera = {});
-  if (!camera.entity) {
-    const pick = all.find((id) => id.startsWith('camera.') && !used.has(id));
-    if (pick) { camera.entity = pick; used.add(pick); }
-  }
-  // slot generici
-  for (const k of ['entities1','entities2','entities3','entities4','entities5']) {
-    const ent = entities[k] || (entities[k] = {});
-    if (ent.entity) continue;
-    const pick = pickFirstFree(all, used);
-    if (pick) { ent.entity = pick; used.add(pick); }
-  }
-  return { ...config, entities };
-}
-
-// SubButtons: sub-button1..6 – domini controllabili, filtro area, evita duplicati
-function autoFillSubButtons(hass, config) {
-  const keys = ['sub-button1','sub-button2','sub-button3','sub-button4','sub-button5','sub-button6'];
-  const entities = { ...(config.entities || {}) };
-  const used = new Set(keys.map((k) => entities[k]?.entity).filter(Boolean));
-  const list = candidatesFor(hass, config, 'subbutton');
-
-  for (const k of keys) {
-    const ent = entities[k] || (entities[k] = {});
-    if (ent.entity) continue;
-    const pick = pickFirstFree(list, used);
-    if (pick) { ent.entity = pick; used.add(pick); }
-  }
-  return { ...config, entities };
-}
-
-// Presence (Room): presence entity – scegli se vuoto, filtra per domini ammessi + device_class + area
-function presenceCandidatesLocal(hass, config) {
-  if (!hass || !hass.states) return [];
-  const allowed = new Set([
-    'person','device_tracker','binary_sensor','light','switch',
-    'media_player','fan','humidifier','lock','input_boolean','scene'
-  ]);
-
-  let ids = Object.keys(hass.states).filter((id) => allowed.has(id.split('.')[0]));
-  // binary_sensor: solo motion/occupancy/presence
-  ids = ids.filter((id) => {
-    const domain = id.split('.')[0];
-    if (domain !== 'binary_sensor') return true;
-    const dc = hass.states[id]?.attributes?.device_class;
-    return ['motion','occupancy','presence'].includes(dc || '');
-  });
-
-  // filtro Area
-  const area = config?.area;
-  if (area) {
-    const inArea = ids.filter((id) => {
-      const st = hass.states[id];
-      const a1 = st?.attributes?.area_id;
-      const a2 = st?.attributes?.area;
-      return a1 === area || a2 === area;
-    });
-    if (inArea.length) ids = inArea;
-  }
-
-  // mantieni selezionata anche se fuori filtro
-  const selected = config?.entities?.presence?.entity || config?.presence_entity;
-  if (selected && !ids.includes(selected)) ids.push(selected);
-
-  if (DEBUG$1) console.info('[AutoDiscovery][presence candidates]', { area, count: ids.length, sample: ids.slice(0,8) });
-  return ids;
-}
-
-function autoFillPresence(hass, config) {
-  const entities = { ...(config.entities || {}) };
-  const ent = entities.presence || (entities.presence = {});
-  if (!ent.entity) {
-    // Se hai aggiunto 'presence' in entity-filters, puoi usare: candidatesFor(hass, config, 'presence')
-    const list = presenceCandidatesLocal(hass, config);
-    if (list.length) ent.entity = list[0];
-  }
-  return { ...config, entities };
-}
-
-/* =========================
- *           RESET
- * ========================= */
-
-function resetSensors(config) {
-  const entities = { ...(config.entities || {}) };
-  ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'].forEach((k) => delete entities[k]);
-  return { ...config, entities };
-}
-function resetMushrooms(config) {
-  const entities = { ...(config.entities || {}) };
-  ['entities1','entities2','entities3','entities4','entities5','climate','camera'].forEach((k) => delete entities[k]);
-  return { ...config, entities };
-}
-function resetSubButtons(config) {
-  const entities = { ...(config.entities || {}) };
-  ['sub-button1','sub-button2','sub-button3','sub-button4','sub-button5','sub-button6'].forEach((k) => delete entities[k]);
-  return { ...config, entities };
-}
-function resetRoom(config) {
-  const entities = { ...(config.entities || {}) };
-  delete entities.presence;                 // pulisci presence
-  const next = { ...config, entities };
-  delete next.name;                         // pulisci campi base Room
-  delete next.icon;
-  delete next.area;
-  delete next.presence_entity;             // legacy
-  return next;
-}
-
-/* =========================
- *   TRIGGER CENTRALE
- * ========================= */
-function maybeAutoDiscover(hass, config, changedProp, debug = false) {
-  const ad = config.auto_discovery_sections || {};
-  const isAreaChange = changedProp === 'area';
-  const isADChange   = changedProp && changedProp.startsWith('auto_discovery_sections.');
-  if (!isAreaChange && !isADChange) return config;
-
-  let next = config;
-  if (ad.sensor)    next = autoFillSensors(hass, next);
-  if (ad.mushroom)  next = autoFillMushrooms(hass, next);
-  if (ad.subbutton) next = autoFillSubButtons(hass, next);
-  if (ad.presence)  next = autoFillPresence(hass, next);
-
-  if (debug && typeof window !== 'undefined' && window.__BUBBLE_DEBUG__) {
-    console.info('[AutoDiscovery] applied after', changedProp, { sections: ad });
-  }
-  return next;
-}
 
 // src/bubble-room-editor.js
 
