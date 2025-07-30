@@ -37,6 +37,7 @@ export class SensorsPanel extends LitElement {
         @expanded-changed=${(e) => (this._expanded = e.detail.expanded)}
       >
         <div slot="header" class="glass-header">🧭 Sensors</div>
+
         <div class="glass-content">
           <div class="autodiscover-box" @click=${() => this._toggleAuto('sensor')}>
             <label>
@@ -144,7 +145,7 @@ export class SensorsPanel extends LitElement {
     }));
   }
 
-  // --- DEBUG Opzione A: wrapper locale che usa la logica centralizzata ---
+  // Wrapper locale (Opzione A) che usa la logica centralizzata e logga per debug
   _getSensorCandidates(type) {
     const list = candidatesFor(this.hass, this.config, { section: 'sensor', type });
     if (DEBUG) {
