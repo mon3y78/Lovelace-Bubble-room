@@ -1,9 +1,9 @@
+// src/panels/RoomPanel.js
 import { LitElement, html, css } from 'lit';
 
 const DEBUG = !!window.__BUBBLE_DEBUG__;
-import { candidatesFor } from '../helpers/entity-filters.js';
-import { FILTERS } from '../helpers/entity-filters.js';
-
+// Se preferisci usare l'helper globale, importa candidatesFor e sostituisci la chiamata nel picker
+// import { candidatesFor } from '../helpers/entity-filters.js';
 
 export class RoomPanel extends LitElement {
   static properties = {
@@ -58,16 +58,8 @@ export class RoomPanel extends LitElement {
       font-size:1.09em; font-family:'Inter',sans-serif; font-weight:800;
       color:#55afff; cursor:pointer; user-select:none; position:relative; z-index:1;
     }
-    .mini-pill-header .chevron { margin-left:auto; font-size:1.22em; opacity:0.64; transition:transform 0.18s; }
-    .mini-pill.expanded .mini-pill-header .chevron { transform: rotate(90deg); }
     .mini-pill-content {
       padding:15px 22px; background:transparent; position:relative; z-index:1;
-    }
-    .autodiscover-box {
-      margin:0 auto 18px; padding:18px 0; display:flex; align-items:center; justify-content:center;
-      font-size:1.17rem; color:#fff; font-weight:700; letter-spacing:0.02em; cursor:pointer;
-      border:2.5px solid #FFD600; box-shadow:0 2px 24px 0 #FFD60033;
-      border-radius:24px; backdrop-filter: blur(7px) saturate(1.2);
     }
     .input-group {
       background: rgba(44,70,100,0.23);
@@ -80,99 +72,187 @@ export class RoomPanel extends LitElement {
       width:100%; border:1px solid #444; border-radius:6px; padding:8px;
       background:#202020; color:#f1f1f1; font-size:0.97rem;
     }
+    .reset-button{
+      border:2px solid #ff4c6a; color:#ff4c6a; border-radius:12px; padding:8px 16px;
+      background:transparent; cursor:pointer;
+    }
+    .pill-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+    .pill-button { padding:6px 10px; border-radius:999px; border:1px solid #555; cursor:pointer; }
+    .pill-button.active { border-color:#55afff; color:#55afff; }
   `;
 
   render() {
+    const area = this.config?.area || '';
+    const name = this.config?.name || '';
+    const icon = this.config?.icon || '';
+    const presenceValue = this.config?.entities?.presence?.entity || this.config?.presence_entity || '';
+    const adPresence = this.config?.auto_discovery_sections?.presence || false;
+
     return html`
       <ha-expansion-panel
         class="glass-panel"
-        .expanded="${this._expanded}"
-        @expanded-changed="${e => this._expanded = e.detail.expanded}"
+        .expanded=${this._expanded}
+        @expanded-changed=${(e) => (this._expanded = e.detail.expanded)}
       >
         <div slot="header" class="glass-header">🛋️ Room Settings 2</div>
-        <div class="mini-pill expanded">
+
+        <div class="mini-pill">
           <div class="mini-pill-header">Room</div>
           <div class="mini-pill-content">
             <div class="input-group">
               <label>Room name:</label>
-              <input type="text" .value="${this.config.name||''}" @input="${this._updateName}">
+              <input type="text" .value=${name} @input=${this._updateName}>
             </div>
             <div class="input-group">
               <label>Area:</label>
               <ha-area-picker
-                .hass="${this.hass}"
-                .value="${this.config.area||''}"
-                @value-changed="${this._updateArea}"
+                .hass=${this.hass}
+                .value=${area}
+                @value-changed=${this._updateArea}
               ></ha-area-picker>
             </div>
           </div>
         </div>
 
-        <div class="mini-pill expanded">
-          <div class="mini-pill-header">Icon</div>
+        <div class="mini-pill">
+          <div class="mini-pill-header">Icon & Presence</div>
           <div class="mini-pill-content">
             <div class="input-group">
               <label>Room Icon:</label>
               <ha-icon-picker
-                .hass="${this.hass}"
-                .value="${this.config.icon||''}"
+                .hass=${this.hass}
+                .value=${icon}
                 allow-custom-icon
-                @value-changed="${this._updateIcon}"
+                @value-changed=${this._updateIcon}
               ></ha-icon-picker>
             </div>
+
             <div class="input-group">
               <label>Presence (ID):</label>
               <ha-entity-picker
                 .hass=${this.hass}
-                .value=${this.config.entities?.presence?.entity || this.config.presence_entity || ''}
-                .includeEntities=${candidatesFor(this.hass, this.config, 'presence')}
+                .value=${presenceValue}
+                .includeEntities=${this._getPresenceCandidates()}
                 allow-custom-entity
-                @value-changed=${e=>this._emit('entities.presence.entity', e.detail.value)}
+                @value-changed=${(e) => this._emit('entities.presence.entity', e.detail.value)}
               ></ha-entity-picker>
+              <label style="margin-top:10px;">
+                <input type="checkbox"
+                  .checked=${adPresence}
+                  @change=${(e) => this._emit('auto_discovery_sections.presence', e.target.checked)}>
+                <span>🪄 Auto-discovery Presence</span>
+              </label>
             </div>
-            <!-- tap/hold actions -->
+
             ${this._renderActions('tap')}
             ${this._renderActions('hold')}
           </div>
         </div>
 
         <div style="text-align:center; margin-top:1.2em;">
-          <button class="reset-button" @click="${this._reset}">🧹 Reset Room</button>
+          <button class="reset-button" @click=${this._resetRoom}>🧹 Reset Room</button>
         </div>
       </ha-expansion-panel>
     `;
   }
 
-  _updateName(e) {
-    this._fire('name', e.target.value);
-  }
-  _updateArea(e) {
-    this._fire('area', e.detail.value);
-  }
-  _updateIcon(e) {
-    this._fire('icon', e.detail.value);
-  }
-  _updateEntity(key, val) {
-    this._fire(`entities.${key}.entity`, val);
-  }
-  _renderActions(type) {
-    const cfg = this.config[`${type}_action`] || {};
-    const labels = { tap: 'Tap', hold: 'Hold' };
+  /* ---------- handlers ---------- */
+  _updateName(e)  { this._fire('name', e.target.value); }
+  _updateArea(e)  { this._fire('area', e.detail.value); }
+  _updateIcon(e)  { this._fire('icon', e.detail.value); }
+
+  _renderActions(actionType) {
+    // azioni standard: toggle, more-info, navigate, call-service, none
+    const cfg = this.config?.[`${actionType}_action`] || {};
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
     return html`
       <div class="input-group">
-        <label>${labels[type]} Action:</label>
-        <!-- replica esattamente il _renderTapHoldAction del sorgente -->
-        ...qui copi esattamente il blocco di codice di ${type} come in originale...
+        <label>${actionType === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
+        <div class="pill-group">
+          ${actions.map((a) => html`
+            <paper-button
+              class="pill-button ${cfg.action === a ? 'active' : ''}"
+              @click=${() => this._fire(`${actionType}_action.action`, a)}
+            >${a}</paper-button>
+          `)}
+        </div>
+        ${cfg.action === 'navigate' ? html`
+          <input type="text" placeholder="Path"
+                 .value=${cfg.navigation_path || ''}
+                 @input=${(e) => this._fire(`${actionType}_action.navigation_path`, e.target.value)}>
+        ` : ''}
+        ${cfg.action === 'call-service' ? html`
+          <input type="text" placeholder="service: domain.service_name"
+                 .value=${cfg.service || ''}
+                 @input=${(e) => this._fire(`${actionType}_action.service`, e.target.value)}>
+          <input type="text" placeholder='service_data (JSON)'
+                 .value=${cfg.service_data ? JSON.stringify(cfg.service_data) : ''}
+                 @input=${(e) => {
+                   let v = e.target.value;
+                   try { v = v ? JSON.parse(v) : undefined; } catch { v = undefined; }
+                   this._fire(`${actionType}_action.service_data`, v);
+                 }}>
+        ` : ''}
       </div>
     `;
   }
-  _reset() {
-    this._fire('resetRoom', true);
-  }
-  _fire(prop, val) {
+
+  _resetRoom() {
+    // delega il reset all'editor (centralizzato)
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val }, bubbles: true, composed: true
+      detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' } },
+      bubbles: true, composed: true,
     }));
+  }
+
+  _emit(prop, val) {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop, val }, bubbles: true, composed: true,
+    }));
+  }
+
+  _fire(prop, val) { this._emit(prop, val); }
+
+  /* ---------- presence candidates (locale, come Archivio2) ---------- */
+  _getPresenceCandidates() {
+    const hass = this.hass;
+    if (!hass || !hass.states) return [];
+    const allowed = new Set([
+      'person','device_tracker','binary_sensor','light','switch',
+      'media_player','fan','humidifier','lock','input_boolean','scene'
+    ]);
+
+    let ids = Object.keys(hass.states).filter((id) => allowed.has(id.split('.')[0]));
+
+    // binary_sensor: solo motion/occupancy/presence
+    ids = ids.filter((id) => {
+      const domain = id.split('.')[0];
+      if (domain !== 'binary_sensor') return true;
+      const dc = hass.states[id]?.attributes?.device_class;
+      return ['motion','occupancy','presence'].includes(dc || '');
+    });
+
+    // filtro per Area
+    const area = this.config?.area;
+    if (area) {
+      const inArea = ids.filter((id) => {
+        const st = hass.states[id];
+        const a1 = st?.attributes?.area_id;
+        const a2 = st?.attributes?.area;
+        return a1 === area || a2 === area;
+      });
+      if (inArea.length) ids = inArea;
+    }
+
+    // mantieni la selezionata anche se fuori filtro
+    const selected = this.config?.entities?.presence?.entity || this.config?.presence_entity;
+    if (selected && !ids.includes(selected)) ids.push(selected);
+
+    if (DEBUG) console.info('[RoomPanel][Presence candidates]', {
+      area, count: ids.length, sample: ids.slice(0,8)
+    });
+
+    return ids;
   }
 }
 
