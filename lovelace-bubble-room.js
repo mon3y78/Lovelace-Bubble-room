@@ -33,7 +33,7 @@ class RoomPanel extends i {
     hass: { type: Object },
     config: { type: Object },
     _expanded: { type: Boolean },
-    _useFallbackPicker: { type: Boolean }, // usa ha-combo-box se il picker nativo è "collassato" o su mobile
+    _useFallbackPicker: { type: Boolean }, // se il picker nativo è collassato / mobile
   };
 
   constructor() {
@@ -43,30 +43,28 @@ class RoomPanel extends i {
     this._expanded = false;
     this._useFallbackPicker = false;
 
-    // Quando i custom elements sono definiti, ricontrolla la visibilità
-    if (!customElements.get('ha-entity-picker')) {
-      customElements.whenDefined('ha-entity-picker').then(() => this._recheckPicker());
+    if (!customElements.get("ha-entity-picker")) {
+      customElements.whenDefined("ha-entity-picker").then(() => this._recheckPicker());
     }
-    if (!customElements.get('ha-combo-box')) {
-      customElements.whenDefined('ha-combo-box').then(() => this.requestUpdate());
+    if (!customElements.get("ha-combo-box")) {
+      customElements.whenDefined("ha-combo-box").then(() => this.requestUpdate());
     }
   }
 
   firstUpdated() {
-    // Stile overlay e prima verifica (mobile -> fallback)
-    this._ensureOverlayTextColor();
-    this._recheckPicker(true);
+    this._injectOverlayGlobalCss();
+    this._recheckPicker(true); // su mobile preferisci il fallback al primo giro
   }
 
   updated(changed) {
-    if (changed.has('config') || changed.has('hass')) this._recheckPicker();
+    if (changed.has("config") || changed.has("hass")) this._recheckPicker();
   }
 
   _recheckPicker(forceMobileHeuristic = false) {
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     const preferFallback = forceMobileHeuristic ? isMobile : this._useFallbackPicker;
 
-    const p = this.renderRoot?.querySelector('ha-entity-picker.presence-picker');
+    const p = this.renderRoot?.querySelector("ha-entity-picker.presence-picker");
     const h = p?.offsetHeight || 0;
     const shouldFallback = preferFallback || !p || h < 8;
 
@@ -92,7 +90,7 @@ class RoomPanel extends i {
       box-shadow: var(--glass-shadow);
     }
     .glass-panel::after {
-      content: '';
+      content: "";
       position: absolute;
       inset: 0;
       border-radius: inherit;
@@ -126,10 +124,9 @@ class RoomPanel extends i {
       align-items: center;
       padding: 15px 22px;
       font-size: 1.09em;
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
       font-weight: 800;
       color: #55afff;
-      cursor: pointer;
       user-select: none;
       position: relative;
       z-index: 1;
@@ -156,7 +153,7 @@ class RoomPanel extends i {
       color: #f1f1f1;
       font-size: 0.97rem;
     }
-    .reset-button{
+    .reset-button {
       border: 2px solid #ff4c6a;
       color: #ff4c6a;
       border-radius: 12px;
@@ -186,11 +183,11 @@ class RoomPanel extends i {
   `;
 
   render() {
-    const area = this.config?.area || '';
-    const name = this.config?.name || '';
-    const icon = this.config?.icon || '';
+    const area = this.config?.area || "";
+    const name = this.config?.name || "";
+    const icon = this.config?.icon || "";
     const presenceValue =
-      this.config?.entities?.presence?.entity || this.config?.presence_entity || '';
+      this.config?.entities?.presence?.entity || this.config?.presence_entity || "";
     const adPresence = this.config?.auto_discovery_sections?.presence || false;
 
     return x`
@@ -208,7 +205,7 @@ class RoomPanel extends i {
               type="checkbox"
               .checked=${adPresence}
               @change=${(e) =>
-                this._emit('auto_discovery_sections.presence', e.target.checked)}
+                this._emit("auto_discovery_sections.presence", e.target.checked)}
             />
             <span>🪄 Auto-discovery Presence</span>
           </label>
@@ -252,39 +249,31 @@ class RoomPanel extends i {
                 <!-- Picker nativo Home Assistant -->
                 <ha-entity-picker
                   class="presence-picker"
-                  style="
-                    display:block;min-height:56px;width:100%;box-sizing:border-box;
-                    --primary-text-color:#eaeef8;
-                    --mdc-theme-on-surface:#eaeef8;
-                    --text-primary-color:#eaeef8;
-                  "
+                  style="display:block;min-height:56px;width:100%;box-sizing:border-box"
                   .hass=${this.hass}
                   .value=${presenceValue}
                   .includeEntities=${this._getPresenceCandidates()}
                   allow-custom-entity
-                  @value-changed=${(e)=>this._emit('entities.presence.entity', e.detail.value)}
-                  @opened=${()=>this._ensureOverlayTextColor(false)}
+                  @value-changed=${(e) => this._emit("entities.presence.entity", e.detail.value)}
+                  @opened=${(e) => this._ensureOverlayTextColorFrom(e.currentTarget)}
                 ></ha-entity-picker>
               ` : x`
                 <!-- Fallback: ha-combo-box (ricerca + custom value) -->
                 <ha-combo-box
                   class="presence-fallback"
-                  style="
-                    display:block;min-height:56px;width:100%;box-sizing:border-box;
-                    --primary-text-color:#eaeef8; --mdc-theme-on-surface:#eaeef8;
-                  "
+                  style="display:block;min-height:56px;width:100%;box-sizing:border-box"
                   .items=${this._getPresenceCandidates()}
-                  .value=${presenceValue || ''}
+                  .value=${presenceValue || ""}
                   allow-custom-value
-                  @value-changed=${(e)=>
-                    this._emit('entities.presence.entity', e.detail?.value ?? e.target?.value)}
-                  @opened=${()=>this._ensureOverlayTextColor(true)}
+                  @value-changed=${(e) =>
+                    this._emit("entities.presence.entity", e.detail?.value ?? e.target?.value)}
+                  @opened=${(e) => this._ensureOverlayTextColorFrom(e.currentTarget)}
                 ></ha-combo-box>
               `}
             </div>
 
-            ${this._renderActions('tap')}
-            ${this._renderActions('hold')}
+            ${this._renderActions("tap")}
+            ${this._renderActions("hold")}
           </div>
         </div>
 
@@ -296,132 +285,116 @@ class RoomPanel extends i {
   }
 
   /* ---------- handlers ---------- */
-  _updateName(e) { this._fire('name', e.target.value); }
-  _updateArea(e) { this._fire('area', e.detail.value); }
-  _updateIcon(e) { this._fire('icon', e.detail.value); }
+  _updateName(e) { this._fire("name", e.target.value); }
+  _updateArea(e) { this._fire("area", e.detail.value); }
+  _updateIcon(e) { this._fire("icon", e.detail.value); }
 
   _renderActions(actionType) {
     const cfg = this.config?.[`${actionType}_action`] || {};
-    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+    const actions = ["toggle", "more-info", "navigate", "call-service", "none"];
     return x`
       <div class="input-group">
-        <label>${actionType === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
+        <label>${actionType === "tap" ? "Tap Action" : "Hold Action"}</label>
         <div class="pill-group">
           ${actions.map(
             (a) => x`
               <paper-button
-                class="pill-button ${cfg.action === a ? 'active' : ''}"
+                class="pill-button ${cfg.action === a ? "active" : ""}"
                 @click=${() => this._fire(`${actionType}_action.action`, a)}
-                >${a}</paper-button
-              >
+              >${a}</paper-button>
             `
           )}
         </div>
-        ${cfg.action === 'navigate'
-          ? x`
-              <input
-                type="text"
-                placeholder="Path"
-                .value=${cfg.navigation_path || ''}
-                @input=${(e) =>
-                  this._fire(`${actionType}_action.navigation_path`, e.target.value)}
-              />
-            `
-          : ''}
-        ${cfg.action === 'call-service'
-          ? x`
-              <input
-                type="text"
-                placeholder="service: domain.service_name"
-                .value=${cfg.service || ''}
-                @input=${(e) => this._fire(`${actionType}_action.service`, e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="service_data (JSON)"
-                .value=${cfg.service_data ? JSON.stringify(cfg.service_data) : ''}
-                @input=${(e) => {
-                  let v = e.target.value;
-                  try { v = v ? JSON.parse(v) : undefined; } catch { v = undefined; }
-                  this._fire(`${actionType}_action.service_data`, v);
-                }}
-              />
-            `
-          : ''}
+        ${cfg.action === "navigate" ? x`
+          <input
+            type="text"
+            placeholder="Path"
+            .value=${cfg.navigation_path || ""}
+            @input=${(e) => this._fire(`${actionType}_action.navigation_path`, e.target.value)}
+          />
+        ` : ""}
+        ${cfg.action === "call-service" ? x`
+          <input
+            type="text"
+            placeholder="service: domain.service_name"
+            .value=${cfg.service || ""}
+            @input=${(e) => this._fire(`${actionType}_action.service`, e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="service_data (JSON)"
+            .value=${cfg.service_data ? JSON.stringify(cfg.service_data) : ""}
+            @input=${(e) => {
+              let v = e.target.value;
+              try { v = v ? JSON.parse(v) : undefined; } catch { v = undefined; }
+              this._fire(`${actionType}_action.service_data`, v);
+            }}
+          />
+        ` : ""}
       </div>
     `;
   }
 
   _resetRoom() {
-    this.dispatchEvent(
-      new CustomEvent('panel-changed', {
-        detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' } },
-        bubbles: true,
-        composed: true,
-      })
-    );
+    this.dispatchEvent(new CustomEvent("panel-changed", {
+      detail: { prop: "__panel_cmd__", val: { cmd: "reset", section: "room" } },
+      bubbles: true, composed: true,
+    }));
   }
 
   _emit(prop, val) {
-    this.dispatchEvent(
-      new CustomEvent('panel-changed', {
-        detail: { prop, val },
-        bubbles: true,
-        composed: true,
-      })
-    );
+    this.dispatchEvent(new CustomEvent("panel-changed", {
+      detail: { prop, val }, bubbles: true, composed: true,
+    }));
   }
   _fire(prop, val) { this._emit(prop, val); }
 
-  // Forza testo visibile e overlay che non sfora
-  _ensureOverlayTextColor(isFallback = false) {
-    // 1) Trova il combo-box da "rendere"
-    let combo = null;
-
-    if (isFallback) {
-      combo = this.renderRoot?.querySelector('ha-combo-box.presence-fallback');
-    } else {
-      const picker = this.renderRoot?.querySelector('ha-entity-picker.presence-picker');
-      combo = picker?.shadowRoot?.querySelector('ha-combo-box') || null;
+  /* ---------- overlay rendering/color fix ---------- */
+  _ensureOverlayTextColorFrom(el) {
+    // Se è un ha-entity-picker, preleva l'ha-combo-box interno; se è già ha-combo-box usa quello
+    let combo = el;
+    if (!combo || combo.tagName?.toLowerCase() !== "ha-combo-box") {
+      combo = el?.shadowRoot?.querySelector("ha-combo-box");
     }
+    if (!combo) return;
 
-    // 2) Applica renderer per testo ed ellissi
-    if (combo && !combo._bubbleRendererApplied) {
-      combo.renderer = (root, _combo, model) => {
-        root.style.padding    = '10px 14px';
-        root.style.color      = '#eaeef8';
-        root.style.fontSize   = '14px';
-        root.style.whiteSpace = 'nowrap';
-        root.style.overflow   = 'hidden';
-        root.style.textOverflow = 'ellipsis';
-
-        const txt = typeof model.item === 'string'
+    if (!combo._bubbleRendererApplied) {
+      combo.renderer = (root, _c, model) => {
+        root.style.padding = "10px 14px";
+        root.style.color = "var(--primary-text-color, #eaeef8)";
+        root.style.fontSize = "14px";
+        root.style.whiteSpace = "nowrap";
+        root.style.overflow = "hidden";
+        root.style.textOverflow = "ellipsis";
+        const txt = typeof model.item === "string"
           ? model.item
-          : (model.item?.label || model.item?.value || '');
-        root.textContent = txt || '';
+          : (model.item?.label || model.item?.value || "");
+        root.textContent = txt || "";
       };
       combo._bubbleRendererApplied = true;
     }
+    this._injectOverlayGlobalCss();
+  }
 
-    // 3) Stile globale per overlay Vaadin
-    if (!document.getElementById('bubble-room-vaadin-overlay-fix')) {
-      const style = document.createElement('style');
-      style.id = 'bubble-room-vaadin-overlay-fix';
-      style.textContent = `
-        vaadin-combo-box-overlay {
-          color: #eaeef8 !important;
-          max-width: min(92vw, 520px) !important;
-        }
-        vaadin-combo-box-item,
-        vaadin-combo-box-item::part(content) {
-          color: #eaeef8 !important;
-          white-space: nowrap !important;
-          overflow: hidden !important;
-          text-overflow: ellipsis !important;
-        }
-      `;
-      document.head.appendChild(style);
-    }
+  _injectOverlayGlobalCss() {
+    if (document.getElementById("bubble-room-vaadin-overlay-fix")) return;
+    const style = document.createElement("style");
+    style.id = "bubble-room-vaadin-overlay-fix";
+    style.textContent = `
+      /* testo chiaro e larghezza massima dell’overlay */
+      vaadin-combo-box-overlay {
+        color: var(--primary-text-color, #eaeef8) !important;
+        max-width: min(92vw, 520px) !important;
+      }
+      vaadin-combo-box-item,
+      vaadin-combo-box-item::part(content) {
+        color: var(--primary-text-color, #eaeef8) !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+      }
+    `;
+    document.head.appendChild(style);
   }
 
   /* ---------- candidates Presence ---------- */
@@ -430,18 +403,18 @@ class RoomPanel extends i {
     if (!hass || !hass.states) return [];
 
     const allowed = new Set([
-      'person', 'device_tracker', 'binary_sensor', 'light', 'switch',
-      'media_player', 'fan', 'humidifier', 'lock', 'input_boolean', 'scene'
+      "person", "device_tracker", "binary_sensor", "light", "switch",
+      "media_player", "fan", "humidifier", "lock", "input_boolean", "scene",
     ]);
 
-    let ids = Object.keys(hass.states).filter((id) => allowed.has(id.split('.')[0]));
+    let ids = Object.keys(hass.states).filter((id) => allowed.has(id.split(".")[0]));
 
     // binary_sensor: solo motion/occupancy/presence
     ids = ids.filter((id) => {
-      const domain = id.split('.')[0];
-      if (domain !== 'binary_sensor') return true;
+      const domain = id.split(".")[0];
+      if (domain !== "binary_sensor") return true;
       const dc = hass.states[id]?.attributes?.device_class;
-      return ['motion', 'occupancy', 'presence'].includes(dc || '');
+      return ["motion", "occupancy", "presence"].includes(dc || "");
     });
 
     // filtro Area
@@ -456,19 +429,21 @@ class RoomPanel extends i {
       if (inArea.length) ids = inArea;
     }
 
-    // mantieni selezionata anche se fuori filtro
-    const selected = this.config?.entities?.presence?.entity || this.config?.presence_entity;
+    // mantieni selezionata
+    const selected =
+      this.config?.entities?.presence?.entity || this.config?.presence_entity;
     if (selected && !ids.includes(selected)) ids.push(selected);
 
-    if (DEBUG$4) console.info('[RoomPanel][Presence candidates]', {
-      area, count: ids.length, sample: ids.slice(0, 8),
-    });
-
+    if (DEBUG$4) {
+      console.info("[RoomPanel][Presence candidates]", {
+        area, count: ids.length, sample: ids.slice(0, 8),
+      });
+    }
     return ids;
   }
 }
 
-customElements.define('room-panel', RoomPanel);
+customElements.define("room-panel", RoomPanel);
 
 const FILTERS = {
   presence: {
