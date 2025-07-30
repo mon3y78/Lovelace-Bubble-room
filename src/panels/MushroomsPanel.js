@@ -1,5 +1,7 @@
 import { LitElement, html, css } from 'lit';
-import { FILTERS } from '../helpers/entity-filters.js';
+
+const DEBUG = !!window.__BUBBLE_DEBUG__;
+import { FILTERS, candidatesFor } from '../helpers/entity-filters.js';
 
 
 export class MushroomsPanel extends LitElement {
@@ -206,8 +208,7 @@ export class MushroomsPanel extends LitElement {
                     <ha-entity-picker
   .hass="${this.hass}"
   .area="${this.config.area || ''}"
-  .includeDomains=${FILTERS.mushroom.includeDomains}
-  .entityFilter=${(st) => FILTERS.mushroom.entityFilter(st, this.hass)}
+  .includeEntities=${candidatesFor(this.hass, this.config, 'mushroom')}
   .value="${ent.entity_id || ''}"
   allow-custom-entity
   @value-changed="${e => this._updateMushroomEntity(i, e.detail.value)}"
@@ -270,5 +271,27 @@ export class MushroomsPanel extends LitElement {
     ['entities1','entities2','entities3','entities4','entities5','climate','camera'].forEach(k => this._fire(`entities.${k}`, undefined));
   }
 }
+
+
+      _getMushroomCandidates() {
+        const hass = this.hass;
+        if (!hass || !hass.states) return [];
+        const allowed = new Set(['light','switch','media_player','fan','cover','humidifier','lock','scene','input_boolean','script','button','sensor','binary_sensor','climate']);
+        let res = Object.keys(hass.states || {}).filter((id) => allowed.has(id.split('.')[0]));
+        const area = this.config?.area;
+        if (area) {
+          const inArea = res.filter((id) => {
+            const st = hass.states[id];
+            const a1 = st?.attributes?.area_id;
+            const a2 = st?.attributes?.area;
+            return a1 === area || a2 === area;
+          });
+          if (inArea.length) res = inArea;
+        }
+        if (DEBUG) {
+          console.info('[MushroomsPanel][Candidates]', { area, count: res.length, sample: res.slice(0,8) });
+        }
+        return res;
+      }
 
 customElements.define('mushrooms-panel', MushroomsPanel);

@@ -1,5 +1,7 @@
 import { LitElement, html, css } from 'lit';
-import { FILTERS } from '../helpers/entity-filters.js';
+
+const DEBUG = !!window.__BUBBLE_DEBUG__;
+import { FILTERS, candidatesFor } from '../helpers/entity-filters.js';
 
 
 export class SubButtonsPanel extends LitElement {
@@ -50,8 +52,7 @@ export class SubButtonsPanel extends LitElement {
                     <ha-entity-picker
   .hass="${this.hass}"
   .area="${this.config.area || ''}"
-  .includeDomains=${FILTERS.subbutton.includeDomains}
-  .entityFilter=${(st) => FILTERS.subbutton.entityFilter(st, this.hass)}
+  .includeEntities=${candidatesFor(this.hass, this.config, 'subbutton')}
   .value="${btn.entity_id || ''}"
   allow-custom-entity
   @value-changed="${e => this._updateSubButtonEntity(i, e.detail.value)}"
@@ -85,5 +86,27 @@ export class SubButtonsPanel extends LitElement {
   _resetAll(){['sub-button1','sub-button2','sub-button3','sub-button4'].forEach(k=>this._fire(`entities.${k}`,undefined));}
   _fire(prop,val){this.dispatchEvent(new CustomEvent('panel-changed',{detail:{prop,val},bubbles:true,composed:true}));}
 }
+
+
+      _getSubButtonCandidates() {
+        const hass = this.hass;
+        if (!hass || !hass.states) return [];
+        const allowed = new Set(['light','switch','media_player','fan','cover','humidifier','lock','scene','input_boolean','script','button']);
+        let res = Object.keys(hass.states || {}).filter((id) => allowed.has(id.split('.')[0]));
+        const area = this.config?.area;
+        if (area) {
+          const inArea = res.filter((id) => {
+            const st = hass.states[id];
+            const a1 = st?.attributes?.area_id;
+            const a2 = st?.attributes?.area;
+            return a1 === area || a2 === area;
+          });
+          if (inArea.length) res = inArea;
+        }
+        if (DEBUG) {
+          console.info('[SubButtonsPanel][Candidates]', { area, count: res.length, sample: res.slice(0,8) });
+        }
+        return res;
+      }
 
 customElements.define('subbuttons-panel', SubButtonsPanel);

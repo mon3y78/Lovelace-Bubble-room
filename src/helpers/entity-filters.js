@@ -35,3 +35,56 @@ export const FILTERS = {
     entityFilter: () => true,
   },
 };
+
+
+/**
+ * Build a concrete list of entity_ids for a given section,
+ * applying domain / device_class filters from FILTERS and
+ * the Area filter from the current card config.
+ *
+ * Usage examples:
+ *   candidatesFor(hass, config, 'presence')
+ *   candidatesFor(hass, config, { section: 'sensor', type })
+ */
+export function candidatesFor(hass, config, sectionOrOpts) {
+  const opts = typeof sectionOrOpts === 'string'
+    ? { section: sectionOrOpts }
+    : (sectionOrOpts || {});
+  const section = opts.section;
+  if (!hass || !hass.states || !section) return [];
+
+  // Select filter descriptor
+  let desc;
+  if (section === 'sensor') {
+    const t = opts.type;
+    desc = FILTERS.sensorByType ? FILTERS.sensorByType(t) : FILTERS.sensor;
+  } else {
+    desc = FILTERS[section];
+  }
+  if (!desc) return [];
+
+  const includeDomains = desc.includeDomains || [];
+  const includeDeviceClasses = desc.includeDeviceClasses || [];
+  const entityFilter = desc.entityFilter || (() => true);
+
+  const allIds = Object.keys(hass.states);
+  const byDomain = includeDomains.length
+    ? allIds.filter((id) => includeDomains.includes(id.split('.')[0]))
+    : allIds.slice();
+
+  const byDesc = byDomain.filter((id) => entityFilter(id, hass));
+
+  const area = config?.area;
+  let res = byDesc;
+  if (area) {
+    const inArea = byDesc.filter((id) => {
+      const st = hass.states[id];
+      const a1 = st?.attributes?.area_id;
+      const a2 = st?.attributes?.area;
+      return a1 === area || a2 === area;
+    });
+    if (inArea.length) res = inArea;
+  }
+
+  return res;
+}

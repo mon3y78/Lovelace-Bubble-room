@@ -1,5 +1,7 @@
 import { LitElement, html, css } from 'lit';
-import { FILTERS } from '../helpers/entity-filters.js';
+
+const DEBUG = !!window.__BUBBLE_DEBUG__;
+import { FILTERS, candidatesFor } from '../helpers/entity-filters.js';
 
 import { SENSOR_TYPES } from '../helpers/sensor-mapping.js';
 
@@ -80,10 +82,7 @@ export class SensorsPanel extends LitElement {
               <label>Entity ID</label>
               <ha-entity-picker
   .hass="${this.hass}"
-  .area="${this.config.area || ''}"
-  .includeDomains=${FILTERS.sensorByType(s.type).includeDomains}
-  .includeDeviceClasses=${FILTERS.sensorByType(s.type).includeDeviceClasses}
-  .entityFilter=${(st) => FILTERS.sensorByType(s.type).entityFilter(st, this.hass)}
+  .includeEntities=${candidatesFor(this.hass, this.config, { section: 'sensor', type: s.type })}
   .value="${s.entity_id || ''}"
   allow-custom-entity
   @value-changed="${e => this._fire(`sensors[${i}].entity_id`, e.detail.value)}"
@@ -124,5 +123,41 @@ export class SensorsPanel extends LitElement {
     }));
   }
 }
+
+
+      _getSensorCandidates(type) {
+        const hass = this.hass;
+        if (!hass || !hass.states) return [];
+        const allIds = Object.keys(hass.states || {});
+        let res = allIds.filter((id) => id.startsWith('sensor.'));
+        try {
+          if (type && typeof type === 'string') {
+            const t = type.toLowerCase();
+            res = res.filter((id) => {
+              const st = hass.states[id];
+              const dc = st?.attributes?.device_class || '';
+              const u  = st?.attributes?.unit_of_measurement || '';
+              if (t === 'temperature') return (dc === 'temperature') || (['°C','°F','K'].includes(u));
+              if (t === 'humidity') return (dc === 'humidity') || (u === '%') || (/hum/i.test(st?.attributes?.friendly_name || ''));
+              if (t === 'pressure') return (dc === 'pressure') || (/hPa|mbar|bar|psi/i.test(u));
+              return true;
+            });
+          }
+        } catch (e) {}
+        const area = this.config?.area;
+        if (area) {
+          const inArea = res.filter((id) => {
+            const st = hass.states[id];
+            const a1 = st?.attributes?.area_id;
+            const a2 = st?.attributes?.area;
+            return a1 === area || a2 === area;
+          });
+          if (inArea.length) res = inArea;
+        }
+        if (DEBUG) {
+          console.info('[SensorsPanel][Candidates]', { type, area, count: res.length, sample: res.slice(0,8) });
+        }
+        return res;
+      }
 
 customElements.define('sensors-panel', SensorsPanel);
