@@ -13,7 +13,11 @@ export class SubButtonsPanel extends LitElement {
   
   constructor() {
     super();
-    this.hass = {};
+    
+    if (!customElements.get('ha-entity-picker')) {
+      customElements.whenDefined('ha-entity-picker').then(() => this.requestUpdate());
+    }
+this.hass = {};
     this.config = {};
     this._expanded = false;
     this._expandedItems = Array(6).fill(false); // sub-button1..6
@@ -109,26 +113,25 @@ export class SubButtonsPanel extends LitElement {
       background: rgba(255,76,106,0.18)!important; color: #fff!important;
       border-color: #ff1744!important; box-shadow: 0 6px 32px 0 #ff4c6abf;
     }
-    /* 🔧 Evita che i picker collassino a 0px su mobile/temi particolari */
-    ha-entity-picker,
-    ha-icon-picker,
-    ha-area-picker,
-    ha-device-picker,
-    ha-select {
-      display: block;
-      width: 100%;
-      min-height: 56px;      /* altezza minima visibile */
-      box-sizing: border-box;
-    }
-    
-    /* Best-effort per Vaadin combo-box interno (se esposto via ::part) */
-    ha-entity-picker::part(input),
-    ha-entity-picker::part(text-field),
-    ha-entity-picker::part(combobox) {
-      min-height: 56px;
-    }
-
-  `;
+  
+/* Ensure HA pickers are visible and not collapsed */
+ha-entity-picker,
+ha-icon-picker,
+ha-area-picker,
+ha-device-picker,
+ha-select {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  box-sizing: border-box;
+}
+/* Best-effort vaadin parts */
+ha-entity-picker::part(input),
+ha-entity-picker::part(text-field),
+ha-entity-picker::part(combobox) {
+  min-height: 56px;
+}
+`;
   
   render() {
     const keys = ['sub-button1', 'sub-button2', 'sub-button3', 'sub-button4', 'sub-button5', 'sub-button6'];

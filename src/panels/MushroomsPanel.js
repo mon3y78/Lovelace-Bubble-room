@@ -13,7 +13,11 @@ export class MushroomsPanel extends LitElement {
 
   constructor() {
     super();
-    this.hass = {};
+    
+    if (!customElements.get('ha-entity-picker')) {
+      customElements.whenDefined('ha-entity-picker').then(() => this.requestUpdate());
+    }
+this.hass = {};
     this.config = {};
     this._expanded = false;
     this._expandedItems = Array(7).fill(false); // entities1..5 + climate + camera
@@ -163,26 +167,25 @@ export class MushroomsPanel extends LitElement {
       border-color: #ff1744!important;
       box-shadow: 0 6px 32px 0 #ff4c6abf;
     }
-    /* 🔧 Evita che i picker collassino a 0px su mobile/temi particolari */
-    ha-entity-picker,
-    ha-icon-picker,
-    ha-area-picker,
-    ha-device-picker,
-    ha-select {
-      display: block;
-      width: 100%;
-      min-height: 56px;      /* altezza minima visibile */
-      box-sizing: border-box;
-    }
-    
-    /* Best-effort per Vaadin combo-box interno (se esposto via ::part) */
-    ha-entity-picker::part(input),
-    ha-entity-picker::part(text-field),
-    ha-entity-picker::part(combobox) {
-      min-height: 56px;
-    }
-
-  `;
+  
+/* Ensure HA pickers are visible and not collapsed */
+ha-entity-picker,
+ha-icon-picker,
+ha-area-picker,
+ha-device-picker,
+ha-select {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  box-sizing: border-box;
+}
+/* Best-effort vaadin parts */
+ha-entity-picker::part(input),
+ha-entity-picker::part(text-field),
+ha-entity-picker::part(combobox) {
+  min-height: 56px;
+}
+`;
 
   render() {
     const cfg = this.config;

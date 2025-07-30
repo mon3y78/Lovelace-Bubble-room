@@ -16,7 +16,11 @@ export class SensorsPanel extends LitElement {
 
   constructor() {
     super();
-    this.hass = {};
+    
+    if (!customElements.get('ha-entity-picker')) {
+      customElements.whenDefined('ha-entity-picker').then(() => this.requestUpdate());
+    }
+this.hass = {};
     this.config = {};
     this._expanded = false;
     this._expandedSensors = Array(6).fill(false);
@@ -57,26 +61,25 @@ export class SensorsPanel extends LitElement {
       border:2px solid #ff4c6a; color:#ff4c6a; border-radius:12px; padding:8px 16px;
       background:transparent; cursor:pointer;
     }
-    /* 🔧 Evita che i picker collassino a 0px su mobile/temi particolari */
-    ha-entity-picker,
-    ha-icon-picker,
-    ha-area-picker,
-    ha-device-picker,
-    ha-select {
-      display: block;
-      width: 100%;
-      min-height: 56px;      /* altezza minima visibile */
-      box-sizing: border-box;
-    }
-    
-    /* Best-effort per Vaadin combo-box interno (se esposto via ::part) */
-    ha-entity-picker::part(input),
-    ha-entity-picker::part(text-field),
-    ha-entity-picker::part(combobox) {
-      min-height: 56px;
-    }
-
-  `;
+  
+/* Ensure HA pickers are visible and not collapsed */
+ha-entity-picker,
+ha-icon-picker,
+ha-area-picker,
+ha-device-picker,
+ha-select {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  box-sizing: border-box;
+}
+/* Best-effort vaadin parts */
+ha-entity-picker::part(input),
+ha-entity-picker::part(text-field),
+ha-entity-picker::part(combobox) {
+  min-height: 56px;
+}
+`;
 
   render() {
     const ad = this.config?.auto_discovery_sections?.sensor || false;

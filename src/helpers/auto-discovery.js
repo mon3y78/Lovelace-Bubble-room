@@ -162,9 +162,8 @@ export function maybeAutoDiscover(hass, config, changedProp, debug = false) {
   if (ad.subbutton) next = autoFillSubButtons(hass, next);
   if (ad.presence)  next = autoFillPresence(hass, next);
 
-  if (debug || (typeof window !== 'undefined' && window.__BUBBLE_DEBUG__)) {
+  if (debug && typeof window !== 'undefined' && window.__BUBBLE_DEBUG__) {
     console.info('[AutoDiscovery] applied after', changedProp, { sections: ad });
   }
-
   return next;
 }
