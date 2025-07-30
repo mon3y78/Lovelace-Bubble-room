@@ -1365,7 +1365,7 @@ function resetRoom(config) {
 /* =========================
  *   TRIGGER CENTRALE
  * ========================= */
-function maybeAutoDiscover(hass, config, changedProp, debug = true) {
+function maybeAutoDiscover(hass, config, changedProp, debug = false) {
   const ad = config.auto_discovery_sections || {};
   const isAreaChange = changedProp === 'area';
   const isADChange   = changedProp && changedProp.startsWith('auto_discovery_sections.');
