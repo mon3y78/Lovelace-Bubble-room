@@ -202,11 +202,12 @@ class RoomPanel extends i {
               ></ha-icon-picker>
             </div>
 
+            // --- dentro render(), nella card "Icon & Presence" ---
             <div class="input-group">
               <label>Presence (ID):</label>
-
+            
               ${!this._useFallbackPicker ? x`
-                <!-- 🧠 Picker nativo Home Assistant -->
+                <!-- Picker nativo Home Assistant -->
                 <ha-entity-picker
                   class="presence-picker"
                   style="display:block;min-height:56px;width:100%;box-sizing:border-box"
@@ -215,30 +216,20 @@ class RoomPanel extends i {
                   .includeEntities=${this._getPresenceCandidates()}
                   allow-custom-entity
                   @value-changed=${(e) => this._emit('entities.presence.entity', e.detail.value)}
+                  @opened=${() => this._ensureOverlayTextColor()}
                 ></ha-entity-picker>
-              ` : (customElements.get('ha-combo-box') ? x`
-                <!-- 🔁 FALLBACK UNICO: ha-combo-box (ricerca + custom value) -->
+              ` : x`
+                <!-- Fallback unico: ha-combo-box (ricerca + custom value) -->
                 <ha-combo-box
+                  class="presence-fallback"
+                  style="display:block;min-height:56px;width:100%;box-sizing:border-box"
                   .items=${this._getPresenceCandidates()}
                   .value=${presenceValue || ''}
                   allow-custom-value
                   @value-changed=${(e) => this._emit('entities.presence.entity', e.detail?.value ?? e.target?.value)}
-                  @closed=${(e) => e.stopPropagation()}
+                  @opened=${() => this._ensureOverlayTextColor(true)}
                 ></ha-combo-box>
-              ` : x`
-                <!-- 🔁 FALLBACK minimo: select (senza textfield separato) -->
-                <ha-select
-                  .value=${presenceValue || ''}
-                  @selected=${(e) => this._emit('entities.presence.entity', e.target?.value)}
-                  @value-changed=${(e) => this._emit('entities.presence.entity', e.detail?.value ?? e.target?.value)}
-                  @closed=${(e) => e.stopPropagation()}
-                >
-                  <mwc-list-item .value=${''}>— seleziona —</mwc-list-item>
-                  ${(this._getPresenceCandidates() || []).map(id =>
-                    x`<mwc-list-item .value=${id}>${id}</mwc-list-item>`
-                  )}
-                </ha-select>
-              `)}
+              `}
             </div>
 
             ${this._renderActions('tap')}
@@ -307,7 +298,60 @@ class RoomPanel extends i {
   }
   _fire(prop, val) { this._emit(prop, val); }
 
-  /* ---------- presence candidates (locale) ---------- */
+  
+    // Forza il colore del testo nell’overlay Vaadin (lista risultati)
+  // works both per ha-entity-picker (vaadin-combo-box) e per ha-combo-box fallback
+  _ensureOverlayTextColor(isFallback = false) {
+    // 1) prova con renderer sul fallback, così siamo sicuri
+    if (isFallback) {
+      const cb = this.renderRoot?.querySelector('ha-combo-box.presence-fallback');
+      if (cb && !cb._bubbleRendererApplied) {
+        cb.renderer = (root, _combo, model) => {
+          // root è “persistente”: imposta stile e contenuto
+          root.style.padding = '10px 14px';
+          root.style.color = 'var(--primary-text-color, #eaeef8)';
+          root.style.fontSize = 'var(--mdc-typography-body2-font-size, 14px)';
+          root.textContent = typeof model.item === 'string' ? model.item : (model.item?.label || model.item?.value || '');
+        };
+        cb._bubbleRendererApplied = true;
+      }
+    }
+    
+    // 2) in ogni caso, inserisci (una sola volta) un piccolo stile globale per l’overlay
+    if (!document.getElementById('bubble-room-vaadin-overlay-fix')) {
+      const style = document.createElement('style');
+      style.id = 'bubble-room-vaadin-overlay-fix';
+      style.textContent = `
+        /* Forza un colore testo leggibile nel menu overlay */
+        vaadin-combo-box-overlay,
+        vaadin-combo-box-item,
+        vaadin-combo-box-item::part(content) {
+          color: var(--primary-text-color, #eaeef8) !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  }
+  
+  // Migliora l’auto–switch tra picker nativo e fallback
+  firstUpdated() { this._recheckPicker(true); }
+  updated(changed) {
+    if (changed.has('config') || changed.has('hass')) this._recheckPicker();
+  }
+  _recheckPicker(forceMobileHeuristic = false) {
+    // su mobile spesso l’overlay ha problemi -> parti in fallback
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const preferredFallback = forceMobileHeuristic ? isMobile : this._useFallbackPicker;
+    
+    const p = this.renderRoot?.querySelector('ha-entity-picker.presence-picker');
+    const h = p?.offsetHeight || 0;
+    const shouldFallback = preferredFallback || !p || h < 8;
+    
+    if (shouldFallback !== this._useFallbackPicker) {
+      this._useFallbackPicker = shouldFallback;
+    }
+  }
+  
   _getPresenceCandidates() {
     const hass = this.hass;
     if (!hass || !hass.states) return [];
