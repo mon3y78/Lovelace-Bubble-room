@@ -145,7 +145,7 @@ export class SensorsPanel extends LitElement {
     }));
   }
 
-  // Wrapper locale (Opzione A) che usa la logica centralizzata e logga per debug
+  // Wrapper locale (Opzione A): usa la logica centralizzata e logga per debug
   _getSensorCandidates(type) {
     const list = candidatesFor(this.hass, this.config, { section: 'sensor', type });
     if (DEBUG) {
