@@ -176,4 +176,38 @@ export class RoomPanel extends LitElement {
   }
 }
 
+_getPresenceCandidates() {
+  const hass = this.hass;
+  if (!hass || !hass.states) return [];
+  const allowed = new Set(['person','device_tracker','binary_sensor','light','switch','media_player','fan','humidifier','lock','input_boolean','scene']);
+  let ids = Object.keys(hass.states).filter((id) => allowed.has(id.split('.')[0]));
+  ids = ids.filter((id) => {
+    const domain = id.split('.')[0];
+    if (domain !== 'binary_sensor') return true;
+    const dc = hass.states[id]?.attributes?.device_class;
+    return ['motion','occupancy','presence'].includes(dc || '');
+  });
+  const area = this.config?.area;
+  if (area) {
+    const inArea = ids.filter((id) => {
+      const st = hass.states[id];
+      const a1 = st?.attributes?.area_id;
+      const a2 = st?.attributes?.area;
+      return a1 === area || a2 === area;
+    });
+    if (inArea.length) ids = inArea;
+  }
+  const selected = this.config?.entities?.presence?.entity || this.config?.presence_entity;
+  if (selected && !ids.includes(selected)) ids.push(selected);
+  if (DEBUG) console.info('[RoomPanel][Presence candidates]', { area, count: ids.length, sample: ids.slice(0,8) });
+  return ids;
+}
+
+_resetRoom() {
+  this.dispatchEvent(new CustomEvent('panel-changed', {
+    detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' } },
+    bubbles: true, composed: true,
+  }));
+}
+
 customElements.define('room-panel', RoomPanel);
