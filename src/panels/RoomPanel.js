@@ -1,13 +1,12 @@
 // src/panels/RoomPanel.js
 import { LitElement, html, css } from 'lit';
-
-const DEBUG = !!window.__BUBBLE_DEBUG__;
+import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 
 export class RoomPanel extends LitElement {
   static properties = {
-    hass:       { type: Object },
-    config:     { type: Object },
-    _expanded:  { type: Boolean },
+    hass: { type: Object },
+    config: { type: Object },
+    _expanded: { type: Boolean },
   };
 
   constructor() {
@@ -17,24 +16,31 @@ export class RoomPanel extends LitElement {
     this._expanded = false;
   }
 
+  updated(changedProps) {
+    if (changedProps.has('config') || changedProps.has('hass')) {
+      // trigger auto-discovery on area or toggle change
+      maybeAutoDiscover(this.hass, this.config, 'area');
+      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
+    }
+  }
+
   static styles = css`
     :host { display: block; }
-
     .glass-panel {
-      margin: 0!important;
+      margin: 0 !important;
       width: 100%;
       box-sizing: border-box;
       border-radius: 40px;
       position: relative;
       border: none;
-      z-index: 0;
       --glass-bg: rgba(73,164,255,0.38);
       --glass-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
-      --glass-sheen:
-        linear-gradient(120deg,
-                        rgba(255,255,255,0.26),
-                        rgba(255,255,255,0.11) 70%,
-                        transparent 100%);
+      --glass-sheen: linear-gradient(
+        120deg,
+        rgba(255,255,255,0.26),
+        rgba(255,255,255,0.11) 70%,
+        transparent 100%
+      );
       background: var(--glass-bg);
       box-shadow: var(--glass-shadow);
     }
@@ -45,13 +51,10 @@ export class RoomPanel extends LitElement {
       border-radius: inherit;
       background: var(--glass-sheen);
       pointer-events: none;
-      z-index: 0;
     }
     .glass-header {
       position: relative;
       z-index: 1;
-      background: none!important;
-      box-shadow: none!important;
       padding: 22px 0 18px;
       margin: 0;
       text-align: center;
@@ -60,9 +63,9 @@ export class RoomPanel extends LitElement {
       color: #fff;
     }
     .mini-pill {
-      background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.12);
-      box-shadow: 0 3px 22px 0 rgba(70,120,220,0.13);
+      background: rgba(44, 70, 100, 0.23);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 3px 22px 0 rgba(70, 120, 220, 0.13);
       backdrop-filter: blur(10px) saturate(1.2);
       border-radius: 24px;
       margin-bottom: 18px;
@@ -78,26 +81,19 @@ export class RoomPanel extends LitElement {
       color: #55afff;
       cursor: pointer;
       user-select: none;
-      position: relative;
-      z-index: 1;
     }
     .mini-pill-content {
       padding: 15px 22px;
-      background: transparent;
-      position: relative;
-      z-index: 1;
     }
     .input-group {
-      background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.13);
-      box-shadow: 0 2px 14px 0 rgba(70,120,220,0.10);
+      background: rgba(44, 70, 100, 0.23);
+      border: 1.5px solid rgba(255, 255, 255, 0.13);
+      box-shadow: 0 2px 14px 0 rgba(70, 120, 220, 0.10);
       border-radius: 18px;
       margin-bottom: 13px;
       padding: 14px 18px 10px;
     }
-    .ad-top {
-      margin: 0 16px 14px;
-    }
+    .ad-top { margin: 0 16px 14px; }
     label {
       display: block;
       font-size: 1.13rem;
@@ -105,14 +101,15 @@ export class RoomPanel extends LitElement {
       color: #55afff;
       margin-bottom: 6px;
     }
-    input[type="text"] {
+    /* rendiamo il picker HA sempre visibile */
+    ha-entity-picker, ha-icon-picker, ha-area-picker {
+      display: block;
       width: 100%;
-      border: 1px solid #444;
-      border-radius: 6px;
-      padding: 8px;
-      background: #202020;
-      color: #f1f1f1;
-      font-size: 0.97rem;
+      min-height: 56px;
+      box-sizing: border-box;
+    }
+    ha-entity-picker::part(combobox) {
+      min-height: 56px;
     }
     .reset-button {
       border: 2px solid #ff4c6a;
@@ -139,48 +136,39 @@ export class RoomPanel extends LitElement {
       color: #55afff;
     }
 
-    /* Assicura che il picker non venga nascosto */
-    ha-entity-picker,
-    ha-area-picker,
-    ha-icon-picker {
-      display: block;
-      width: 100%;
-      min-height: 56px;
-      box-sizing: border-box;
-    }
-    ha-entity-picker::part(text-field),
-    ha-entity-picker::part(combobox) {
-      min-height: 56px;
+    /* fix globale overlay Vaadin */
+    vaadin-combo-box-overlay,
+    vaadin-combo-box-item,
+    vaadin-combo-box-item::part(content) {
+      color: var(--primary-text-color, #eaeef8) !important;
     }
   `;
 
   render() {
-    const area   = this.config?.area || '';
-    const name   = this.config?.name || '';
-    const icon   = this.config?.icon || '';
-    const pres   =
-      this.config?.entities?.presence?.entity ||
-      this.config?.presence_entity ||
-      '';
-    const adPres = this.config?.auto_discovery_sections?.presence || false;
+    const cfg = this.config;
+    const area = cfg.area || '';
+    const name = cfg.name || '';
+    const icon = cfg.icon || '';
+    const pres = cfg.entities?.presence?.entity || cfg.presence_entity || '';
+    const ad = cfg.auto_discovery_sections?.presence || false;
 
     return html`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
-        @expanded-changed=${e => this._expanded = e.detail.expanded}
+        @expanded-changed=${e => (this._expanded = e.detail.expanded)}
       >
         <div slot="header" class="glass-header">🛋️ Room Settings 2</div>
 
-        <!-- Auto-discovery Presence toggle -->
+        <!-- Auto-discover subito sotto il titolo -->
         <div class="input-group ad-top">
           <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input
               type="checkbox"
-              .checked=${adPres}
-              @change=${e => this._fire('auto_discovery_sections.presence', e.target.checked)}
+              .checked=${ad}
+              @change=${e => this._emit('auto_discovery_sections.presence', e.target.checked)}
             />
-            <span>🪄 Auto-discovery Presence</span>
+            <span>🔍 Auto-discover Presence</span>
           </label>
         </div>
 
@@ -218,7 +206,6 @@ export class RoomPanel extends LitElement {
                 @value-changed=${e => this._fire('icon', e.detail.value)}
               ></ha-icon-picker>
             </div>
-
             <div class="input-group">
               <label>Presence (ID):</label>
               <ha-entity-picker
@@ -226,18 +213,16 @@ export class RoomPanel extends LitElement {
                 .value=${pres}
                 .includeEntities=${this._getPresenceCandidates()}
                 allow-custom-entity
-                @value-changed=${e => this._fire('entities.presence.entity', e.detail.value)}
+                @value-changed=${e => this._emit('entities.presence.entity', e.detail.value)}
               ></ha-entity-picker>
             </div>
-
             ${this._renderActions('tap')}
             ${this._renderActions('hold')}
           </div>
         </div>
 
-        <div style="text-align:center; margin-top:1.2em;">
-          <button class="reset-button"
-                  @click=${() => this._fire('__panel_cmd__', { cmd:'reset', section:'room' })}>
+        <div style="text-align:center;margin-top:1.2em;">
+          <button class="reset-button" @click=${this._resetRoom}>
             🧹 Reset Room
           </button>
         </div>
@@ -247,72 +232,74 @@ export class RoomPanel extends LitElement {
 
   _renderActions(type) {
     const cfg = this.config?.[`${type}_action`] || {};
-    const opts = ['toggle','more-info','navigate','call-service','none'];
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
     return html`
       <div class="input-group">
-        <label>${type==='tap'?'Tap Action':'Hold Action'}</label>
+        <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
         <div class="pill-group">
-          ${opts.map(o => html`
+          ${actions.map(a => html`
             <paper-button
-              class="pill-button ${cfg.action===o?'active':''}"
-              @click=${()=>this._fire(`${type}_action.action`, o)}
-            >${o}</paper-button>
+              class="pill-button ${cfg.action === a ? 'active' : ''}"
+              @click=${() => this._fire(`${type}_action.action`, a)}
+            >${a}</paper-button>
           `)}
         </div>
-        ${cfg.action==='navigate'?html`
-          <input type="text" placeholder="Path"
-                 .value=${cfg.navigation_path||''}
-                 @input=${e=>this._fire(`${type}_action.navigation_path`, e.target.value)} />
-        `:''}
-        ${cfg.action==='call-service'?html`
-          <input type="text" placeholder="domain.service"
-                 .value=${cfg.service||''}
-                 @input=${e=>this._fire(`${type}_action.service`, e.target.value)} />
-          <input type="text" placeholder='service_data (JSON)'
-                 .value=${cfg.service_data?JSON.stringify(cfg.service_data):''}
-                 @input=${e=>{
-                   let v=e.target.value; try{v=v?JSON.parse(v):undefined}catch{v=undefined}
-                   this._fire(`${type}_action.service_data`,v);
-                 }} />
-        `:''}
+        ${cfg.action === 'navigate' ? html`
+          <input
+            type="text"
+            placeholder="Path"
+            .value=${cfg.navigation_path || ''}
+            @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
+          />
+        ` : ''}
+        ${cfg.action === 'call-service' ? html`
+          <input
+            type="text"
+            placeholder="service: domain.service_name"
+            .value=${cfg.service || ''}
+            @input=${e => this._fire(`${type}_action.service`, e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder='service_data (JSON)'
+            .value=${cfg.service_data ? JSON.stringify(cfg.service_data) : ''}
+            @input=${e => {
+              let v = e.target.value;
+              try { v = v ? JSON.parse(v) : undefined; } catch { v = undefined; }
+              this._fire(`${type}_action.service_data`, v);
+            }}
+          />
+        ` : ''}
       </div>
     `;
   }
 
   _getPresenceCandidates() {
-    const hass = this.hass;
-    if(!hass||!hass.states) return [];
-    const allowed = new Set([
-      'person','device_tracker','binary_sensor','light','switch',
-      'media_player','fan','humidifier','lock','input_boolean','scene'
-    ]);
-    let list = Object.keys(hass.states).filter(id=>allowed.has(id.split('.')[0]));
-    list = list.filter(id=>{
-      const d=id.split('.')[0];
-      if(d!=='binary_sensor') return true;
-      const dc=hass.states[id]?.attributes?.device_class;
-      return ['motion','occupancy','presence'].includes(dc||'');
-    });
-    const area=this.config?.area;
-    if(area){
-      const ia=list.filter(id=>{
-        const st=hass.states[id];
-        return st?.attributes?.area_id===area||st?.attributes?.area===area;
+    const h = this.hass?.states || {};
+    return Object.keys(h)
+      .filter(id => ['person','device_tracker','binary_sensor'].includes(id.split('.')[0]))
+      .filter(id => {
+        if (id.split('.')[0] !== 'binary_sensor') return true;
+        const dc = h[id]?.attributes?.device_class;
+        return ['motion','occupancy','presence'].includes(dc);
       });
-      if(ia.length) list=ia;
-    }
-    const sel=this.config?.entities?.presence?.entity||this.config?.presence_entity;
-    if(sel&&!list.includes(sel)) list.push(sel);
-    if(DEBUG) console.info('[RoomPanel] Presence candidates:',list.length,list.slice(0,8));
-    return list;
   }
 
-  _fire(prop,val){
-    this.dispatchEvent(new CustomEvent('panel-changed',{
-      detail:{prop,val},
-      bubbles:true,composed:true
+  _resetRoom() {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' } },
+      bubbles: true, composed: true,
     }));
   }
+
+  _emit(prop, val) {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop, val },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+  _fire(prop, val) { this._emit(prop, val); }
 }
 
 customElements.define('room-panel', RoomPanel);
