@@ -2,8 +2,7 @@
 import { LitElement, html, css } from 'lit';
 
 const DEBUG = !!window.__BUBBLE_DEBUG__;
-// Se preferisci usare l'helper globale, importa candidatesFor e sostituisci la chiamata nel picker
-// import { candidatesFor } from '../helpers/entity-filters.js';
+// import { candidatesFor } from '../helpers/entity-filters.js'; // opzionale se vuoi centralizzare
 
 export class RoomPanel extends LitElement {
   static properties = {
@@ -67,6 +66,10 @@ export class RoomPanel extends LitElement {
       box-shadow:0 2px 14px 0 rgba(70,120,220,0.10);
       border-radius:18px; margin-bottom:13px; padding:14px 18px 10px;
     }
+    /* box per il toggle in alto, come in Sensors */
+    .ad-top {
+      margin: 0 16px 14px;
+    }
     label { display:block; font-size:1.13rem; font-weight:700; color:#55afff; margin-bottom:6px; }
     input[type="text"] {
       width:100%; border:1px solid #444; border-radius:6px; padding:8px;
@@ -95,6 +98,16 @@ export class RoomPanel extends LitElement {
         @expanded-changed=${(e) => (this._expanded = e.detail.expanded)}
       >
         <div slot="header" class="glass-header">🛋️ Room Settings 2</div>
+
+        <!-- 🔝 Auto-discovery Presence SUBITO SOTTO IL TITOLO -->
+        <div class="input-group ad-top">
+          <label style="display:flex;align-items:center;gap:8px;margin:0;">
+            <input type="checkbox"
+              .checked=${adPresence}
+              @change=${(e) => this._emit('auto_discovery_sections.presence', e.target.checked)}>
+            <span>🪄 Auto-discovery Presence</span>
+          </label>
+        </div>
 
         <div class="mini-pill">
           <div class="mini-pill-header">Room</div>
@@ -136,12 +149,6 @@ export class RoomPanel extends LitElement {
                 allow-custom-entity
                 @value-changed=${(e) => this._emit('entities.presence.entity', e.detail.value)}
               ></ha-entity-picker>
-              <label style="margin-top:10px;">
-                <input type="checkbox"
-                  .checked=${adPresence}
-                  @change=${(e) => this._emit('auto_discovery_sections.presence', e.target.checked)}>
-                <span>🪄 Auto-discovery Presence</span>
-              </label>
             </div>
 
             ${this._renderActions('tap')}
@@ -162,7 +169,6 @@ export class RoomPanel extends LitElement {
   _updateIcon(e)  { this._fire('icon', e.detail.value); }
 
   _renderActions(actionType) {
-    // azioni standard: toggle, more-info, navigate, call-service, none
     const cfg = this.config?.[`${actionType}_action`] || {};
     const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
     return html`
@@ -198,7 +204,6 @@ export class RoomPanel extends LitElement {
   }
 
   _resetRoom() {
-    // delega il reset all'editor (centralizzato)
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' } },
       bubbles: true, composed: true,
@@ -210,10 +215,9 @@ export class RoomPanel extends LitElement {
       detail: { prop, val }, bubbles: true, composed: true,
     }));
   }
-
   _fire(prop, val) { this._emit(prop, val); }
 
-  /* ---------- presence candidates (locale, come Archivio2) ---------- */
+  /* ---------- presence candidates (locale) ---------- */
   _getPresenceCandidates() {
     const hass = this.hass;
     if (!hass || !hass.states) return [];
