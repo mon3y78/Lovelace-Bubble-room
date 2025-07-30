@@ -38,7 +38,11 @@ class RoomPanel extends i {
 
   constructor() {
     super();
-    this.hass = {};
+    
+    if (!customElements.get('ha-entity-picker')) {
+      customElements.whenDefined('ha-entity-picker').then(() => this.requestUpdate());
+    }
+this.hass = {};
     this.config = {};
     this._expanded = false;
   }
@@ -107,26 +111,25 @@ class RoomPanel extends i {
     .pill-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
     .pill-button { padding:6px 10px; border-radius:999px; border:1px solid #555; cursor:pointer; }
     .pill-button.active { border-color:#55afff; color:#55afff; }
-    /* 🔧 Evita che i picker collassino a 0px su mobile/temi particolari */
-    ha-entity-picker,
-    ha-icon-picker,
-    ha-area-picker,
-    ha-device-picker,
-    ha-select {
-      display: block;
-      width: 100%;
-      min-height: 56px;      /* altezza minima visibile */
-      box-sizing: border-box;
-    }
-    
-    /* Best-effort per Vaadin combo-box interno (se esposto via ::part) */
-    ha-entity-picker::part(input),
-    ha-entity-picker::part(text-field),
-    ha-entity-picker::part(combobox) {
-      min-height: 56px;
-    }
-
-  `;
+  
+/* Ensure HA pickers are visible and not collapsed */
+ha-entity-picker,
+ha-icon-picker,
+ha-area-picker,
+ha-device-picker,
+ha-select {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  box-sizing: border-box;
+}
+/* Best-effort vaadin parts */
+ha-entity-picker::part(input),
+ha-entity-picker::part(text-field),
+ha-entity-picker::part(combobox) {
+  min-height: 56px;
+}
+`;
 
   render() {
     const area = this.config?.area || '';
@@ -187,7 +190,6 @@ class RoomPanel extends i {
             <div class="input-group">
               <label>Presence (ID):</label>
               <ha-entity-picker
-                style="display:block;min-height:56px;width:100%;box-sizing:border-box"
                 .hass=${this.hass}
                 .value=${presenceValue}
                 .includeEntities=${this._getPresenceCandidates()}
@@ -412,7 +414,11 @@ class SensorsPanel extends i {
 
   constructor() {
     super();
-    this.hass = {};
+    
+    if (!customElements.get('ha-entity-picker')) {
+      customElements.whenDefined('ha-entity-picker').then(() => this.requestUpdate());
+    }
+this.hass = {};
     this.config = {};
     this._expanded = false;
     this._expandedSensors = Array(6).fill(false);
@@ -453,26 +459,25 @@ class SensorsPanel extends i {
       border:2px solid #ff4c6a; color:#ff4c6a; border-radius:12px; padding:8px 16px;
       background:transparent; cursor:pointer;
     }
-    /* 🔧 Evita che i picker collassino a 0px su mobile/temi particolari */
-    ha-entity-picker,
-    ha-icon-picker,
-    ha-area-picker,
-    ha-device-picker,
-    ha-select {
-      display: block;
-      width: 100%;
-      min-height: 56px;      /* altezza minima visibile */
-      box-sizing: border-box;
-    }
-    
-    /* Best-effort per Vaadin combo-box interno (se esposto via ::part) */
-    ha-entity-picker::part(input),
-    ha-entity-picker::part(text-field),
-    ha-entity-picker::part(combobox) {
-      min-height: 56px;
-    }
-
-  `;
+  
+/* Ensure HA pickers are visible and not collapsed */
+ha-entity-picker,
+ha-icon-picker,
+ha-area-picker,
+ha-device-picker,
+ha-select {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  box-sizing: border-box;
+}
+/* Best-effort vaadin parts */
+ha-entity-picker::part(input),
+ha-entity-picker::part(text-field),
+ha-entity-picker::part(combobox) {
+  min-height: 56px;
+}
+`;
 
   render() {
     const ad = this.config?.auto_discovery_sections?.sensor || false;
@@ -607,7 +612,11 @@ class MushroomsPanel extends i {
 
   constructor() {
     super();
-    this.hass = {};
+    
+    if (!customElements.get('ha-entity-picker')) {
+      customElements.whenDefined('ha-entity-picker').then(() => this.requestUpdate());
+    }
+this.hass = {};
     this.config = {};
     this._expanded = false;
     this._expandedItems = Array(7).fill(false); // entities1..5 + climate + camera
@@ -757,26 +766,25 @@ class MushroomsPanel extends i {
       border-color: #ff1744!important;
       box-shadow: 0 6px 32px 0 #ff4c6abf;
     }
-    /* 🔧 Evita che i picker collassino a 0px su mobile/temi particolari */
-    ha-entity-picker,
-    ha-icon-picker,
-    ha-area-picker,
-    ha-device-picker,
-    ha-select {
-      display: block;
-      width: 100%;
-      min-height: 56px;      /* altezza minima visibile */
-      box-sizing: border-box;
-    }
-    
-    /* Best-effort per Vaadin combo-box interno (se esposto via ::part) */
-    ha-entity-picker::part(input),
-    ha-entity-picker::part(text-field),
-    ha-entity-picker::part(combobox) {
-      min-height: 56px;
-    }
-
-  `;
+  
+/* Ensure HA pickers are visible and not collapsed */
+ha-entity-picker,
+ha-icon-picker,
+ha-area-picker,
+ha-device-picker,
+ha-select {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  box-sizing: border-box;
+}
+/* Best-effort vaadin parts */
+ha-entity-picker::part(input),
+ha-entity-picker::part(text-field),
+ha-entity-picker::part(combobox) {
+  min-height: 56px;
+}
+`;
 
   render() {
     const cfg = this.config;
@@ -932,7 +940,11 @@ class SubButtonsPanel extends i {
   
   constructor() {
     super();
-    this.hass = {};
+    
+    if (!customElements.get('ha-entity-picker')) {
+      customElements.whenDefined('ha-entity-picker').then(() => this.requestUpdate());
+    }
+this.hass = {};
     this.config = {};
     this._expanded = false;
     this._expandedItems = Array(6).fill(false); // sub-button1..6
@@ -1028,26 +1040,25 @@ class SubButtonsPanel extends i {
       background: rgba(255,76,106,0.18)!important; color: #fff!important;
       border-color: #ff1744!important; box-shadow: 0 6px 32px 0 #ff4c6abf;
     }
-    /* 🔧 Evita che i picker collassino a 0px su mobile/temi particolari */
-    ha-entity-picker,
-    ha-icon-picker,
-    ha-area-picker,
-    ha-device-picker,
-    ha-select {
-      display: block;
-      width: 100%;
-      min-height: 56px;      /* altezza minima visibile */
-      box-sizing: border-box;
-    }
-    
-    /* Best-effort per Vaadin combo-box interno (se esposto via ::part) */
-    ha-entity-picker::part(input),
-    ha-entity-picker::part(text-field),
-    ha-entity-picker::part(combobox) {
-      min-height: 56px;
-    }
-
-  `;
+  
+/* Ensure HA pickers are visible and not collapsed */
+ha-entity-picker,
+ha-icon-picker,
+ha-area-picker,
+ha-device-picker,
+ha-select {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  box-sizing: border-box;
+}
+/* Best-effort vaadin parts */
+ha-entity-picker::part(input),
+ha-entity-picker::part(text-field),
+ha-entity-picker::part(combobox) {
+  min-height: 56px;
+}
+`;
   
   render() {
     const keys = ['sub-button1', 'sub-button2', 'sub-button3', 'sub-button4', 'sub-button5', 'sub-button6'];
@@ -1454,10 +1465,9 @@ function maybeAutoDiscover(hass, config, changedProp, debug = false) {
   if (ad.subbutton) next = autoFillSubButtons(hass, next);
   if (ad.presence)  next = autoFillPresence(hass, next);
 
-  if (debug || (typeof window !== 'undefined' && window.__BUBBLE_DEBUG__)) {
+  if (debug && typeof window !== 'undefined' && window.__BUBBLE_DEBUG__) {
     console.info('[AutoDiscovery] applied after', changedProp, { sections: ad });
   }
-
   return next;
 }
 
