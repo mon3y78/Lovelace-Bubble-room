@@ -34,7 +34,7 @@ class RoomPanel extends i {
     hass: { type: Object },
     config: { type: Object },
     _expanded: { type: Boolean },
-    _useFallbackPicker: { type: Boolean },   // 👈 stato per fallback
+    _useFallbackPicker: { type: Boolean },   // se il picker nativo è “collassato”
   };
 
   constructor() {
@@ -45,32 +45,26 @@ class RoomPanel extends i {
     this._expanded = false;
     this._useFallbackPicker = false;
 
-    // Se il custom element viene registrato dopo l'apertura dell'editor,
-    // forziamo un rerender per farlo comparire.
+    // Quando i custom elements vengono definiti, ricontrolla la visibilità
     if (!customElements.get('ha-entity-picker')) {
       customElements.whenDefined('ha-entity-picker').then(() => this._recheckPicker());
     }
-  }
-
-  firstUpdated() {
-    this._recheckPicker();
-  }
-
-  updated(changedProps) {
-    if (changedProps.has('config') || changedProps.has('hass')) {
-      this._recheckPicker();
+    if (!customElements.get('ha-combo-box')) {
+      customElements.whenDefined('ha-combo-box').then(() => this.requestUpdate());
     }
   }
 
-  // Verifica se il picker nativo è effettivamente "visibile";
-  // altrimenti abilita il fallback (ha-select + ha-textfield).
+  firstUpdated() { this._recheckPicker(); }
+  updated(changed) {
+    if (changed.has('config') || changed.has('hass')) this._recheckPicker();
+  }
+
   _recheckPicker() {
+    // Se il picker nativo è presente ma alto 0px, abilita fallback
     const p = this.renderRoot?.querySelector('ha-entity-picker.presence-picker');
     const h = p?.offsetHeight || 0;
-    const needFallback = !p || h < 8; // 0px o pochi px => non renderizzato/visibile
-    if (needFallback !== this._useFallbackPicker) {
-      this._useFallbackPicker = needFallback;
-    }
+    const needFallback = !p || h < 8;
+    if (needFallback !== this._useFallbackPicker) this._useFallbackPicker = needFallback;
   }
 
   static styles = i$3`
@@ -112,18 +106,17 @@ class RoomPanel extends i {
       font-size:1.09em; font-family:'Inter',sans-serif; font-weight:800;
       color:#55afff; cursor:pointer; user-select:none; position:relative; z-index:1;
     }
-    .mini-pill-content {
-      padding:15px 22px; background:transparent; position:relative; z-index:1;
-    }
+    .mini-pill-content { padding:15px 22px; background:transparent; position:relative; z-index:1; }
+
     .input-group {
       background: rgba(44,70,100,0.23);
       border:1.5px solid rgba(255,255,255,0.13);
       box-shadow:0 2px 14px 0 rgba(70,120,220,0.10);
       border-radius:18px; margin-bottom:13px; padding:14px 18px 10px;
     }
-    /* box per il toggle in alto, come in Sensors */
     .ad-top { margin: 0 16px 14px; }
     label { display:block; font-size:1.13rem; font-weight:700; color:#55afff; margin-bottom:6px; }
+
     input[type="text"] {
       width:100%; border:1px solid #444; border-radius:6px; padding:8px;
       background:#202020; color:#f1f1f1; font-size:0.97rem;
@@ -136,23 +129,21 @@ class RoomPanel extends i {
     .pill-button { padding:6px 10px; border-radius:999px; border:1px solid #555; cursor:pointer; }
     .pill-button.active { border-color:#55afff; color:#55afff; }
 
-    /* ✅ Evita collasso dei picker HA */
+    /* Evita collasso dei picker HA / combo */
     ha-entity-picker,
     ha-icon-picker,
     ha-area-picker,
     ha-device-picker,
-    ha-select {
+    ha-select,
+    ha-combo-box {
       display: block;
       width: 100%;
       min-height: 56px;
       box-sizing: border-box;
     }
-    /* Best-effort vaadin parts (quando esposti) */
     ha-entity-picker::part(input),
     ha-entity-picker::part(text-field),
-    ha-entity-picker::part(combobox) {
-      min-height: 56px;
-    }
+    ha-entity-picker::part(combobox) { min-height: 56px; }
   `;
 
   render() {
@@ -170,7 +161,7 @@ class RoomPanel extends i {
       >
         <div slot="header" class="glass-header">🛋️ Room Settings 2</div>
 
-        <!-- 🔝 Auto-discovery Presence SUBITO SOTTO IL TITOLO -->
+        <!-- 🔝 Auto-discovery Presence -->
         <div class="input-group ad-top">
           <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input type="checkbox"
@@ -214,27 +205,7 @@ class RoomPanel extends i {
             <div class="input-group">
               <label>Presence (ID):</label>
 
-              ${this._useFallbackPicker ? x`
-                <!-- 🔁 FALLBACK: visibile subito ovunque -->
-                <ha-select
-                  .value=${presenceValue || ''}
-                  @selected=${this._onPresenceSelect}
-                  @value-changed=${this._onPresenceSelect}
-                  @closed=${(e) => e.stopPropagation()}
-                >
-                  <mwc-list-item .value=${''}>— seleziona —</mwc-list-item>
-                  ${(this._getPresenceCandidates() || []).map(id =>
-                    x`<mwc-list-item .value=${id}>${id}</mwc-list-item>`
-                  )}
-                </ha-select>
-
-                <ha-textfield
-                  style="margin-top:8px"
-                  placeholder="oppure digita un entity_id"
-                  .value=${presenceValue || ''}
-                  @change=${(e) => this._emit('entities.presence.entity', e.target.value)}
-                ></ha-textfield>
-              ` : x`
+              ${!this._useFallbackPicker ? x`
                 <!-- 🧠 Picker nativo Home Assistant -->
                 <ha-entity-picker
                   class="presence-picker"
@@ -245,7 +216,29 @@ class RoomPanel extends i {
                   allow-custom-entity
                   @value-changed=${(e) => this._emit('entities.presence.entity', e.detail.value)}
                 ></ha-entity-picker>
-              `}
+              ` : (customElements.get('ha-combo-box') ? x`
+                <!-- 🔁 FALLBACK UNICO: ha-combo-box (ricerca + custom value) -->
+                <ha-combo-box
+                  .items=${this._getPresenceCandidates()}
+                  .value=${presenceValue || ''}
+                  allow-custom-value
+                  @value-changed=${(e) => this._emit('entities.presence.entity', e.detail?.value ?? e.target?.value)}
+                  @closed=${(e) => e.stopPropagation()}
+                ></ha-combo-box>
+              ` : x`
+                <!-- 🔁 FALLBACK minimo: select (senza textfield separato) -->
+                <ha-select
+                  .value=${presenceValue || ''}
+                  @selected=${(e) => this._emit('entities.presence.entity', e.target?.value)}
+                  @value-changed=${(e) => this._emit('entities.presence.entity', e.detail?.value ?? e.target?.value)}
+                  @closed=${(e) => e.stopPropagation()}
+                >
+                  <mwc-list-item .value=${''}>— seleziona —</mwc-list-item>
+                  ${(this._getPresenceCandidates() || []).map(id =>
+                    x`<mwc-list-item .value=${id}>${id}</mwc-list-item>`
+                  )}
+                </ha-select>
+              `)}
             </div>
 
             ${this._renderActions('tap')}
@@ -264,11 +257,6 @@ class RoomPanel extends i {
   _updateName(e)  { this._fire('name', e.target.value); }
   _updateArea(e)  { this._fire('area', e.detail.value); }
   _updateIcon(e)  { this._fire('icon', e.detail.value); }
-
-  _onPresenceSelect = (e) => {
-    const v = e?.detail?.value ?? e?.target?.value ?? '';
-    this._emit('entities.presence.entity', v);
-  };
 
   _renderActions(actionType) {
     const cfg = this.config?.[`${actionType}_action`] || {};
