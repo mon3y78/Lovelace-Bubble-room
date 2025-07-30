@@ -34,17 +34,43 @@ class RoomPanel extends i {
     hass: { type: Object },
     config: { type: Object },
     _expanded: { type: Boolean },
+    _useFallbackPicker: { type: Boolean },   // 👈 stato per fallback
   };
 
   constructor() {
     super();
-    
-    if (!customElements.get('ha-entity-picker')) {
-      customElements.whenDefined('ha-entity-picker').then(() => this.requestUpdate());
-    }
-this.hass = {};
+
+    this.hass = {};
     this.config = {};
     this._expanded = false;
+    this._useFallbackPicker = false;
+
+    // Se il custom element viene registrato dopo l'apertura dell'editor,
+    // forziamo un rerender per farlo comparire.
+    if (!customElements.get('ha-entity-picker')) {
+      customElements.whenDefined('ha-entity-picker').then(() => this._recheckPicker());
+    }
+  }
+
+  firstUpdated() {
+    this._recheckPicker();
+  }
+
+  updated(changedProps) {
+    if (changedProps.has('config') || changedProps.has('hass')) {
+      this._recheckPicker();
+    }
+  }
+
+  // Verifica se il picker nativo è effettivamente "visibile";
+  // altrimenti abilita il fallback (ha-select + ha-textfield).
+  _recheckPicker() {
+    const p = this.renderRoot?.querySelector('ha-entity-picker.presence-picker');
+    const h = p?.offsetHeight || 0;
+    const needFallback = !p || h < 8; // 0px o pochi px => non renderizzato/visibile
+    if (needFallback !== this._useFallbackPicker) {
+      this._useFallbackPicker = needFallback;
+    }
   }
 
   static styles = i$3`
@@ -96,9 +122,7 @@ this.hass = {};
       border-radius:18px; margin-bottom:13px; padding:14px 18px 10px;
     }
     /* box per il toggle in alto, come in Sensors */
-    .ad-top {
-      margin: 0 16px 14px;
-    }
+    .ad-top { margin: 0 16px 14px; }
     label { display:block; font-size:1.13rem; font-weight:700; color:#55afff; margin-bottom:6px; }
     input[type="text"] {
       width:100%; border:1px solid #444; border-radius:6px; padding:8px;
@@ -111,25 +135,25 @@ this.hass = {};
     .pill-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
     .pill-button { padding:6px 10px; border-radius:999px; border:1px solid #555; cursor:pointer; }
     .pill-button.active { border-color:#55afff; color:#55afff; }
-  
-/* Ensure HA pickers are visible and not collapsed */
-ha-entity-picker,
-ha-icon-picker,
-ha-area-picker,
-ha-device-picker,
-ha-select {
-  display: block;
-  width: 100%;
-  min-height: 56px;
-  box-sizing: border-box;
-}
-/* Best-effort vaadin parts */
-ha-entity-picker::part(input),
-ha-entity-picker::part(text-field),
-ha-entity-picker::part(combobox) {
-  min-height: 56px;
-}
-`;
+
+    /* ✅ Evita collasso dei picker HA */
+    ha-entity-picker,
+    ha-icon-picker,
+    ha-area-picker,
+    ha-device-picker,
+    ha-select {
+      display: block;
+      width: 100%;
+      min-height: 56px;
+      box-sizing: border-box;
+    }
+    /* Best-effort vaadin parts (quando esposti) */
+    ha-entity-picker::part(input),
+    ha-entity-picker::part(text-field),
+    ha-entity-picker::part(combobox) {
+      min-height: 56px;
+    }
+  `;
 
   render() {
     const area = this.config?.area || '';
@@ -189,13 +213,39 @@ ha-entity-picker::part(combobox) {
 
             <div class="input-group">
               <label>Presence (ID):</label>
-              <ha-entity-picker
-                .hass=${this.hass}
-                .value=${presenceValue}
-                .includeEntities=${this._getPresenceCandidates()}
-                allow-custom-entity
-                @value-changed=${(e) => this._emit('entities.presence.entity', e.detail.value)}
-              ></ha-entity-picker>
+
+              ${this._useFallbackPicker ? x`
+                <!-- 🔁 FALLBACK: visibile subito ovunque -->
+                <ha-select
+                  .value=${presenceValue || ''}
+                  @selected=${this._onPresenceSelect}
+                  @value-changed=${this._onPresenceSelect}
+                  @closed=${(e) => e.stopPropagation()}
+                >
+                  <mwc-list-item .value=${''}>— seleziona —</mwc-list-item>
+                  ${(this._getPresenceCandidates() || []).map(id =>
+                    x`<mwc-list-item .value=${id}>${id}</mwc-list-item>`
+                  )}
+                </ha-select>
+
+                <ha-textfield
+                  style="margin-top:8px"
+                  placeholder="oppure digita un entity_id"
+                  .value=${presenceValue || ''}
+                  @change=${(e) => this._emit('entities.presence.entity', e.target.value)}
+                ></ha-textfield>
+              ` : x`
+                <!-- 🧠 Picker nativo Home Assistant -->
+                <ha-entity-picker
+                  class="presence-picker"
+                  style="display:block;min-height:56px;width:100%;box-sizing:border-box"
+                  .hass=${this.hass}
+                  .value=${presenceValue}
+                  .includeEntities=${this._getPresenceCandidates()}
+                  allow-custom-entity
+                  @value-changed=${(e) => this._emit('entities.presence.entity', e.detail.value)}
+                ></ha-entity-picker>
+              `}
             </div>
 
             ${this._renderActions('tap')}
@@ -214,6 +264,11 @@ ha-entity-picker::part(combobox) {
   _updateName(e)  { this._fire('name', e.target.value); }
   _updateArea(e)  { this._fire('area', e.detail.value); }
   _updateIcon(e)  { this._fire('icon', e.detail.value); }
+
+  _onPresenceSelect = (e) => {
+    const v = e?.detail?.value ?? e?.target?.value ?? '';
+    this._emit('entities.presence.entity', v);
+  };
 
   _renderActions(actionType) {
     const cfg = this.config?.[`${actionType}_action`] || {};
