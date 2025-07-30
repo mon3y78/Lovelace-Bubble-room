@@ -1,13 +1,10 @@
+// src/panels/SensorsPanel.js
 import { LitElement, html, css } from 'lit';
 
 const DEBUG = !!window.__BUBBLE_DEBUG__;
-import { FILTERS, candidatesFor } from '../helpers/entity-filters.js';
-import { SENSOR_TYPES } from '../helpers/sensor-mapping.js';
-
-const SENSOR_TYPE_MAP = SENSOR_TYPES.reduce((map, { type, label, emoji, unit }) => {
-  map[type] = { label, emoji, units: [unit] };
-  return map;
-}, {});
+import { candidatesFor } from '../helpers/entity-filters.js';
+// Se hai un mapping tipi/etichette, puoi importarlo. Qui rendo opzionale.
+// import { SENSOR_TYPES } from '../helpers/sensor-mapping.js';
 
 export class SensorsPanel extends LitElement {
   static properties = {
@@ -26,141 +23,158 @@ export class SensorsPanel extends LitElement {
   }
 
   static styles = css`
-    /* inserisci qui i CSS di .glass-panel, .glass-header, .mini-pill, .input-group ecc */
+    :host { display:block; }
+    .glass-panel{
+      margin:0!important; width:100%; box-sizing:border-box; border-radius:40px;
+      background: var(--glass-bg, rgba(80,235,175,0.28));
+      box-shadow: var(--glass-shadow, 0 2px 24px 0 rgba(40,220,145,0.18));
+      position:relative; border:none;
+    }
+    .glass-header{
+      position:relative; padding:22px 0 18px; text-align:center;
+      font-size:1.12rem; font-weight:700; color:#fff;
+    }
+    .mini-pill{
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      box-shadow: 0 2px 14px 0 rgba(70,120,220,0.10);
+      border-radius: 24px; margin-bottom: 13px; overflow:hidden;
+    }
+    .mini-pill-header{
+      display:flex; align-items:center; gap:14px; padding:15px 22px;
+      font-size:1.02rem; font-weight:800; color:#36e6a0; cursor:pointer;
+    }
+    .chevron{ margin-left:auto; opacity:.64; transition:transform .18s; }
+    .mini-pill.expanded .chevron{ transform: rotate(90deg); }
+    .mini-pill-content{ padding:15px 22px; }
+    .input-group{
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.13);
+      border-radius:18px; margin-bottom: 13px; padding: 14px 18px 10px;
+    }
+    label{ display:block; margin-bottom:6px; color:#36e6a0; font-weight:700; }
+    .reset-button{
+      border:2px solid #ff4c6a; color:#ff4c6a; border-radius:12px; padding:8px 16px;
+      background:transparent; cursor:pointer;
+    }
   `;
 
   render() {
+    const ad = this.config?.auto_discovery_sections?.sensor || false;
+    const keys = ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'];
+
     return html`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
         @expanded-changed=${(e) => (this._expanded = e.detail.expanded)}
       >
-        <div slot="header" class="glass-header">🧭 Sensors</div>
+        <div slot="header" class="glass-header">🌡️ Sensors</div>
 
-        <div class="glass-content">
-          <div class="autodiscover-box" @click=${() => this._toggleAuto('sensor')}>
-            <label>
-              <input
-                type="checkbox"
-                .checked=${this.config.auto_discovery_sections?.sensor || false}
-                @change=${(e) => this._toggleAuto('sensor', e.target.checked)}
-                @click=${(e) => e.stopPropagation()}
-              />
-              <span>🪄 Auto-discovery enabled</span>
-            </label>
-          </div>
+        <div class="input-group" style="margin:0 16px 14px;">
+          <label style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox"
+              .checked=${ad}
+              @change=${(e) => this._fire('auto_discovery_sections.sensor', e.target.checked)}>
+            <span>🪄 Auto-discovery</span>
+          </label>
+        </div>
 
-          ${['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6']
-            .map((key, i) => this._renderSingle(i, key))}
+        ${keys.map((key, i) => this._renderSingle(i, key))}
 
-          <div style="text-align:center; margin-top:1.2em;">
-            <button class="reset-button" @click=${this._resetAll}>🧹 Reset Sensors</button>
-          </div>
+        <div style="text-align:center; margin-top:1.2em; padding-bottom:16px;">
+          <button class="reset-button" @click=${this._resetAll}>🧹 Reset Sensors</button>
         </div>
       </ha-expansion-panel>
     `;
   }
 
   _renderSingle(index, key) {
-    const sensor = this.config.entities?.[key] || {};
-    const expanded = this._expandedSensors[index];
+    const ent = this.config?.entities?.[key] || {};
+    const expanded = !!this._expandedSensors[index];
+    const label = ent.type ? `Sensor ${index + 1} – ${ent.type}` : `Sensor ${index + 1}`;
+
+    // path helper (evita backtick annidati nel template!)
+    const pathType = `entities.${key}.type`;
+    const pathEntity = `entities.${key}.entity_id`;
+    const typeValue = ent.type || '';
+    const entityValue = ent.entity_id || '';
+
+    const includeList = candidatesFor(this.hass, this.config, { section: 'sensor', type: typeValue });
 
     return html`
-      <div class="mini-pill ${expanded ? 'expanded' : ''}" @click=${() => this._toggleOne(index)}>
-        <div class="mini-pill-header">
-          ${SENSOR_TYPE_MAP[sensor.type]?.emoji || '❔'} ${sensor.type || `Sensor ${index + 1}`}
+      <div class="mini-pill ${expanded ? 'expanded' : ''}">
+        <div class="mini-pill-header" @click=${() => this._toggleOne(index)}>
+          ${label}
           <span class="chevron">${expanded ? '▼' : '▶'}</span>
         </div>
-
         ${expanded ? html`
           <div class="mini-pill-content">
             <div class="input-group">
               <label>Sensor Type</label>
-              <select
-                .value=${sensor.type || ''}
-                @change=${(e) => this._update(index, 'type', e.target.value)}
-              >
+              <select .value=${typeValue} @change=${(e) => this._fire(pathType, e.target.value)}>
                 <option value="">-- none --</option>
-                ${Object.entries(SENSOR_TYPE_MAP).map(([type, { emoji, label }]) => html`
-                  <option value=${type}>${emoji} ${label}</option>
-                `)}
+                <option value="temperature">🌡️ Temperature</option>
+                <option value="humidity">💧 Humidity</option>
+                <option value="pressure">🔽 Pressure</option>
+                <option value="generic">🔎 Generic</option>
               </select>
             </div>
 
             <div class="input-group">
-              <label>Entity ID</label>
+              <label>Entity</label>
               <ha-entity-picker
                 .hass=${this.hass}
-                .includeEntities=${this._getSensorCandidates(sensor.type)}
-                .value=${sensor.entity_id || ''}
+                .value=${entityValue}
+                .includeEntities=${includeList}
                 allow-custom-entity
-                @value-changed=${(e) =>
-                  this._fire('entities.sensor' + (index + 1) + '.entity_id', e.detail.value)}
+                @value-changed=${(e) => this._fire(pathEntity, e.detail.value)}
               ></ha-entity-picker>
             </div>
 
-            <div class="input-group">
-              <label>Unit</label>
-              <select
-                .value=${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}
-                @change=${(e) => this._update(index, 'unit', e.target.value)}
-              >
-                ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(
-                  (u) => html`<option>${u}</option>`
-                )}
-              </select>
-            </div>
+            ${this._renderUnit(index, typeValue, ent.unit)}
           </div>
         ` : ''}
       </div>
     `;
   }
 
-  _toggleAuto(section, val) {
-    const current = this.config.auto_discovery_sections?.[section] || false;
-    const next = typeof val === 'boolean' ? val : !current;
-    this._fire(`auto_discovery_sections.${section}`, next);
+  _renderUnit(index, type, currentUnit) {
+    const path = `entities.sensor${index + 1}.unit`;
+    let units = [];
+    if (type === 'temperature') units = ['°C', '°F', 'K'];
+    else if (type === 'humidity') units = ['%'];
+    else if (type === 'pressure') units = ['hPa', 'mbar', 'bar', 'psi'];
+
+    return html`
+      <div class="input-group">
+        <label>Unit</label>
+        <select .value=${currentUnit || (units[0] || '')}
+                @change=${(e) => this._fire(path, e.target.value)}>
+          ${units.map((u) => html`<option value=${u}>${u}</option>`)}
+        </select>
+      </div>
+    `;
   }
 
+  /* ---------- helpers ---------- */
   _toggleOne(i) {
     this._expandedSensors = this._expandedSensors.map((_, j) => j === i);
-  }
-
-  _update(i, field, value) {
-    this._fire(`entities.sensor${i + 1}.${field}`, value);
+    this.requestUpdate();
   }
 
   _resetAll() {
-  this.dispatchEvent(new CustomEvent('panel-changed', {
-    detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'sensor' } },
-    bubbles: true, composed: true,
-  }));
-}
-`, undefined)
-    );
+    // reset centralizzato gestito dall'editor
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'sensor' } },
+      bubbles: true, composed: true,
+    }));
   }
 
   _fire(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val },
-      bubbles: true,
-      composed: true,
+      detail: { prop, val }, bubbles: true, composed: true,
     }));
-  }
-
-  // Wrapper locale (Opzione A): usa la logica centralizzata e logga per debug
-  _getSensorCandidates(type) {
-    const list = candidatesFor(this.hass, this.config, { section: 'sensor', type });
-    if (DEBUG) {
-      console.info('[SensorsPanel][Candidates]', {
-        type,
-        area: this.config?.area || null,
-        count: list.length,
-        sample: list.slice(0, 8),
-      });
-    }
-    return list;
   }
 }
 
