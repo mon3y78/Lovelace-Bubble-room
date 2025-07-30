@@ -163,6 +163,25 @@ export class MushroomsPanel extends LitElement {
       border-color: #ff1744!important;
       box-shadow: 0 6px 32px 0 #ff4c6abf;
     }
+    /* 🔧 Evita che i picker collassino a 0px su mobile/temi particolari */
+    ha-entity-picker,
+    ha-icon-picker,
+    ha-area-picker,
+    ha-device-picker,
+    ha-select {
+      display: block;
+      width: 100%;
+      min-height: 56px;      /* altezza minima visibile */
+      box-sizing: border-box;
+    }
+    
+    /* Best-effort per Vaadin combo-box interno (se esposto via ::part) */
+    ha-entity-picker::part(input),
+    ha-entity-picker::part(text-field),
+    ha-entity-picker::part(combobox) {
+      min-height: 56px;
+    }
+
   `;
 
   render() {

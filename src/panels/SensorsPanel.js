@@ -57,6 +57,25 @@ export class SensorsPanel extends LitElement {
       border:2px solid #ff4c6a; color:#ff4c6a; border-radius:12px; padding:8px 16px;
       background:transparent; cursor:pointer;
     }
+    /* 🔧 Evita che i picker collassino a 0px su mobile/temi particolari */
+    ha-entity-picker,
+    ha-icon-picker,
+    ha-area-picker,
+    ha-device-picker,
+    ha-select {
+      display: block;
+      width: 100%;
+      min-height: 56px;      /* altezza minima visibile */
+      box-sizing: border-box;
+    }
+    
+    /* Best-effort per Vaadin combo-box interno (se esposto via ::part) */
+    ha-entity-picker::part(input),
+    ha-entity-picker::part(text-field),
+    ha-entity-picker::part(combobox) {
+      min-height: 56px;
+    }
+
   `;
 
   render() {

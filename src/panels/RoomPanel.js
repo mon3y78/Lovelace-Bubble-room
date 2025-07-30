@@ -82,6 +82,25 @@ export class RoomPanel extends LitElement {
     .pill-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
     .pill-button { padding:6px 10px; border-radius:999px; border:1px solid #555; cursor:pointer; }
     .pill-button.active { border-color:#55afff; color:#55afff; }
+    /* 🔧 Evita che i picker collassino a 0px su mobile/temi particolari */
+    ha-entity-picker,
+    ha-icon-picker,
+    ha-area-picker,
+    ha-device-picker,
+    ha-select {
+      display: block;
+      width: 100%;
+      min-height: 56px;      /* altezza minima visibile */
+      box-sizing: border-box;
+    }
+    
+    /* Best-effort per Vaadin combo-box interno (se esposto via ::part) */
+    ha-entity-picker::part(input),
+    ha-entity-picker::part(text-field),
+    ha-entity-picker::part(combobox) {
+      min-height: 56px;
+    }
+
   `;
 
   render() {
