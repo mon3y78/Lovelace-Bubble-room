@@ -24,6 +24,265 @@ const t=globalThis,i$1=t.trustedTypes,s$1=i$1?i$1.createPolicy("lit-html",{creat
  * SPDX-License-Identifier: BSD-3-Clause
  */const s=globalThis;class i extends y$1{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0;}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const r=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=B(r,this.renderRoot,this.renderOptions);}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0);}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1);}render(){return T}}i._$litElement$=!0,i["finalized"]=!0,s.litElementHydrateSupport?.({LitElement:i});const o=s.litElementPolyfillSupport;o?.({LitElement:i});(s.litElementVersions??=[]).push("4.2.1");
 
+// src/panels/RoomPanel.js
+
+const DEBUG$4 = !!window.__BUBBLE_DEBUG__;
+// Se preferisci usare l'helper globale, importa candidatesFor e sostituisci la chiamata nel picker
+// import { candidatesFor } from '../helpers/entity-filters.js';
+
+class RoomPanel extends i {
+  static properties = {
+    hass: { type: Object },
+    config: { type: Object },
+    _expanded: { type: Boolean },
+  };
+
+  constructor() {
+    super();
+    this.hass = {};
+    this.config = {};
+    this._expanded = false;
+  }
+
+  static styles = i$3`
+    :host { display: block; }
+    .glass-panel {
+      margin: 0 !important;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 40px;
+      position: relative;
+      border: none;
+      z-index: 0;
+      --glass-bg: rgba(73,164,255,0.38);
+      --glass-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
+      --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.26),rgba(255,255,255,0.11) 70%,transparent 100%);
+      background: var(--glass-bg);
+      box-shadow: var(--glass-shadow);
+    }
+    .glass-panel::after {
+      content: ''; position: absolute; inset: 0; border-radius: inherit;
+      background: var(--glass-sheen); pointer-events: none; z-index:0;
+    }
+    .glass-header {
+      position: relative; z-index: 1; background: none!important; box-shadow:none!important;
+      padding: 22px 0 18px; margin:0; text-align:center;
+      font-size:1.2rem; font-weight:700; color:#fff;
+    }
+    .mini-pill {
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      box-shadow: 0 3px 22px 0 rgba(70,120,220,0.13);
+      backdrop-filter: blur(10px) saturate(1.2);
+      border-radius: 24px;
+      margin-bottom:18px;
+      overflow:hidden;
+    }
+    .mini-pill-header {
+      display:flex; align-items:center; padding:15px 22px;
+      font-size:1.09em; font-family:'Inter',sans-serif; font-weight:800;
+      color:#55afff; cursor:pointer; user-select:none; position:relative; z-index:1;
+    }
+    .mini-pill-content {
+      padding:15px 22px; background:transparent; position:relative; z-index:1;
+    }
+    .input-group {
+      background: rgba(44,70,100,0.23);
+      border:1.5px solid rgba(255,255,255,0.13);
+      box-shadow:0 2px 14px 0 rgba(70,120,220,0.10);
+      border-radius:18px; margin-bottom:13px; padding:14px 18px 10px;
+    }
+    label { display:block; font-size:1.13rem; font-weight:700; color:#55afff; margin-bottom:6px; }
+    input[type="text"] {
+      width:100%; border:1px solid #444; border-radius:6px; padding:8px;
+      background:#202020; color:#f1f1f1; font-size:0.97rem;
+    }
+    .reset-button{
+      border:2px solid #ff4c6a; color:#ff4c6a; border-radius:12px; padding:8px 16px;
+      background:transparent; cursor:pointer;
+    }
+    .pill-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+    .pill-button { padding:6px 10px; border-radius:999px; border:1px solid #555; cursor:pointer; }
+    .pill-button.active { border-color:#55afff; color:#55afff; }
+  `;
+
+  render() {
+    const area = this.config?.area || '';
+    const name = this.config?.name || '';
+    const icon = this.config?.icon || '';
+    const presenceValue = this.config?.entities?.presence?.entity || this.config?.presence_entity || '';
+    const adPresence = this.config?.auto_discovery_sections?.presence || false;
+
+    return x`
+      <ha-expansion-panel
+        class="glass-panel"
+        .expanded=${this._expanded}
+        @expanded-changed=${(e) => (this._expanded = e.detail.expanded)}
+      >
+        <div slot="header" class="glass-header">🛋️ Room Settings 2</div>
+
+        <div class="mini-pill">
+          <div class="mini-pill-header">Room</div>
+          <div class="mini-pill-content">
+            <div class="input-group">
+              <label>Room name:</label>
+              <input type="text" .value=${name} @input=${this._updateName}>
+            </div>
+            <div class="input-group">
+              <label>Area:</label>
+              <ha-area-picker
+                .hass=${this.hass}
+                .value=${area}
+                @value-changed=${this._updateArea}
+              ></ha-area-picker>
+            </div>
+          </div>
+        </div>
+
+        <div class="mini-pill">
+          <div class="mini-pill-header">Icon & Presence</div>
+          <div class="mini-pill-content">
+            <div class="input-group">
+              <label>Room Icon:</label>
+              <ha-icon-picker
+                .hass=${this.hass}
+                .value=${icon}
+                allow-custom-icon
+                @value-changed=${this._updateIcon}
+              ></ha-icon-picker>
+            </div>
+
+            <div class="input-group">
+              <label>Presence (ID):</label>
+              <ha-entity-picker
+                .hass=${this.hass}
+                .value=${presenceValue}
+                .includeEntities=${this._getPresenceCandidates()}
+                allow-custom-entity
+                @value-changed=${(e) => this._emit('entities.presence.entity', e.detail.value)}
+              ></ha-entity-picker>
+              <label style="margin-top:10px;">
+                <input type="checkbox"
+                  .checked=${adPresence}
+                  @change=${(e) => this._emit('auto_discovery_sections.presence', e.target.checked)}>
+                <span>🪄 Auto-discovery Presence</span>
+              </label>
+            </div>
+
+            ${this._renderActions('tap')}
+            ${this._renderActions('hold')}
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-top:1.2em;">
+          <button class="reset-button" @click=${this._resetRoom}>🧹 Reset Room</button>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+
+  /* ---------- handlers ---------- */
+  _updateName(e)  { this._fire('name', e.target.value); }
+  _updateArea(e)  { this._fire('area', e.detail.value); }
+  _updateIcon(e)  { this._fire('icon', e.detail.value); }
+
+  _renderActions(actionType) {
+    // azioni standard: toggle, more-info, navigate, call-service, none
+    const cfg = this.config?.[`${actionType}_action`] || {};
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+    return x`
+      <div class="input-group">
+        <label>${actionType === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
+        <div class="pill-group">
+          ${actions.map((a) => x`
+            <paper-button
+              class="pill-button ${cfg.action === a ? 'active' : ''}"
+              @click=${() => this._fire(`${actionType}_action.action`, a)}
+            >${a}</paper-button>
+          `)}
+        </div>
+        ${cfg.action === 'navigate' ? x`
+          <input type="text" placeholder="Path"
+                 .value=${cfg.navigation_path || ''}
+                 @input=${(e) => this._fire(`${actionType}_action.navigation_path`, e.target.value)}>
+        ` : ''}
+        ${cfg.action === 'call-service' ? x`
+          <input type="text" placeholder="service: domain.service_name"
+                 .value=${cfg.service || ''}
+                 @input=${(e) => this._fire(`${actionType}_action.service`, e.target.value)}>
+          <input type="text" placeholder='service_data (JSON)'
+                 .value=${cfg.service_data ? JSON.stringify(cfg.service_data) : ''}
+                 @input=${(e) => {
+                   let v = e.target.value;
+                   try { v = v ? JSON.parse(v) : undefined; } catch { v = undefined; }
+                   this._fire(`${actionType}_action.service_data`, v);
+                 }}>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  _resetRoom() {
+    // delega il reset all'editor (centralizzato)
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' } },
+      bubbles: true, composed: true,
+    }));
+  }
+
+  _emit(prop, val) {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop, val }, bubbles: true, composed: true,
+    }));
+  }
+
+  _fire(prop, val) { this._emit(prop, val); }
+
+  /* ---------- presence candidates (locale, come Archivio2) ---------- */
+  _getPresenceCandidates() {
+    const hass = this.hass;
+    if (!hass || !hass.states) return [];
+    const allowed = new Set([
+      'person','device_tracker','binary_sensor','light','switch',
+      'media_player','fan','humidifier','lock','input_boolean','scene'
+    ]);
+
+    let ids = Object.keys(hass.states).filter((id) => allowed.has(id.split('.')[0]));
+
+    // binary_sensor: solo motion/occupancy/presence
+    ids = ids.filter((id) => {
+      const domain = id.split('.')[0];
+      if (domain !== 'binary_sensor') return true;
+      const dc = hass.states[id]?.attributes?.device_class;
+      return ['motion','occupancy','presence'].includes(dc || '');
+    });
+
+    // filtro per Area
+    const area = this.config?.area;
+    if (area) {
+      const inArea = ids.filter((id) => {
+        const st = hass.states[id];
+        const a1 = st?.attributes?.area_id;
+        const a2 = st?.attributes?.area;
+        return a1 === area || a2 === area;
+      });
+      if (inArea.length) ids = inArea;
+    }
+
+    // mantieni la selezionata anche se fuori filtro
+    const selected = this.config?.entities?.presence?.entity || this.config?.presence_entity;
+    if (selected && !ids.includes(selected)) ids.push(selected);
+
+    if (DEBUG$4) console.info('[RoomPanel][Presence candidates]', {
+      area, count: ids.length, sample: ids.slice(0,8)
+    });
+
+    return ids;
+  }
+}
+
+customElements.define('room-panel', RoomPanel);
+
 const FILTERS = {
   presence: {
     includeDomains: ['person','device_tracker','binary_sensor','light','switch','media_player','fan','humidifier','lock','input_boolean','scene'],
@@ -115,204 +374,9 @@ function candidatesFor(hass, config, sectionOrOpts) {
   return res;
 }
 
-class RoomPanel extends i {
-  static properties = {
-    hass: { type: Object },
-    config: { type: Object },
-    _expanded: { type: Boolean },
-  };
-
-  constructor() {
-    super();
-    this.hass = {};
-    this.config = {};
-    this._expanded = false;
-  }
-
-  static styles = i$3`
-    :host { display: block; }
-    .glass-panel {
-      margin: 0 !important;
-      width: 100%;
-      box-sizing: border-box;
-      border-radius: 40px;
-      position: relative;
-      border: none;
-      z-index: 0;
-      --glass-bg: rgba(73,164,255,0.38);
-      --glass-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
-      --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.26),rgba(255,255,255,0.11) 70%,transparent 100%);
-      background: var(--glass-bg);
-      box-shadow: var(--glass-shadow);
-    }
-    .glass-panel::after {
-      content: ''; position: absolute; inset: 0; border-radius: inherit;
-      background: var(--glass-sheen); pointer-events: none; z-index:0;
-    }
-    .glass-header {
-      position: relative; z-index: 1; background: none!important; box-shadow:none!important;
-      padding: 22px 0 18px; margin:0; text-align:center;
-      font-size:1.2rem; font-weight:700; color:#fff;
-    }
-    .mini-pill {
-      background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.12);
-      box-shadow: 0 3px 22px 0 rgba(70,120,220,0.13);
-      backdrop-filter: blur(10px) saturate(1.2);
-      border-radius: 24px;
-      margin-bottom:18px;
-      overflow:hidden;
-    }
-    .mini-pill-header {
-      display:flex; align-items:center; padding:15px 22px;
-      font-size:1.09em; font-family:'Inter',sans-serif; font-weight:800;
-      color:#55afff; cursor:pointer; user-select:none; position:relative; z-index:1;
-    }
-    .mini-pill-header .chevron { margin-left:auto; font-size:1.22em; opacity:0.64; transition:transform 0.18s; }
-    .mini-pill.expanded .mini-pill-header .chevron { transform: rotate(90deg); }
-    .mini-pill-content {
-      padding:15px 22px; background:transparent; position:relative; z-index:1;
-    }
-    .autodiscover-box {
-      margin:0 auto 18px; padding:18px 0; display:flex; align-items:center; justify-content:center;
-      font-size:1.17rem; color:#fff; font-weight:700; letter-spacing:0.02em; cursor:pointer;
-      border:2.5px solid #FFD600; box-shadow:0 2px 24px 0 #FFD60033;
-      border-radius:24px; backdrop-filter: blur(7px) saturate(1.2);
-    }
-    .input-group {
-      background: rgba(44,70,100,0.23);
-      border:1.5px solid rgba(255,255,255,0.13);
-      box-shadow:0 2px 14px 0 rgba(70,120,220,0.10);
-      border-radius:18px; margin-bottom:13px; padding:14px 18px 10px;
-    }
-    label { display:block; font-size:1.13rem; font-weight:700; color:#55afff; margin-bottom:6px; }
-    input[type="text"] {
-      width:100%; border:1px solid #444; border-radius:6px; padding:8px;
-      background:#202020; color:#f1f1f1; font-size:0.97rem;
-    }
-  `;
-
-  render() {
-    return x`
-      <ha-expansion-panel
-        class="glass-panel"
-        .expanded="${this._expanded}"
-        @expanded-changed="${e => this._expanded = e.detail.expanded}"
-      >
-        <div slot="header" class="glass-header">🛋️ Room Settings 2</div>
-        <div class="mini-pill expanded">
-          <div class="mini-pill-header">Room</div>
-          <div class="mini-pill-content">
-            <div class="input-group">
-              <label>Room name:</label>
-              <input type="text" .value="${this.config.name||''}" @input="${this._updateName}">
-            </div>
-            <div class="input-group">
-              <label>Area:</label>
-              <ha-area-picker
-                .hass="${this.hass}"
-                .value="${this.config.area||''}"
-                @value-changed="${this._updateArea}"
-              ></ha-area-picker>
-            </div>
-          </div>
-        </div>
-
-        <div class="mini-pill expanded">
-          <div class="mini-pill-header">Icon</div>
-          <div class="mini-pill-content">
-            <div class="input-group">
-              <label>Room Icon:</label>
-              <ha-icon-picker
-                .hass="${this.hass}"
-                .value="${this.config.icon||''}"
-                allow-custom-icon
-                @value-changed="${this._updateIcon}"
-              ></ha-icon-picker>
-            </div>
-            <div class="input-group">
-              <label>Presence (ID):</label>
-              <ha-entity-picker
-                .hass=${this.hass}
-                .value=${this.config.entities?.presence?.entity || this.config.presence_entity || ''}
-                .includeEntities=${candidatesFor(this.hass, this.config, 'presence')}
-                allow-custom-entity
-                @value-changed=${e=>this._emit('entities.presence.entity', e.detail.value)}
-              ></ha-entity-picker>
-            </div>
-            <!-- tap/hold actions -->
-            ${this._renderActions('tap')}
-            ${this._renderActions('hold')}
-          </div>
-        </div>
-
-        <div style="text-align:center; margin-top:1.2em;">
-          <button class="reset-button" @click="${this._reset}">🧹 Reset Room</button>
-        </div>
-      </ha-expansion-panel>
-    `;
-  }
-
-  _updateName(e) {
-    this._fire('name', e.target.value);
-  }
-  _updateArea(e) {
-    this._fire('area', e.detail.value);
-  }
-  _updateIcon(e) {
-    this._fire('icon', e.detail.value);
-  }
-  _updateEntity(key, val) {
-    this._fire(`entities.${key}.entity`, val);
-  }
-  _renderActions(type) {
-    this.config[`${type}_action`] || {};
-    const labels = { tap: 'Tap', hold: 'Hold' };
-    return x`
-      <div class="input-group">
-        <label>${labels[type]} Action:</label>
-        <!-- replica esattamente il _renderTapHoldAction del sorgente -->
-        ...qui copi esattamente il blocco di codice di ${type} come in originale...
-      </div>
-    `;
-  }
-  _reset() {
-    this._fire('resetRoom', true);
-  }
-  _fire(prop, val) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val }, bubbles: true, composed: true
-    }));
-  }
-}
-
-customElements.define('room-panel', RoomPanel);
-
-/**
- * sensor-mapping.js
- * 
- * Mappa centralizzata dei tipi di sensori, unità e relative proprietà visuali.
- * File completo e chiuso.
- */
-
-const SENSOR_TYPES = [
-  { type: 'temperature', label: 'Temperature', emoji: '🌡️', icon: 'mdi:thermometer', unit: '°C' },
-  { type: 'humidity',    label: 'Humidity',    emoji: '💧',  icon: 'mdi:water-percent', unit: '%' },
-  { type: 'co2',         label: 'CO2',         emoji: '🟩',  icon: 'mdi:molecule-co2',  unit: 'ppm' },
-  { type: 'lux',         label: 'Luminosity',  emoji: '🔆',  icon: 'mdi:brightness-5',  unit: 'lx' },
-  { type: 'uv',          label: 'UV Index',    emoji: '🌞',  icon: 'mdi:weather-sunny-alert', unit: 'UV' },
-  { type: 'pressure',    label: 'Pressure',    emoji: '⏲️',  icon: 'mdi:gauge', unit: 'hPa' },
-  { type: 'noise',       label: 'Noise',       emoji: '🔊',  icon: 'mdi:volume-high', unit: 'dB' },
-  { type: 'pm25',        label: 'PM2.5',       emoji: '🌫️',  icon: 'mdi:blur', unit: 'µg/m³' },
-  { type: 'pm10',        label: 'PM10',        emoji: '🌫️',  icon: 'mdi:blur-linear', unit: 'µg/m³' }
-];
-
-const DEBUG$3 = !!window.__BUBBLE_DEBUG__;
-
-const SENSOR_TYPE_MAP = SENSOR_TYPES.reduce((map, { type, label, emoji, unit }) => {
-  map[type] = { label, emoji, units: [unit] };
-  return map;
-}, {});
+// src/panels/SensorsPanel.js
+// Se hai un mapping tipi/etichette, puoi importarlo. Qui rendo opzionale.
+// import { SENSOR_TYPES } from '../helpers/sensor-mapping.js';
 
 class SensorsPanel extends i {
   static properties = {
@@ -331,143 +395,164 @@ class SensorsPanel extends i {
   }
 
   static styles = i$3`
-    /* inserisci qui i CSS di .glass-panel, .glass-header, .mini-pill, .input-group ecc */
+    :host { display:block; }
+    .glass-panel{
+      margin:0!important; width:100%; box-sizing:border-box; border-radius:40px;
+      background: var(--glass-bg, rgba(80,235,175,0.28));
+      box-shadow: var(--glass-shadow, 0 2px 24px 0 rgba(40,220,145,0.18));
+      position:relative; border:none;
+    }
+    .glass-header{
+      position:relative; padding:22px 0 18px; text-align:center;
+      font-size:1.12rem; font-weight:700; color:#fff;
+    }
+    .mini-pill{
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      box-shadow: 0 2px 14px 0 rgba(70,120,220,0.10);
+      border-radius: 24px; margin-bottom: 13px; overflow:hidden;
+    }
+    .mini-pill-header{
+      display:flex; align-items:center; gap:14px; padding:15px 22px;
+      font-size:1.02rem; font-weight:800; color:#36e6a0; cursor:pointer;
+    }
+    .chevron{ margin-left:auto; opacity:.64; transition:transform .18s; }
+    .mini-pill.expanded .chevron{ transform: rotate(90deg); }
+    .mini-pill-content{ padding:15px 22px; }
+    .input-group{
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.13);
+      border-radius:18px; margin-bottom: 13px; padding: 14px 18px 10px;
+    }
+    label{ display:block; margin-bottom:6px; color:#36e6a0; font-weight:700; }
+    .reset-button{
+      border:2px solid #ff4c6a; color:#ff4c6a; border-radius:12px; padding:8px 16px;
+      background:transparent; cursor:pointer;
+    }
   `;
 
   render() {
+    const ad = this.config?.auto_discovery_sections?.sensor || false;
+    const keys = ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'];
+
     return x`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
         @expanded-changed=${(e) => (this._expanded = e.detail.expanded)}
       >
-        <div slot="header" class="glass-header">🧭 Sensors</div>
+        <div slot="header" class="glass-header">🌡️ Sensors</div>
 
-        <div class="glass-content">
-          <div class="autodiscover-box" @click=${() => this._toggleAuto('sensor')}>
-            <label>
-              <input
-                type="checkbox"
-                .checked=${this.config.auto_discovery_sections?.sensor || false}
-                @change=${(e) => this._toggleAuto('sensor', e.target.checked)}
-                @click=${(e) => e.stopPropagation()}
-              />
-              <span>🪄 Auto-discovery enabled</span>
-            </label>
-          </div>
+        <div class="input-group" style="margin:0 16px 14px;">
+          <label style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox"
+              .checked=${ad}
+              @change=${(e) => this._fire('auto_discovery_sections.sensor', e.target.checked)}>
+            <span>🪄 Auto-discovery</span>
+          </label>
+        </div>
 
-          ${['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6']
-            .map((key, i) => this._renderSingle(i, key))}
+        ${keys.map((key, i) => this._renderSingle(i, key))}
 
-          <div style="text-align:center; margin-top:1.2em;">
-            <button class="reset-button" @click=${this._resetAll}>🧹 Reset Sensors</button>
-          </div>
+        <div style="text-align:center; margin-top:1.2em; padding-bottom:16px;">
+          <button class="reset-button" @click=${this._resetAll}>🧹 Reset Sensors</button>
         </div>
       </ha-expansion-panel>
     `;
   }
 
   _renderSingle(index, key) {
-    const sensor = this.config.entities?.[key] || {};
-    const expanded = this._expandedSensors[index];
+    const ent = this.config?.entities?.[key] || {};
+    const expanded = !!this._expandedSensors[index];
+    const label = ent.type ? `Sensor ${index + 1} – ${ent.type}` : `Sensor ${index + 1}`;
+
+    // path helper (evita backtick annidati nel template!)
+    const pathType = `entities.${key}.type`;
+    const pathEntity = `entities.${key}.entity_id`;
+    const typeValue = ent.type || '';
+    const entityValue = ent.entity_id || '';
+
+    const includeList = candidatesFor(this.hass, this.config, { section: 'sensor', type: typeValue });
 
     return x`
-      <div class="mini-pill ${expanded ? 'expanded' : ''}" @click=${() => this._toggleOne(index)}>
-        <div class="mini-pill-header">
-          ${SENSOR_TYPE_MAP[sensor.type]?.emoji || '❔'} ${sensor.type || `Sensor ${index + 1}`}
+      <div class="mini-pill ${expanded ? 'expanded' : ''}">
+        <div class="mini-pill-header" @click=${() => this._toggleOne(index)}>
+          ${label}
           <span class="chevron">${expanded ? '▼' : '▶'}</span>
         </div>
-
         ${expanded ? x`
           <div class="mini-pill-content">
             <div class="input-group">
               <label>Sensor Type</label>
-              <select
-                .value=${sensor.type || ''}
-                @change=${(e) => this._update(index, 'type', e.target.value)}
-              >
+              <select .value=${typeValue} @change=${(e) => this._fire(pathType, e.target.value)}>
                 <option value="">-- none --</option>
-                ${Object.entries(SENSOR_TYPE_MAP).map(([type, { emoji, label }]) => x`
-                  <option value=${type}>${emoji} ${label}</option>
-                `)}
+                <option value="temperature">🌡️ Temperature</option>
+                <option value="humidity">💧 Humidity</option>
+                <option value="pressure">🔽 Pressure</option>
+                <option value="generic">🔎 Generic</option>
               </select>
             </div>
 
             <div class="input-group">
-              <label>Entity ID</label>
+              <label>Entity</label>
               <ha-entity-picker
                 .hass=${this.hass}
-                .includeEntities=${this._getSensorCandidates(sensor.type)}
-                .value=${sensor.entity_id || ''}
+                .value=${entityValue}
+                .includeEntities=${includeList}
                 allow-custom-entity
-                @value-changed=${(e) =>
-                  this._fire('entities.sensor' + (index + 1) + '.entity_id', e.detail.value)}
+                @value-changed=${(e) => this._fire(pathEntity, e.detail.value)}
               ></ha-entity-picker>
             </div>
 
-            <div class="input-group">
-              <label>Unit</label>
-              <select
-                .value=${sensor.unit || (SENSOR_TYPE_MAP[sensor.type]?.units[0] || '')}
-                @change=${(e) => this._update(index, 'unit', e.target.value)}
-              >
-                ${(SENSOR_TYPE_MAP[sensor.type]?.units || []).map(
-                  (u) => x`<option>${u}</option>`
-                )}
-              </select>
-            </div>
+            ${this._renderUnit(index, typeValue, ent.unit)}
           </div>
         ` : ''}
       </div>
     `;
   }
 
-  _toggleAuto(section, val) {
-    const current = this.config.auto_discovery_sections?.[section] || false;
-    const next = typeof val === 'boolean' ? val : !current;
-    this._fire(`auto_discovery_sections.${section}`, next);
+  _renderUnit(index, type, currentUnit) {
+    const path = `entities.sensor${index + 1}.unit`;
+    let units = [];
+    if (type === 'temperature') units = ['°C', '°F', 'K'];
+    else if (type === 'humidity') units = ['%'];
+    else if (type === 'pressure') units = ['hPa', 'mbar', 'bar', 'psi'];
+
+    return x`
+      <div class="input-group">
+        <label>Unit</label>
+        <select .value=${currentUnit || (units[0] || '')}
+                @change=${(e) => this._fire(path, e.target.value)}>
+          ${units.map((u) => x`<option value=${u}>${u}</option>`)}
+        </select>
+      </div>
+    `;
   }
 
+  /* ---------- helpers ---------- */
   _toggleOne(i) {
     this._expandedSensors = this._expandedSensors.map((_, j) => j === i);
-  }
-
-  _update(i, field, value) {
-    this._fire(`entities.sensor${i + 1}.${field}`, value);
+    this.requestUpdate();
   }
 
   _resetAll() {
-    ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'].forEach((k) =>
-      this._fire(`entities.${k}`, undefined)
-    );
+    // reset centralizzato gestito dall'editor
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'sensor' } },
+      bubbles: true, composed: true,
+    }));
   }
 
   _fire(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val },
-      bubbles: true,
-      composed: true,
+      detail: { prop, val }, bubbles: true, composed: true,
     }));
-  }
-
-  // Wrapper locale (Opzione A): usa la logica centralizzata e logga per debug
-  _getSensorCandidates(type) {
-    const list = candidatesFor(this.hass, this.config, { section: 'sensor', type });
-    if (DEBUG$3) {
-      console.info('[SensorsPanel][Candidates]', {
-        type,
-        area: this.config?.area || null,
-        count: list.length,
-        sample: list.slice(0, 8),
-      });
-    }
-    return list;
   }
 }
 
 customElements.define('sensors-panel', SensorsPanel);
 
-const DEBUG$2 = !!window.__BUBBLE_DEBUG__;
+const DEBUG$3 = !!window.__BUBBLE_DEBUG__;
 
 class MushroomsPanel extends i {
   static properties = {
@@ -751,15 +836,16 @@ class MushroomsPanel extends i {
   }
 
   _resetAll() {
-    ['entities1','entities2','entities3','entities4','entities5','climate','camera']
-      .forEach((k) => this._fire('entities.' + k, undefined));
-  }
-
-  // --- Wrapper locale: calcola candidati + log ---
+  this.dispatchEvent(new CustomEvent('panel-changed', {
+    detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'mushroom' } },
+    bubbles: true, composed: true,
+  }));
+}
+// --- Wrapper locale: calcola candidati + log ---
   _getMushroomCandidates() {
     // Usa la logica centralizzata, ma aggiunge log locale (Opzione A)
     const list = candidatesFor(this.hass, this.config, 'mushroom');
-    if (DEBUG$2) {
+    if (DEBUG$3) {
       console.info('[MushroomsPanel][Candidates]', {
         area: this.config?.area || null,
         count: list.length,
@@ -772,7 +858,7 @@ class MushroomsPanel extends i {
 
 customElements.define('mushrooms-panel', MushroomsPanel);
 
-const DEBUG$1 = !!window.__BUBBLE_DEBUG__;
+const DEBUG$2 = !!window.__BUBBLE_DEBUG__;
 
 class SubButtonsPanel extends i {
   static properties = {
@@ -985,11 +1071,12 @@ class SubButtonsPanel extends i {
   }
   
   _resetAll() {
-    ['sub-button1', 'sub-button2', 'sub-button3', 'sub-button4', 'sub-button5', 'sub-button6']
-    .forEach((k) => this._fire('entities.' + k, undefined));
-  }
-  
-  _fire(prop, value) {
+  this.dispatchEvent(new CustomEvent('panel-changed', {
+    detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'subbutton' } },
+    bubbles: true, composed: true,
+  }));
+}
+_fire(prop, value) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop, val: value },
       bubbles: true,
@@ -1024,7 +1111,7 @@ class SubButtonsPanel extends i {
       }
     }
     
-    if (DEBUG$1) {
+    if (DEBUG$2) {
       console.info('[SubButtonsPanel][Candidates]', {
         area: this.config?.area || null,
         count: list.length,
@@ -1123,6 +1210,175 @@ class ColorsPanel extends i {
 
 customElements.define('colors-panel', ColorsPanel);
 
+// src/helpers/auto-discovery.js
+
+const DEBUG$1 = !!window.__BUBBLE_DEBUG__;
+const pickFirstFree = (list, used) => list.find((id) => !used.has(id)) || null;
+
+/* =========================
+ *   AUTO-FILL (per sezione)
+ * ========================= */
+
+// Sensors: sensor1..sensor6 – riempi solo slot vuoti, rispetta type & area, evita duplicati
+function autoFillSensors(hass, config) {
+  const keys = ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'];
+  const entities = { ...(config.entities || {}) };
+  const used = new Set(keys.map((k) => entities[k]?.entity_id).filter(Boolean));
+
+  for (const k of keys) {
+    const ent = entities[k] || (entities[k] = {});
+    if (ent.entity_id) continue; // non sovrascrivere scelte utente
+    const type = ent.type || '';
+    const list = candidatesFor(hass, config, { section: 'sensor', type });
+    const pick = pickFirstFree(list, used);
+    if (pick) { ent.entity_id = pick; used.add(pick); }
+  }
+  return { ...config, entities };
+}
+
+// Mushrooms: entities1..5 + climate + camera – priorità al dominio degli slot dedicati
+function autoFillMushrooms(hass, config) {
+  const order = ['climate','camera','entities1','entities2','entities3','entities4','entities5'];
+  const entities = { ...(config.entities || {}) };
+  const used = new Set(order.map((k) => entities[k]?.entity).filter(Boolean));
+  const all = candidatesFor(hass, config, 'mushroom');
+
+  // slot dedicati
+  const climate = entities.climate || (entities.climate = {});
+  if (!climate.entity) {
+    const pick = all.find((id) => id.startsWith('climate.') && !used.has(id));
+    if (pick) { climate.entity = pick; used.add(pick); }
+  }
+  const camera = entities.camera || (entities.camera = {});
+  if (!camera.entity) {
+    const pick = all.find((id) => id.startsWith('camera.') && !used.has(id));
+    if (pick) { camera.entity = pick; used.add(pick); }
+  }
+  // slot generici
+  for (const k of ['entities1','entities2','entities3','entities4','entities5']) {
+    const ent = entities[k] || (entities[k] = {});
+    if (ent.entity) continue;
+    const pick = pickFirstFree(all, used);
+    if (pick) { ent.entity = pick; used.add(pick); }
+  }
+  return { ...config, entities };
+}
+
+// SubButtons: sub-button1..6 – domini controllabili, filtro area, evita duplicati
+function autoFillSubButtons(hass, config) {
+  const keys = ['sub-button1','sub-button2','sub-button3','sub-button4','sub-button5','sub-button6'];
+  const entities = { ...(config.entities || {}) };
+  const used = new Set(keys.map((k) => entities[k]?.entity).filter(Boolean));
+  const list = candidatesFor(hass, config, 'subbutton');
+
+  for (const k of keys) {
+    const ent = entities[k] || (entities[k] = {});
+    if (ent.entity) continue;
+    const pick = pickFirstFree(list, used);
+    if (pick) { ent.entity = pick; used.add(pick); }
+  }
+  return { ...config, entities };
+}
+
+// Presence (Room): presence entity – scegli se vuoto, filtra per domini ammessi + device_class + area
+function presenceCandidatesLocal(hass, config) {
+  if (!hass || !hass.states) return [];
+  const allowed = new Set([
+    'person','device_tracker','binary_sensor','light','switch',
+    'media_player','fan','humidifier','lock','input_boolean','scene'
+  ]);
+
+  let ids = Object.keys(hass.states).filter((id) => allowed.has(id.split('.')[0]));
+  // binary_sensor: solo motion/occupancy/presence
+  ids = ids.filter((id) => {
+    const domain = id.split('.')[0];
+    if (domain !== 'binary_sensor') return true;
+    const dc = hass.states[id]?.attributes?.device_class;
+    return ['motion','occupancy','presence'].includes(dc || '');
+  });
+
+  // filtro Area
+  const area = config?.area;
+  if (area) {
+    const inArea = ids.filter((id) => {
+      const st = hass.states[id];
+      const a1 = st?.attributes?.area_id;
+      const a2 = st?.attributes?.area;
+      return a1 === area || a2 === area;
+    });
+    if (inArea.length) ids = inArea;
+  }
+
+  // mantieni selezionata anche se fuori filtro
+  const selected = config?.entities?.presence?.entity || config?.presence_entity;
+  if (selected && !ids.includes(selected)) ids.push(selected);
+
+  if (DEBUG$1) console.info('[AutoDiscovery][presence candidates]', { area, count: ids.length, sample: ids.slice(0,8) });
+  return ids;
+}
+
+function autoFillPresence(hass, config) {
+  const entities = { ...(config.entities || {}) };
+  const ent = entities.presence || (entities.presence = {});
+  if (!ent.entity) {
+    // Se hai aggiunto 'presence' in entity-filters, puoi usare: candidatesFor(hass, config, 'presence')
+    const list = presenceCandidatesLocal(hass, config);
+    if (list.length) ent.entity = list[0];
+  }
+  return { ...config, entities };
+}
+
+/* =========================
+ *           RESET
+ * ========================= */
+
+function resetSensors(config) {
+  const entities = { ...(config.entities || {}) };
+  ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'].forEach((k) => delete entities[k]);
+  return { ...config, entities };
+}
+function resetMushrooms(config) {
+  const entities = { ...(config.entities || {}) };
+  ['entities1','entities2','entities3','entities4','entities5','climate','camera'].forEach((k) => delete entities[k]);
+  return { ...config, entities };
+}
+function resetSubButtons(config) {
+  const entities = { ...(config.entities || {}) };
+  ['sub-button1','sub-button2','sub-button3','sub-button4','sub-button5','sub-button6'].forEach((k) => delete entities[k]);
+  return { ...config, entities };
+}
+function resetRoom(config) {
+  const entities = { ...(config.entities || {}) };
+  delete entities.presence;                 // pulisci presence
+  const next = { ...config, entities };
+  delete next.name;                         // pulisci campi base Room
+  delete next.icon;
+  delete next.area;
+  delete next.presence_entity;             // legacy
+  return next;
+}
+
+/* =========================
+ *   TRIGGER CENTRALE
+ * ========================= */
+function maybeAutoDiscover(hass, config, changedProp, debug = false) {
+  const ad = config.auto_discovery_sections || {};
+  const isAreaChange = changedProp === 'area';
+  const isADChange   = changedProp && changedProp.startsWith('auto_discovery_sections.');
+  if (!isAreaChange && !isADChange) return config;
+
+  let next = config;
+  if (ad.sensor)    next = autoFillSensors(hass, next);
+  if (ad.mushroom)  next = autoFillMushrooms(hass, next);
+  if (ad.subbutton) next = autoFillSubButtons(hass, next);
+  if (ad.presence)  next = autoFillPresence(hass, next);
+
+  if (debug && typeof window !== 'undefined' && window.__BUBBLE_DEBUG__) {
+    console.info('[AutoDiscovery] applied after', changedProp, { sections: ad });
+  }
+  return next;
+}
+
 // src/bubble-room-editor.js
 
 const DEBUG = !!window.__BUBBLE_DEBUG__;
@@ -1194,6 +1450,20 @@ class BubbleRoomEditor extends i {
     const mapped = this._mapLegacyPath(prop);
     if (DEBUG) console.info('[Editor][panel-changed]', { prop, mapped, val });
     this._setByPath(this.config, mapped, val);
+    
+    // Auto-discovery per-sezione (incl. presence)
+    this.config = maybeAutoDiscover(this.hass, this.config, prop, DEBUG);
+    // Reset per-sezione delegato dai pannelli
+    if (prop === '__panel_cmd__' && val && val.cmd === 'reset') {
+      const section = val.section;
+      if (section === 'sensor') this.config = resetSensors(this.config);
+      if (section === 'mushroom') this.config = resetMushrooms(this.config);
+      if (section === 'subbutton') this.config = resetSubButtons(this.config);
+      if (section === 'room') this.config = resetRoom(this.config);
+      if (DEBUG) console.info('[Reset]', section);
+    }
+    
+    
     this.requestUpdate();
     this.dispatchEvent(new CustomEvent('config-changed', {
       detail: { config: this.getConfig() },
