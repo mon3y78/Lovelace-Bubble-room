@@ -8,7 +8,6 @@ export class RoomPanel extends LitElement {
     hass: { type: Object },
     config: { type: Object },
     _expanded: { type: Boolean },
-    _useFallbackPicker: { type: Boolean },
   };
 
   constructor() {
@@ -16,31 +15,15 @@ export class RoomPanel extends LitElement {
     this.hass = {};
     this.config = {};
     this._expanded = false;
-    this._useFallbackPicker = false;
 
+    // se il custom element arriva dopo, forzo update
     if (!customElements.get("ha-entity-picker")) {
-      customElements.whenDefined("ha-entity-picker").then(() => this._recheckPicker());
-    }
-    if (!customElements.get("ha-combo-box")) {
-      customElements.whenDefined("ha-combo-box").then(() => this.requestUpdate());
+      customElements.whenDefined("ha-entity-picker").then(() => this.requestUpdate());
     }
   }
 
   firstUpdated() {
-    this._injectOverlayCss();
-    this._recheckPicker(true);
-  }
-  updated(changed) {
-    if (changed.has("config") || changed.has("hass")) this._recheckPicker();
-  }
-
-  _recheckPicker(forceMobileHeuristic = false) {
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const preferFallback = forceMobileHeuristic ? isMobile : this._useFallbackPicker;
-    const p = this.renderRoot?.querySelector("ha-entity-picker.presence-picker");
-    const h = p?.offsetHeight || 0;
-    const shouldFallback = preferFallback || !p || h < 8;
-    if (shouldFallback !== this._useFallbackPicker) this._useFallbackPicker = shouldFallback;
+    this._injectOverlayCss(); // stile di sicurezza per l’overlay
   }
 
   static styles = css`
@@ -57,41 +40,46 @@ export class RoomPanel extends LitElement {
       background:var(--glass-sheen); pointer-events:none; z-index:0; }
     .glass-header { position:relative; z-index:1; background:none!important; box-shadow:none!important;
       padding:22px 0 18px; margin:0; text-align:center; font-size:1.2rem; font-weight:700; color:#fff; }
+
     .mini-pill { background:rgba(44,70,100,0.23); border:1.5px solid rgba(255,255,255,0.12);
       box-shadow:0 3px 22px 0 rgba(70,120,220,0.13); backdrop-filter: blur(10px) saturate(1.2);
       border-radius:24px; margin-bottom:18px; overflow:hidden; }
     .mini-pill-header { display:flex; align-items:center; padding:15px 22px; font-size:1.09em;
       font-family:Inter, system-ui, sans-serif; font-weight:800; color:#55afff; user-select:none; z-index:1; }
     .mini-pill-content { padding:15px 22px; background:transparent; position:relative; z-index:1; }
+
     .input-group { background:rgba(44,70,100,0.23); border:1.5px solid rgba(255,255,255,0.13);
       box-shadow:0 2px 14px 0 rgba(70,120,220,0.10); border-radius:18px; margin-bottom:13px; padding:14px 18px 10px; }
     .ad-top { margin:0 16px 14px; }
     label { display:block; font-size:1.13rem; font-weight:700; color:#55afff; margin-bottom:6px; }
+
     input[type="text"] { width:100%; border:1px solid #444; border-radius:6px; padding:8px; background:#202020; color:#f1f1f1; font-size:.97rem; }
     .reset-button{ border:2px solid #ff4c6a; color:#ff4c6a; border-radius:12px; padding:8px 16px; background:transparent; cursor:pointer; }
     .pill-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
     .pill-button { padding:6px 10px; border-radius:999px; border:1px solid #555; cursor:pointer; }
     .pill-button.active { border-color:#55afff; color:#55afff; }
 
-    /* non collassare i pickers */
-    ha-entity-picker, ha-icon-picker, ha-area-picker, ha-device-picker, ha-select, ha-combo-box {
+    /* evita collasso del picker */
+    ha-entity-picker, ha-icon-picker, ha-area-picker {
       display:block; width:100%; min-height:56px; box-sizing:border-box;
     }
     ha-entity-picker::part(input), ha-entity-picker::part(text-field), ha-entity-picker::part(combobox) { min-height:56px; }
   `;
 
   render() {
-    const area = this.config?.area || "";
-    const name = this.config?.name || "";
-    const icon = this.config?.icon || "";
-    const presenceValue = this.config?.entities?.presence?.entity || this.config?.presence_entity || "";
+    const area   = this.config?.area || "";
+    const name   = this.config?.name || "";
+    const icon   = this.config?.icon || "";
+    const presenceValue =
+      this.config?.entities?.presence?.entity || this.config?.presence_entity || "";
     const adPresence = this.config?.auto_discovery_sections?.presence || false;
 
     return html`
       <ha-expansion-panel class="glass-panel" .expanded=${this._expanded}
-        @expanded-changed=${(e)=> this._expanded = e.detail.expanded}>
+        @expanded-changed=${(e)=> (this._expanded = e.detail.expanded)}>
         <div slot="header" class="glass-header">🛋️ Room Settings 2</div>
 
+        <!-- Auto‑discovery Presence -->
         <div class="input-group ad-top">
           <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input type="checkbox" .checked=${adPresence}
@@ -124,31 +112,15 @@ export class RoomPanel extends LitElement {
 
             <div class="input-group">
               <label>Presence (ID):</label>
-
-              ${this._useFallbackPicker ? html`
-                <!-- fallback a prova di tema -->
-                <ha-select .value=${presenceValue || ""} @selected=${this._onPresenceSelect} @value-changed=${this._onPresenceSelect}>
-                  <mwc-list-item .value=${""}>— seleziona —</mwc-list-item>
-                  ${(this._getPresenceCandidates() || []).map(id => html`
-                    <mwc-list-item .value=${id}>${id}</mwc-list-item>
-                  `)}
-                </ha-select>
-                <ha-textfield style="margin-top:8px" placeholder="oppure digita un entity_id"
-                  .value=${presenceValue || ""}
-                  @change=${(e)=> this._emit("entities.presence.entity", e.target.value)}>
-                </ha-textfield>
-              ` : html`
-                <!-- picker nativo -->
-                <ha-entity-picker class="presence-picker"
-                  style="display:block;min-height:56px;width:100%;box-sizing:border-box"
-                  .hass=${this.hass}
-                  .value=${presenceValue}
-                  .includeEntities=${this._getPresenceCandidates()}
-                  allow-custom-entity
-                  @opened=${(e)=> this._fixComboOverlay(e.currentTarget)}
-                  @value-changed=${(e)=> this._emit("entities.presence.entity", e.detail.value)}>
-                </ha-entity-picker>
-              `}
+              <ha-entity-picker class="presence-picker"
+                style="display:block;min-height:56px;width:100%;box-sizing:border-box"
+                .hass=${this.hass}
+                .value=${presenceValue}
+                .includeEntities=${this._getPresenceCandidates()}
+                allow-custom-entity
+                @opened=${(e)=> this._fixEntityPickerOverlay(e.currentTarget)}
+                @value-changed=${(e)=> this._emit("entities.presence.entity", e.detail.value)}>
+              </ha-entity-picker>
             </div>
 
             ${this._renderActions("tap")}
@@ -156,7 +128,7 @@ export class RoomPanel extends LitElement {
           </div>
         </div>
 
-        <div style="text-align:center;margin-top:1.2em;">
+        <div style="text-align:center; margin-top:1.2em;">
           <button class="reset-button" @click=${this._resetRoom}>🧹 Reset Room</button>
         </div>
       </ha-expansion-panel>
@@ -167,41 +139,33 @@ export class RoomPanel extends LitElement {
   _updateName(e){ this._fire("name", e.target.value); }
   _updateArea(e){ this._fire("area", e.detail.value); }
   _updateIcon(e){ this._fire("icon", e.detail.value); }
-  _onPresenceSelect = (e) => {
-    const v = e?.detail?.value ?? e?.target?.value ?? "";
-    this._emit("entities.presence.entity", v);
-  };
   _emit(prop, val){ this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop, val},bubbles:true,composed:true})); }
   _fire(prop, val){ this._emit(prop, val); }
 
-  /* === FIX overlay testo/renderer === */
-  _fixComboOverlay(el) {
-    // se ricevo ha-entity-picker, prendo l'ha-combo-box interno
-    let combo = el;
-    if (combo?.tagName?.toLowerCase() !== "ha-combo-box") {
-      combo = el?.shadowRoot?.querySelector("ha-combo-box");
+  // Forza il testo dell’overlay del combo interno a ha-entity-picker
+  _fixEntityPickerOverlay(picker) {
+    try {
+      const haCombo = picker?.shadowRoot?.querySelector("ha-combo-box");
+      const vaadin  = haCombo?.shadowRoot?.querySelector("vaadin-combo-box");
+      if (vaadin && !vaadin._bubbleRendererApplied) {
+        vaadin.renderer = (root, _combo, model) => {
+          root.style.padding = "10px 14px";
+          root.style.color = "var(--primary-text-color, #eaeef8)";
+          root.style.fontSize = "14px";
+          root.style.whiteSpace = "nowrap";
+          root.style.overflow = "hidden";
+          root.style.textOverflow = "ellipsis";
+          const txt = typeof model.item === "string"
+            ? model.item
+            : (model.item?.label || model.item?.value || "");
+          root.textContent = txt || "";
+        };
+        vaadin._bubbleRendererApplied = true;
+      }
+      this._injectOverlayCss();
+    } catch (e) {
+      if (DEBUG) console.warn("[RoomPanel] overlay fix skipped:", e);
     }
-    // da ha-combo-box scendo al vero vaadin-combo-box
-    const vaadin = combo?.shadowRoot?.querySelector("vaadin-combo-box");
-    if (!vaadin) return;
-
-    if (!vaadin._bubbleRendererApplied) {
-      vaadin.renderer = (root, _combo, model) => {
-        // renderer: garantisce testo chiaro e visibile
-        root.style.padding = "10px 14px";
-        root.style.color = "var(--primary-text-color, #eaeef8)";
-        root.style.fontSize = "14px";
-        root.style.whiteSpace = "nowrap";
-        root.style.overflow = "hidden";
-        root.style.textOverflow = "ellipsis";
-        const txt = typeof model.item === "string"
-          ? model.item
-          : (model.item?.label || model.item?.value || "");
-        root.textContent = txt || "";
-      };
-      vaadin._bubbleRendererApplied = true;
-    }
-    this._injectOverlayCss();
   }
 
   _injectOverlayCss() {
