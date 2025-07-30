@@ -132,8 +132,12 @@ export class SensorsPanel extends LitElement {
   }
 
   _resetAll() {
-    ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'].forEach((k) =>
-      this._fire(`entities.${k}`, undefined)
+  this.dispatchEvent(new CustomEvent('panel-changed', {
+    detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'sensor' } },
+    bubbles: true, composed: true,
+  }));
+}
+`, undefined)
     );
   }
 

@@ -214,11 +214,12 @@ export class SubButtonsPanel extends LitElement {
   }
   
   _resetAll() {
-    ['sub-button1', 'sub-button2', 'sub-button3', 'sub-button4', 'sub-button5', 'sub-button6']
-    .forEach((k) => this._fire('entities.' + k, undefined));
-  }
-  
-  _fire(prop, value) {
+  this.dispatchEvent(new CustomEvent('panel-changed', {
+    detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'subbutton' } },
+    bubbles: true, composed: true,
+  }));
+}
+_fire(prop, value) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop, val: value },
       bubbles: true,

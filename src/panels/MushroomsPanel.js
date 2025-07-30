@@ -285,11 +285,12 @@ export class MushroomsPanel extends LitElement {
   }
 
   _resetAll() {
-    ['entities1','entities2','entities3','entities4','entities5','climate','camera']
-      .forEach((k) => this._fire('entities.' + k, undefined));
-  }
-
-  // --- Wrapper locale: calcola candidati + log ---
+  this.dispatchEvent(new CustomEvent('panel-changed', {
+    detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'mushroom' } },
+    bubbles: true, composed: true,
+  }));
+}
+// --- Wrapper locale: calcola candidati + log ---
   _getMushroomCandidates() {
     // Usa la logica centralizzata, ma aggiunge log locale (Opzione A)
     const list = candidatesFor(this.hass, this.config, 'mushroom');

@@ -9,7 +9,7 @@ import './panels/SensorsPanel.js';
 import './panels/MushroomsPanel.js';
 import './panels/SubButtonsPanel.js';
 import './panels/ColorsPanel.js';
-import { maybeAutoDiscover, resetSensors, resetMushrooms, resetSubButtons, resetRoom } from './helpers/auto-discovery.js';
+import { maybeAutoDiscover, resetSensors, resetMushrooms, resetSubButtons } from './helpers/auto-discovery.js';
 
 export class BubbleRoomEditor extends LitElement {
   static properties = {
@@ -79,19 +79,17 @@ export class BubbleRoomEditor extends LitElement {
     if (DEBUG) console.info('[Editor][panel-changed]', { prop, mapped, val });
     this._setByPath(this.config, mapped, val);
 
-    // Auto-discovery per-sezione (incl. presence)
+    // Auto-discovery per-sezione
     this.config = maybeAutoDiscover(this.hass, this.config, prop, DEBUG);
-// Reset per-sezione delegato dai pannelli
-if (prop === '__panel_cmd__' && val && val.cmd === 'reset') {
-  const section = val.section;
-  if (section === 'sensor')    this.config = resetSensors(this.config);
-  if (section === 'mushroom')  this.config = resetMushrooms(this.config);
-  if (section === 'subbutton') this.config = resetSubButtons(this.config);
-  if (section === 'room')      this.config = resetRoom(this.config);
-  if (DEBUG) console.info('[Reset]', section);
-}
 
-
+    // Reset per-sezione delegato dai pannelli
+    if (prop === '__panel_cmd__' && val && val.cmd === 'reset') {
+      const section = val.section;
+      if (section === 'sensor')   this.config = resetSensors(this.config);
+      if (section === 'mushroom') this.config = resetMushrooms(this.config);
+      if (section === 'subbutton')this.config = resetSubButtons(this.config);
+      if (DEBUG) console.info('[Reset]', section);
+    }
     this.requestUpdate();
     this.dispatchEvent(new CustomEvent('config-changed', {
       detail: { config: this.getConfig() },
