@@ -116,12 +116,14 @@ export function candidatesFor(hass, config, sectionOrOpts) {
   const byDesc = byDomain.filter((id) => entityFilter(id, hass));
   
   /* 3. filtro per area (NOVITÀ) --------------------------------------------- */
-  const area = config?.area;
+  const area      = config?.area;
+  const adEnabled = config?.auto_discovery_sections?.[section] ?? false;
+
   let res = byDesc;
-  if (area) {
+  /*  ▶︎ Applica il filtro per area SOLO se auto-discovery è attivo  */
+  if (area && adEnabled) {
     const fromArea = entitiesInArea(hass, area);
     res = byDesc.filter((id) => fromArea.includes(id));
   }
-  
   return res;
-}
+ }

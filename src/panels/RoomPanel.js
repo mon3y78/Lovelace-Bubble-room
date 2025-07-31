@@ -3,32 +3,36 @@ import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor } from '../helpers/entity-filters.js';
 
-// ── IMPORT dei Web-components del frontend HA ──────────────────────────────
-
 export class RoomPanel extends LitElement {
   static properties = {
-    hass:   { type: Object },
-    config: { type: Object },
+    hass:      { type: Object },
+    config:    { type: Object },
     _expanded: { type: Boolean },
   };
 
   constructor() {
     super();
-    this.hass   = {};
-    this.config = {};
+    this.hass      = {};
+    this.config    = {};
     this._expanded = false;
   }
 
-  updated(changedProps) {
-    if (changedProps.has('config') || changedProps.has('hass')) {
+  updated(changed) {
+    if (changed.has('config') || changed.has('hass')) {
       maybeAutoDiscover(this.hass, this.config, 'area');
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
+      maybeAutoDiscover(
+        this.hass,
+        this.config,
+        'auto_discovery_sections.presence',
+      );
     }
   }
 
   /* ─────────────────────────────── CSS ─────────────────────────────── */
   static styles = css`
     :host { display: block; }
+
+    /* ── pannello glass ─────────────────────────────────────────────── */
     .glass-panel {
       margin: 0 !important;
       width: 100%;
@@ -55,6 +59,7 @@ export class RoomPanel extends LitElement {
       background: var(--glass-sheen);
       pointer-events: none;
     }
+
     .glass-header {
       position: relative;
       z-index: 1;
@@ -65,6 +70,8 @@ export class RoomPanel extends LitElement {
       font-weight: 700;
       color: #fff;
     }
+
+    /* ── mini-pill ─────────────────────────────────────────────────── */
     .mini-pill {
       background: rgba(44, 70, 100, 0.23);
       border: 1.5px solid rgba(255, 255, 255, 0.12);
@@ -85,9 +92,9 @@ export class RoomPanel extends LitElement {
       cursor: pointer;
       user-select: none;
     }
-    .mini-pill-content {
-      padding: 15px 22px;
-    }
+    .mini-pill-content { padding: 15px 22px; }
+
+    /* ── input group ───────────────────────────────────────────────── */
     .input-group {
       background: rgba(44, 70, 100, 0.23);
       border: 1.5px solid rgba(255, 255, 255, 0.13);
@@ -97,6 +104,7 @@ export class RoomPanel extends LitElement {
       padding: 14px 18px 10px;
     }
     .ad-top { margin: 0 16px 14px; }
+
     label {
       display: block;
       font-size: 1.13rem;
@@ -104,15 +112,16 @@ export class RoomPanel extends LitElement {
       color: #55afff;
       margin-bottom: 6px;
     }
+
     ha-selector, ha-icon-picker {
       display: block;
       width: 100%;
       min-height: 56px;
       box-sizing: border-box;
     }
-    ha-selector::part(combobox) {
-      min-height: 56px;
-    }
+    ha-selector::part(combobox) { min-height: 56px; }
+
+    /* ── reset button ──────────────────────────────────────────────── */
     .reset-button {
       border: 2px solid #ff4c6a;
       color: #ff4c6a;
@@ -121,6 +130,8 @@ export class RoomPanel extends LitElement {
       background: transparent;
       cursor: pointer;
     }
+
+    /* ── pill-buttons per tap/hold ─────────────────────────────────── */
     .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
     .pill-button {
       padding: 6px 10px;
@@ -130,7 +141,7 @@ export class RoomPanel extends LitElement {
     }
     .pill-button.active { border-color: #55afff; color: #55afff; }
 
-    /* fix globale overlay Vaadin */
+    /* fix overlay Vaadin */
     vaadin-combo-box-overlay,
     vaadin-combo-box-item,
     vaadin-combo-box-item::part(content) {
@@ -138,20 +149,21 @@ export class RoomPanel extends LitElement {
     }
   `;
 
-  /* ─────────────────────────────── UI ─────────────────────────────── */
+  /* ────────────────────────────── RENDER ───────────────────────────── */
   render() {
     const cfg   = this.config;
-    const area  = cfg.area || '';
-    const name  = cfg.name || '';
-    const icon  = cfg.icon || '';
+    const area  = cfg.area   || '';
+    const name  = cfg.name   || '';
+    const icon  = cfg.icon   || '';
 
-    /* presenza salvata (entity_id) */
+    /* entity_id della presenza salvata */
     const pres  = cfg.entities?.presence?.entity || cfg.presence_entity || '';
 
-    /* lista di entità “presence” filtrata per area + dominio + device_class */
+    /* entità candidate, filtrate da candidatesFor() */
     const presCandidates = candidatesFor(this.hass, this.config, 'presence');
 
-    const ad    = cfg.auto_discovery_sections?.presence || false;
+    /* flag auto-discover di questa sezione */
+    const ad = cfg.auto_discovery_sections?.presence || false;
 
     return html`
       <ha-expansion-panel
@@ -161,23 +173,24 @@ export class RoomPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
-        <!-- Auto-discover -->
+        <!-- ── toggle auto-discover ── -->
         <div class="input-group ad-top">
           <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input
               type="checkbox"
               .checked=${ad}
-              @change=${e => this._emit('auto_discovery_sections.presence', e.target.checked)}
+              @change=${e =>
+                this._emit('auto_discovery_sections.presence', e.target.checked)}
             />
             <span>🔍 Auto-discover Presence</span>
           </label>
         </div>
 
-        <!-- ── PILL: Room ── -->
+        <!-- ────────────────── PILL: Room ────────────────── -->
         <div class="mini-pill">
           <div class="mini-pill-header">Room</div>
           <div class="mini-pill-content">
-            <!-- Nome stanza -->
+            <!-- nome stanza -->
             <div class="input-group">
               <label>Room name:</label>
               <input
@@ -187,24 +200,24 @@ export class RoomPanel extends LitElement {
               />
             </div>
 
-            <!-- Area -->
+            <!-- area -->
             <div class="input-group">
               <label>Area:</label>
               <ha-selector
                 .hass=${this.hass}
                 .value=${area}
                 .selector=${{ area: {} }}
-                @value-changed=${e => this._fire('area', e.detail.value)}
+                @value-changed=${this._onAreaChanged}
               ></ha-selector>
             </div>
           </div>
         </div>
 
-        <!-- ── PILL: Icona & Presence ── -->
+        <!-- ─────────────── PILL: Icon & Presence ─────────────── -->
         <div class="mini-pill">
           <div class="mini-pill-header">Icon & Presence</div>
           <div class="mini-pill-content">
-            <!-- Icona -->
+            <!-- icona -->
             <div class="input-group">
               <label>Room Icon:</label>
               <ha-icon-picker
@@ -215,7 +228,7 @@ export class RoomPanel extends LitElement {
               ></ha-icon-picker>
             </div>
 
-            <!-- Presence -->
+            <!-- presence -->
             <div class="input-group">
               <label>Presence (ID):</label>
               <ha-selector
@@ -224,8 +237,8 @@ export class RoomPanel extends LitElement {
                 .selector=${{
                   entity: {
                     multiple: false,
-                    include_entities: presCandidates
-                  }
+                    include_entities: presCandidates,
+                  },
                 }}
                 allow-custom-entity
                 @value-changed=${e =>
@@ -238,7 +251,7 @@ export class RoomPanel extends LitElement {
           </div>
         </div>
 
-        <!-- Reset -->
+        <!-- reset stanza -->
         <div style="text-align:center;margin-top:1.2em;">
           <button class="reset-button" @click=${this._resetRoom}>
             🧹 Reset Room
@@ -248,10 +261,10 @@ export class RoomPanel extends LitElement {
     `;
   }
 
-  /* ────────────────────────────── Helpers ─────────────────────────── */
+  /* ───────────────────────── helpers UI ───────────────────────── */
   _renderActions(type) {
     const cfg     = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle','more-info','navigate','call-service','none'];
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
 
     return html`
       <div class="input-group">
@@ -270,7 +283,8 @@ export class RoomPanel extends LitElement {
             type="text"
             placeholder="Path"
             .value=${cfg.navigation_path || ''}
-            @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
+            @input=${e => this._fire(
+              `${type}_action.navigation_path`, e.target.value)}
           />
         ` : ''}
 
@@ -295,6 +309,17 @@ export class RoomPanel extends LitElement {
       </div>
     `;
   }
+
+  /* ─────────────────────────── handlers ────────────────────────── */
+  _onAreaChanged = (e) => {
+    const val = e.detail.value;
+    this._fire('area', val);
+
+    /* se l'utente sceglie un’area ➜ attiva auto-discover */
+    if (val) {
+      this._emit('auto_discovery_sections.presence', true);
+    }
+  };
 
   _resetRoom() {
     this.dispatchEvent(new CustomEvent('panel-changed', {
