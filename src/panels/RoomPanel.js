@@ -1,8 +1,7 @@
 // src/panels/RoomPanel.js
 import { LitElement, html, css } from 'lit';
-import { state } from 'lit/decorators.js';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
-import { candidatesFor }         from '../helpers/entity-filters.js';
+import { maybeAutoDiscover }      from '../helpers/auto-discovery.js';
+import { candidatesFor }          from '../helpers/entity-filters.js';
 
 const PRESENCE_CATS = [
   'presence',   // binary_sensor.device_class = presence
@@ -15,13 +14,16 @@ const PRESENCE_CATS = [
 
 export class RoomPanel extends LitElement {
   static properties = {
-    hass:      { type: Object },
-    config:    { type: Object },
-    _expanded: { type: Boolean },
+    hass:           { type: Object },
+    config:         { type: Object },
+    _expanded:      { type: Boolean },
+    activeFilters:  { type: Array, state: true },
   };
 
   static styles = css`
-    :host { display: block; }
+    :host {
+      display: block;
+    }
     /* Shape chip Material Web */
     --md-filter-chip-container-shape: 16px;
 
@@ -153,14 +155,12 @@ export class RoomPanel extends LitElement {
     }
   `;
 
-  @state()
-  activeFilters = [];
-
   constructor() {
     super();
-    this.hass      = {};
-    this.config    = {};
-    this._expanded = false;
+    this.hass          = {};
+    this.config        = {};
+    this._expanded     = false;
+    this.activeFilters = [];
 
     // Import dinamico di Material Web: eseguito solo una volta
     if (!customElements.get('md-focus-ring')) {
@@ -174,26 +174,23 @@ export class RoomPanel extends LitElement {
       maybeAutoDiscover(this.hass, this.config, 'area');
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
 
-      // Sincronizzo activeFilters con la config iniziale
+      // Sincronizzo activeFilters con la config al primo caricamento
       if (changed.has('config') && Array.isArray(this.config.presence_filters)) {
         this.activeFilters = [...this.config.presence_filters];
       }
     }
   }
 
-  /** Aggiunge un filtro se non presente */
   addFilter(filter) {
     if (!this.activeFilters.includes(filter)) {
       this.activeFilters = [...this.activeFilters, filter];
     }
   }
 
-  /** Rimuove un filtro */
   removeFilter(filter) {
     this.activeFilters = this.activeFilters.filter(f => f !== filter);
   }
 
-  /** Alterna on/off e notifica l'editor */
   toggleFilter(filter) {
     if (this.activeFilters.includes(filter)) {
       this.removeFilter(filter);
@@ -204,9 +201,9 @@ export class RoomPanel extends LitElement {
   }
 
   render() {
-    const cfg           = this.config;
-    const presFilters   = cfg.presence_filters ?? [...PRESENCE_CATS];
-    const presValue     = cfg.entities?.presence?.entity ?? cfg.presence_entity ?? '';
+    const cfg            = this.config;
+    const presFilters    = cfg.presence_filters ?? [...PRESENCE_CATS];
+    const presValue      = cfg.entities?.presence?.entity ?? cfg.presence_entity ?? '';
     const presCandidates = candidatesFor(this.hass, this.config, 'presence', presFilters);
 
     return html`
@@ -312,18 +309,15 @@ export class RoomPanel extends LitElement {
     `;
   }
 
-  // forza auto-discover quando cambia area
   _onAreaChanged = (e) => {
     const v = e.detail.value;
     this._fire('area', v);
-    if (v) {
-      this._fire('auto_discovery_sections.presence', true);
-    }
+    if (v) this._fire('auto_discovery_sections.presence', true);
   };
 
   _renderActions(type) {
     const cfg     = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle','more-info','navigate','call-service','none'];
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
     return html`
       <div class="input-group">
         <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
@@ -368,7 +362,7 @@ export class RoomPanel extends LitElement {
   }
 
   _resetRoom() {
-    this._emit('__panel_cmd__', { cmd: 'reset', section: 'room' });
+    this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' });
   }
 
   _emit(prop, val) {
