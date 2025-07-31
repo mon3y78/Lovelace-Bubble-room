@@ -1,7 +1,3 @@
-import '@home-assistant/frontend/src/components/ha-selector/ha-selector';
-import '@home-assistant/frontend/src/components/ha-icon-picker/ha-icon-picker';
-import '@home-assistant/frontend/src/components/ha-expansion-panel/ha-expansion-panel';
-
 /**
  * @license
  * Copyright 2019 Google LLC
@@ -314,8 +310,8 @@ function maybeAutoDiscover(hass, config, changedProp, debug = false) {
 }
 
 // src/panels/RoomPanel.js
-// (gli altri, come <paper-button>, sono già registrati dal bundle principale)
-// ───────────────────────────────────────────────────────────────────────────
+
+// ── IMPORT dei Web-components del frontend HA ──────────────────────────────
 
 class RoomPanel extends i {
   static properties = {
