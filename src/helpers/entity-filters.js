@@ -1,129 +1,107 @@
 /**
- * Raccolta di filtri “di sezione” usati da tutti i pannelli della card.
- * Ogni descrittore può contenere:
- *   • includeDomains        array di domini ammessi
- *   • includeDeviceClasses  array di device_class ammessi (solo per binary_sensor)
- *   • entityFilter(state)   funzione extra, deve restituire true / false
+ * Mappa label leggibili → device_class
+ * (usata dai <device-class-chips>)
  */
+export const DEVICE_CLASS_LABELS = {
+  // sensor (se ti serviranno altrove)
+  temperature: 'Temperatura',
+  humidity: 'Umidità',
+  pressure: 'Pressione',
+  battery: 'Batteria',
+  
+  // binary_sensor
+  presence: 'Presenza',
+  motion: 'Movimento',
+  occupancy: 'Occupazione',
+  light: 'Luce',
+};
+
+/* ───────────────────────────── DESCRITTORI DI FILTRO ───────────────────── */
 export const FILTERS = {
+  /** Presence ID – SOLO: presenza/movimento/occupazione + luce/switch/ventola */
   presence: {
-    includeDomains: [
-      'person', 'device_tracker', 'binary_sensor',
-      'light', 'switch', 'media_player', 'fan',
-      'humidifier', 'lock', 'input_boolean', 'scene'
-    ],
-    includeDeviceClasses: ['motion', 'occupancy', 'presence'],
-    entityFilter: (state, hass) => {
-      const id = typeof state === 'string' ? state : state?.entity_id;
-      if (!id) return false;
+    includeDomains: ['binary_sensor', 'light', 'switch', 'fan'],
+    includeDeviceClasses: ['presence', 'motion', 'occupancy'], // solo per binary_sensor
+    entityFilter: (id, hass) => {
       const [domain] = id.split('.');
       if (domain === 'binary_sensor') {
-        const dc = hass?.states?.[id]?.attributes?.device_class;
-        return ['motion', 'occupancy', 'presence'].includes(dc);
+        const dc = hass.states[id]?.attributes?.device_class;
+        return ['presence', 'motion', 'occupancy'].includes(dc);
       }
+      // light, switch, fan passano sempre
       return true;
     },
   },
   
-  sensorByType: (type) => ({
+  /** Sensor dinamico filtrabile per device_class (temperature, humidity…) */
+  sensorByType: (allowedDC = []) => ({
     includeDomains: ['sensor'],
-    includeDeviceClasses: undefined,
-    entityFilter: (state) => {
-      // in futuro potrai filtrare per type/device_class
-      return !!state;
-    },
+    entityFilter: (id, hass) =>
+      !allowedDC.length ?
+      true :
+      allowedDC.includes(hass.states[id]?.attributes?.device_class ?? ''),
   }),
   
-  subbutton: {
-    includeDomains: [
-      'light', 'switch', 'media_player', 'fan', 'cover',
-      'humidifier', 'lock', 'scene', 'input_boolean',
-      'script', 'button'
-    ],
-    entityFilter: () => true,
-  },
-  
-  mushroom: {
-    includeDomains: [
-      'light', 'switch', 'media_player', 'fan', 'cover',
-      'humidifier', 'lock', 'scene', 'input_boolean',
-      'script', 'button', 'sensor', 'binary_sensor', 'climate'
-    ],
-    entityFilter: () => true,
-  },
+  /** Alert: binary_sensor filtrati per device_class (occupancy, motion, …) */
+  alert: (allowedDC = []) => ({
+    includeDomains: ['binary_sensor'],
+    entityFilter: (id, hass) =>
+      !allowedDC.length ?
+      true :
+      allowedDC.includes(hass.states[id]?.attributes?.device_class ?? ''),
+  }),
 };
 
-/* ────────────────────────────────────────────────────────────────── */
-/*  NOVITÀ  ➜  utility riusabile per sapere quali entità sono in area */
-/* ────────────────────────────────────────────────────────────────── */
+/* ─────────── funzioni riuso (entitiesInArea, candidatesFor) ────────────── */
 export function entitiesInArea(hass, areaId) {
   if (!hass?.states || !areaId) return [];
-
   const entReg = hass.entities ?? {};
   const devReg = hass.devices ?? {};
-
+  
   return Object.keys(hass.states).filter((eid) => {
-    /* 1️⃣  entity-registry: area_id diretto */
-    const entEntry = entReg[eid];
-    if (entEntry?.area_id === areaId) return true;
-
-    /* 2️⃣  device-registry: area_id ereditato dal device */
-    const devId = entEntry?.device_id;
+    const ent = entReg[eid];
+    if (ent?.area_id === areaId) return true;
+    const devId = ent?.device_id;
     if (devId && devReg[devId]?.area_id === areaId) return true;
-
-    /* 3️⃣  (fallback) attributi nello state, utile per vecchie integrazioni */
+    
     const attr = hass.states[eid]?.attributes ?? {};
     return attr.area_id === areaId || attr.area === areaId;
   });
 }
 
 /**
- * Restituisce la lista finale di entity_id “candidati” per una sezione.
- *
- * Esempi:
- *   candidatesFor(hass, config, 'presence')
- *   candidatesFor(hass, config, { section: 'sensor', type })
+ * candidatesFor(hass, config, section[, deviceClassArray])
+ *  – restituisce gli entity_id ammessi secondo:
+ *    · descrittore in FILTERS
+ *    · device_class opzionali
+ *    · filtro per area (solo se auto-discovery attivo)
  */
-export function candidatesFor(hass, config, sectionOrOpts) {
-  const opts = typeof sectionOrOpts === 'string' ?
-    { section: sectionOrOpts } :
-    (sectionOrOpts || {});
-  const section = opts.section;
-  if (!hass || !hass.states || !section) return [];
+export function candidatesFor(hass, config, sectionOrOpts, allowedDC = []) {
+  const section = typeof sectionOrOpts === 'string' ?
+    sectionOrOpts :
+    sectionOrOpts.section;
   
-  /* scegli il descrittore di filtro */
   let desc;
   if (section === 'sensor') {
-    desc = FILTERS.sensorByType(opts.type);
+    desc = FILTERS.sensorByType(allowedDC);
+  } else if (section === 'alert') {
+    desc = FILTERS.alert(allowedDC);
   } else {
     desc = FILTERS[section];
   }
-  if (!desc) return [];
+  if (!desc || !hass?.states) return [];
   
-  const {
-    includeDomains = [],
-      includeDeviceClasses = [],
-      entityFilter = () => true,
-  } = desc;
+  const byDomain = Object.keys(hass.states).filter((id) =>
+    desc.includeDomains.includes(id.split('.')[0]),
+  );
   
-  /* 1. filtro per domini ---------------------------------------------------- */
-  const allIds = Object.keys(hass.states);
-  const byDomain = includeDomains.length ?
-    allIds.filter((id) => includeDomains.includes(id.split('.')[0])) :
-    allIds.slice();
+  const byDesc = byDomain.filter((id) => desc.entityFilter(id, hass));
   
-  /* 2. filtro custom (device_class, ecc.) ----------------------------------- */
-  const byDesc = byDomain.filter((id) => entityFilter(id, hass));
-  
-  /* 3. filtro per area (NOVITÀ) --------------------------------------------- */
-  const area      = config?.area;
+  /* area + auto-discover */
   const adEnabled = config?.auto_discovery_sections?.[section] ?? false;
-
-  let res = byDesc;
-  /*  ▶︎ Applica il filtro per area SOLO se auto-discovery è attivo  */
-  if (area && adEnabled) {
-    const fromArea = entitiesInArea(hass, area);
-    res = byDesc.filter((id) => fromArea.includes(id));
+  if (adEnabled && config?.area) {
+    const inArea = entitiesInArea(hass, config.area);
+    return byDesc.filter((id) => inArea.includes(id));
   }
-  return res;
- }
+  return byDesc;
+}
