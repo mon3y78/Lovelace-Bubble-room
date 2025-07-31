@@ -1,8 +1,9 @@
 // src/helpers/filter-chips.js
 import { LitElement, html, css } from 'lit';
+
+// import dei componenti ufficiali da @material/web
 import '@material/web/chips/chip-set.js';
 import '@material/web/chips/filter-chip.js';
-
 
 import { FILTER_LABELS } from './entity-filters.js';
 
@@ -25,16 +26,17 @@ export class FilterChips extends LitElement {
   }
 
   static styles = css`
-    mwc-chip {
+    /* un piccolo margin tra chip */
+    md-filter-chip {
       margin: 4px;
     }
   `;
 
   _toggle(cat) {
-    const set = new Set(this.value);
-    set.has(cat) ? set.delete(cat) : set.add(cat);
+    const s = new Set(this.value);
+    s.has(cat) ? s.delete(cat) : s.add(cat);
     this.dispatchEvent(new CustomEvent('value-changed', {
-      detail: { value: Array.from(set) },
+      detail: { value: Array.from(s) },
       bubbles: true,
       composed: true,
     }));
@@ -45,15 +47,15 @@ export class FilterChips extends LitElement {
       return html``;
     }
     return html`
-      <mwc-chip-set choice>
+      <md-chip-set choice>
         ${this.allowed.map(cat => html`
-          <mwc-chip
+          <md-filter-chip
             .label=${FILTER_LABELS[cat] ?? cat}
-            ?selected=${this.value.includes(cat)}
+            .selected=${this.value.includes(cat)}
             @click=${() => this._toggle(cat)}
-          ></mwc-chip>
+          ></md-filter-chip>
         `)}
-      </mwc-chip-set>
+      </md-chip-set>
     `;
   }
 }
