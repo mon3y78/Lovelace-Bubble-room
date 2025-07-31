@@ -1,3 +1,6 @@
+import '@home-assistant/frontend/src/components/chip/ha-chip-set.js';
+import '@home-assistant/frontend/src/components/chip/ha-chip.js';
+
 /**
  * @license
  * Copyright 2019 Google LLC
@@ -288,14 +291,8 @@ function maybeAutoDiscover(hass, config, changedProp, debug = false) {
   return next;
 }
 
-/**
- * <filter-chips>
- *
- *  • value   = array categorie attive  (['motion','light'…])
- *  • allowed = array categorie valide  (tutte)
- *
- *  Emette "value-changed" con { value: [...] }.
- */
+// src/helpers/filter-chips.js
+
 class FilterChips extends i {
   static properties = {
     value: { type: Array },
@@ -309,38 +306,39 @@ class FilterChips extends i {
   }
   
   static styles = i$3`
-    mwc-chip {
+    ha-chip {
       margin: 4px;
-      --mdc-theme-primary: var(--primary-color);   /* rispetta tema HA */
     }
   `;
   
   _toggle(cat) {
-    const set = new Set(this.value);
-    set.has(cat) ? set.delete(cat) : set.add(cat);
+    const s = new Set(this.value);
+    s.has(cat) ? s.delete(cat) : s.add(cat);
     this.dispatchEvent(new CustomEvent('value-changed', {
-      detail: { value: [...set] },
+      detail: { value: Array.from(s) },
       bubbles: true,
       composed: true,
     }));
   }
   
   render() {
-    if (!this.allowed?.length) return x``; /* niente chip → niente UI */
-    
+    if (!this.allowed?.length) {
+      return x``;
+    }
     return x`
-      <mwc-chip-set filter>
+      <ha-chip-set choice>
         ${this.allowed.map(cat => x`
-          <mwc-chip
+          <ha-chip
             .label=${FILTER_LABELS[cat] ?? cat}
             ?selected=${this.value.includes(cat)}
             @click=${() => this._toggle(cat)}
-          ></mwc-chip>
+          ></ha-chip>
         `)}
-      </mwc-chip-set>
+      </ha-chip-set>
     `;
   }
 }
+
 customElements.define('filter-chips', FilterChips);
 
 // src/panels/RoomPanel.js
@@ -378,7 +376,7 @@ class RoomPanel extends i {
   static styles = i$3`
     :host { display: block; }
 
-    /* ── Glass panel ───────────────────────────────────────── */
+    /* Glass panel */
     .glass-panel {
       margin: 0 !important;
       width: 100%;
@@ -416,11 +414,11 @@ class RoomPanel extends i {
       color: #fff;
     }
 
-    /* ── Mini-pill ─────────────────────────────────────────── */
+    /* Mini-pill */
     .mini-pill {
-      background: rgba(44, 70, 100, 0.23);
-      border: 1.5px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 3px 22px 0 rgba(70, 120, 220, 0.13);
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      box-shadow: 0 3px 22px 0 rgba(70,120,220,0.13);
       backdrop-filter: blur(10px) saturate(1.2);
       border-radius: 24px;
       margin-bottom: 18px;
@@ -440,11 +438,11 @@ class RoomPanel extends i {
       padding: 15px 22px;
     }
 
-    /* ── Input group ───────────────────────────────────────── */
+    /* Input group */
     .input-group {
-      background: rgba(44, 70, 100, 0.23);
-      border: 1.5px solid rgba(255, 255, 255, 0.13);
-      box-shadow: 0 2px 14px 0 rgba(70, 120, 220, 0.10);
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.13);
+      box-shadow: 0 2px 14px 0 rgba(70,120,220,0.10);
       border-radius: 18px;
       margin-bottom: 13px;
       padding: 14px 18px 10px;
@@ -470,7 +468,7 @@ class RoomPanel extends i {
       min-height: 56px;
     }
 
-    /* ── Reset button ─────────────────────────────────────── */
+    /* Reset button */
     .reset-button {
       border: 2px solid #ff4c6a;
       color: #ff4c6a;
@@ -480,7 +478,7 @@ class RoomPanel extends i {
       cursor: pointer;
     }
 
-    /* ── Tap/Hold action pills ─────────────────────────────── */
+    /* Tap/Hold action pills */
     .pill-group {
       display: flex;
       flex-wrap: wrap;
@@ -498,7 +496,7 @@ class RoomPanel extends i {
       color: #55afff;
     }
 
-    /* ── Vaadin overlay fix ───────────────────────────────── */
+    /* Vaadin overlay fix */
     vaadin-combo-box-overlay,
     vaadin-combo-box-item,
     vaadin-combo-box-item::part(content) {
@@ -507,19 +505,14 @@ class RoomPanel extends i {
   `;
 
   render() {
-    const cfg = this.config;
-    const area       = cfg.area || '';
-    const name       = cfg.name || '';
-    const icon       = cfg.icon || '';
-    const presValue  = cfg.entities?.presence?.entity || cfg.presence_entity || '';
-    const autoDisc   = cfg.auto_discovery_sections?.presence ?? false;
-    const presFilters = cfg.presence_filters ?? [...PRESENCE_CATS];
-    const presCandidates = candidatesFor(
-      this.hass,
-      this.config,
-      'presence',
-      presFilters
-    );
+    const cfg           = this.config;
+    const area          = cfg.area || '';
+    const name          = cfg.name || '';
+    const icon          = cfg.icon || '';
+    const presValue     = cfg.entities?.presence?.entity || cfg.presence_entity || '';
+    const autoDisc      = cfg.auto_discovery_sections?.presence ?? false;
+    const presFilters   = cfg.presence_filters ?? [...PRESENCE_CATS];
+    const presCandidates = candidatesFor(this.hass, this.config, 'presence', presFilters);
 
     return x`
       <ha-expansion-panel
@@ -529,7 +522,7 @@ class RoomPanel extends i {
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
-        <!-- Auto-discover toggle -->
+        <!-- Auto-discover -->
         <div class="input-group ad-top">
           <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input
@@ -566,7 +559,7 @@ class RoomPanel extends i {
           </div>
         </div>
 
-        <!-- Icon & Presence -->
+        <!-- Icon & Presence + Chips -->
         <div class="mini-pill">
           <div class="mini-pill-header">Icon & Presence</div>
           <div class="mini-pill-content">
@@ -580,7 +573,6 @@ class RoomPanel extends i {
               ></ha-icon-picker>
             </div>
 
-            <!-- Filter Chips -->
             <div class="input-group">
               <label>Filtra per categoria:</label>
               <filter-chips
@@ -590,7 +582,6 @@ class RoomPanel extends i {
               ></filter-chips>
             </div>
 
-            <!-- Presence selector -->
             <div class="input-group">
               <label>Presence (ID):</label>
               <ha-selector
@@ -615,14 +606,13 @@ class RoomPanel extends i {
 
         <!-- Reset -->
         <div style="text-align:center;margin-top:1.2em;">
-          <button class="reset-button" @click=${this._resetRoom}>
-            🧹 Reset Room
-          </button>
+          <button class="reset-button" @click=${this._resetRoom}>🧹 Reset Room</button>
         </div>
       </ha-expansion-panel>
     `;
   }
 
+  // forza auto-discover quando cambia area
   _onAreaChanged = (e) => {
     const v = e.detail.value;
     this._fire('area', v);
@@ -645,20 +635,22 @@ class RoomPanel extends i {
             >${a}</paper-button>
           `)}
         </div>
+
         ${cfg.action === 'navigate' ? x`
           <input
             type="text"
             placeholder="Path"
             .value=${cfg.navigation_path || ''}
-            @input=${e => this._fire(`${type}_action.navigation_path`, e.detail.value)}
+            @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
           />
         ` : ''}
+
         ${cfg.action === 'call-service' ? x`
           <input
             type="text"
             placeholder="service: domain.service_name"
             .value=${cfg.service || ''}
-            @input=${e => this._fire(`${type}_action.service`, e.detail.value)}
+            @input=${e => this._fire(`${type}_action.service`, e.target.value)}
           />
           <input
             type="text"
@@ -677,7 +669,7 @@ class RoomPanel extends i {
 
   _resetRoom() {
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' } },
+      detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' }},
       bubbles: true, composed: true,
     }));
   }
@@ -687,10 +679,7 @@ class RoomPanel extends i {
       detail: { prop, val }, bubbles: true, composed: true,
     }));
   }
-
-  _fire(prop, val) {
-    this._emit(prop, val);
-  }
+  _fire(prop, val) { this._emit(prop, val); }
 }
 
 customElements.define('room-panel', RoomPanel);
