@@ -2,9 +2,6 @@
 import { LitElement, html, css } from 'lit';
 
 /* usa i chip “ufficiali” di HA, già presenti nel bundle */
-import '@home-assistant/frontend/src/components/chip/ha-chip-set.js';
-import '@home-assistant/frontend/src/components/chip/ha-chip.js';
-
 import { FILTER_LABELS } from './entity-filters.js';
 
 export class FilterChips extends LitElement {
