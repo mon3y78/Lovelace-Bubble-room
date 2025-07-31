@@ -9,6 +9,7 @@
     "build": "rollup -c"
   },
   "dependencies": {
+    "@material/web": "^0.20.0",
     "acorn": "^8.14.0",
     "buffer-from": "^1.1.2",
     "commander": "^2.20.3",
