@@ -149,7 +149,6 @@ export class RoomPanel extends LitElement {
     }
   `;
 
-  static styles = css`/* …stili tagliati per brevità… */`;
 
   /* ────────────────────────── RENDER ────────────────────────── */
   render() {
