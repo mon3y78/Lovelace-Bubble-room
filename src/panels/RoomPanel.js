@@ -13,7 +13,6 @@ export class RoomPanel extends LitElement {
 
   constructor() {
     super();
-    import("@home-assistant/frontend/src/components/ha-entity-picker");
     this.hass = {};
     this.config = {};
     this._expanded = false;
@@ -188,11 +187,19 @@ export class RoomPanel extends LitElement {
             </div>
             <div class="input-group">
               <label>Area:</label>
-              <ha-area-picker
+               <ha-selector
                 .hass=${this.hass}
-                .value=${area}
-                @value-changed=${e => this._fire('area', e.detail.value)}
-              ></ha-area-picker>
+                .value=${pres}
+                .selector=${{
+                  entity: {
+                    domain: ["person", "device_tracker", "binary_sensor"],
+                    device_class: ["motion", "occupancy", "presence"],
+                    multiple: false          // (valore di default, ma lo lascio chiaro)
+                  }
+                }}
+                @value-changed=${e =>
+                  this._emit("entities.presence.entity", e.detail.value)}
+              ></ha-selector>
             </div>
           </div>
         </div>
