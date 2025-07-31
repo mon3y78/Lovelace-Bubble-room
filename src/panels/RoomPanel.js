@@ -1,9 +1,8 @@
 // src/panels/RoomPanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover }       from '../helpers/auto-discovery.js';
-import { candidatesFor }           from '../helpers/entity-filters.js';
 import { state } from 'lit/decorators.js';
-
+import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
+import { candidatesFor }         from '../helpers/entity-filters.js';
 
 const PRESENCE_CATS = [
   'presence',   // binary_sensor.device_class = presence
@@ -21,26 +20,9 @@ export class RoomPanel extends LitElement {
     _expanded: { type: Boolean },
   };
 
-  constructor() {
-    super();
-    this.hass      = {};
-    this.config    = {};
-    this._expanded = false;
-    if (!customElements.get('md-focus-ring')) {
-      import('@material/web/chips/chip-set.js');
-      import('@material/web/chips/filter-chip.js');
-    }
-  }
-
-  updated(changed) {
-    if (changed.has('config') || changed.has('hass')) {
-      maybeAutoDiscover(this.hass, this.config, 'area');
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
-    }
-  }
-
   static styles = css`
     :host { display: block; }
+    /* Shape chip Material Web */
     --md-filter-chip-container-shape: 16px;
 
     /* Glass panel */
@@ -171,41 +153,60 @@ export class RoomPanel extends LitElement {
     }
   `;
 
-  export class RoomPanel extends LitElement {
-    static styles = css`
-      /* …override variabili… */
-      --md-filter-chip-container-shape: 16px;
-    `;
-  
-    /** array di filtri attivi (es. presence_id) */
-    @state()
-    activeFilters = [];
-    /**
-   * Aggiunge un filtro (se non già presente)
-   * @param {string} filter
-   */
+  @state()
+  activeFilters = [];
+
+  constructor() {
+    super();
+    this.hass      = {};
+    this.config    = {};
+    this._expanded = false;
+
+    // Import dinamico di Material Web: eseguito solo una volta
+    if (!customElements.get('md-focus-ring')) {
+      import('@material/web/chips/chip-set.js');
+      import('@material/web/chips/filter-chip.js');
+    }
+  }
+
+  updated(changed) {
+    if (changed.has('config') || changed.has('hass')) {
+      maybeAutoDiscover(this.hass, this.config, 'area');
+      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
+
+      // Sincronizzo activeFilters con la config iniziale
+      if (changed.has('config') && Array.isArray(this.config.presence_filters)) {
+        this.activeFilters = [...this.config.presence_filters];
+      }
+    }
+  }
+
+  /** Aggiunge un filtro se non presente */
   addFilter(filter) {
     if (!this.activeFilters.includes(filter)) {
       this.activeFilters = [...this.activeFilters, filter];
     }
   }
 
-  /**
-   * Rimuove un filtro esistente
-   * @param {string} filter
-   */
+  /** Rimuove un filtro */
   removeFilter(filter) {
     this.activeFilters = this.activeFilters.filter(f => f !== filter);
   }
 
+  /** Alterna on/off e notifica l'editor */
+  toggleFilter(filter) {
+    if (this.activeFilters.includes(filter)) {
+      this.removeFilter(filter);
+    } else {
+      this.addFilter(filter);
+    }
+    this._fire('presence_filters', this.activeFilters);
+  }
+
   render() {
     const cfg           = this.config;
-    const area          = cfg.area || '';
-    const name          = cfg.name || '';
-    const icon          = cfg.icon || '';
-    const presValue     = cfg.entities?.presence?.entity || cfg.presence_entity || '';
-    const autoDisc      = cfg.auto_discovery_sections?.presence ?? false;
     const presFilters   = cfg.presence_filters ?? [...PRESENCE_CATS];
+    const presValue     = cfg.entities?.presence?.entity ?? cfg.presence_entity ?? '';
     const presCandidates = candidatesFor(this.hass, this.config, 'presence', presFilters);
 
     return html`
@@ -221,9 +222,9 @@ export class RoomPanel extends LitElement {
           <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input
               type="checkbox"
-              .checked=${autoDisc}
+              .checked=${cfg.auto_discovery_sections?.presence ?? false}
               @change=${e =>
-                this._emit('auto_discovery_sections.presence', e.target.checked)}
+                this._fire('auto_discovery_sections.presence', e.target.checked)}
             />
             <span>🔍 Auto-discover Presence</span>
           </label>
@@ -237,7 +238,7 @@ export class RoomPanel extends LitElement {
               <label>Room name:</label>
               <input
                 type="text"
-                .value=${name}
+                .value=${cfg.name ?? ''}
                 @input=${e => this._fire('name', e.target.value)}
               />
             </div>
@@ -245,7 +246,7 @@ export class RoomPanel extends LitElement {
               <label>Area:</label>
               <ha-selector
                 .hass=${this.hass}
-                .value=${area}
+                .value=${cfg.area ?? ''}
                 .selector=${{ area: {} }}
                 @value-changed=${this._onAreaChanged}
               ></ha-selector>
@@ -261,7 +262,7 @@ export class RoomPanel extends LitElement {
               <label>Room Icon:</label>
               <ha-icon-picker
                 .hass=${this.hass}
-                .value=${icon}
+                .value=${cfg.icon ?? ''}
                 allow-custom-icon
                 @value-changed=${e => this._fire('icon', e.detail.value)}
               ></ha-icon-picker>
@@ -269,11 +270,16 @@ export class RoomPanel extends LitElement {
 
             <div class="input-group">
               <label>Filtra per categoria:</label>
-              <filter-chips
-                .value=${presFilters}
-                .allowed=${PRESENCE_CATS}
-                @value-changed=${e => this._fire('presence_filters', e.detail.value)}
-              ></filter-chips>
+              <md-chip-set aria-label="Categorie di Presence" selectable>
+                ${PRESENCE_CATS.map(cat => html`
+                  <md-filter-chip
+                    .label=${cat}
+                    ?selected=${this.activeFilters.includes(cat)}
+                    ?removable=${this.activeFilters.includes(cat)}
+                    @click=${() => this.toggleFilter(cat)}
+                  ></md-filter-chip>
+                `)}
+              </md-chip-set>
             </div>
 
             <div class="input-group">
@@ -311,7 +317,7 @@ export class RoomPanel extends LitElement {
     const v = e.detail.value;
     this._fire('area', v);
     if (v) {
-      this._emit('auto_discovery_sections.presence', true);
+      this._fire('auto_discovery_sections.presence', true);
     }
   };
 
@@ -362,10 +368,7 @@ export class RoomPanel extends LitElement {
   }
 
   _resetRoom() {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' }},
-      bubbles: true, composed: true,
-    }));
+    this._emit('__panel_cmd__', { cmd: 'reset', section: 'room' });
   }
 
   _emit(prop, val) {
