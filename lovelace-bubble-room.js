@@ -1,385 +1,39 @@
-import '@material/mwc-chip/mwc-chip.js';
-import '@material/mwc-chip-set/mwc-chip-set.js';
-
+import"@material/mwc-chip/mwc-chip.js";import"@material/mwc-chip-set/mwc-chip-set.js";
 /**
  * @license
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */
-const t$1=globalThis,e$2=t$1.ShadowRoot&&(void 0===t$1.ShadyCSS||t$1.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,s$2=Symbol(),o$3=new WeakMap;class n$2{constructor(t,e,o){if(this._$cssResult$=!0,o!==s$2)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=t,this.t=e;}get styleSheet(){let t=this.o;const s=this.t;if(e$2&&void 0===t){const e=void 0!==s&&1===s.length;e&&(t=o$3.get(s)),void 0===t&&((this.o=t=new CSSStyleSheet).replaceSync(this.cssText),e&&o$3.set(s,t));}return t}toString(){return this.cssText}}const r$2=t=>new n$2("string"==typeof t?t:t+"",void 0,s$2),i$3=(t,...e)=>{const o=1===t.length?t[0]:e.reduce(((e,s,o)=>e+(t=>{if(!0===t._$cssResult$)return t.cssText;if("number"==typeof t)return t;throw Error("Value passed to 'css' function must be a 'css' function result: "+t+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(s)+t[o+1]),t[0]);return new n$2(o,t,s$2)},S$1=(s,o)=>{if(e$2)s.adoptedStyleSheets=o.map((t=>t instanceof CSSStyleSheet?t:t.styleSheet));else for(const e of o){const o=document.createElement("style"),n=t$1.litNonce;void 0!==n&&o.setAttribute("nonce",n),o.textContent=e.cssText,s.appendChild(o);}},c$2=e$2?t=>t:t=>t instanceof CSSStyleSheet?(t=>{let e="";for(const s of t.cssRules)e+=s.cssText;return r$2(e)})(t):t;
-
+ */const e=globalThis,t=e.ShadowRoot&&(void 0===e.ShadyCSS||e.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,i=Symbol(),s=new WeakMap;class n{constructor(e,t,s){if(this._$cssResult$=!0,s!==i)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=e,this.t=t}get styleSheet(){let e=this.o;const i=this.t;if(t&&void 0===e){const t=void 0!==i&&1===i.length;t&&(e=s.get(i)),void 0===e&&((this.o=e=new CSSStyleSheet).replaceSync(this.cssText),t&&s.set(i,e))}return e}toString(){return this.cssText}}const o=(e,...t)=>{const s=1===e.length?e[0]:t.reduce((t,i,s)=>t+(e=>{if(!0===e._$cssResult$)return e.cssText;if("number"==typeof e)return e;throw Error("Value passed to 'css' function must be a 'css' function result: "+e+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(i)+e[s+1],e[0]);return new n(s,e,i)},a=t?e=>e:e=>e instanceof CSSStyleSheet?(e=>{let t="";for(const i of e.cssRules)t+=i.cssText;return(e=>new n("string"==typeof e?e:e+"",void 0,i))(t)})(e):e,{is:r,defineProperty:l,getOwnPropertyDescriptor:c,getOwnPropertyNames:p,getOwnPropertySymbols:d,getPrototypeOf:h}=Object,u=globalThis,b=u.trustedTypes,m=b?b.emptyScript:"",g=u.reactiveElementPolyfillSupport,f=(e,t)=>e,v={toAttribute(e,t){switch(t){case Boolean:e=e?m:null;break;case Object:case Array:e=null==e?e:JSON.stringify(e)}return e},fromAttribute(e,t){let i=e;switch(t){case Boolean:i=null!==e;break;case Number:i=null===e?null:Number(e);break;case Object:case Array:try{i=JSON.parse(e)}catch(e){i=null}}return i}},x=(e,t)=>!r(e,t),_={attribute:!0,type:String,converter:v,reflect:!1,useDefault:!1,hasChanged:x};
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const{is:i$2,defineProperty:e$1,getOwnPropertyDescriptor:h$1,getOwnPropertyNames:r$1,getOwnPropertySymbols:o$2,getPrototypeOf:n$1}=Object,a$1=globalThis,c$1=a$1.trustedTypes,l$1=c$1?c$1.emptyScript:"",p$1=a$1.reactiveElementPolyfillSupport,d$1=(t,s)=>t,u$1={toAttribute(t,s){switch(s){case Boolean:t=t?l$1:null;break;case Object:case Array:t=null==t?t:JSON.stringify(t);}return t},fromAttribute(t,s){let i=t;switch(s){case Boolean:i=null!==t;break;case Number:i=null===t?null:Number(t);break;case Object:case Array:try{i=JSON.parse(t);}catch(t){i=null;}}return i}},f$1=(t,s)=>!i$2(t,s),b={attribute:!0,type:String,converter:u$1,reflect:!1,useDefault:!1,hasChanged:f$1};Symbol.metadata??=Symbol("metadata"),a$1.litPropertyMetadata??=new WeakMap;class y$1 extends HTMLElement{static addInitializer(t){this._$Ei(),(this.l??=[]).push(t);}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(t,s=b){if(s.state&&(s.attribute=!1),this._$Ei(),this.prototype.hasOwnProperty(t)&&((s=Object.create(s)).wrapped=!0),this.elementProperties.set(t,s),!s.noAccessor){const i=Symbol(),h=this.getPropertyDescriptor(t,i,s);void 0!==h&&e$1(this.prototype,t,h);}}static getPropertyDescriptor(t,s,i){const{get:e,set:r}=h$1(this.prototype,t)??{get(){return this[s]},set(t){this[s]=t;}};return {get:e,set(s){const h=e?.call(this);r?.call(this,s),this.requestUpdate(t,h,i);},configurable:!0,enumerable:!0}}static getPropertyOptions(t){return this.elementProperties.get(t)??b}static _$Ei(){if(this.hasOwnProperty(d$1("elementProperties")))return;const t=n$1(this);t.finalize(),void 0!==t.l&&(this.l=[...t.l]),this.elementProperties=new Map(t.elementProperties);}static finalize(){if(this.hasOwnProperty(d$1("finalized")))return;if(this.finalized=!0,this._$Ei(),this.hasOwnProperty(d$1("properties"))){const t=this.properties,s=[...r$1(t),...o$2(t)];for(const i of s)this.createProperty(i,t[i]);}const t=this[Symbol.metadata];if(null!==t){const s=litPropertyMetadata.get(t);if(void 0!==s)for(const[t,i]of s)this.elementProperties.set(t,i);}this._$Eh=new Map;for(const[t,s]of this.elementProperties){const i=this._$Eu(t,s);void 0!==i&&this._$Eh.set(i,t);}this.elementStyles=this.finalizeStyles(this.styles);}static finalizeStyles(s){const i=[];if(Array.isArray(s)){const e=new Set(s.flat(1/0).reverse());for(const s of e)i.unshift(c$2(s));}else void 0!==s&&i.push(c$2(s));return i}static _$Eu(t,s){const i=s.attribute;return !1===i?void 0:"string"==typeof i?i:"string"==typeof t?t.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=!1,this.hasUpdated=!1,this._$Em=null,this._$Ev();}_$Ev(){this._$ES=new Promise((t=>this.enableUpdating=t)),this._$AL=new Map,this._$E_(),this.requestUpdate(),this.constructor.l?.forEach((t=>t(this)));}addController(t){(this._$EO??=new Set).add(t),void 0!==this.renderRoot&&this.isConnected&&t.hostConnected?.();}removeController(t){this._$EO?.delete(t);}_$E_(){const t=new Map,s=this.constructor.elementProperties;for(const i of s.keys())this.hasOwnProperty(i)&&(t.set(i,this[i]),delete this[i]);t.size>0&&(this._$Ep=t);}createRenderRoot(){const t=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return S$1(t,this.constructor.elementStyles),t}connectedCallback(){this.renderRoot??=this.createRenderRoot(),this.enableUpdating(!0),this._$EO?.forEach((t=>t.hostConnected?.()));}enableUpdating(t){}disconnectedCallback(){this._$EO?.forEach((t=>t.hostDisconnected?.()));}attributeChangedCallback(t,s,i){this._$AK(t,i);}_$ET(t,s){const i=this.constructor.elementProperties.get(t),e=this.constructor._$Eu(t,i);if(void 0!==e&&!0===i.reflect){const h=(void 0!==i.converter?.toAttribute?i.converter:u$1).toAttribute(s,i.type);this._$Em=t,null==h?this.removeAttribute(e):this.setAttribute(e,h),this._$Em=null;}}_$AK(t,s){const i=this.constructor,e=i._$Eh.get(t);if(void 0!==e&&this._$Em!==e){const t=i.getPropertyOptions(e),h="function"==typeof t.converter?{fromAttribute:t.converter}:void 0!==t.converter?.fromAttribute?t.converter:u$1;this._$Em=e;const r=h.fromAttribute(s,t.type);this[e]=r??this._$Ej?.get(e)??r,this._$Em=null;}}requestUpdate(t,s,i){if(void 0!==t){const e=this.constructor,h=this[t];if(i??=e.getPropertyOptions(t),!((i.hasChanged??f$1)(h,s)||i.useDefault&&i.reflect&&h===this._$Ej?.get(t)&&!this.hasAttribute(e._$Eu(t,i))))return;this.C(t,s,i);}!1===this.isUpdatePending&&(this._$ES=this._$EP());}C(t,s,{useDefault:i,reflect:e,wrapped:h},r){i&&!(this._$Ej??=new Map).has(t)&&(this._$Ej.set(t,r??s??this[t]),!0!==h||void 0!==r)||(this._$AL.has(t)||(this.hasUpdated||i||(s=void 0),this._$AL.set(t,s)),!0===e&&this._$Em!==t&&(this._$Eq??=new Set).add(t));}async _$EP(){this.isUpdatePending=!0;try{await this._$ES;}catch(t){Promise.reject(t);}const t=this.scheduleUpdate();return null!=t&&await t,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??=this.createRenderRoot(),this._$Ep){for(const[t,s]of this._$Ep)this[t]=s;this._$Ep=void 0;}const t=this.constructor.elementProperties;if(t.size>0)for(const[s,i]of t){const{wrapped:t}=i,e=this[s];!0!==t||this._$AL.has(s)||void 0===e||this.C(s,void 0,i,e);}}let t=!1;const s=this._$AL;try{t=this.shouldUpdate(s),t?(this.willUpdate(s),this._$EO?.forEach((t=>t.hostUpdate?.())),this.update(s)):this._$EM();}catch(s){throw t=!1,this._$EM(),s}t&&this._$AE(s);}willUpdate(t){}_$AE(t){this._$EO?.forEach((t=>t.hostUpdated?.())),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(t)),this.updated(t);}_$EM(){this._$AL=new Map,this.isUpdatePending=!1;}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(t){return !0}update(t){this._$Eq&&=this._$Eq.forEach((t=>this._$ET(t,this[t]))),this._$EM();}updated(t){}firstUpdated(t){}}y$1.elementStyles=[],y$1.shadowRootOptions={mode:"open"},y$1[d$1("elementProperties")]=new Map,y$1[d$1("finalized")]=new Map,p$1?.({ReactiveElement:y$1}),(a$1.reactiveElementVersions??=[]).push("2.1.1");
-
+ */Symbol.metadata??=Symbol("metadata"),u.litPropertyMetadata??=new WeakMap;class $ extends HTMLElement{static addInitializer(e){this._$Ei(),(this.l??=[]).push(e)}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(e,t=_){if(t.state&&(t.attribute=!1),this._$Ei(),this.prototype.hasOwnProperty(e)&&((t=Object.create(t)).wrapped=!0),this.elementProperties.set(e,t),!t.noAccessor){const i=Symbol(),s=this.getPropertyDescriptor(e,i,t);void 0!==s&&l(this.prototype,e,s)}}static getPropertyDescriptor(e,t,i){const{get:s,set:n}=c(this.prototype,e)??{get(){return this[t]},set(e){this[t]=e}};return{get:s,set(t){const o=s?.call(this);n?.call(this,t),this.requestUpdate(e,o,i)},configurable:!0,enumerable:!0}}static getPropertyOptions(e){return this.elementProperties.get(e)??_}static _$Ei(){if(this.hasOwnProperty(f("elementProperties")))return;const e=h(this);e.finalize(),void 0!==e.l&&(this.l=[...e.l]),this.elementProperties=new Map(e.elementProperties)}static finalize(){if(this.hasOwnProperty(f("finalized")))return;if(this.finalized=!0,this._$Ei(),this.hasOwnProperty(f("properties"))){const e=this.properties,t=[...p(e),...d(e)];for(const i of t)this.createProperty(i,e[i])}const e=this[Symbol.metadata];if(null!==e){const t=litPropertyMetadata.get(e);if(void 0!==t)for(const[e,i]of t)this.elementProperties.set(e,i)}this._$Eh=new Map;for(const[e,t]of this.elementProperties){const i=this._$Eu(e,t);void 0!==i&&this._$Eh.set(i,e)}this.elementStyles=this.finalizeStyles(this.styles)}static finalizeStyles(e){const t=[];if(Array.isArray(e)){const i=new Set(e.flat(1/0).reverse());for(const e of i)t.unshift(a(e))}else void 0!==e&&t.push(a(e));return t}static _$Eu(e,t){const i=t.attribute;return!1===i?void 0:"string"==typeof i?i:"string"==typeof e?e.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=!1,this.hasUpdated=!1,this._$Em=null,this._$Ev()}_$Ev(){this._$ES=new Promise(e=>this.enableUpdating=e),this._$AL=new Map,this._$E_(),this.requestUpdate(),this.constructor.l?.forEach(e=>e(this))}addController(e){(this._$EO??=new Set).add(e),void 0!==this.renderRoot&&this.isConnected&&e.hostConnected?.()}removeController(e){this._$EO?.delete(e)}_$E_(){const e=new Map,t=this.constructor.elementProperties;for(const i of t.keys())this.hasOwnProperty(i)&&(e.set(i,this[i]),delete this[i]);e.size>0&&(this._$Ep=e)}createRenderRoot(){const i=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return((i,s)=>{if(t)i.adoptedStyleSheets=s.map(e=>e instanceof CSSStyleSheet?e:e.styleSheet);else for(const t of s){const s=document.createElement("style"),n=e.litNonce;void 0!==n&&s.setAttribute("nonce",n),s.textContent=t.cssText,i.appendChild(s)}})(i,this.constructor.elementStyles),i}connectedCallback(){this.renderRoot??=this.createRenderRoot(),this.enableUpdating(!0),this._$EO?.forEach(e=>e.hostConnected?.())}enableUpdating(e){}disconnectedCallback(){this._$EO?.forEach(e=>e.hostDisconnected?.())}attributeChangedCallback(e,t,i){this._$AK(e,i)}_$ET(e,t){const i=this.constructor.elementProperties.get(e),s=this.constructor._$Eu(e,i);if(void 0!==s&&!0===i.reflect){const n=(void 0!==i.converter?.toAttribute?i.converter:v).toAttribute(t,i.type);this._$Em=e,null==n?this.removeAttribute(s):this.setAttribute(s,n),this._$Em=null}}_$AK(e,t){const i=this.constructor,s=i._$Eh.get(e);if(void 0!==s&&this._$Em!==s){const e=i.getPropertyOptions(s),n="function"==typeof e.converter?{fromAttribute:e.converter}:void 0!==e.converter?.fromAttribute?e.converter:v;this._$Em=s;const o=n.fromAttribute(t,e.type);this[s]=o??this._$Ej?.get(s)??o,this._$Em=null}}requestUpdate(e,t,i){if(void 0!==e){const s=this.constructor,n=this[e];if(i??=s.getPropertyOptions(e),!((i.hasChanged??x)(n,t)||i.useDefault&&i.reflect&&n===this._$Ej?.get(e)&&!this.hasAttribute(s._$Eu(e,i))))return;this.C(e,t,i)}!1===this.isUpdatePending&&(this._$ES=this._$EP())}C(e,t,{useDefault:i,reflect:s,wrapped:n},o){i&&!(this._$Ej??=new Map).has(e)&&(this._$Ej.set(e,o??t??this[e]),!0!==n||void 0!==o)||(this._$AL.has(e)||(this.hasUpdated||i||(t=void 0),this._$AL.set(e,t)),!0===s&&this._$Em!==e&&(this._$Eq??=new Set).add(e))}async _$EP(){this.isUpdatePending=!0;try{await this._$ES}catch(e){Promise.reject(e)}const e=this.scheduleUpdate();return null!=e&&await e,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??=this.createRenderRoot(),this._$Ep){for(const[e,t]of this._$Ep)this[e]=t;this._$Ep=void 0}const e=this.constructor.elementProperties;if(e.size>0)for(const[t,i]of e){const{wrapped:e}=i,s=this[t];!0!==e||this._$AL.has(t)||void 0===s||this.C(t,void 0,i,s)}}let e=!1;const t=this._$AL;try{e=this.shouldUpdate(t),e?(this.willUpdate(t),this._$EO?.forEach(e=>e.hostUpdate?.()),this.update(t)):this._$EM()}catch(t){throw e=!1,this._$EM(),t}e&&this._$AE(t)}willUpdate(e){}_$AE(e){this._$EO?.forEach(e=>e.hostUpdated?.()),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(e)),this.updated(e)}_$EM(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(e){return!0}update(e){this._$Eq&&=this._$Eq.forEach(e=>this._$ET(e,this[e])),this._$EM()}updated(e){}firstUpdated(e){}}$.elementStyles=[],$.shadowRootOptions={mode:"open"},$[f("elementProperties")]=new Map,$[f("finalized")]=new Map,g?.({ReactiveElement:$}),(u.reactiveElementVersions??=[]).push("2.1.1");
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const t=globalThis,i$1=t.trustedTypes,s$1=i$1?i$1.createPolicy("lit-html",{createHTML:t=>t}):void 0,e="$lit$",h=`lit$${Math.random().toFixed(9).slice(2)}$`,o$1="?"+h,n=`<${o$1}>`,r=document,l=()=>r.createComment(""),c=t=>null===t||"object"!=typeof t&&"function"!=typeof t,a=Array.isArray,u=t=>a(t)||"function"==typeof t?.[Symbol.iterator],d="[ \t\n\f\r]",f=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,v=/-->/g,_=/>/g,m=RegExp(`>|${d}(?:([^\\s"'>=/]+)(${d}*=${d}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),p=/'/g,g=/"/g,$=/^(?:script|style|textarea|title)$/i,y=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),x=y(1),T=Symbol.for("lit-noChange"),E=Symbol.for("lit-nothing"),A=new WeakMap,C=r.createTreeWalker(r,129);function P(t,i){if(!a(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==s$1?s$1.createHTML(i):i}const V=(t,i)=>{const s=t.length-1,o=[];let r,l=2===i?"<svg>":3===i?"<math>":"",c=f;for(let i=0;i<s;i++){const s=t[i];let a,u,d=-1,y=0;for(;y<s.length&&(c.lastIndex=y,u=c.exec(s),null!==u);)y=c.lastIndex,c===f?"!--"===u[1]?c=v:void 0!==u[1]?c=_:void 0!==u[2]?($.test(u[2])&&(r=RegExp("</"+u[2],"g")),c=m):void 0!==u[3]&&(c=m):c===m?">"===u[0]?(c=r??f,d=-1):void 0===u[1]?d=-2:(d=c.lastIndex-u[2].length,a=u[1],c=void 0===u[3]?m:'"'===u[3]?g:p):c===g||c===p?c=m:c===v||c===_?c=f:(c=m,r=void 0);const x=c===m&&t[i+1].startsWith("/>")?" ":"";l+=c===f?s+n:d>=0?(o.push(a),s.slice(0,d)+e+s.slice(d)+h+x):s+h+(-2===d?i:x);}return [P(t,l+(t[s]||"<?>")+(2===i?"</svg>":3===i?"</math>":"")),o]};class N{constructor({strings:t,_$litType$:s},n){let r;this.parts=[];let c=0,a=0;const u=t.length-1,d=this.parts,[f,v]=V(t,s);if(this.el=N.createElement(f,n),C.currentNode=this.el.content,2===s||3===s){const t=this.el.content.firstChild;t.replaceWith(...t.childNodes);}for(;null!==(r=C.nextNode())&&d.length<u;){if(1===r.nodeType){if(r.hasAttributes())for(const t of r.getAttributeNames())if(t.endsWith(e)){const i=v[a++],s=r.getAttribute(t).split(h),e=/([.?@])?(.*)/.exec(i);d.push({type:1,index:c,name:e[2],strings:s,ctor:"."===e[1]?H:"?"===e[1]?I:"@"===e[1]?L:k}),r.removeAttribute(t);}else t.startsWith(h)&&(d.push({type:6,index:c}),r.removeAttribute(t));if($.test(r.tagName)){const t=r.textContent.split(h),s=t.length-1;if(s>0){r.textContent=i$1?i$1.emptyScript:"";for(let i=0;i<s;i++)r.append(t[i],l()),C.nextNode(),d.push({type:2,index:++c});r.append(t[s],l());}}}else if(8===r.nodeType)if(r.data===o$1)d.push({type:2,index:c});else {let t=-1;for(;-1!==(t=r.data.indexOf(h,t+1));)d.push({type:7,index:c}),t+=h.length-1;}c++;}}static createElement(t,i){const s=r.createElement("template");return s.innerHTML=t,s}}function S(t,i,s=t,e){if(i===T)return i;let h=void 0!==e?s._$Co?.[e]:s._$Cl;const o=c(i)?void 0:i._$litDirective$;return h?.constructor!==o&&(h?._$AO?.(!1),void 0===o?h=void 0:(h=new o(t),h._$AT(t,s,e)),void 0!==e?(s._$Co??=[])[e]=h:s._$Cl=h),void 0!==h&&(i=S(t,h._$AS(t,i.values),h,e)),i}class M{constructor(t,i){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){const{el:{content:i},parts:s}=this._$AD,e=(t?.creationScope??r).importNode(i,!0);C.currentNode=e;let h=C.nextNode(),o=0,n=0,l=s[0];for(;void 0!==l;){if(o===l.index){let i;2===l.type?i=new R(h,h.nextSibling,this,t):1===l.type?i=new l.ctor(h,l.name,l.strings,this,t):6===l.type&&(i=new z(h,this,t)),this._$AV.push(i),l=s[++n];}o!==l?.index&&(h=C.nextNode(),o++);}return C.currentNode=r,e}p(t){let i=0;for(const s of this._$AV)void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class R{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(t,i,s,e){this.type=2,this._$AH=E,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cv=e?.isConnected??!0;}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===t?.nodeType&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=S(this,t,i),c(t)?t===E||null==t||""===t?(this._$AH!==E&&this._$AR(),this._$AH=E):t!==this._$AH&&t!==T&&this._(t):void 0!==t._$litType$?this.$(t):void 0!==t.nodeType?this.T(t):u(t)?this.k(t):this._(t);}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t));}_(t){this._$AH!==E&&c(this._$AH)?this._$AA.nextSibling.data=t:this.T(r.createTextNode(t)),this._$AH=t;}$(t){const{values:i,_$litType$:s}=t,e="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=N.createElement(P(s.h,s.h[0]),this.options)),s);if(this._$AH?._$AD===e)this._$AH.p(i);else {const t=new M(e,this),s=t.u(this.options);t.p(i),this.T(s),this._$AH=t;}}_$AC(t){let i=A.get(t.strings);return void 0===i&&A.set(t.strings,i=new N(t)),i}k(t){a(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const h of t)e===i.length?i.push(s=new R(this.O(l()),this.O(l()),this,this.options)):s=i[e],s._$AI(h),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,i){for(this._$AP?.(!1,!0,i);t!==this._$AB;){const i=t.nextSibling;t.remove(),t=i;}}setConnected(t){void 0===this._$AM&&(this._$Cv=t,this._$AP?.(t));}}class k{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,i,s,e,h){this.type=1,this._$AH=E,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=h,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=E;}_$AI(t,i=this,s,e){const h=this.strings;let o=!1;if(void 0===h)t=S(this,t,i,0),o=!c(t)||t!==this._$AH&&t!==T,o&&(this._$AH=t);else {const e=t;let n,r;for(t=h[0],n=0;n<h.length-1;n++)r=S(this,e[s+n],i,n),r===T&&(r=this._$AH[n]),o||=!c(r)||r!==this._$AH[n],r===E?t=E:t!==E&&(t+=(r??"")+h[n+1]),this._$AH[n]=r;}o&&!e&&this.j(t);}j(t){t===E?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"");}}class H extends k{constructor(){super(...arguments),this.type=3;}j(t){this.element[this.name]=t===E?void 0:t;}}class I extends k{constructor(){super(...arguments),this.type=4;}j(t){this.element.toggleAttribute(this.name,!!t&&t!==E);}}class L extends k{constructor(t,i,s,e,h){super(t,i,s,e,h),this.type=5;}_$AI(t,i=this){if((t=S(this,t,i,0)??E)===T)return;const s=this._$AH,e=t===E&&s!==E||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,h=t!==E&&(s===E||e);e&&this.element.removeEventListener(this.name,this,s),h&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){"function"==typeof this._$AH?this._$AH.call(this.options?.host??this.element,t):this._$AH.handleEvent(t);}}class z{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){S(this,t);}}const j=t.litHtmlPolyfillSupport;j?.(N,R),(t.litHtmlVersions??=[]).push("3.3.1");const B=(t,i,s)=>{const e=s?.renderBefore??i;let h=e._$litPart$;if(void 0===h){const t=s?.renderBefore??null;e._$litPart$=h=new R(i.insertBefore(l(),t),t,void 0,s??{});}return h._$AI(t),h};
-
+const y=globalThis,w=y.trustedTypes,A=w?w.createPolicy("lit-html",{createHTML:e=>e}):void 0,k="$lit$",E=`lit$${Math.random().toFixed(9).slice(2)}$`,S="?"+E,C=`<${S}>`,O=document,P=()=>O.createComment(""),z=e=>null===e||"object"!=typeof e&&"function"!=typeof e,B=Array.isArray,U="[ \t\n\f\r]",I=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,M=/-->/g,R=/>/g,H=RegExp(`>|${U}(?:([^\\s"'>=/]+)(${U}*=${U}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),j=/'/g,N=/"/g,T=/^(?:script|style|textarea|title)$/i,D=(e=>(t,...i)=>({_$litType$:e,strings:t,values:i}))(1),L=Symbol.for("lit-noChange"),q=Symbol.for("lit-nothing"),W=new WeakMap,V=O.createTreeWalker(O,129);function G(e,t){if(!B(e)||!e.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==A?A.createHTML(t):t}const F=(e,t)=>{const i=e.length-1,s=[];let n,o=2===t?"<svg>":3===t?"<math>":"",a=I;for(let t=0;t<i;t++){const i=e[t];let r,l,c=-1,p=0;for(;p<i.length&&(a.lastIndex=p,l=a.exec(i),null!==l);)p=a.lastIndex,a===I?"!--"===l[1]?a=M:void 0!==l[1]?a=R:void 0!==l[2]?(T.test(l[2])&&(n=RegExp("</"+l[2],"g")),a=H):void 0!==l[3]&&(a=H):a===H?">"===l[0]?(a=n??I,c=-1):void 0===l[1]?c=-2:(c=a.lastIndex-l[2].length,r=l[1],a=void 0===l[3]?H:'"'===l[3]?N:j):a===N||a===j?a=H:a===M||a===R?a=I:(a=H,n=void 0);const d=a===H&&e[t+1].startsWith("/>")?" ":"";o+=a===I?i+C:c>=0?(s.push(r),i.slice(0,c)+k+i.slice(c)+E+d):i+E+(-2===c?t:d)}return[G(e,o+(e[i]||"<?>")+(2===t?"</svg>":3===t?"</math>":"")),s]};class J{constructor({strings:e,_$litType$:t},i){let s;this.parts=[];let n=0,o=0;const a=e.length-1,r=this.parts,[l,c]=F(e,t);if(this.el=J.createElement(l,i),V.currentNode=this.el.content,2===t||3===t){const e=this.el.content.firstChild;e.replaceWith(...e.childNodes)}for(;null!==(s=V.nextNode())&&r.length<a;){if(1===s.nodeType){if(s.hasAttributes())for(const e of s.getAttributeNames())if(e.endsWith(k)){const t=c[o++],i=s.getAttribute(e).split(E),a=/([.?@])?(.*)/.exec(t);r.push({type:1,index:n,name:a[2],strings:i,ctor:"."===a[1]?Y:"?"===a[1]?ee:"@"===a[1]?te:X}),s.removeAttribute(e)}else e.startsWith(E)&&(r.push({type:6,index:n}),s.removeAttribute(e));if(T.test(s.tagName)){const e=s.textContent.split(E),t=e.length-1;if(t>0){s.textContent=w?w.emptyScript:"";for(let i=0;i<t;i++)s.append(e[i],P()),V.nextNode(),r.push({type:2,index:++n});s.append(e[t],P())}}}else if(8===s.nodeType)if(s.data===S)r.push({type:2,index:n});else{let e=-1;for(;-1!==(e=s.data.indexOf(E,e+1));)r.push({type:7,index:n}),e+=E.length-1}n++}}static createElement(e,t){const i=O.createElement("template");return i.innerHTML=e,i}}function K(e,t,i=e,s){if(t===L)return t;let n=void 0!==s?i._$Co?.[s]:i._$Cl;const o=z(t)?void 0:t._$litDirective$;return n?.constructor!==o&&(n?._$AO?.(!1),void 0===o?n=void 0:(n=new o(e),n._$AT(e,i,s)),void 0!==s?(i._$Co??=[])[s]=n:i._$Cl=n),void 0!==n&&(t=K(e,n._$AS(e,t.values),n,s)),t}class Z{constructor(e,t){this._$AV=[],this._$AN=void 0,this._$AD=e,this._$AM=t}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(e){const{el:{content:t},parts:i}=this._$AD,s=(e?.creationScope??O).importNode(t,!0);V.currentNode=s;let n=V.nextNode(),o=0,a=0,r=i[0];for(;void 0!==r;){if(o===r.index){let t;2===r.type?t=new Q(n,n.nextSibling,this,e):1===r.type?t=new r.ctor(n,r.name,r.strings,this,e):6===r.type&&(t=new ie(n,this,e)),this._$AV.push(t),r=i[++a]}o!==r?.index&&(n=V.nextNode(),o++)}return V.currentNode=O,s}p(e){let t=0;for(const i of this._$AV)void 0!==i&&(void 0!==i.strings?(i._$AI(e,i,t),t+=i.strings.length-2):i._$AI(e[t])),t++}}class Q{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(e,t,i,s){this.type=2,this._$AH=q,this._$AN=void 0,this._$AA=e,this._$AB=t,this._$AM=i,this.options=s,this._$Cv=s?.isConnected??!0}get parentNode(){let e=this._$AA.parentNode;const t=this._$AM;return void 0!==t&&11===e?.nodeType&&(e=t.parentNode),e}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(e,t=this){e=K(this,e,t),z(e)?e===q||null==e||""===e?(this._$AH!==q&&this._$AR(),this._$AH=q):e!==this._$AH&&e!==L&&this._(e):void 0!==e._$litType$?this.$(e):void 0!==e.nodeType?this.T(e):(e=>B(e)||"function"==typeof e?.[Symbol.iterator])(e)?this.k(e):this._(e)}O(e){return this._$AA.parentNode.insertBefore(e,this._$AB)}T(e){this._$AH!==e&&(this._$AR(),this._$AH=this.O(e))}_(e){this._$AH!==q&&z(this._$AH)?this._$AA.nextSibling.data=e:this.T(O.createTextNode(e)),this._$AH=e}$(e){const{values:t,_$litType$:i}=e,s="number"==typeof i?this._$AC(e):(void 0===i.el&&(i.el=J.createElement(G(i.h,i.h[0]),this.options)),i);if(this._$AH?._$AD===s)this._$AH.p(t);else{const e=new Z(s,this),i=e.u(this.options);e.p(t),this.T(i),this._$AH=e}}_$AC(e){let t=W.get(e.strings);return void 0===t&&W.set(e.strings,t=new J(e)),t}k(e){B(this._$AH)||(this._$AH=[],this._$AR());const t=this._$AH;let i,s=0;for(const n of e)s===t.length?t.push(i=new Q(this.O(P()),this.O(P()),this,this.options)):i=t[s],i._$AI(n),s++;s<t.length&&(this._$AR(i&&i._$AB.nextSibling,s),t.length=s)}_$AR(e=this._$AA.nextSibling,t){for(this._$AP?.(!1,!0,t);e!==this._$AB;){const t=e.nextSibling;e.remove(),e=t}}setConnected(e){void 0===this._$AM&&(this._$Cv=e,this._$AP?.(e))}}class X{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(e,t,i,s,n){this.type=1,this._$AH=q,this._$AN=void 0,this.element=e,this.name=t,this._$AM=s,this.options=n,i.length>2||""!==i[0]||""!==i[1]?(this._$AH=Array(i.length-1).fill(new String),this.strings=i):this._$AH=q}_$AI(e,t=this,i,s){const n=this.strings;let o=!1;if(void 0===n)e=K(this,e,t,0),o=!z(e)||e!==this._$AH&&e!==L,o&&(this._$AH=e);else{const s=e;let a,r;for(e=n[0],a=0;a<n.length-1;a++)r=K(this,s[i+a],t,a),r===L&&(r=this._$AH[a]),o||=!z(r)||r!==this._$AH[a],r===q?e=q:e!==q&&(e+=(r??"")+n[a+1]),this._$AH[a]=r}o&&!s&&this.j(e)}j(e){e===q?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,e??"")}}class Y extends X{constructor(){super(...arguments),this.type=3}j(e){this.element[this.name]=e===q?void 0:e}}class ee extends X{constructor(){super(...arguments),this.type=4}j(e){this.element.toggleAttribute(this.name,!!e&&e!==q)}}class te extends X{constructor(e,t,i,s,n){super(e,t,i,s,n),this.type=5}_$AI(e,t=this){if((e=K(this,e,t,0)??q)===L)return;const i=this._$AH,s=e===q&&i!==q||e.capture!==i.capture||e.once!==i.once||e.passive!==i.passive,n=e!==q&&(i===q||s);s&&this.element.removeEventListener(this.name,this,i),n&&this.element.addEventListener(this.name,this,e),this._$AH=e}handleEvent(e){"function"==typeof this._$AH?this._$AH.call(this.options?.host??this.element,e):this._$AH.handleEvent(e)}}class ie{constructor(e,t,i){this.element=e,this.type=6,this._$AN=void 0,this._$AM=t,this.options=i}get _$AU(){return this._$AM._$AU}_$AI(e){K(this,e)}}const se=y.litHtmlPolyfillSupport;se?.(J,Q),(y.litHtmlVersions??=[]).push("3.3.1");const ne=globalThis;
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const s=globalThis;class i extends y$1{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0;}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const r=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=B(r,this.renderRoot,this.renderOptions);}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0);}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1);}render(){return T}}i._$litElement$=!0,i["finalized"]=!0,s.litElementHydrateSupport?.({LitElement:i});const o=s.litElementPolyfillSupport;o?.({LitElement:i});(s.litElementVersions??=[]).push("4.2.1");
-
-// src/helpers/entity-filters.js
-
-/* ───────────── label da mostrare sui chip ───────────── */
-const FILTER_LABELS = {
-  presence: 'Presenza',
-  motion: 'Movimento',
-  occupancy: 'Occupazione',
-  light: 'Luce',
-  switch: 'Switch',
-  fan: 'Ventola',
-};
-
-/* ───────────── filtri di sezione ───────────── */
-const FILTERS = {
-  /**
-   * Presence (ID) – filtra per device_class o dominio
-   * @param {string[]} cats  categorie selezionate nei chip
-   */
-  presence: (cats = []) => ({
-    includeDomains: ['binary_sensor', 'light', 'switch', 'fan'],
-    entityFilter: (id, hass) => {
-      if (!cats.length) return false;
-      const [domain] = id.split('.');
-      if (domain === 'binary_sensor') {
-        const dc = hass.states[id]?.attributes?.device_class ?? '';
-        return cats.includes(dc);
-      }
-      return cats.includes(domain);
-    },
-  }),
-
-  /* …eventuali altri filtri (sensor, alert, ecc.)… */
-};
-
-/* ───────────── funzione che trova entità in una certa area ───────────── */
-function entitiesInArea(hass, areaId) {
-  if (!hass?.states || !areaId) return [];
-
-  // 1) registry delle entità (area_id diretto)
-  const entReg = hass.entities ?? {};
-  // 2) registry dei device (area_id ereditato dal device)
-  const devReg = hass.devices ?? {};
-
-  return Object.keys(hass.states).filter((eid) => {
-    // controllo entity-registry
-    const ent = entReg[eid];
-    if (ent?.area_id === areaId) return true;
-    // controllo device-registry
-    const devId = ent?.device_id;
-    if (devId && devReg[devId]?.area_id === areaId) return true;
-    // fallback sugli attributi legacy
-    const attr = hass.states[eid]?.attributes ?? {};
-    return attr.area_id === areaId || attr.area === areaId;
-  });
-}
-
-/**
- * Restituisce la lista di entity_id “candidati” per una sezione,
- * applicando:
- *   • filtro per dominio + device_class (da FILTERS)
- *   • filtro per area (se auto-discovery_sections.presence === true)
- *   • filtro per categorie (solo per 'presence', via cats)
- *
- * Usage: candidatesFor(hass, config, 'presence', ['light','motion'])
- */
-function candidatesFor(hass, config, section, cats = []) {
-  if (!hass?.states) return [];
-
-  // scegli il descrittore giusto
-  let desc = null;
-  if (section === 'presence') {
-    desc = FILTERS.presence(cats);
-  }
-  // else if (section==='sensor') … se hai altri filtri
-
-  if (!desc) return [];
-
-  // 1) filtro per dominio
-  const byDomain = Object.keys(hass.states).filter((id) =>
-    desc.includeDomains.includes(id.split('.')[0]),
-  );
-
-  // 2) filtro custom (device_class o dominio)
-  const byDesc = byDomain.filter((id) => desc.entityFilter(id, hass));
-
-  // 3) filtro per area (solo se auto-discover è attivo)
-  const autoDisc = config?.auto_discovery_sections?.presence ?? false;
-  if (autoDisc && config?.area) {
-    const inArea = entitiesInArea(hass, config.area);
-    return byDesc.filter((id) => inArea.includes(id));
-  }
-
-  return byDesc;
-}
-
-// src/helpers/auto-discovery.js
-
-const DEBUG$3 = !!window.__BUBBLE_DEBUG__;
-const pickFirstFree = (list, used) => list.find((id) => !used.has(id)) || null;
-
-/* =========================
- *   AUTO-FILL (per sezione)
- * ========================= */
-
-// Sensors: sensor1..sensor6 – riempi solo slot vuoti, rispetta type & area, evita duplicati
-function autoFillSensors(hass, config) {
-  const keys = ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'];
-  const entities = { ...(config.entities || {}) };
-  const used = new Set(keys.map((k) => entities[k]?.entity_id).filter(Boolean));
-
-  for (const k of keys) {
-    const ent = entities[k] || (entities[k] = {});
-    if (ent.entity_id) continue; // non sovrascrivere scelte utente
-    const type = ent.type || '';
-    const list = candidatesFor(hass, config, { section: 'sensor', type });
-    const pick = pickFirstFree(list, used);
-    if (pick) { ent.entity_id = pick; used.add(pick); }
-  }
-  return { ...config, entities };
-}
-
-// Mushrooms: entities1..5 + climate + camera – priorità al dominio degli slot dedicati
-function autoFillMushrooms(hass, config) {
-  const order = ['climate','camera','entities1','entities2','entities3','entities4','entities5'];
-  const entities = { ...(config.entities || {}) };
-  const used = new Set(order.map((k) => entities[k]?.entity).filter(Boolean));
-  const all = candidatesFor(hass, config, 'mushroom');
-
-  // slot dedicati
-  const climate = entities.climate || (entities.climate = {});
-  if (!climate.entity) {
-    const pick = all.find((id) => id.startsWith('climate.') && !used.has(id));
-    if (pick) { climate.entity = pick; used.add(pick); }
-  }
-  const camera = entities.camera || (entities.camera = {});
-  if (!camera.entity) {
-    const pick = all.find((id) => id.startsWith('camera.') && !used.has(id));
-    if (pick) { camera.entity = pick; used.add(pick); }
-  }
-  // slot generici
-  for (const k of ['entities1','entities2','entities3','entities4','entities5']) {
-    const ent = entities[k] || (entities[k] = {});
-    if (ent.entity) continue;
-    const pick = pickFirstFree(all, used);
-    if (pick) { ent.entity = pick; used.add(pick); }
-  }
-  return { ...config, entities };
-}
-
-// SubButtons: sub-button1..6 – domini controllabili, filtro area, evita duplicati
-function autoFillSubButtons(hass, config) {
-  const keys = ['sub-button1','sub-button2','sub-button3','sub-button4','sub-button5','sub-button6'];
-  const entities = { ...(config.entities || {}) };
-  const used = new Set(keys.map((k) => entities[k]?.entity).filter(Boolean));
-  const list = candidatesFor(hass, config, 'subbutton');
-
-  for (const k of keys) {
-    const ent = entities[k] || (entities[k] = {});
-    if (ent.entity) continue;
-    const pick = pickFirstFree(list, used);
-    if (pick) { ent.entity = pick; used.add(pick); }
-  }
-  return { ...config, entities };
-}
-
-// Presence (Room): presence entity – scegli se vuoto, filtra per domini ammessi + device_class + area
-function presenceCandidatesLocal(hass, config) {
-  if (!hass || !hass.states) return [];
-  const allowed = new Set([
-    'person','device_tracker','binary_sensor','light','switch',
-    'media_player','fan','humidifier','lock','input_boolean','scene'
-  ]);
-
-  let ids = Object.keys(hass.states).filter((id) => allowed.has(id.split('.')[0]));
-  // binary_sensor: solo motion/occupancy/presence
-  ids = ids.filter((id) => {
-    const domain = id.split('.')[0];
-    if (domain !== 'binary_sensor') return true;
-    const dc = hass.states[id]?.attributes?.device_class;
-    return ['motion','occupancy','presence'].includes(dc || '');
-  });
-
-  // filtro Area
-  const area = config?.area;
-  if (area) {
-    const inArea = ids.filter((id) => {
-      const st = hass.states[id];
-      const a1 = st?.attributes?.area_id;
-      const a2 = st?.attributes?.area;
-      return a1 === area || a2 === area;
-    });
-    if (inArea.length) ids = inArea;
-  }
-
-  // mantieni selezionata anche se fuori filtro
-  const selected = config?.entities?.presence?.entity || config?.presence_entity;
-  if (selected && !ids.includes(selected)) ids.push(selected);
-
-  if (DEBUG$3) console.info('[AutoDiscovery][presence candidates]', { area, count: ids.length, sample: ids.slice(0,8) });
-  return ids;
-}
-
-function autoFillPresence(hass, config) {
-  const entities = { ...(config.entities || {}) };
-  const ent = entities.presence || (entities.presence = {});
-  if (!ent.entity) {
-    // Se hai aggiunto 'presence' in entity-filters, puoi usare: candidatesFor(hass, config, 'presence')
-    const list = presenceCandidatesLocal(hass, config);
-    if (list.length) ent.entity = list[0];
-  }
-  return { ...config, entities };
-}
-
-/* =========================
- *           RESET
- * ========================= */
-
-function resetSensors(config) {
-  const entities = { ...(config.entities || {}) };
-  ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'].forEach((k) => delete entities[k]);
-  return { ...config, entities };
-}
-function resetMushrooms(config) {
-  const entities = { ...(config.entities || {}) };
-  ['entities1','entities2','entities3','entities4','entities5','climate','camera'].forEach((k) => delete entities[k]);
-  return { ...config, entities };
-}
-function resetSubButtons(config) {
-  const entities = { ...(config.entities || {}) };
-  ['sub-button1','sub-button2','sub-button3','sub-button4','sub-button5','sub-button6'].forEach((k) => delete entities[k]);
-  return { ...config, entities };
-}
-function resetRoom(config) {
-  const entities = { ...(config.entities || {}) };
-  delete entities.presence;                 // pulisci presence
-  const next = { ...config, entities };
-  delete next.name;                         // pulisci campi base Room
-  delete next.icon;
-  delete next.area;
-  delete next.presence_entity;             // legacy
-  return next;
-}
-
-/* =========================
- *   TRIGGER CENTRALE
- * ========================= */
-function maybeAutoDiscover(hass, config, changedProp, debug = false) {
-  const ad = config.auto_discovery_sections || {};
-  const isAreaChange = changedProp === 'area';
-  const isADChange   = changedProp && changedProp.startsWith('auto_discovery_sections.');
-  if (!isAreaChange && !isADChange) return config;
-
-  let next = config;
-  if (ad.sensor)    next = autoFillSensors(hass, next);
-  if (ad.mushroom)  next = autoFillMushrooms(hass, next);
-  if (ad.subbutton) next = autoFillSubButtons(hass, next);
-  if (ad.presence)  next = autoFillPresence(hass, next);
-
-  if (debug && typeof window !== 'undefined' && window.__BUBBLE_DEBUG__) {
-    console.info('[AutoDiscovery] applied after', changedProp, { sections: ad });
-  }
-  return next;
-}
-
-// src/helpers/filter-chips.js
-
-/**
- * <filter-chips>
- *  • value   = array di categorie attive
- *  • allowed = array di tutte le categorie possibili
- *  Emesso: "value-changed" con detail.value = nuovo array.
- */
-class FilterChips extends i {
-  static properties = {
-    value:   { type: Array },
-    allowed: { type: Array },
-  };
-
-  constructor() {
-    super();
-    this.value   = [];
-    this.allowed = [];
-  }
-
-  static styles = i$3`
+ */class oe extends ${constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){const e=super.createRenderRoot();return this.renderOptions.renderBefore??=e.firstChild,e}update(e){const t=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(e),this._$Do=((e,t,i)=>{const s=i?.renderBefore??t;let n=s._$litPart$;if(void 0===n){const e=i?.renderBefore??null;s._$litPart$=n=new Q(t.insertBefore(P(),e),e,void 0,i??{})}return n._$AI(e),n})(t,this.renderRoot,this.renderOptions)}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0)}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1)}render(){return L}}oe._$litElement$=!0,oe.finalized=!0,ne.litElementHydrateSupport?.({LitElement:oe});const ae=ne.litElementPolyfillSupport;ae?.({LitElement:oe}),(ne.litElementVersions??=[]).push("4.2.1");const re={presence:"Presenza",motion:"Movimento",occupancy:"Occupazione",light:"Luce",switch:"Switch",fan:"Ventola"},le=(e=[])=>({includeDomains:["binary_sensor","light","switch","fan"],entityFilter:(t,i)=>{if(!e.length)return!1;const[s]=t.split(".");if("binary_sensor"===s){const s=i.states[t]?.attributes?.device_class??"";return e.includes(s)}return e.includes(s)}});function ce(e,t,i,s=[]){if(!e?.states)return[];let n=null;if("presence"===i&&(n=le(s)),!n)return[];const o=Object.keys(e.states).filter(e=>n.includeDomains.includes(e.split(".")[0])).filter(t=>n.entityFilter(t,e));if((t?.auto_discovery_sections?.presence??!1)&&t?.area){const i=function(e,t){if(!e?.states||!t)return[];const i=e.entities??{},s=e.devices??{};return Object.keys(e.states).filter(n=>{const o=i[n];if(o?.area_id===t)return!0;const a=o?.device_id;if(a&&s[a]?.area_id===t)return!0;const r=e.states[n]?.attributes??{};return r.area_id===t||r.area===t})}(e,t.area);return o.filter(e=>i.includes(e))}return o}const pe=!!window.__BUBBLE_DEBUG__,de=(e,t)=>e.find(e=>!t.has(e))||null;function he(e,t){const i={...t.entities||{}},s=i.presence||(i.presence={});if(!s.entity){const i=function(e,t){if(!e||!e.states)return[];const i=new Set(["person","device_tracker","binary_sensor","light","switch","media_player","fan","humidifier","lock","input_boolean","scene"]);let s=Object.keys(e.states).filter(e=>i.has(e.split(".")[0]));s=s.filter(t=>{if("binary_sensor"!==t.split(".")[0])return!0;const i=e.states[t]?.attributes?.device_class;return["motion","occupancy","presence"].includes(i||"")});const n=t?.area;if(n){const t=s.filter(t=>{const i=e.states[t],s=i?.attributes?.area_id,o=i?.attributes?.area;return s===n||o===n});t.length&&(s=t)}const o=t?.entities?.presence?.entity||t?.presence_entity;return o&&!s.includes(o)&&s.push(o),pe&&console.info("[AutoDiscovery][presence candidates]",{area:n,count:s.length,sample:s.slice(0,8)}),s}(e,t);i.length&&(s.entity=i[0])}return{...t,entities:i}}function ue(e,t,i,s=!1){const n=t.auto_discovery_sections||{},o="area"===i,a=i&&i.startsWith("auto_discovery_sections.");if(!o&&!a)return t;let r=t;return n.sensor&&(r=function(e,t){const i=["sensor1","sensor2","sensor3","sensor4","sensor5","sensor6"],s={...t.entities||{}},n=new Set(i.map(e=>s[e]?.entity_id).filter(Boolean));for(const o of i){const i=s[o]||(s[o]={});if(i.entity_id)continue;const a=ce(e,t,{section:"sensor",type:i.type||""}),r=de(a,n);r&&(i.entity_id=r,n.add(r))}return{...t,entities:s}}(e,r)),n.mushroom&&(r=function(e,t){const i={...t.entities||{}},s=new Set(["climate","camera","entities1","entities2","entities3","entities4","entities5"].map(e=>i[e]?.entity).filter(Boolean)),n=ce(e,t,"mushroom"),o=i.climate||(i.climate={});if(!o.entity){const e=n.find(e=>e.startsWith("climate.")&&!s.has(e));e&&(o.entity=e,s.add(e))}const a=i.camera||(i.camera={});if(!a.entity){const e=n.find(e=>e.startsWith("camera.")&&!s.has(e));e&&(a.entity=e,s.add(e))}for(const e of["entities1","entities2","entities3","entities4","entities5"]){const t=i[e]||(i[e]={});if(t.entity)continue;const o=de(n,s);o&&(t.entity=o,s.add(o))}return{...t,entities:i}}(e,r)),n.subbutton&&(r=function(e,t){const i=["sub-button1","sub-button2","sub-button3","sub-button4","sub-button5","sub-button6"],s={...t.entities||{}},n=new Set(i.map(e=>s[e]?.entity).filter(Boolean)),o=ce(e,t,"subbutton");for(const e of i){const t=s[e]||(s[e]={});if(t.entity)continue;const i=de(o,n);i&&(t.entity=i,n.add(i))}return{...t,entities:s}}(e,r)),n.presence&&(r=he(e,r)),s&&"undefined"!=typeof window&&window.__BUBBLE_DEBUG__&&console.info("[AutoDiscovery] applied after",i,{sections:n}),r}class be extends oe{static properties={value:{type:Array},allowed:{type:Array}};constructor(){super(),this.value=[],this.allowed=[]}static styles=o`
     mwc-chip {
       margin: 4px;
     }
-  `;
-
-  _toggle(cat) {
-    const set = new Set(this.value);
-    set.has(cat) ? set.delete(cat) : set.add(cat);
-    this.dispatchEvent(new CustomEvent('value-changed', {
-      detail: { value: Array.from(set) },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  render() {
-    if (!this.allowed?.length) {
-      return x``;
-    }
-    return x`
+  `;_toggle(e){const t=new Set(this.value);t.has(e)?t.delete(e):t.add(e),this.dispatchEvent(new CustomEvent("value-changed",{detail:{value:Array.from(t)},bubbles:!0,composed:!0}))}render(){return this.allowed?.length?D`
       <mwc-chip-set choice>
-        ${this.allowed.map(cat => x`
+        ${this.allowed.map(e=>D`
           <mwc-chip
-            .label=${FILTER_LABELS[cat] ?? cat}
-            ?selected=${this.value.includes(cat)}
-            @click=${() => this._toggle(cat)}
+            .label=${re[e]??e}
+            ?selected=${this.value.includes(e)}
+            @click=${()=>this._toggle(e)}
           ></mwc-chip>
         `)}
       </mwc-chip-set>
-    `;
-  }
-}
-
-customElements.define('filter-chips', FilterChips);
-
-// src/panels/RoomPanel.js
-
-const PRESENCE_CATS = [
-  'presence',   // binary_sensor.device_class = presence
-  'motion',     // binary_sensor.device_class = motion
-  'occupancy',  // binary_sensor.device_class = occupancy
-  'light',      // dominio light.*
-  'switch',     // dominio switch.*
-  'fan',        // dominio fan.*
-];
-
-class RoomPanel extends i {
-  static properties = {
-    hass:      { type: Object },
-    config:    { type: Object },
-    _expanded: { type: Boolean },
-  };
-
-  constructor() {
-    super();
-    this.hass      = {};
-    this.config    = {};
-    this._expanded = false;
-  }
-
-  updated(changed) {
-    if (changed.has('config') || changed.has('hass')) {
-      maybeAutoDiscover(this.hass, this.config, 'area');
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
-    }
-  }
-
-  static styles = i$3`
+    `:D``}}customElements.define("filter-chips",be);const me=["presence","motion","occupancy","light","switch","fan"];class ge extends oe{static properties={hass:{type:Object},config:{type:Object},_expanded:{type:Boolean}};constructor(){super(),this.hass={},this.config={},this._expanded=!1}updated(e){(e.has("config")||e.has("hass"))&&(ue(this.hass,this.config,"area"),ue(this.hass,this.config,"auto_discovery_sections.presence"))}static styles=o`
     :host { display: block; }
 
     /* Glass panel */
@@ -508,23 +162,11 @@ class RoomPanel extends i {
     vaadin-combo-box-item::part(content) {
       color: var(--primary-text-color, #eaeef8) !important;
     }
-  `;
-
-  render() {
-    const cfg           = this.config;
-    const area          = cfg.area || '';
-    const name          = cfg.name || '';
-    const icon          = cfg.icon || '';
-    const presValue     = cfg.entities?.presence?.entity || cfg.presence_entity || '';
-    const autoDisc      = cfg.auto_discovery_sections?.presence ?? false;
-    const presFilters   = cfg.presence_filters ?? [...PRESENCE_CATS];
-    const presCandidates = candidatesFor(this.hass, this.config, 'presence', presFilters);
-
-    return x`
+  `;render(){const e=this.config,t=e.area||"",i=e.name||"",s=e.icon||"",n=e.entities?.presence?.entity||e.presence_entity||"",o=e.auto_discovery_sections?.presence??!1,a=e.presence_filters??[...me],r=ce(this.hass,this.config,"presence",a);return D`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
-        @expanded-changed=${e => (this._expanded = e.detail.expanded)}
+        @expanded-changed=${e=>this._expanded=e.detail.expanded}
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
@@ -533,9 +175,8 @@ class RoomPanel extends i {
           <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input
               type="checkbox"
-              .checked=${autoDisc}
-              @change=${e =>
-                this._emit('auto_discovery_sections.presence', e.target.checked)}
+              .checked=${o}
+              @change=${e=>this._emit("auto_discovery_sections.presence",e.target.checked)}
             />
             <span>🔍 Auto-discover Presence</span>
           </label>
@@ -549,16 +190,16 @@ class RoomPanel extends i {
               <label>Room name:</label>
               <input
                 type="text"
-                .value=${name}
-                @input=${e => this._fire('name', e.target.value)}
+                .value=${i}
+                @input=${e=>this._fire("name",e.target.value)}
               />
             </div>
             <div class="input-group">
               <label>Area:</label>
               <ha-selector
                 .hass=${this.hass}
-                .value=${area}
-                .selector=${{ area: {} }}
+                .value=${t}
+                .selector=${{area:{}}}
                 @value-changed=${this._onAreaChanged}
               ></ha-selector>
             </div>
@@ -573,18 +214,18 @@ class RoomPanel extends i {
               <label>Room Icon:</label>
               <ha-icon-picker
                 .hass=${this.hass}
-                .value=${icon}
+                .value=${s}
                 allow-custom-icon
-                @value-changed=${e => this._fire('icon', e.detail.value)}
+                @value-changed=${e=>this._fire("icon",e.detail.value)}
               ></ha-icon-picker>
             </div>
 
             <div class="input-group">
               <label>Filtra per categoria:</label>
               <filter-chips
-                .value=${presFilters}
-                .allowed=${PRESENCE_CATS}
-                @value-changed=${e => this._fire('presence_filters', e.detail.value)}
+                .value=${a}
+                .allowed=${me}
+                @value-changed=${e=>this._fire("presence_filters",e.detail.value)}
               ></filter-chips>
             </div>
 
@@ -592,21 +233,15 @@ class RoomPanel extends i {
               <label>Presence (ID):</label>
               <ha-selector
                 .hass=${this.hass}
-                .value=${presValue}
-                .selector=${{
-                  entity: {
-                    multiple: false,
-                    include_entities: presCandidates
-                  }
-                }}
+                .value=${n}
+                .selector=${{entity:{multiple:!1,include_entities:r}}}
                 allow-custom-entity
-                @value-changed=${e =>
-                  this._emit('entities.presence.entity', e.detail.value)}
+                @value-changed=${e=>this._emit("entities.presence.entity",e.detail.value)}
               ></ha-selector>
             </div>
 
-            ${this._renderActions('tap')}
-            ${this._renderActions('hold')}
+            ${this._renderActions("tap")}
+            ${this._renderActions("hold")}
           </div>
         </div>
 
@@ -615,106 +250,43 @@ class RoomPanel extends i {
           <button class="reset-button" @click=${this._resetRoom}>🧹 Reset Room</button>
         </div>
       </ha-expansion-panel>
-    `;
-  }
-
-  // forza auto-discover quando cambia area
-  _onAreaChanged = (e) => {
-    const v = e.detail.value;
-    this._fire('area', v);
-    if (v) {
-      this._emit('auto_discovery_sections.presence', true);
-    }
-  };
-
-  _renderActions(type) {
-    const cfg     = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle','more-info','navigate','call-service','none'];
-    return x`
+    `}_onAreaChanged=e=>{const t=e.detail.value;this._fire("area",t),t&&this._emit("auto_discovery_sections.presence",!0)};_renderActions(e){const t=this.config?.[`${e}_action`]||{};return D`
       <div class="input-group">
-        <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
+        <label>${"tap"===e?"Tap Action":"Hold Action"}</label>
         <div class="pill-group">
-          ${actions.map(a => x`
+          ${["toggle","more-info","navigate","call-service","none"].map(i=>D`
             <paper-button
-              class="pill-button ${cfg.action === a ? 'active' : ''}"
-              @click=${() => this._fire(`${type}_action.action`, a)}
-            >${a}</paper-button>
+              class="pill-button ${t.action===i?"active":""}"
+              @click=${()=>this._fire(`${e}_action.action`,i)}
+            >${i}</paper-button>
           `)}
         </div>
 
-        ${cfg.action === 'navigate' ? x`
+        ${"navigate"===t.action?D`
           <input
             type="text"
             placeholder="Path"
-            .value=${cfg.navigation_path || ''}
-            @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
+            .value=${t.navigation_path||""}
+            @input=${t=>this._fire(`${e}_action.navigation_path`,t.target.value)}
           />
-        ` : ''}
+        `:""}
 
-        ${cfg.action === 'call-service' ? x`
+        ${"call-service"===t.action?D`
           <input
             type="text"
             placeholder="service: domain.service_name"
-            .value=${cfg.service || ''}
-            @input=${e => this._fire(`${type}_action.service`, e.target.value)}
+            .value=${t.service||""}
+            @input=${t=>this._fire(`${e}_action.service`,t.target.value)}
           />
           <input
             type="text"
             placeholder='service_data (JSON)'
-            .value=${cfg.service_data ? JSON.stringify(cfg.service_data) : ''}
-            @input=${e => {
-              let v = e.target.value;
-              try { v = v ? JSON.parse(v) : undefined; } catch { v = undefined; }
-              this._fire(`${type}_action.service_data`, v);
-            }}
+            .value=${t.service_data?JSON.stringify(t.service_data):""}
+            @input=${t=>{let i=t.target.value;try{i=i?JSON.parse(i):void 0}catch{i=void 0}this._fire(`${e}_action.service_data`,i)}}
           />
-        ` : ''}
+        `:""}
       </div>
-    `;
-  }
-
-  _resetRoom() {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' }},
-      bubbles: true, composed: true,
-    }));
-  }
-
-  _emit(prop, val) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val }, bubbles: true, composed: true,
-    }));
-  }
-  _fire(prop, val) { this._emit(prop, val); }
-}
-
-customElements.define('room-panel', RoomPanel);
-
-// src/panels/SensorsPanel.js
-// Se hai un mapping tipi/etichette, puoi importarlo. Qui rendo opzionale.
-// import { SENSOR_TYPES } from '../helpers/sensor-mapping.js';
-
-class SensorsPanel extends i {
-  static properties = {
-    hass: { type: Object },
-    config: { type: Object },
-    _expanded: { type: Boolean },
-    _expandedSensors: { type: Array },
-  };
-
-  constructor() {
-    super();
-    
-    if (!customElements.get('ha-entity-picker')) {
-      customElements.whenDefined('ha-entity-picker').then(() => this.requestUpdate());
-    }
-this.hass = {};
-    this.config = {};
-    this._expanded = false;
-    this._expandedSensors = Array(6).fill(false);
-  }
-
-  static styles = i$3`
+    `}_resetRoom(){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"__panel_cmd__",val:{cmd:"reset",section:"room"}},bubbles:!0,composed:!0}))}_emit(e,t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:e,val:t},bubbles:!0,composed:!0}))}_fire(e,t){this._emit(e,t)}}customElements.define("room-panel",ge);class fe extends oe{static properties={hass:{type:Object},config:{type:Object},_expanded:{type:Boolean},_expandedSensors:{type:Array}};constructor(){super(),customElements.get("ha-entity-picker")||customElements.whenDefined("ha-entity-picker").then(()=>this.requestUpdate()),this.hass={},this.config={},this._expanded=!1,this._expandedSensors=Array(6).fill(!1)}static styles=o`
     :host { display:block; }
     .glass-panel{
       margin:0!important; width:100%; box-sizing:border-box; border-radius:40px;
@@ -767,62 +339,40 @@ ha-entity-picker::part(text-field),
 ha-entity-picker::part(combobox) {
   min-height: 56px;
 }
-`;
-
-  render() {
-    const ad = this.config?.auto_discovery_sections?.sensor || false;
-    const keys = ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'];
-
-    return x`
+`;render(){const e=this.config?.auto_discovery_sections?.sensor||!1;return D`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
-        @expanded-changed=${(e) => (this._expanded = e.detail.expanded)}
+        @expanded-changed=${e=>this._expanded=e.detail.expanded}
       >
         <div slot="header" class="glass-header">🌡️ Sensors</div>
 
         <div class="input-group" style="margin:0 16px 14px;">
           <label style="display:flex;align-items:center;gap:8px;">
             <input type="checkbox"
-              .checked=${ad}
-              @change=${(e) => this._fire('auto_discovery_sections.sensor', e.target.checked)}>
+              .checked=${e}
+              @change=${e=>this._fire("auto_discovery_sections.sensor",e.target.checked)}>
             <span>🪄 Auto-discovery</span>
           </label>
         </div>
 
-        ${keys.map((key, i) => this._renderSingle(i, key))}
+        ${["sensor1","sensor2","sensor3","sensor4","sensor5","sensor6"].map((e,t)=>this._renderSingle(t,e))}
 
         <div style="text-align:center; margin-top:1.2em; padding-bottom:16px;">
           <button class="reset-button" @click=${this._resetAll}>🧹 Reset Sensors</button>
         </div>
       </ha-expansion-panel>
-    `;
-  }
-
-  _renderSingle(index, key) {
-    const ent = this.config?.entities?.[key] || {};
-    const expanded = !!this._expandedSensors[index];
-    const label = ent.type ? `Sensor ${index + 1} – ${ent.type}` : `Sensor ${index + 1}`;
-
-    // path helper (evita backtick annidati nel template!)
-    const pathType = `entities.${key}.type`;
-    const pathEntity = `entities.${key}.entity_id`;
-    const typeValue = ent.type || '';
-    const entityValue = ent.entity_id || '';
-
-    const includeList = candidatesFor(this.hass, this.config, { section: 'sensor', type: typeValue });
-
-    return x`
-      <div class="mini-pill ${expanded ? 'expanded' : ''}">
-        <div class="mini-pill-header" @click=${() => this._toggleOne(index)}>
-          ${label}
-          <span class="chevron">${expanded ? '▼' : '▶'}</span>
+    `}_renderSingle(e,t){const i=this.config?.entities?.[t]||{},s=!!this._expandedSensors[e],n=i.type?`Sensor ${e+1} – ${i.type}`:`Sensor ${e+1}`,o=`entities.${t}.type`,a=`entities.${t}.entity_id`,r=i.type||"",l=i.entity_id||"",c=ce(this.hass,this.config,{section:"sensor",type:r});return D`
+      <div class="mini-pill ${s?"expanded":""}">
+        <div class="mini-pill-header" @click=${()=>this._toggleOne(e)}>
+          ${n}
+          <span class="chevron">${s?"▼":"▶"}</span>
         </div>
-        ${expanded ? x`
+        ${s?D`
           <div class="mini-pill-content">
             <div class="input-group">
               <label>Sensor Type</label>
-              <select .value=${typeValue} @change=${(e) => this._fire(pathType, e.target.value)}>
+              <select .value=${r} @change=${e=>this._fire(o,e.target.value)}>
                 <option value="">-- none --</option>
                 <option value="temperature">🌡️ Temperature</option>
                 <option value="humidity">💧 Humidity</option>
@@ -835,92 +385,26 @@ ha-entity-picker::part(combobox) {
               <label>Entity</label>
               <ha-entity-picker
                 .hass=${this.hass}
-                .value=${entityValue}
-                .includeEntities=${includeList}
+                .value=${l}
+                .includeEntities=${c}
                 allow-custom-entity
-                @value-changed=${(e) => this._fire(pathEntity, e.detail.value)}
+                @value-changed=${e=>this._fire(a,e.detail.value)}
               ></ha-entity-picker>
             </div>
 
-            ${this._renderUnit(index, typeValue, ent.unit)}
+            ${this._renderUnit(e,r,i.unit)}
           </div>
-        ` : ''}
+        `:""}
       </div>
-    `;
-  }
-
-  _renderUnit(index, type, currentUnit) {
-    const path = `entities.sensor${index + 1}.unit`;
-    let units = [];
-    if (type === 'temperature') units = ['°C', '°F', 'K'];
-    else if (type === 'humidity') units = ['%'];
-    else if (type === 'pressure') units = ['hPa', 'mbar', 'bar', 'psi'];
-
-    return x`
+    `}_renderUnit(e,t,i){const s=`entities.sensor${e+1}.unit`;let n=[];return"temperature"===t?n=["°C","°F","K"]:"humidity"===t?n=["%"]:"pressure"===t&&(n=["hPa","mbar","bar","psi"]),D`
       <div class="input-group">
         <label>Unit</label>
-        <select .value=${currentUnit || (units[0] || '')}
-                @change=${(e) => this._fire(path, e.target.value)}>
-          ${units.map((u) => x`<option value=${u}>${u}</option>`)}
+        <select .value=${i||n[0]||""}
+                @change=${e=>this._fire(s,e.target.value)}>
+          ${n.map(e=>D`<option value=${e}>${e}</option>`)}
         </select>
       </div>
-    `;
-  }
-
-  /* ---------- helpers ---------- */
-  _toggleOne(i) {
-    this._expandedSensors = this._expandedSensors.map((_, j) => j === i);
-    this.requestUpdate();
-  }
-
-  _resetAll() {
-    // reset centralizzato gestito dall'editor
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'sensor' } },
-      bubbles: true, composed: true,
-    }));
-  }
-
-  _fire(prop, val) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val }, bubbles: true, composed: true,
-    }));
-  }
-}
-
-customElements.define('sensors-panel', SensorsPanel);
-
-const DEBUG$2 = !!window.__BUBBLE_DEBUG__;
-
-class MushroomsPanel extends i {
-  static properties = {
-    hass: { type: Object },
-    config: { type: Object },
-    _expanded: { type: Boolean },
-    _expandedItems: { type: Array },
-  };
-
-  constructor() {
-    super();
-    
-    if (!customElements.get('ha-entity-picker')) {
-      customElements.whenDefined('ha-entity-picker').then(() => this.requestUpdate());
-    }
-this.hass = {};
-    this.config = {};
-    this._expanded = false;
-    this._expandedItems = Array(7).fill(false); // entities1..5 + climate + camera
-  }
-
-  setConfig(config) {
-    this.config = config;
-  }
-
-  getConfig() {
-    return this.config;
-  }
-
-  static styles = i$3`
+    `}_toggleOne(e){this._expandedSensors=this._expandedSensors.map((t,i)=>i===e),this.requestUpdate()}_resetAll(){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"__panel_cmd__",val:{cmd:"reset",section:"sensor"}},bubbles:!0,composed:!0}))}_fire(e,t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:e,val:t},bubbles:!0,composed:!0}))}}customElements.define("sensors-panel",fe);const ve=!!window.__BUBBLE_DEBUG__;class xe extends oe{static properties={hass:{type:Object},config:{type:Object},_expanded:{type:Boolean},_expandedItems:{type:Array}};constructor(){super(),customElements.get("ha-entity-picker")||customElements.whenDefined("ha-entity-picker").then(()=>this.requestUpdate()),this.hass={},this.config={},this._expanded=!1,this._expandedItems=Array(7).fill(!1)}setConfig(e){this.config=e}getConfig(){return this.config}static styles=o`
     :host { display: block; }
     .glass-panel {
       margin: 0!important;
@@ -1074,65 +558,52 @@ ha-entity-picker::part(text-field),
 ha-entity-picker::part(combobox) {
   min-height: 56px;
 }
-`;
-
-  render() {
-    const cfg = this.config;
-    return x`
+`;render(){const e=this.config;return D`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
-        @expanded-changed=${(e) => (this._expanded = e.detail.expanded)}
+        @expanded-changed=${e=>this._expanded=e.detail.expanded}
       >
         <div slot="header" class="glass-header">🍄 Mushroom Entities</div>
 
         <div class="glass-content">
           <div
             class="autodiscover-box"
-            @click=${() => this._fire('auto_discovery_sections.mushroom', !cfg.auto_discovery_sections?.mushroom)}
+            @click=${()=>this._fire("auto_discovery_sections.mushroom",!e.auto_discovery_sections?.mushroom)}
           >
             <label>
               <input
                 type="checkbox"
-                .checked=${cfg.auto_discovery_sections?.mushroom || false}
-                @change=${(e) => this._fire('auto_discovery_sections.mushroom', e.target.checked)}
-                @click=${(e) => e.stopPropagation()}
+                .checked=${e.auto_discovery_sections?.mushroom||!1}
+                @change=${e=>this._fire("auto_discovery_sections.mushroom",e.target.checked)}
+                @click=${e=>e.stopPropagation()}
               />
               <span>🪄 Auto-discovery</span>
             </label>
           </div>
 
-          ${['entities1','entities2','entities3','entities4','entities5','climate','camera'].map(
-            (key, i) => this._renderSingle(i, key)
-          )}
+          ${["entities1","entities2","entities3","entities4","entities5","climate","camera"].map((e,t)=>this._renderSingle(t,e))}
 
           <button class="reset-button" @click=${this._resetAll}>🧹 Reset Mushroom Entities</button>
         </div>
       </ha-expansion-panel>
-    `;
-  }
-
-  _renderSingle(index, key) {
-    const item = this.config.entities?.[key] || {};
-    const expanded = this._expandedItems[index];
-
-    return x`
-      <div class="mini-pill ${expanded ? 'expanded' : ''}" @click=${() => this._toggleOne(index)}>
+    `}_renderSingle(e,t){const i=this.config.entities?.[t]||{},s=this._expandedItems[e];return D`
+      <div class="mini-pill ${s?"expanded":""}" @click=${()=>this._toggleOne(e)}>
         <div class="mini-pill-header">
-          ${item.icon || '🔘'} ${item.label || 'Entity ' + (index + 1)}
-          <span class="chevron">${expanded ? '▼' : '▶'}</span>
+          ${i.icon||"🔘"} ${i.label||"Entity "+(e+1)}
+          <span class="chevron">${s?"▼":"▶"}</span>
         </div>
 
-        ${expanded ? x`
+        ${s?D`
           <div class="mini-pill-content">
             <div class="input-group">
               <label>Entity</label>
               <ha-entity-picker
                 .hass=${this.hass}
                 .includeEntities=${this._getMushroomCandidates()}
-                .value=${item.entity || ''}
+                .value=${i.entity||""}
                 allow-custom-entity
-                @value-changed=${(e) => this._fire('entities.' + key + '.entity', e.detail.value)}
+                @value-changed=${e=>this._fire("entities."+t+".entity",e.detail.value)}
               ></ha-entity-picker>
             </div>
 
@@ -1140,115 +611,39 @@ ha-entity-picker::part(combobox) {
               <label>Icon</label>
               <ha-icon-picker
                 .hass=${this.hass}
-                .value=${item.icon || ''}
+                .value=${i.icon||""}
                 allow-custom-icon
-                @value-changed=${(e) => this._fire('entities.' + key + '.icon', e.detail.value)}
+                @value-changed=${e=>this._fire("entities."+t+".icon",e.detail.value)}
               ></ha-icon-picker>
             </div>
 
-            ${this._renderActions('tap', key)}
-            ${this._renderActions('hold', key)}
+            ${this._renderActions("tap",t)}
+            ${this._renderActions("hold",t)}
           </div>
-        ` : ''}
+        `:""}
       </div>
-    `;
-  }
-
-  _toggleOne(idx) {
-    this._expandedItems = this._expandedItems.map((_, i) => i === idx);
-    this.requestUpdate();
-  }
-
-  _renderActions(actionType, key) {
-    const cfg = this.config.entities?.[key] || {};
-    const actCfg = cfg[actionType + '_action'] || {};
-    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
-    return x`
+    `}_toggleOne(e){this._expandedItems=this._expandedItems.map((t,i)=>i===e),this.requestUpdate()}_renderActions(e,t){const i=(this.config.entities?.[t]||{})[e+"_action"]||{};return D`
       <div class="input-group">
-        <label>${actionType === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
+        <label>${"tap"===e?"Tap Action":"Hold Action"}</label>
         <div class="pill-group">
-          ${actions.map((a) => x`
+          ${["toggle","more-info","navigate","call-service","none"].map(s=>D`
             <paper-button
-              class="pill-button ${actCfg.action === a ? 'active' : ''}"
-              @click=${() => this._fire('entities.' + key + '.' + actionType + '_action.action', a)}
-            >${a}</paper-button>
+              class="pill-button ${i.action===s?"active":""}"
+              @click=${()=>this._fire("entities."+t+"."+e+"_action.action",s)}
+            >${s}</paper-button>
           `)}
         </div>
 
-        ${actCfg.action === 'navigate' ? x`
+        ${"navigate"===i.action?D`
           <input
             type="text"
             placeholder="Path"
-            .value=${actCfg.navigation_path || ''}
-            @input=${(e) => this._fire('entities.' + key + '.' + actionType + '_action.navigation_path', e.target.value)}
+            .value=${i.navigation_path||""}
+            @input=${i=>this._fire("entities."+t+"."+e+"_action.navigation_path",i.target.value)}
           />
-        ` : ''}
+        `:""}
       </div>
-    `;
-  }
-
-  _fire(prop, value) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val: value },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  _resetAll() {
-  this.dispatchEvent(new CustomEvent('panel-changed', {
-    detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'mushroom' } },
-    bubbles: true, composed: true,
-  }));
-}
-// --- Wrapper locale: calcola candidati + log ---
-  _getMushroomCandidates() {
-    // Usa la logica centralizzata, ma aggiunge log locale (Opzione A)
-    const list = candidatesFor(this.hass, this.config, 'mushroom');
-    if (DEBUG$2) {
-      console.info('[MushroomsPanel][Candidates]', {
-        area: this.config?.area || null,
-        count: list.length,
-        sample: list.slice(0, 8),
-      });
-    }
-    return list;
-  }
-}
-
-customElements.define('mushrooms-panel', MushroomsPanel);
-
-const DEBUG$1 = !!window.__BUBBLE_DEBUG__;
-
-class SubButtonsPanel extends i {
-  static properties = {
-    hass: { type: Object },
-    config: { type: Object },
-    _expanded: { type: Boolean },
-    _expandedItems: { type: Array },
-  };
-  
-  constructor() {
-    super();
-    
-    if (!customElements.get('ha-entity-picker')) {
-      customElements.whenDefined('ha-entity-picker').then(() => this.requestUpdate());
-    }
-this.hass = {};
-    this.config = {};
-    this._expanded = false;
-    this._expandedItems = Array(6).fill(false); // sub-button1..6
-  }
-  
-  setConfig(config) {
-    this.config = config;
-  }
-  
-  getConfig() {
-    return this.config;
-  }
-  
-  static styles = i$3`
+    `}_fire(e,t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:e,val:t},bubbles:!0,composed:!0}))}_resetAll(){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"__panel_cmd__",val:{cmd:"reset",section:"mushroom"}},bubbles:!0,composed:!0}))}_getMushroomCandidates(){const e=ce(this.hass,this.config,"mushroom");return ve&&console.info("[MushroomsPanel][Candidates]",{area:this.config?.area||null,count:e.length,sample:e.slice(0,8)}),e}}customElements.define("mushrooms-panel",xe);const _e=!!window.__BUBBLE_DEBUG__;class $e extends oe{static properties={hass:{type:Object},config:{type:Object},_expanded:{type:Boolean},_expandedItems:{type:Array}};constructor(){super(),customElements.get("ha-entity-picker")||customElements.whenDefined("ha-entity-picker").then(()=>this.requestUpdate()),this.hass={},this.config={},this._expanded=!1,this._expandedItems=Array(6).fill(!1)}setConfig(e){this.config=e}getConfig(){return this.config}static styles=o`
     :host { display: block; }
     .glass-panel {
       margin: 0!important;
@@ -1348,48 +743,36 @@ ha-entity-picker::part(text-field),
 ha-entity-picker::part(combobox) {
   min-height: 56px;
 }
-`;
-  
-  render() {
-    const keys = ['sub-button1', 'sub-button2', 'sub-button3', 'sub-button4', 'sub-button5', 'sub-button6'];
-    
-    return x`
+`;render(){return D`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
-        @expanded-changed=${(e) => (this._expanded = e.detail.expanded)}
+        @expanded-changed=${e=>this._expanded=e.detail.expanded}
       >
         <div slot="header" class="glass-header">🔘 Sub Buttons</div>
 
         <div class="glass-content">
-          ${keys.map((key, i) => this._renderSingle(i, key))}
+          ${["sub-button1","sub-button2","sub-button3","sub-button4","sub-button5","sub-button6"].map((e,t)=>this._renderSingle(t,e))}
           <button class="reset-button" @click=${this._resetAll}>🧹 Reset Sub Buttons</button>
         </div>
       </ha-expansion-panel>
-    `;
-  }
-  
-  _renderSingle(index, key) {
-    const item = this.config.entities?.[key] || {};
-    const expanded = this._expandedItems[index];
-    
-    return x`
-      <div class="mini-pill ${expanded ? 'expanded' : ''}" @click=${() => this._toggleOne(index)}>
+    `}_renderSingle(e,t){const i=this.config.entities?.[t]||{},s=this._expandedItems[e];return D`
+      <div class="mini-pill ${s?"expanded":""}" @click=${()=>this._toggleOne(e)}>
         <div class="mini-pill-header">
-          ${item.icon || '🔘'} ${item.label || 'Sub Button ' + (index + 1)}
-          <span class="chevron">${expanded ? '▼' : '▶'}</span>
+          ${i.icon||"🔘"} ${i.label||"Sub Button "+(e+1)}
+          <span class="chevron">${s?"▼":"▶"}</span>
         </div>
 
-        ${expanded ? x`
+        ${s?D`
           <div class="mini-pill-content">
             <div class="input-group">
               <label>Entity</label>
               <ha-entity-picker
                 .hass=${this.hass}
                 .includeEntities=${this._getSubButtonCandidates()}
-                .value=${item.entity || ''}
+                .value=${i.entity||""}
                 allow-custom-entity
-                @value-changed=${(e) => this._fire('entities.' + key + '.entity', e.detail.value)}
+                @value-changed=${e=>this._fire("entities."+t+".entity",e.detail.value)}
               ></ha-entity-picker>
             </div>
 
@@ -1397,8 +780,8 @@ ha-entity-picker::part(combobox) {
               <label>Label</label>
               <input
                 type="text"
-                .value=${item.label || ''}
-                @input=${(e) => this._fire('entities.' + key + '.label', e.target.value)}
+                .value=${i.label||""}
+                @input=${e=>this._fire("entities."+t+".label",e.target.value)}
               />
             </div>
 
@@ -1406,126 +789,40 @@ ha-entity-picker::part(combobox) {
               <label>Icon</label>
               <ha-icon-picker
                 .hass=${this.hass}
-                .value=${item.icon || ''}
+                .value=${i.icon||""}
                 allow-custom-icon
-                @value-changed=${(e) => this._fire('entities.' + key + '.icon', e.detail.value)}
+                @value-changed=${e=>this._fire("entities."+t+".icon",e.detail.value)}
               ></ha-icon-picker>
             </div>
 
-            ${this._renderActions('tap', key)}
-            ${this._renderActions('hold', key)}
+            ${this._renderActions("tap",t)}
+            ${this._renderActions("hold",t)}
           </div>
-        ` : ''}
+        `:""}
       </div>
-    `;
-  }
-  
-  _renderActions(actionType, key) {
-    const cfg = this.config.entities?.[key] || {};
-    const actCfg = cfg[actionType + '_action'] || {};
-    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
-    return x`
+    `}_renderActions(e,t){const i=(this.config.entities?.[t]||{})[e+"_action"]||{};return D`
       <div class="input-group">
-        <label>${actionType === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
+        <label>${"tap"===e?"Tap Action":"Hold Action"}</label>
         <div class="pill-group">
-          ${actions.map((a) => x`
+          ${["toggle","more-info","navigate","call-service","none"].map(s=>D`
             <paper-button
-              class="pill-button ${actCfg.action === a ? 'active' : ''}"
-              @click=${() => this._fire('entities.' + key + '.' + actionType + '_action.action', a)}
-            >${a}</paper-button>
+              class="pill-button ${i.action===s?"active":""}"
+              @click=${()=>this._fire("entities."+t+"."+e+"_action.action",s)}
+            >${s}</paper-button>
           `)}
         </div>
-        ${actCfg.action === 'navigate' ? x`
+        ${"navigate"===i.action?D`
           <input
             type="text"
             placeholder="Path"
-            .value=${actCfg.navigation_path || ''}
-            @input=${(e) => this._fire('entities.' + key + '.' + actionType + '_action.navigation_path', e.target.value)}
+            .value=${i.navigation_path||""}
+            @input=${i=>this._fire("entities."+t+"."+e+"_action.navigation_path",i.target.value)}
           />
-        ` : ''}
+        `:""}
       </div>
-    `;
-  }
-  
-  _toggleOne(i) {
-    this._expandedItems = this._expandedItems.map((_, j) => j === i);
-    this.requestUpdate();
-  }
-  
-  _resetAll() {
-  this.dispatchEvent(new CustomEvent('panel-changed', {
-    detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'subbutton' } },
-    bubbles: true, composed: true,
-  }));
-}
-_fire(prop, value) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val: value },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-  
-  // --- Wrapper locale (Opzione A): usa logica centralizzata + log ---
-  _getSubButtonCandidates() {
-    // Preferisci la funzione centralizzata (applica domini, classi e filtro Area)
-    let list = [];
-    try {
-      list = candidatesFor(this.hass, this.config, 'subbutton');
-    } catch (e) {
-      // Fallback locale se l'helper non fosse disponibile
-      const hass = this.hass;
-      if (!hass || !hass.states) return [];
-      const allowed = new Set([
-        'light', 'switch', 'media_player', 'fan', 'cover', 'humidifier', 'lock',
-        'scene', 'input_boolean', 'script', 'button'
-      ]);
-      list = Object.keys(hass.states || {}).filter((id) => allowed.has(id.split('.')[0]));
-      const area = this.config?.area;
-      if (area) {
-        const inArea = list.filter((id) => {
-          const st = hass.states[id];
-          const a1 = st?.attributes?.area_id;
-          const a2 = st?.attributes?.area;
-          return a1 === area || a2 === area;
-        });
-        if (inArea.length) list = inArea;
-      }
-    }
-    
-    if (DEBUG$1) {
-      console.info('[SubButtonsPanel][Candidates]', {
-        area: this.config?.area || null,
-        count: list.length,
-        sample: list.slice(0, 8),
-      });
-    }
-    return list;
-  }
-}
-
-customElements.define('subbuttons-panel', SubButtonsPanel);
-
-class ColorsPanel extends i {
-  static properties = {
-    config: { type: Object },
-    _expanded: { type: Boolean },
-    _expandedColors: { type: Array },
-  };
-  
-  constructor() {
-    super();
-    this.config = {};
-    this._expanded = false;
-    this._expandedColors = [false, false];
-  }
-  
-  static styles = i$3`
+    `}_toggleOne(e){this._expandedItems=this._expandedItems.map((t,i)=>i===e),this.requestUpdate()}_resetAll(){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"__panel_cmd__",val:{cmd:"reset",section:"subbutton"}},bubbles:!0,composed:!0}))}_fire(e,t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:e,val:t},bubbles:!0,composed:!0}))}_getSubButtonCandidates(){let e=[];try{e=ce(this.hass,this.config,"subbutton")}catch(t){const i=this.hass;if(!i||!i.states)return[];const s=new Set(["light","switch","media_player","fan","cover","humidifier","lock","scene","input_boolean","script","button"]);e=Object.keys(i.states||{}).filter(e=>s.has(e.split(".")[0]));const n=this.config?.area;if(n){const t=e.filter(e=>{const t=i.states[e],s=t?.attributes?.area_id,o=t?.attributes?.area;return s===n||o===n});t.length&&(e=t)}}return _e&&console.info("[SubButtonsPanel][Candidates]",{area:this.config?.area||null,count:e.length,sample:e.slice(0,8)}),e}}customElements.define("subbuttons-panel",$e);class ye extends oe{static properties={config:{type:Object},_expanded:{type:Boolean},_expandedColors:{type:Array}};constructor(){super(),this.config={},this._expanded=!1,this._expandedColors=[!1,!1]}static styles=o`
     /* glass-panel, mini-pill/header, input-group, color-row etc. */
-  `;
-  
-  render() {
-    return x`
+  `;render(){return D`
       <ha-expansion-panel
         class="glass-panel"
         .expanded="${this._expanded}"
@@ -1533,97 +830,30 @@ class ColorsPanel extends i {
       >
         <div slot="header" class="glass-header">🎨 Colors</div>
         <div class="glass-content">
-          ${this._renderColorPill(0,'Room','#55afff',[
-            {label:'Background Active','field':'background_active'},
-            {label:'Background Inactive','field':'background_inactive'},
-            {label:'Icon Active','field':'icon_active'},
-            {label:'Icon Inactive','field':'icon_inactive'},
-          ])}
-          ${this._renderColorPill(1,'Subbutton','#b28fff',[
-            {label:'Background On','field':'background_on'},
-            {label:'Background Off','field':'background_off'},
-            {label:'Icon On','field':'icon_on'},
-            {label:'Icon Off','field':'icon_off'},
-          ])}
+          ${this._renderColorPill(0,"Room","#55afff",[{label:"Background Active",field:"background_active"},{label:"Background Inactive",field:"background_inactive"},{label:"Icon Active",field:"icon_active"},{label:"Icon Inactive",field:"icon_inactive"}])}
+          ${this._renderColorPill(1,"Subbutton","#b28fff",[{label:"Background On",field:"background_on"},{label:"Background Off",field:"background_off"},{label:"Icon On",field:"icon_on"},{label:"Icon Off",field:"icon_off"}])}
         </div>
       </ha-expansion-panel>
-    `;
-  }
-  
-  _renderColorPill(idx, label, accent, fields) {
-    return x`
-      <div class="mini-pill ${this._expandedColors[idx]?'expanded':''}" @click="${()=>this._expandedColors[idx]=!this._expandedColors[idx]}">
-        <div class="mini-pill-header" style="--section-accent:${accent}">${label}<span class="chevron">${this._expandedColors[idx]?'▼':'▶'}</span></div>
-        ${this._expandedColors[idx]? x`
+    `}_renderColorPill(e,t,i,s){return D`
+      <div class="mini-pill ${this._expandedColors[e]?"expanded":""}" @click="${()=>this._expandedColors[e]=!this._expandedColors[e]}">
+        <div class="mini-pill-header" style="--section-accent:${i}">${t}<span class="chevron">${this._expandedColors[e]?"▼":"▶"}</span></div>
+        ${this._expandedColors[e]?D`
           <div class="mini-pill-content">
-            ${fields.map(f=>x`
+            ${s.map(e=>D`
               <div class="input-group color-row">
-                <label>${f.label}</label>
+                <label>${e.label}</label>
                 <input type="color"
-                       .value="${this._toHex(this.config.colors[label.toLowerCase()]?.[f.field]||'#000')}"
-                       @input="${e=>this._updateColor(label.toLowerCase(),f.field,e.target.value)}">
+                       .value="${this._toHex(this.config.colors[t.toLowerCase()]?.[e.field]||"#000")}"
+                       @input="${i=>this._updateColor(t.toLowerCase(),e.field,i.target.value)}">
                 <input type="range" min="0" max="1" step="0.01"
-                       .value="${parseFloat((this.config.colors[label.toLowerCase()]?.[f.field]||'1').split(',').pop())}"
-                       @input="${e=>this._updateColor(label.toLowerCase(),f.field,e.target.value,true)}">
+                       .value="${parseFloat((this.config.colors[t.toLowerCase()]?.[e.field]||"1").split(",").pop())}"
+                       @input="${i=>this._updateColor(t.toLowerCase(),e.field,i.target.value,!0)}">
               </div>
             `)}
           </div>
-        `:''}
+        `:""}
       </div>
-    `;
-  }
-  
-  _toHex(color) {
-    if (!color) return '#000000';
-    if (color.startsWith('#')) return color.length===7 ? color.slice(0,7) : color;
-    const m = /rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i.exec(color);
-    if (!m) return '#000000';
-    const [r,g,b] = m.slice(1).map(n => Math.max(0, Math.min(255, parseInt(n,10)||0)));
-    return '#' + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join('');
-  }
-  _updateColor(section, key, value, alpha = false) {
-    const hex = this._toHex(value);
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: `colors.${section}.${key}`, val: hex },
-      bubbles: true, composed: true
-    }));
-  }
-}
-
-customElements.define('colors-panel', ColorsPanel);
-
-// src/bubble-room-editor.js
-
-const DEBUG = !!window.__BUBBLE_DEBUG__;
-
-class BubbleRoomEditor extends i {
-  static properties = {
-    hass: { type: Object },
-    config: { type: Object },
-  };
-  
-  constructor() {
-    super();
-    this.hass = {};
-    this.config = {};
-  }
-  
-  setConfig(config) {
-    this.config = {
-      ...config,
-      sensors: Array.isArray(config.sensors) ? config.sensors : [],
-      mushrooms: Array.isArray(config.mushrooms) ? config.mushrooms : [],
-      subbuttons: Array.isArray(config.subbuttons) ? config.subbuttons : [],
-      colors: config.colors ? config.colors : { room: {}, subbutton: {} },
-    };
-  }
-  
-  getConfig() {
-    return { ...this.config };
-  }
-  
-  render() {
-    return x`
+    `}_toHex(e){if(!e)return"#000000";if(e.startsWith("#"))return 7===e.length?e.slice(0,7):e;const t=/rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i.exec(e);if(!t)return"#000000";const[i,s,n]=t.slice(1).map(e=>Math.max(0,Math.min(255,parseInt(e,10)||0)));return"#"+[i,s,n].map(e=>e.toString(16).padStart(2,"0")).join("")}_updateColor(e,t,i,s=!1){const n=this._toHex(i);this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${e}.${t}`,val:n},bubbles:!0,composed:!0}))}}customElements.define("colors-panel",ye);const we=!!window.__BUBBLE_DEBUG__;class Ae extends oe{static properties={hass:{type:Object},config:{type:Object}};constructor(){super(),this.hass={},this.config={}}setConfig(e){this.config={...e,sensors:Array.isArray(e.sensors)?e.sensors:[],mushrooms:Array.isArray(e.mushrooms)?e.mushrooms:[],subbuttons:Array.isArray(e.subbuttons)?e.subbuttons:[],colors:e.colors?e.colors:{room:{},subbutton:{}}}}getConfig(){return{...this.config}}render(){return D`
       <div class="editor-container">
         <room-panel
           .hass="${this.hass}"
@@ -1654,72 +884,7 @@ class BubbleRoomEditor extends i {
           @panel-changed="${this._onPanelChanged}"
         ></colors-panel>
       </div>
-    `;
-  }
-  
-  _onPanelChanged(e) {
-    const { prop, val } = e.detail || {};
-    if (!prop) return;
-    const mapped = this._mapLegacyPath(prop);
-    if (DEBUG) console.info('[Editor][panel-changed]', { prop, mapped, val });
-    this._setByPath(this.config, mapped, val);
-    
-    // Auto-discovery per-sezione (incl. presence)
-    this.config = maybeAutoDiscover(this.hass, this.config, prop, DEBUG);
-    // Reset per-sezione delegato dai pannelli
-    if (prop === '__panel_cmd__' && val && val.cmd === 'reset') {
-      const section = val.section;
-      if (section === 'sensor') this.config = resetSensors(this.config);
-      if (section === 'mushroom') this.config = resetMushrooms(this.config);
-      if (section === 'subbutton') this.config = resetSubButtons(this.config);
-      if (section === 'room') this.config = resetRoom(this.config);
-      if (DEBUG) console.info('[Reset]', section);
-    }
-    
-    
-    this.requestUpdate();
-    this.dispatchEvent(new CustomEvent('config-changed', {
-      detail: { config: this.getConfig() },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-  
-  // Converte path legacy dei pannelli in path sugli array usati dalla card
-  _mapLegacyPath(p) {
-    if (p && p.startsWith('entities.')) {
-      const key = p.slice('entities.'.length);
-      
-      // sensors: entities.sensor1 -> sensors[0]
-      let m = key.match(/^sensor(\d+)$/);
-      if (m) return 'sensors[' + (parseInt(m[1], 10) - 1) + ']';
-      
-      // sub-buttons: entities.sub-button2 -> subbuttons[1]
-      m = key.match(/^sub-button(\d+)$/);
-      if (m) return 'subbuttons[' + (parseInt(m[1], 10) - 1) + ']';
-      
-      // mushrooms: entities1..entities6 -> mushrooms[0..5]
-      m = key.match(/^entities(\d+)$/);
-      if (m) return 'mushrooms[' + (parseInt(m[1], 10) - 1) + ']';
-      
-      // tutti gli altri (es. presence.entity) restano sotto "entities"
-      return 'entities.' + key;
-    }
-    return p;
-  }
-  _setByPath(obj, path, value) {
-    const parts = path.replace(/\[(\d+)\]/g, '.$1').split('.');
-    let cur = obj;
-    for (let i = 0; i < parts.length - 1; i++) {
-      const k = parts[i];
-      const nextIsIndex = /^\d+$/.test(parts[i + 1]);
-      if (cur[k] == null) cur[k] = nextIsIndex ? [] : {};
-      cur = cur[k];
-    }
-    cur[parts[parts.length - 1]] = value;
-  }
-  
-  static styles = i$3`
+    `}_onPanelChanged(e){const{prop:t,val:i}=e.detail||{};if(!t)return;const s=this._mapLegacyPath(t);if(we&&console.info("[Editor][panel-changed]",{prop:t,mapped:s,val:i}),this._setByPath(this.config,s,i),this.config=ue(this.hass,this.config,t,we),"__panel_cmd__"===t&&i&&"reset"===i.cmd){const e=i.section;"sensor"===e&&(this.config=function(e){const t={...e.entities||{}};return["sensor1","sensor2","sensor3","sensor4","sensor5","sensor6"].forEach(e=>delete t[e]),{...e,entities:t}}(this.config)),"mushroom"===e&&(this.config=function(e){const t={...e.entities||{}};return["entities1","entities2","entities3","entities4","entities5","climate","camera"].forEach(e=>delete t[e]),{...e,entities:t}}(this.config)),"subbutton"===e&&(this.config=function(e){const t={...e.entities||{}};return["sub-button1","sub-button2","sub-button3","sub-button4","sub-button5","sub-button6"].forEach(e=>delete t[e]),{...e,entities:t}}(this.config)),"room"===e&&(this.config=function(e){const t={...e.entities||{}};delete t.presence;const i={...e,entities:t};return delete i.name,delete i.icon,delete i.area,delete i.presence_entity,i}(this.config)),we&&console.info("[Reset]",e)}this.requestUpdate(),this.dispatchEvent(new CustomEvent("config-changed",{detail:{config:this.getConfig()},bubbles:!0,composed:!0}))}_mapLegacyPath(e){if(e&&e.startsWith("entities.")){const t=e.slice(9);let i=t.match(/^sensor(\d+)$/);return i?"sensors["+(parseInt(i[1],10)-1)+"]":(i=t.match(/^sub-button(\d+)$/),i?"subbuttons["+(parseInt(i[1],10)-1)+"]":(i=t.match(/^entities(\d+)$/),i?"mushrooms["+(parseInt(i[1],10)-1)+"]":"entities."+t))}return e}_setByPath(e,t,i){const s=t.replace(/\[(\d+)\]/g,".$1").split(".");let n=e;for(let e=0;e<s.length-1;e++){const t=s[e],i=/^\d+$/.test(s[e+1]);null==n[t]&&(n[t]=i?[]:{}),n=n[t]}n[s[s.length-1]]=i}static styles=o`
     :host {
       display: block;
       padding: 0;
@@ -1732,40 +897,7 @@ class BubbleRoomEditor extends i {
       padding: 16px;
       box-sizing: border-box;
     }
-  `;
-}
-
-customElements.define('bubble-room-editor', BubbleRoomEditor);
-
-var bubbleRoomEditor = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  BubbleRoomEditor: BubbleRoomEditor
-});
-
-/**
- * BubbleIcon.js
- * 
- * Icona principale stanza, gigante e posizionata assoluta in basso a sinistra.
- * Replica stile pixel-perfect dell’originale Bubble Room.
- */
-
-class BubbleIcon extends i {
-  static properties = {
-    icon: { type: String },
-    active: { type: Boolean },
-    colorActive: { type: String },
-    colorInactive: { type: String }
-  };
-  
-  constructor() {
-    super();
-    this.icon = '';
-    this.active = false;
-    this.colorActive = '#21df73'; // verde acceso (default originale)
-    this.colorInactive = '#173c16'; // verde scuro sbiadito (default originale)
-  }
-  
-  static styles = i$3`
+  `}customElements.define("bubble-room-editor",Ae);var ke=Object.freeze({__proto__:null,BubbleRoomEditor:Ae});class Ee extends oe{static properties={icon:{type:String},active:{type:Boolean},colorActive:{type:String},colorInactive:{type:String}};constructor(){super(),this.icon="",this.active=!1,this.colorActive="#21df73",this.colorInactive="#173c16"}static styles=o`
     :host {
       position: absolute;
       left: 0;
@@ -1791,43 +923,14 @@ class BubbleIcon extends i {
         font-size: 5.7em;
       }
     }
-  `;
-  
-  render() {
-    const iconColor = this.active ? this.colorActive : this.colorInactive;
-    return x`
+  `;render(){const e=this.active?this.colorActive:this.colorInactive;return D`
       <ha-icon
-        class="main-icon ${this.active ? 'active' : ''}"
+        class="main-icon ${this.active?"active":""}"
         .icon="${this.icon}"
-        style="--icon-color: ${iconColor}"
-        @click="${() => this.dispatchEvent(new CustomEvent('main-icon-click'))}"
+        style="--icon-color: ${e}"
+        @click="${()=>this.dispatchEvent(new CustomEvent("main-icon-click"))}"
       ></ha-icon>
-    `;
-  }
-}
-
-customElements.define('bubble-icon', BubbleIcon);
-
-/**
- * BubbleMushroom.js
- * 
- * Mushroom entities disposte a raggera attorno all'icona principale.
- * Comportamento, overlay e stile come in Bubble Room originale.
- */
-
-class BubbleMushroom extends i {
-  static properties = {
-    entities: { type: Array },
-    containerSize: { type: Object }
-  };
-
-  constructor() {
-    super();
-    this.entities = [];
-    this.containerSize = { width: 200, height: 200 };
-  }
-
-  static styles = i$3`
+    `}}customElements.define("bubble-icon",Ee);class Se extends oe{static properties={entities:{type:Array},containerSize:{type:Object}};constructor(){super(),this.entities=[],this.containerSize={width:200,height:200}}static styles=o`
     .mushroom-container {
       position: absolute;
       left: 0;
@@ -1860,68 +963,18 @@ class BubbleMushroom extends i {
       box-shadow: 0 0 12px 2px rgba(33,223,115,0.14);
       filter: brightness(1.18);
     }
-  `;
-
-  /**
-   * Posizioni a raggera (percentuali rispetto a containerSize)
-   * - Puoi personalizzare queste per le tue 6 mushroom entity!
-   */
-  _entityRatios() {
-    // max 6 posizioni, modifica se ne vuoi di più
-    return [
-      { x: 0.20, y: 0.09 },
-      { x: 0.54, y: 0.05 },
-      { x: 0.81, y: 0.33 },
-      { x: 0.82, y: 0.67 },
-      { x: 0.54, y: 0.92 },
-      { x: 0.20, y: 0.87 },
-    ];
-  }
-
-  render() {
-    const { width, height } = this.containerSize || { width: 200, height: 200 };
-    const ratios = this._entityRatios();
-    return x`
-      <div class="mushroom-container" style="width:${width}px;height:${height}px;">
-        ${this.entities.map((entity, idx) => {
-          const r = ratios[idx] || { x: 0.5, y: 0.5 };
-          const left = `${Math.round(r.x * width) - 26}px`;
-          const top = `${Math.round(r.y * height) - 26}px`;
-          return x`
+  `;_entityRatios(){return[{x:.2,y:.09},{x:.54,y:.05},{x:.81,y:.33},{x:.82,y:.67},{x:.54,y:.92},{x:.2,y:.87}]}render(){const{width:e,height:t}=this.containerSize||{width:200,height:200},i=this._entityRatios();return D`
+      <div class="mushroom-container" style="width:${e}px;height:${t}px;">
+        ${this.entities.map((s,n)=>{const o=i[n]||{x:.5,y:.5},a=Math.round(o.x*e)-26+"px",r=Math.round(o.y*t)-26+"px";return D`
             <ha-icon
-              class="mushroom-entity ${entity.state === 'on' ? 'active' : ''}"
-              .icon="${entity.icon}"
-              style="left: ${left}; top: ${top}; color: ${entity.color || '#888'}"
-              @click="${() => this.dispatchEvent(new CustomEvent('mushroom-entity-click', { detail: idx }))}"
+              class="mushroom-entity ${"on"===s.state?"active":""}"
+              .icon="${s.icon}"
+              style="left: ${a}; top: ${r}; color: ${s.color||"#888"}"
+              @click="${()=>this.dispatchEvent(new CustomEvent("mushroom-entity-click",{detail:n}))}"
             ></ha-icon>
-          `;
-        })}
+          `})}
       </div>
-    `;
-  }
-}
-
-customElements.define('bubble-mushroom', BubbleMushroom);
-
-/**
- * BubbleName.js
- * 
- * Visualizza il nome della stanza, uppercased, grande e bold, allineato a sinistra.
- */
-
-class BubbleName extends i {
-  static properties = {
-    name: { type: String },
-    area: { type: String }
-  };
-  
-  constructor() {
-    super();
-    this.name = '';
-    this.area = '';
-  }
-  
-  static styles = i$3`
+    `}}customElements.define("bubble-mushroom",Se);class Ce extends oe{static properties={name:{type:String},area:{type:String}};constructor(){super(),this.name="",this.area=""}static styles=o`
     .bubble-name {
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       text-transform: uppercase;
@@ -1952,30 +1005,12 @@ class BubbleName extends i {
         font-size: 2.2em;
       }
     }
-  `;
-  
-  render() {
-    return x`
+  `;render(){return D`
       <div class="bubble-name">
         ${this.name}
-        ${this.area
-          ? x`<span class="bubble-area">(${this.area})</span>`
-          : ''}
+        ${this.area?D`<span class="bubble-area">(${this.area})</span>`:""}
       </div>
-    `;
-  }
-}
-
-customElements.define('bubble-name', BubbleName);
-
-// src/components/BubbleSensors.js
-
-class BubbleSensors extends i {
-  static properties = {
-    sensors: { type: Array }, // [{icon, label, value, unit, color}]
-  };
-  
-  static styles = i$3`
+    `}}customElements.define("bubble-name",Ce);class Oe extends oe{static properties={sensors:{type:Array}};static styles=o`
     .sensor-row {
       display: flex;
       gap: 18px;
@@ -2021,58 +1056,30 @@ class BubbleSensors extends i {
       margin-left: 0.12em;
       font-weight: 600;
     }
-  `;
-  
-  render() {
-    // Divide in due righe (3+3 sensori)
-    const row1 = this.sensors?.slice(0, 3) || [];
-    const row2 = this.sensors?.slice(3, 6) || [];
-    return x`
+  `;render(){const e=this.sensors?.slice(0,3)||[],t=this.sensors?.slice(3,6)||[];return D`
       <div class="sensor-row">
-        ${row1.map(sensor => x`
-          <div class="sensor-pill" style="color: ${sensor.color || '#e3f6ff'}">
-            <ha-icon class="sensor-icon" .icon="${sensor.icon}"></ha-icon>
-            <span class="sensor-label">${sensor.label || ''}</span>
-            <span class="sensor-value">${sensor.value ?? '--'}</span>
-            <span class="sensor-unit">${sensor.unit || ''}</span>
+        ${e.map(e=>D`
+          <div class="sensor-pill" style="color: ${e.color||"#e3f6ff"}">
+            <ha-icon class="sensor-icon" .icon="${e.icon}"></ha-icon>
+            <span class="sensor-label">${e.label||""}</span>
+            <span class="sensor-value">${e.value??"--"}</span>
+            <span class="sensor-unit">${e.unit||""}</span>
           </div>
         `)}
       </div>
-      ${row2.length ? x`
+      ${t.length?D`
         <div class="sensor-row">
-          ${row2.map(sensor => x`
-            <div class="sensor-pill" style="color: ${sensor.color || '#e3f6ff'}">
-              <ha-icon class="sensor-icon" .icon="${sensor.icon}"></ha-icon>
-              <span class="sensor-label">${sensor.label || ''}</span>
-              <span class="sensor-value">${sensor.value ?? '--'}</span>
-              <span class="sensor-unit">${sensor.unit || ''}</span>
+          ${t.map(e=>D`
+            <div class="sensor-pill" style="color: ${e.color||"#e3f6ff"}">
+              <ha-icon class="sensor-icon" .icon="${e.icon}"></ha-icon>
+              <span class="sensor-label">${e.label||""}</span>
+              <span class="sensor-value">${e.value??"--"}</span>
+              <span class="sensor-unit">${e.unit||""}</span>
             </div>
           `)}
         </div>
-      ` : ''}
-    `;
-  }
-}
-
-customElements.define('bubble-sensors', BubbleSensors);
-
-/**
- * BubbleSubButton.js
- * 
- * Visualizza i subbutton verticali a destra, quadrati e con label sotto (come nell’originale Bubble Room).
- */
-
-class BubbleSubButton extends i {
-  static properties = {
-    subbuttons: { type: Array }
-  };
-  
-  constructor() {
-    super();
-    this.subbuttons = [];
-  }
-  
-  static styles = i$3`
+      `:""}
+    `}}customElements.define("bubble-sensors",Oe);class Pe extends oe{static properties={subbuttons:{type:Array}};constructor(){super(),this.subbuttons=[]}static styles=o`
     .subbutton-column {
       display: flex;
       flex-direction: column;
@@ -2134,125 +1141,21 @@ class BubbleSubButton extends i {
       color: #fff700;
       opacity: 1;
     }
-  `;
-  
-  render() {
-    return x`
+  `;render(){return D`
       <div class="subbutton-column">
-        ${this.subbuttons.map(
-          (sub, idx) => x`
+        ${this.subbuttons.map((e,t)=>D`
             <div
-              class="subbutton ${sub.active ? 'active' : ''}"
-              @click="${() => this.dispatchEvent(new CustomEvent('subbutton-click', { detail: idx }))}"
-              title="${sub.label || ''}"
-              style="background:${sub.active ? (sub.colorOn || '#21df73') : (sub.colorOff || '#455a64')};"
+              class="subbutton ${e.active?"active":""}"
+              @click="${()=>this.dispatchEvent(new CustomEvent("subbutton-click",{detail:t}))}"
+              title="${e.label||""}"
+              style="background:${e.active?e.colorOn||"#21df73":e.colorOff||"#455a64"};"
             >
-              <ha-icon class="subbutton-icon" .icon="${sub.icon}"></ha-icon>
-              ${sub.label
-                ? x`<span class="subbutton-label">${sub.label}</span>`
-                : ''}
+              <ha-icon class="subbutton-icon" .icon="${e.icon}"></ha-icon>
+              ${e.label?D`<span class="subbutton-label">${e.label}</span>`:""}
             </div>
-          `
-        )}
+          `)}
       </div>
-    `;
-  }
-}
-
-customElements.define('bubble-subbutton', BubbleSubButton);
-
-/**
- * icon-mapping.js
- * 
- * Mappa centralizzata delle icone predefinite per device_class, sensori e fallback vari.
- * Usare così com'è.
- */
-
-const SENSOR_TYPE_ICON_MAP = {
-  temperature: { icon: 'mdi:thermometer', unit: '°C' },
-  humidity:    { icon: 'mdi:water-percent', unit: '%' },
-  co2:         { icon: 'mdi:molecule-co2', unit: 'ppm' },
-  lux:         { icon: 'mdi:brightness-5', unit: 'lx' },
-  uv:          { icon: 'mdi:weather-sunny-alert', unit: 'UV' },
-  pressure:    { icon: 'mdi:gauge', unit: 'hPa' },
-  noise:       { icon: 'mdi:volume-high', unit: 'dB' },
-  pm25:        { icon: 'mdi:blur', unit: 'µg/m³' },
-  pm10:        { icon: 'mdi:blur-linear', unit: 'µg/m³' }
-};
-
-const DEFAULT_ICON = 'mdi:sofa';
-
-/**
- * utils.js
- * 
- * Funzioni comuni e utility per la card Bubble Room.
- * File chiuso, non lasciare placeholder!
- */
-
-function capitalize(str) {
-  if (!str) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-/* ==== src/bubble-room.js  (ver. 29-lug-22:13 patched) ==== */
-
-class BubbleRoom extends i {
-  static properties = {
-    config: { type: Object },
-    hass: { type: Object }
-  };
-  
-  constructor() {
-    super();
-    this.config = {};
-    this.hass = {};
-  }
-
-  static getStubConfig() {
-    return {
-      type: 'custom:bubble-room',
-      name: 'Salotto',
-      area: 'Zona Giorno',
-      icon: 'mdi:sofa',
-      sensors: [
-        { entity_id: 'sensor.some_sensor1', type: 'temperature', label: 'Temperatura', color: '#e3f6ff' }
-      ],
-      mushrooms: [
-        { entity_id: 'switch.lampada', icon: 'mdi:lightbulb', color: '#ffeb3b' }
-      ],
-      subbuttons: [
-        { entity_id: 'light.luce_tavolo', icon: 'mdi:lamp', label: 'Tavolo', colorOn: '#00d46d', colorOff: '#999' }
-      ],
-      colors: {
-        room: {
-          background_active: 'rgba(var(--color-green),1)',
-          background_inactive: 'rgba(var(--color-green),0.3)',
-          icon_active: 'orange',
-          icon_inactive: '#80808055',
-          mushroom_active: 'rgba(var(--color-green),1)',
-          mushroom_inactive: '#80808055'
-        },
-        subbutton: {
-          background_on: 'rgba(var(--color-blue),1)',
-          background_off: 'rgba(var(--color-blue),0.3)',
-          icon_on: 'yellow',
-          icon_off: '#666'
-        }
-      }
-    };
-  }
-
-  /* ------- HA editor hook ------- */
-  static async getConfigElement() {
-    await Promise.resolve().then(function () { return bubbleRoomEditor; });
-    return document.createElement('bubble-room-editor');
-  }
-  setConfig(config) {
-    this.config = config;
-  }
-
-  /* ------- CSS ------- */
-  static styles = i$3`
+    `}}customElements.define("bubble-subbutton",Pe);const ze={temperature:{icon:"mdi:thermometer",unit:"°C"},humidity:{icon:"mdi:water-percent",unit:"%"},co2:{icon:"mdi:molecule-co2",unit:"ppm"},lux:{icon:"mdi:brightness-5",unit:"lx"},uv:{icon:"mdi:weather-sunny-alert",unit:"UV"},pressure:{icon:"mdi:gauge",unit:"hPa"},noise:{icon:"mdi:volume-high",unit:"dB"},pm25:{icon:"mdi:blur",unit:"µg/m³"},pm10:{icon:"mdi:blur-linear",unit:"µg/m³"}};class Be extends oe{static properties={config:{type:Object},hass:{type:Object}};constructor(){super(),this.config={},this.hass={}}static getStubConfig(){return{type:"custom:bubble-room",name:"Salotto",area:"Zona Giorno",icon:"mdi:sofa",sensors:[{entity_id:"sensor.some_sensor1",type:"temperature",label:"Temperatura",color:"#e3f6ff"}],mushrooms:[{entity_id:"switch.lampada",icon:"mdi:lightbulb",color:"#ffeb3b"}],subbuttons:[{entity_id:"light.luce_tavolo",icon:"mdi:lamp",label:"Tavolo",colorOn:"#00d46d",colorOff:"#999"}],colors:{room:{background_active:"rgba(var(--color-green),1)",background_inactive:"rgba(var(--color-green),0.3)",icon_active:"orange",icon_inactive:"#80808055",mushroom_active:"rgba(var(--color-green),1)",mushroom_inactive:"#80808055"},subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return ke}),document.createElement("bubble-room-editor")}setConfig(e){this.config=e}static styles=o`
     .bubble-room-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
@@ -2301,99 +1204,31 @@ class BubbleRoom extends i {
         border-radius: 19px;
       }
     }
-  `;
-
-  render() {
-    const mainIcon = this.config.icon || DEFAULT_ICON;
-
-    const iconActive =
-      this.config.colors?.room?.icon_active ??
-      this.config.icon_active ?? '#21df73';
-
-    const iconInactive =
-      this.config.colors?.room?.icon_inactive ??
-      this.config.icon_inactive ?? '#173c16';
-
-    const name  = this.config.name  || 'Room';
-    const area  = this.config.area  || '';
-    const sensors           = this._getSensors();
-    const mushroomEntities  = this._getMushroomEntities();
-    const subbuttons        = this._getSubButtons();
-    const mushroomSize      = { width: 240, height: 190 };
-
-    return x`
+  `;render(){const e=this.config.icon||"mdi:sofa",t=this.config.colors?.room?.icon_active??this.config.icon_active??"#21df73",i=this.config.colors?.room?.icon_inactive??this.config.icon_inactive??"#173c16",s=this.config.name||"Room",n=this.config.area||"",o=this._getSensors(),a=this._getMushroomEntities(),r=this._getSubButtons();return D`
       <div class="bubble-room-grid">
         <div class="main-area">
-          <bubble-sensors .sensors="${sensors}"></bubble-sensors>
-          <bubble-name .name="${name}" .area="${area}"></bubble-name>
+          <bubble-sensors .sensors="${o}"></bubble-sensors>
+          <bubble-name .name="${s}" .area="${n}"></bubble-name>
           <div class="icon-mushroom-area">
             <bubble-icon
-              .icon="${mainIcon}"
+              .icon="${e}"
               .active="${this._isMainIconActive()}"
-              .colorActive="${iconActive}"
-              .colorInactive="${iconInactive}"
+              .colorActive="${t}"
+              .colorInactive="${i}"
               @main-icon-click="${this._onMainIconClick}"
             ></bubble-icon>
             <bubble-mushroom
-              .entities="${mushroomEntities}"
-              .containerSize="${mushroomSize}"
+              .entities="${a}"
+              .containerSize="${{width:240,height:190}}"
               @mushroom-entity-click="${this._onMushroomEntityClick}"
             ></bubble-mushroom>
           </div>
         </div>
         <div class="sidebar">
           <bubble-subbutton
-            .subbuttons="${subbuttons}"
+            .subbuttons="${r}"
             @subbutton-click="${this._onSubButtonClick}"
           ></bubble-subbutton>
         </div>
       </div>
-    `;
-  }
-
-  /* ------- helpers ------- */
-  _getSensors() {
-    return (this.config.sensors || []).map(s => ({
-      icon: SENSOR_TYPE_ICON_MAP[s.type]?.icon || 'mdi:help-circle',
-      label: s.label || capitalize(s.type || ''),
-      value: this.hass.states?.[s.entity_id]?.state ?? '--',
-      unit:  SENSOR_TYPE_ICON_MAP[s.type]?.unit || '',
-      color: s.color || '#e3f6ff'
-    }));
-  }
-
-  _getMushroomEntities() {
-    const def = this.config.colors?.room?.mushroom_inactive ?? '#999';
-    return (this.config.mushrooms || []).map(e => ({
-      icon: e.icon || 'mdi:flash',
-      state: this.hass.states?.[e.entity_id]?.state,
-      color: e.color ?? def,
-    }));
-  }
-
-  _getSubButtons() {
-    const defOn  = this.config.colors?.subbutton?.background_on  ?? '#00d46d';
-    const defOff = this.config.colors?.subbutton?.background_off ?? '#999';
-    return (this.config.subbuttons || []).map(sub => ({
-      icon: sub.icon || 'mdi:light-switch',
-      active: this.hass.states?.[sub.entity_id]?.state === 'on',
-      colorOn: sub.colorOn ?? defOn,
-      colorOff: sub.colorOff ?? defOff,
-      label: sub.label || '',
-    }));
-  }
-
-  _isMainIconActive() {
-    return !!this.config.active;
-  }
-
-  /* ------- event stub (da completare) ------- */
-  _onMainIconClick() {/* ... */}
-  _onMushroomEntityClick(e) {/* ... */}
-  _onSubButtonClick(e)     {/* ... */}
-}
-
-customElements.define('bubble-room', BubbleRoom);
-/* ==== fine bubble-room.js ==== */
-
-export { BubbleRoom };
+    `}_getSensors(){return(this.config.sensors||[]).map(e=>{return{icon:ze[e.type]?.icon||"mdi:help-circle",label:e.label||(t=e.type||"",t?t.charAt(0).toUpperCase()+t.slice(1):""),value:this.hass.states?.[e.entity_id]?.state??"--",unit:ze[e.type]?.unit||"",color:e.color||"#e3f6ff"};var t})}_getMushroomEntities(){const e=this.config.colors?.room?.mushroom_inactive??"#999";return(this.config.mushrooms||[]).map(t=>({icon:t.icon||"mdi:flash",state:this.hass.states?.[t.entity_id]?.state,color:t.color??e}))}_getSubButtons(){const e=this.config.colors?.subbutton?.background_on??"#00d46d",t=this.config.colors?.subbutton?.background_off??"#999";return(this.config.subbuttons||[]).map(i=>({icon:i.icon||"mdi:light-switch",active:"on"===this.hass.states?.[i.entity_id]?.state,colorOn:i.colorOn??e,colorOff:i.colorOff??t,label:i.label||""}))}_isMainIconActive(){return!!this.config.active}_onMainIconClick(){}_onMushroomEntityClick(e){}_onSubButtonClick(e){}}customElements.define("bubble-room",Be);export{Be as BubbleRoom};
