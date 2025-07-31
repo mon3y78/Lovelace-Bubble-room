@@ -297,7 +297,6 @@ class RoomPanel extends i {
 
   constructor() {
     super();
-    import('@home-assistant/frontend/src/components/ha-entity-picker');
     this.hass = {};
     this.config = {};
     this._expanded = false;
@@ -433,7 +432,7 @@ class RoomPanel extends i {
 
   render() {
     const cfg = this.config;
-    const area = cfg.area || '';
+    cfg.area || '';
     const name = cfg.name || '';
     const icon = cfg.icon || '';
     const pres = cfg.entities?.presence?.entity || cfg.presence_entity || '';
@@ -472,11 +471,19 @@ class RoomPanel extends i {
             </div>
             <div class="input-group">
               <label>Area:</label>
-              <ha-area-picker
+               <ha-selector
                 .hass=${this.hass}
-                .value=${area}
-                @value-changed=${e => this._fire('area', e.detail.value)}
-              ></ha-area-picker>
+                .value=${pres}
+                .selector=${{
+                  entity: {
+                    domain: ["person", "device_tracker", "binary_sensor"],
+                    device_class: ["motion", "occupancy", "presence"],
+                    multiple: false          // (valore di default, ma lo lascio chiaro)
+                  }
+                }}
+                @value-changed=${e =>
+                  this._emit("entities.presence.entity", e.detail.value)}
+              ></ha-selector>
             </div>
           </div>
         </div>
