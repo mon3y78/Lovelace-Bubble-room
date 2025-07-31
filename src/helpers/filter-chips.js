@@ -2,8 +2,6 @@
 import { LitElement, html, css } from 'lit';
 
 /* importa i web-component Material (obbligatorio se non li carica il core) */
-import '@material/mwc-chip';
-import '@material/mwc-chip-set';
 
 import { FILTER_LABELS } from './entity-filters.js';
 
