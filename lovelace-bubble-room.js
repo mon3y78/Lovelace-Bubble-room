@@ -402,7 +402,6 @@ class RoomPanel extends i {
       font-family: 'Inter', sans-serif;
       font-weight: 800;
       color: #55afff;
-      cursor: pointer;
       user-select: none;
     }
     .mini-pill-content {
@@ -477,26 +476,18 @@ class RoomPanel extends i {
 
   render() {
     const cfg = this.config;
-
-    // current values
-    const area   = cfg.area || '';
-    const name   = cfg.name || '';
-    const icon   = cfg.icon || '';
-    const presValue = cfg.entities?.presence?.entity || cfg.presence_entity || '';
-
-    // filter chips
+    const area       = cfg.area || '';
+    const name       = cfg.name || '';
+    const icon       = cfg.icon || '';
+    const presValue  = cfg.entities?.presence?.entity || cfg.presence_entity || '';
+    const autoDisc   = cfg.auto_discovery_sections?.presence ?? false;
     const presFilters = cfg.presence_filters ?? [...PRESENCE_CATS];
-
-    // filtered entity list
     const presCandidates = candidatesFor(
       this.hass,
       this.config,
       'presence',
       presFilters
     );
-
-    // auto-discover flag
-    const autoDisc = cfg.auto_discovery_sections?.presence ?? false;
 
     return x`
       <ha-expansion-panel
@@ -600,9 +591,17 @@ class RoomPanel extends i {
     `;
   }
 
+  _onAreaChanged = (e) => {
+    const v = e.detail.value;
+    this._fire('area', v);
+    if (v) {
+      this._emit('auto_discovery_sections.presence', true);
+    }
+  };
+
   _renderActions(type) {
     const cfg     = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+    const actions = ['toggle','more-info','navigate','call-service','none'];
     return x`
       <div class="input-group">
         <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
@@ -619,7 +618,7 @@ class RoomPanel extends i {
             type="text"
             placeholder="Path"
             .value=${cfg.navigation_path || ''}
-            @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
+            @input=${e => this._fire(`${type}_action.navigation_path`, e.detail.value)}
           />
         ` : ''}
         ${cfg.action === 'call-service' ? x`
@@ -644,24 +643,16 @@ class RoomPanel extends i {
     `;
   }
 
-  _onAreaChanged = e => {
-    const v = e.detail.value;
-    this._fire('area', v);
-    if (v) {
-      this._emit('auto_discovery_sections.presence', true);
-    }
-  };
-
   _resetRoom() {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' } },
-      bubbles: true, composed: true
+      bubbles: true, composed: true,
     }));
   }
 
   _emit(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val }, bubbles: true, composed: true
+      detail: { prop, val }, bubbles: true, composed: true,
     }));
   }
 
