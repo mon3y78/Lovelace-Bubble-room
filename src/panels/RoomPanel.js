@@ -2,7 +2,7 @@
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 // IMPORTS UI COMPONENTS DI HOME ASSISTANT
-import "@home-assistant/frontend/src/components/ha-entity-picker";
+
 
 export class RoomPanel extends LitElement {
   static properties = {
@@ -13,6 +13,7 @@ export class RoomPanel extends LitElement {
 
   constructor() {
     super();
+    import("@home-assistant/frontend/src/components/ha-entity-picker");
     this.hass = {};
     this.config = {};
     this._expanded = false;
