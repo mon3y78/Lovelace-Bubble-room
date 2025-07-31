@@ -280,6 +280,16 @@ function maybeAutoDiscover(hass, config, changedProp, debug = false) {
 
 // src/panels/RoomPanel.js
 
+//
+// ─── CARICO UNA SOLA VOLTA I CHIP DI @material/web ───────────────────────────
+//
+if (!customElements.get('md-chip-set')) {
+  Promise.resolve().then(function () { return chipSet; });
+}
+if (!customElements.get('md-filter-chip')) {
+  Promise.resolve().then(function () { return filterChip; });
+}
+
 const PRESENCE_CATS = [
   'presence',   // binary_sensor.device_class = presence
   'motion',     // binary_sensor.device_class = motion
@@ -298,10 +308,8 @@ class RoomPanel extends i$1 {
   };
 
   static styles = i$4`
-    :host {
-      display: block;
-    }
-    /* Shape chip Material Web */
+    :host { display: block; }
+    /* arrotondamento chip Material Web */
     --md-filter-chip-container-shape: 16px;
 
     /* Glass panel */
@@ -438,20 +446,12 @@ class RoomPanel extends i$1 {
     this.config        = {};
     this._expanded     = false;
     this.activeFilters = [];
-
-    // Import dinamico di Material Web: eseguito solo una volta
-    if (!customElements.get('md-focus-ring')) {
-      Promise.resolve().then(function () { return chipSet; });
-      Promise.resolve().then(function () { return filterChip; });
-    }
   }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
       maybeAutoDiscover(this.hass, this.config, 'area');
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
-
-      // Sincronizzo activeFilters con la config al primo caricamento
       if (changed.has('config') && Array.isArray(this.config.presence_filters)) {
         this.activeFilters = [...this.config.presence_filters];
       }
@@ -569,7 +569,7 @@ class RoomPanel extends i$1 {
                 }}
                 allow-custom-entity
                 @value-changed=${e =>
-                  this._emit('entities.presence.entity', e.detail.value)}
+                  this._fire('entities.presence.entity', e.detail.value)}
               ></ha-selector>
             </div>
 
