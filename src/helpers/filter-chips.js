@@ -1,17 +1,14 @@
-// src/helpers/filter-chips.js
 import { LitElement, html, css } from 'lit';
-
-/* importa i web-component Material (obbligatorio se non li carica il core) */
 
 import { FILTER_LABELS } from './entity-filters.js';
 
 /**
  * <filter-chips>
  *
- *  · value   – array di categorie attive (es. ['motion','light'])
- *  · allowed – array di tutte le categorie possibili
+ *  • value   = array categorie attive  (['motion','light'…])
+ *  • allowed = array categorie valide  (tutte)
  *
- *  Emesso:  "value-changed" → detail.value = nuovo array selezionato
+ *  Emette "value-changed" con { value: [...] }.
  */
 export class FilterChips extends LitElement {
   static properties = {
@@ -25,33 +22,29 @@ export class FilterChips extends LitElement {
     this.allowed = [];
   }
   
-  /* Stili minimi: margine e colore primario ereditato dal tema */
   static styles = css`
     mwc-chip {
       margin: 4px;
-      --mdc-theme-primary: var(--primary-color);
+      --mdc-theme-primary: var(--primary-color);   /* rispetta tema HA */
     }
   `;
   
-  /** Aggiunge/rimuove la categoria e notifica il nuovo set */
   _toggle(cat) {
     const set = new Set(this.value);
     set.has(cat) ? set.delete(cat) : set.add(cat);
-    
     this.dispatchEvent(new CustomEvent('value-changed', {
-      detail: { value: Array.from(set) },
+      detail: { value: [...set] },
       bubbles: true,
       composed: true,
     }));
   }
   
   render() {
-    /* se allowed è vuoto non mostriamo nulla */
-    if (!this.allowed?.length) return html``;
+    if (!this.allowed?.length) return html``; /* niente chip → niente UI */
     
     return html`
-      <mwc-chip-set choice>
-        ${this.allowed.map((cat) => html`
+      <mwc-chip-set filter>
+        ${this.allowed.map(cat => html`
           <mwc-chip
             .label=${FILTER_LABELS[cat] ?? cat}
             ?selected=${this.value.includes(cat)}
@@ -62,5 +55,4 @@ export class FilterChips extends LitElement {
     `;
   }
 }
-
 customElements.define('filter-chips', FilterChips);
