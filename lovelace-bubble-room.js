@@ -1,5 +1,3 @@
-import '@home-assistant/frontend/src/components/ha-entity-picker';
-
 /**
  * @license
  * Copyright 2019 Google LLC
@@ -287,6 +285,8 @@ function maybeAutoDiscover(hass, config, changedProp, debug = false) {
 }
 
 // src/panels/RoomPanel.js
+// IMPORTS UI COMPONENTS DI HOME ASSISTANT
+
 
 class RoomPanel extends i {
   static properties = {
@@ -297,6 +297,7 @@ class RoomPanel extends i {
 
   constructor() {
     super();
+    import('@home-assistant/frontend/src/components/ha-entity-picker');
     this.hass = {};
     this.config = {};
     this._expanded = false;
