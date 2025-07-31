@@ -3,6 +3,16 @@ import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover }      from '../helpers/auto-discovery.js';
 import { candidatesFor }          from '../helpers/entity-filters.js';
 
+//
+// ─── CARICO UNA SOLA VOLTA I CHIP DI @material/web ───────────────────────────
+//
+if (!customElements.get('md-chip-set')) {
+  import('@material/web/chips/chip-set.js');
+}
+if (!customElements.get('md-filter-chip')) {
+  import('@material/web/chips/filter-chip.js');
+}
+
 const PRESENCE_CATS = [
   'presence',   // binary_sensor.device_class = presence
   'motion',     // binary_sensor.device_class = motion
@@ -21,10 +31,8 @@ export class RoomPanel extends LitElement {
   };
 
   static styles = css`
-    :host {
-      display: block;
-    }
-    /* Shape chip Material Web */
+    :host { display: block; }
+    /* arrotondamento chip Material Web */
     --md-filter-chip-container-shape: 16px;
 
     /* Glass panel */
@@ -161,20 +169,12 @@ export class RoomPanel extends LitElement {
     this.config        = {};
     this._expanded     = false;
     this.activeFilters = [];
-
-    // Import dinamico di Material Web: eseguito solo una volta
-    if (!customElements.get('md-focus-ring')) {
-      import('@material/web/chips/chip-set.js');
-      import('@material/web/chips/filter-chip.js');
-    }
   }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
       maybeAutoDiscover(this.hass, this.config, 'area');
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
-
-      // Sincronizzo activeFilters con la config al primo caricamento
       if (changed.has('config') && Array.isArray(this.config.presence_filters)) {
         this.activeFilters = [...this.config.presence_filters];
       }
@@ -292,7 +292,7 @@ export class RoomPanel extends LitElement {
                 }}
                 allow-custom-entity
                 @value-changed=${e =>
-                  this._emit('entities.presence.entity', e.detail.value)}
+                  this._fire('entities.presence.entity', e.detail.value)}
               ></ha-selector>
             </div>
 
