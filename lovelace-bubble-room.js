@@ -1,6 +1,3 @@
-import '@material/mwc-chip';
-import '@material/mwc-chip-set';
-
 /**
  * @license
  * Copyright 2019 Google LLC
