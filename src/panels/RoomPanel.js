@@ -1,8 +1,8 @@
 // src/panels/RoomPanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
-import { candidatesFor } from '../helpers/entity-filters.js';
-import '../helpers/filter-chips.js';   // <filter-chips> component
+import { maybeAutoDiscover }       from '../helpers/auto-discovery.js';
+import { candidatesFor }           from '../helpers/entity-filters.js';
+import '../helpers/filter-chips.js';  // <filter-chips> component
 
 const PRESENCE_CATS = [
   'presence',   // binary_sensor.device_class = presence
@@ -37,7 +37,7 @@ export class RoomPanel extends LitElement {
   static styles = css`
     :host { display: block; }
 
-    /* ── Glass panel ───────────────────────────────────────── */
+    /* Glass panel */
     .glass-panel {
       margin: 0 !important;
       width: 100%;
@@ -75,11 +75,11 @@ export class RoomPanel extends LitElement {
       color: #fff;
     }
 
-    /* ── Mini-pill ─────────────────────────────────────────── */
+    /* Mini-pill */
     .mini-pill {
-      background: rgba(44, 70, 100, 0.23);
-      border: 1.5px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 3px 22px 0 rgba(70, 120, 220, 0.13);
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      box-shadow: 0 3px 22px 0 rgba(70,120,220,0.13);
       backdrop-filter: blur(10px) saturate(1.2);
       border-radius: 24px;
       margin-bottom: 18px;
@@ -99,11 +99,11 @@ export class RoomPanel extends LitElement {
       padding: 15px 22px;
     }
 
-    /* ── Input group ───────────────────────────────────────── */
+    /* Input group */
     .input-group {
-      background: rgba(44, 70, 100, 0.23);
-      border: 1.5px solid rgba(255, 255, 255, 0.13);
-      box-shadow: 0 2px 14px 0 rgba(70, 120, 220, 0.10);
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.13);
+      box-shadow: 0 2px 14px 0 rgba(70,120,220,0.10);
       border-radius: 18px;
       margin-bottom: 13px;
       padding: 14px 18px 10px;
@@ -129,7 +129,7 @@ export class RoomPanel extends LitElement {
       min-height: 56px;
     }
 
-    /* ── Reset button ─────────────────────────────────────── */
+    /* Reset button */
     .reset-button {
       border: 2px solid #ff4c6a;
       color: #ff4c6a;
@@ -139,7 +139,7 @@ export class RoomPanel extends LitElement {
       cursor: pointer;
     }
 
-    /* ── Tap/Hold action pills ─────────────────────────────── */
+    /* Tap/Hold action pills */
     .pill-group {
       display: flex;
       flex-wrap: wrap;
@@ -157,7 +157,7 @@ export class RoomPanel extends LitElement {
       color: #55afff;
     }
 
-    /* ── Vaadin overlay fix ───────────────────────────────── */
+    /* Vaadin overlay fix */
     vaadin-combo-box-overlay,
     vaadin-combo-box-item,
     vaadin-combo-box-item::part(content) {
@@ -166,19 +166,14 @@ export class RoomPanel extends LitElement {
   `;
 
   render() {
-    const cfg = this.config;
-    const area       = cfg.area || '';
-    const name       = cfg.name || '';
-    const icon       = cfg.icon || '';
-    const presValue  = cfg.entities?.presence?.entity || cfg.presence_entity || '';
-    const autoDisc   = cfg.auto_discovery_sections?.presence ?? false;
-    const presFilters = cfg.presence_filters ?? [...PRESENCE_CATS];
-    const presCandidates = candidatesFor(
-      this.hass,
-      this.config,
-      'presence',
-      presFilters
-    );
+    const cfg           = this.config;
+    const area          = cfg.area || '';
+    const name          = cfg.name || '';
+    const icon          = cfg.icon || '';
+    const presValue     = cfg.entities?.presence?.entity || cfg.presence_entity || '';
+    const autoDisc      = cfg.auto_discovery_sections?.presence ?? false;
+    const presFilters   = cfg.presence_filters ?? [...PRESENCE_CATS];
+    const presCandidates = candidatesFor(this.hass, this.config, 'presence', presFilters);
 
     return html`
       <ha-expansion-panel
@@ -188,7 +183,7 @@ export class RoomPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
-        <!-- Auto-discover toggle -->
+        <!-- Auto-discover -->
         <div class="input-group ad-top">
           <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input
@@ -225,7 +220,7 @@ export class RoomPanel extends LitElement {
           </div>
         </div>
 
-        <!-- Icon & Presence -->
+        <!-- Icon & Presence + Chips -->
         <div class="mini-pill">
           <div class="mini-pill-header">Icon & Presence</div>
           <div class="mini-pill-content">
@@ -239,7 +234,6 @@ export class RoomPanel extends LitElement {
               ></ha-icon-picker>
             </div>
 
-            <!-- Filter Chips -->
             <div class="input-group">
               <label>Filtra per categoria:</label>
               <filter-chips
@@ -249,7 +243,6 @@ export class RoomPanel extends LitElement {
               ></filter-chips>
             </div>
 
-            <!-- Presence selector -->
             <div class="input-group">
               <label>Presence (ID):</label>
               <ha-selector
@@ -274,14 +267,13 @@ export class RoomPanel extends LitElement {
 
         <!-- Reset -->
         <div style="text-align:center;margin-top:1.2em;">
-          <button class="reset-button" @click=${this._resetRoom}>
-            🧹 Reset Room
-          </button>
+          <button class="reset-button" @click=${this._resetRoom}>🧹 Reset Room</button>
         </div>
       </ha-expansion-panel>
     `;
   }
 
+  // forza auto-discover quando cambia area
   _onAreaChanged = (e) => {
     const v = e.detail.value;
     this._fire('area', v);
@@ -304,20 +296,22 @@ export class RoomPanel extends LitElement {
             >${a}</paper-button>
           `)}
         </div>
+
         ${cfg.action === 'navigate' ? html`
           <input
             type="text"
             placeholder="Path"
             .value=${cfg.navigation_path || ''}
-            @input=${e => this._fire(`${type}_action.navigation_path`, e.detail.value)}
+            @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
           />
         ` : ''}
+
         ${cfg.action === 'call-service' ? html`
           <input
             type="text"
             placeholder="service: domain.service_name"
             .value=${cfg.service || ''}
-            @input=${e => this._fire(`${type}_action.service`, e.detail.value)}
+            @input=${e => this._fire(`${type}_action.service`, e.target.value)}
           />
           <input
             type="text"
@@ -336,7 +330,7 @@ export class RoomPanel extends LitElement {
 
   _resetRoom() {
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' } },
+      detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' }},
       bubbles: true, composed: true,
     }));
   }
@@ -346,10 +340,7 @@ export class RoomPanel extends LitElement {
       detail: { prop, val }, bubbles: true, composed: true,
     }));
   }
-
-  _fire(prop, val) {
-    this._emit(prop, val);
-  }
+  _fire(prop, val) { this._emit(prop, val); }
 }
 
 customElements.define('room-panel', RoomPanel);

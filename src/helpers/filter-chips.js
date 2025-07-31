@@ -1,15 +1,12 @@
+// src/helpers/filter-chips.js
 import { LitElement, html, css } from 'lit';
+
+/* usa i chip “ufficiali” di HA, già presenti nel bundle */
+import '@home-assistant/frontend/src/components/chip/ha-chip-set.js';
+import '@home-assistant/frontend/src/components/chip/ha-chip.js';
 
 import { FILTER_LABELS } from './entity-filters.js';
 
-/**
- * <filter-chips>
- *
- *  • value   = array categorie attive  (['motion','light'…])
- *  • allowed = array categorie valide  (tutte)
- *
- *  Emette "value-changed" con { value: [...] }.
- */
 export class FilterChips extends LitElement {
   static properties = {
     value: { type: Array },
@@ -23,36 +20,37 @@ export class FilterChips extends LitElement {
   }
   
   static styles = css`
-    mwc-chip {
+    ha-chip {
       margin: 4px;
-      --mdc-theme-primary: var(--primary-color);   /* rispetta tema HA */
     }
   `;
   
   _toggle(cat) {
-    const set = new Set(this.value);
-    set.has(cat) ? set.delete(cat) : set.add(cat);
+    const s = new Set(this.value);
+    s.has(cat) ? s.delete(cat) : s.add(cat);
     this.dispatchEvent(new CustomEvent('value-changed', {
-      detail: { value: [...set] },
+      detail: { value: Array.from(s) },
       bubbles: true,
       composed: true,
     }));
   }
   
   render() {
-    if (!this.allowed?.length) return html``; /* niente chip → niente UI */
-    
+    if (!this.allowed?.length) {
+      return html``;
+    }
     return html`
-      <mwc-chip-set filter>
+      <ha-chip-set choice>
         ${this.allowed.map(cat => html`
-          <mwc-chip
+          <ha-chip
             .label=${FILTER_LABELS[cat] ?? cat}
             ?selected=${this.value.includes(cat)}
             @click=${() => this._toggle(cat)}
-          ></mwc-chip>
+          ></ha-chip>
         `)}
-      </mwc-chip-set>
+      </ha-chip-set>
     `;
   }
 }
+
 customElements.define('filter-chips', FilterChips);
