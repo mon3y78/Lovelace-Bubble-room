@@ -1,32 +1,31 @@
-// rollup.config.mjs
 import resolve  from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import json     from '@rollup/plugin-json';
 import { terser } from 'rollup-plugin-terser';
 
 export default {
-  input: 'src/bubble-room.js',        // il tuo entry-point
+  input: 'src/bubble-room.js',
   output: {
-    file:               'lovelace-bubble-room.js',
+    file:               'dist/lovelace-bubble-room.js',
     format:             'esm',
     inlineDynamicImports: true,
+    sourcemap:          true,
   },
-  // esternalizza **solo** i componenti HA già inclusi a priori
-  external: [
-    'home-assistant-frontend/src/components/ha-entity-picker.js',
-    'home-assistant-frontend/src/components/ha-expansion-panel.js',
-  ],
+  // esternalizza SOLO i componenti core di HA
+  external: id => {
+    return id.startsWith('home-assistant-frontend/');
+  },
   plugins: [
-    // Risolve i bare-specifier nel node_modules
+    // Risolvi tutto da node_modules
     resolve({
-      browser:      true,
-      preferBuiltins: false,
-      mainFields:   ['module','jsnext:main','main'],
-      extensions:   ['.js','.mjs','.json'],
-      dedupe:       ['lit'],           // evita duplicati di lit
+      browser:       true,
+      preferBuiltins:false,
+      mainFields:    ['module','jsnext:main','main'],
+      extensions:    ['.js','.mjs','.json'],
+      dedupe:        ['lit']
     }),
-    commonjs(),   // converte eventuali CJS a ESM
-    json(),       // risolve import .json
-    terser(),     // minifica, facoltativo
+    commonjs(),   // trasforma eventuali CJS
+    json(),       // per importare JSON
+    terser(),     // minifica l’output (opzionale)
   ],
 };
