@@ -2,7 +2,8 @@
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover }       from '../helpers/auto-discovery.js';
 import { candidatesFor }           from '../helpers/entity-filters.js';
-import '../helpers/filter-chips.js';  // <filter-chips> component
+import '@material/web/chips/chip-set.js';
+import '@material/web/chips/filter-chip.js';
 
 const PRESENCE_CATS = [
   'presence',   // binary_sensor.device_class = presence
@@ -36,6 +37,7 @@ export class RoomPanel extends LitElement {
 
   static styles = css`
     :host { display: block; }
+    --md-filter-chip-container-shape: 16px;
 
     /* Glass panel */
     .glass-panel {
