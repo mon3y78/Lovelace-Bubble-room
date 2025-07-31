@@ -2,8 +2,6 @@
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover }       from '../helpers/auto-discovery.js';
 import { candidatesFor }           from '../helpers/entity-filters.js';
-import '@material/web/chips/chip-set.js';
-import '@material/web/chips/filter-chip.js';
 
 const PRESENCE_CATS = [
   'presence',   // binary_sensor.device_class = presence
@@ -26,6 +24,10 @@ export class RoomPanel extends LitElement {
     this.hass      = {};
     this.config    = {};
     this._expanded = false;
+    if (!customElements.get('md-focus-ring')) {
+      import('@material/web/chips/chip-set.js');
+      import('@material/web/chips/filter-chip.js');
+    }
   }
 
   updated(changed) {
