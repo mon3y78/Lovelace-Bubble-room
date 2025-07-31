@@ -1,8 +1,4 @@
 import '@home-assistant/frontend/src/components/ha-entity-picker';
-import '@home-assistant/frontend/src/components/ha-area-picker';
-import '@home-assistant/frontend/src/components/ha-icon-picker';
-import '@home-assistant/frontend/src/components/ha-expansion-panel';
-import '@polymer/paper-button/paper-button';
 
 /**
  * @license
