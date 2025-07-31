@@ -1,3 +1,7 @@
+import '@home-assistant/frontend/src/components/ha-selector/ha-selector';
+import '@home-assistant/frontend/src/components/ha-icon-picker/ha-icon-picker';
+import '@home-assistant/frontend/src/components/ha-expansion-panel/ha-expansion-panel';
+
 /**
  * @license
  * Copyright 2019 Google LLC
@@ -24,94 +28,119 @@ const t=globalThis,i$1=t.trustedTypes,s$1=i$1?i$1.createPolicy("lit-html",{creat
  * SPDX-License-Identifier: BSD-3-Clause
  */const s=globalThis;class i extends y$1{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0;}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const r=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=B(r,this.renderRoot,this.renderOptions);}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0);}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1);}render(){return T}}i._$litElement$=!0,i["finalized"]=!0,s.litElementHydrateSupport?.({LitElement:i});const o=s.litElementPolyfillSupport;o?.({LitElement:i});(s.litElementVersions??=[]).push("4.2.1");
 
+/**
+ * Raccolta di filtri “di sezione” usati da tutti i pannelli della card.
+ * Ogni descrittore può contenere:
+ *   • includeDomains        array di domini ammessi
+ *   • includeDeviceClasses  array di device_class ammessi (solo per binary_sensor)
+ *   • entityFilter(state)   funzione extra, deve restituire true / false
+ */
 const FILTERS = {
   presence: {
-    includeDomains: ['person','device_tracker','binary_sensor','light','switch','media_player','fan','humidifier','lock','input_boolean','scene'],
-    includeDeviceClasses: ['motion','occupancy','presence'],
+    includeDomains: [
+      'person', 'device_tracker', 'binary_sensor',
+      'light', 'switch', 'media_player', 'fan',
+      'humidifier', 'lock', 'input_boolean', 'scene'
+    ],
+    includeDeviceClasses: ['motion', 'occupancy', 'presence'],
     entityFilter: (state, hass) => {
       const id = typeof state === 'string' ? state : state?.entity_id;
       if (!id) return false;
       const [domain] = id.split('.');
       if (domain === 'binary_sensor') {
         const dc = hass?.states?.[id]?.attributes?.device_class;
-        return ['motion','occupancy','presence'].includes(dc);
+        return ['motion', 'occupancy', 'presence'].includes(dc);
       }
       return true;
     },
   },
-
+  
   sensorByType: (type) => ({
     includeDomains: ['sensor'],
     includeDeviceClasses: undefined,
-    entityFilter: (state, hass) => {
-      const id = typeof state === 'string' ? state : state?.entity_id;
-      if (!id) return false;
-      // In futuro si può filtrare per device_class a seconda del type
-      return true;
+    entityFilter: (state) => {
+      // in futuro potrai filtrare per type/device_class
+      return !!state;
     },
   }),
-
+  
   subbutton: {
-    includeDomains: ['light','switch','media_player','fan','cover','humidifier','lock','scene','input_boolean','script','button'],
+    includeDomains: [
+      'light', 'switch', 'media_player', 'fan', 'cover',
+      'humidifier', 'lock', 'scene', 'input_boolean',
+      'script', 'button'
+    ],
     entityFilter: () => true,
   },
-
+  
   mushroom: {
-    includeDomains: ['light','switch','media_player','fan','cover','humidifier','lock','scene','input_boolean','script','button','sensor','binary_sensor','climate'],
+    includeDomains: [
+      'light', 'switch', 'media_player', 'fan', 'cover',
+      'humidifier', 'lock', 'scene', 'input_boolean',
+      'script', 'button', 'sensor', 'binary_sensor', 'climate'
+    ],
     entityFilter: () => true,
   },
 };
 
+/* ────────────────────────────────────────────────────────────────── */
+/*  NOVITÀ  ➜  utility riusabile per sapere quali entità sono in area */
+/* ────────────────────────────────────────────────────────────────── */
+function entitiesInArea(hass, areaId) {
+  if (!hass?.states || !areaId) return [];
+  return Object.keys(hass.states).filter((eid) => {
+    const attr = hass.states[eid]?.attributes ?? {};
+    // area_id = entity-registry / area = attributo legacy di alcune integrazioni
+    return attr.area_id === areaId || attr.area === areaId;
+  });
+}
 
 /**
- * Build a concrete list of entity_ids for a given section,
- * applying domain / device_class filters from FILTERS and
- * the Area filter from the current card config.
+ * Restituisce la lista finale di entity_id “candidati” per una sezione.
  *
- * Usage examples:
+ * Esempi:
  *   candidatesFor(hass, config, 'presence')
  *   candidatesFor(hass, config, { section: 'sensor', type })
  */
 function candidatesFor(hass, config, sectionOrOpts) {
-  const opts = typeof sectionOrOpts === 'string'
-    ? { section: sectionOrOpts }
-    : (sectionOrOpts || {});
+  const opts = typeof sectionOrOpts === 'string' ?
+    { section: sectionOrOpts } :
+    (sectionOrOpts || {});
   const section = opts.section;
   if (!hass || !hass.states || !section) return [];
-
-  // Select filter descriptor
+  
+  /* scegli il descrittore di filtro */
   let desc;
   if (section === 'sensor') {
-    const t = opts.type;
-    desc = FILTERS.sensorByType ? FILTERS.sensorByType(t) : FILTERS.sensor;
+    desc = FILTERS.sensorByType(opts.type);
   } else {
     desc = FILTERS[section];
   }
   if (!desc) return [];
-
-  const includeDomains = desc.includeDomains || [];
-  desc.includeDeviceClasses || [];
-  const entityFilter = desc.entityFilter || (() => true);
-
+  
+  const {
+    includeDomains = [],
+      includeDeviceClasses = [],
+      entityFilter = () => true,
+  } = desc;
+  
+  /* 1. filtro per domini ---------------------------------------------------- */
   const allIds = Object.keys(hass.states);
-  const byDomain = includeDomains.length
-    ? allIds.filter((id) => includeDomains.includes(id.split('.')[0]))
-    : allIds.slice();
-
+  const byDomain = includeDomains.length ?
+    allIds.filter((id) => includeDomains.includes(id.split('.')[0])) :
+    allIds.slice();
+  
+  /* 2. filtro custom (device_class, ecc.) ----------------------------------- */
   const byDesc = byDomain.filter((id) => entityFilter(id, hass));
-
+  
+  /* 3. filtro per area (NOVITÀ) --------------------------------------------- */
   const area = config?.area;
   let res = byDesc;
   if (area) {
-    const inArea = byDesc.filter((id) => {
-      const st = hass.states[id];
-      const a1 = st?.attributes?.area_id;
-      const a2 = st?.attributes?.area;
-      return a1 === area || a2 === area;
-    });
-    if (inArea.length) res = inArea;
+    const fromArea = entitiesInArea(hass, area);
+    res = byDesc.filter((id) => fromArea.includes(id));
   }
-
+  
   return res;
 }
 
@@ -285,31 +314,31 @@ function maybeAutoDiscover(hass, config, changedProp, debug = false) {
 }
 
 // src/panels/RoomPanel.js
-// IMPORTS UI COMPONENTS DI HOME ASSISTANT
-
+// (gli altri, come <paper-button>, sono già registrati dal bundle principale)
+// ───────────────────────────────────────────────────────────────────────────
 
 class RoomPanel extends i {
   static properties = {
-    hass: { type: Object },
+    hass:   { type: Object },
     config: { type: Object },
     _expanded: { type: Boolean },
   };
 
   constructor() {
     super();
-    this.hass = {};
+    this.hass   = {};
     this.config = {};
     this._expanded = false;
   }
 
   updated(changedProps) {
     if (changedProps.has('config') || changedProps.has('hass')) {
-      // trigger auto-discovery on area or toggle change
       maybeAutoDiscover(this.hass, this.config, 'area');
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
     }
   }
 
+  /* ─────────────────────────────── CSS ─────────────────────────────── */
   static styles = i$3`
     :host { display: block; }
     .glass-panel {
@@ -387,14 +416,13 @@ class RoomPanel extends i {
       color: #55afff;
       margin-bottom: 6px;
     }
-    /* rendiamo il picker HA sempre visibile */
-    ha-entity-picker, ha-icon-picker, ha-area-picker {
+    ha-selector, ha-icon-picker {
       display: block;
       width: 100%;
       min-height: 56px;
       box-sizing: border-box;
     }
-    ha-entity-picker::part(combobox) {
+    ha-selector::part(combobox) {
       min-height: 56px;
     }
     .reset-button {
@@ -405,22 +433,14 @@ class RoomPanel extends i {
       background: transparent;
       cursor: pointer;
     }
-    .pill-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 6px;
-    }
+    .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
     .pill-button {
       padding: 6px 10px;
       border-radius: 999px;
       border: 1px solid #555;
       cursor: pointer;
     }
-    .pill-button.active {
-      border-color: #55afff;
-      color: #55afff;
-    }
+    .pill-button.active { border-color: #55afff; color: #55afff; }
 
     /* fix globale overlay Vaadin */
     vaadin-combo-box-overlay,
@@ -430,13 +450,20 @@ class RoomPanel extends i {
     }
   `;
 
+  /* ─────────────────────────────── UI ─────────────────────────────── */
   render() {
-    const cfg = this.config;
-    cfg.area || '';
-    const name = cfg.name || '';
-    const icon = cfg.icon || '';
-    const pres = cfg.entities?.presence?.entity || cfg.presence_entity || '';
-    const ad = cfg.auto_discovery_sections?.presence || false;
+    const cfg   = this.config;
+    const area  = cfg.area || '';
+    const name  = cfg.name || '';
+    const icon  = cfg.icon || '';
+
+    /* presenza salvata (entity_id) */
+    const pres  = cfg.entities?.presence?.entity || cfg.presence_entity || '';
+
+    /* lista di entità “presence” filtrata per area + dominio + device_class */
+    const presCandidates = candidatesFor(this.hass, this.config, 'presence');
+
+    const ad    = cfg.auto_discovery_sections?.presence || false;
 
     return x`
       <ha-expansion-panel
@@ -444,9 +471,9 @@ class RoomPanel extends i {
         .expanded=${this._expanded}
         @expanded-changed=${e => (this._expanded = e.detail.expanded)}
       >
-        <div slot="header" class="glass-header">🛋️ Room Settings 2</div>
+        <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
-        <!-- Auto-discover subito sotto il titolo -->
+        <!-- Auto-discover -->
         <div class="input-group ad-top">
           <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input
@@ -458,9 +485,11 @@ class RoomPanel extends i {
           </label>
         </div>
 
+        <!-- ── PILL: Room ── -->
         <div class="mini-pill">
           <div class="mini-pill-header">Room</div>
           <div class="mini-pill-content">
+            <!-- Nome stanza -->
             <div class="input-group">
               <label>Room name:</label>
               <input
@@ -469,28 +498,25 @@ class RoomPanel extends i {
                 @input=${e => this._fire('name', e.target.value)}
               />
             </div>
+
+            <!-- Area -->
             <div class="input-group">
               <label>Area:</label>
-               <ha-selector
+              <ha-selector
                 .hass=${this.hass}
-                .value=${pres}
-                .selector=${{
-                  entity: {
-                    domain: ["person", "device_tracker", "binary_sensor"],
-                    device_class: ["motion", "occupancy", "presence"],
-                    multiple: false          // (valore di default, ma lo lascio chiaro)
-                  }
-                }}
-                @value-changed=${e =>
-                  this._emit("entities.presence.entity", e.detail.value)}
+                .value=${area}
+                .selector=${{ area: {} }}
+                @value-changed=${e => this._fire('area', e.detail.value)}
               ></ha-selector>
             </div>
           </div>
         </div>
 
+        <!-- ── PILL: Icona & Presence ── -->
         <div class="mini-pill">
           <div class="mini-pill-header">Icon & Presence</div>
           <div class="mini-pill-content">
+            <!-- Icona -->
             <div class="input-group">
               <label>Room Icon:</label>
               <ha-icon-picker
@@ -500,21 +526,31 @@ class RoomPanel extends i {
                 @value-changed=${e => this._fire('icon', e.detail.value)}
               ></ha-icon-picker>
             </div>
+
+            <!-- Presence -->
             <div class="input-group">
               <label>Presence (ID):</label>
-              <ha-entity-picker
+              <ha-selector
                 .hass=${this.hass}
                 .value=${pres}
-                .includeEntities=${this._getPresenceCandidates()}
+                .selector=${{
+                  entity: {
+                    multiple: false,
+                    include_entities: presCandidates
+                  }
+                }}
                 allow-custom-entity
-                @value-changed=${e => this._emit('entities.presence.entity', e.detail.value)}
-              ></ha-entity-picker>
+                @value-changed=${e =>
+                  this._emit('entities.presence.entity', e.detail.value)}
+              ></ha-selector>
             </div>
+
             ${this._renderActions('tap')}
             ${this._renderActions('hold')}
           </div>
         </div>
 
+        <!-- Reset -->
         <div style="text-align:center;margin-top:1.2em;">
           <button class="reset-button" @click=${this._resetRoom}>
             🧹 Reset Room
@@ -524,9 +560,11 @@ class RoomPanel extends i {
     `;
   }
 
+  /* ────────────────────────────── Helpers ─────────────────────────── */
   _renderActions(type) {
-    const cfg = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+    const cfg     = this.config?.[`${type}_action`] || {};
+    const actions = ['toggle','more-info','navigate','call-service','none'];
+
     return x`
       <div class="input-group">
         <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
@@ -538,6 +576,7 @@ class RoomPanel extends i {
             >${a}</paper-button>
           `)}
         </div>
+
         ${cfg.action === 'navigate' ? x`
           <input
             type="text"
@@ -546,6 +585,7 @@ class RoomPanel extends i {
             @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
           />
         ` : ''}
+
         ${cfg.action === 'call-service' ? x`
           <input
             type="text"
@@ -566,17 +606,6 @@ class RoomPanel extends i {
         ` : ''}
       </div>
     `;
-  }
-
-  _getPresenceCandidates() {
-    const h = this.hass?.states || {};
-    return Object.keys(h)
-      .filter(id => ['person','device_tracker','binary_sensor'].includes(id.split('.')[0]))
-      .filter(id => {
-        if (id.split('.')[0] !== 'binary_sensor') return true;
-        const dc = h[id]?.attributes?.device_class;
-        return ['motion','occupancy','presence'].includes(dc);
-      });
   }
 
   _resetRoom() {
