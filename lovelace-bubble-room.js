@@ -291,31 +291,17 @@ const PRESENCE_CATS = [
 
 class RoomPanel extends i$1 {
   static properties = {
-    hass:      { type: Object },
-    config:    { type: Object },
-    _expanded: { type: Boolean },
+    hass:           { type: Object },
+    config:         { type: Object },
+    _expanded:      { type: Boolean },
+    activeFilters:  { type: Array, state: true },
   };
 
-  constructor() {
-    super();
-    this.hass      = {};
-    this.config    = {};
-    this._expanded = false;
-    if (!customElements.get('md-focus-ring')) {
-      Promise.resolve().then(function () { return chipSet; });
-      Promise.resolve().then(function () { return filterChip; });
-    }
-  }
-
-  updated(changed) {
-    if (changed.has('config') || changed.has('hass')) {
-      maybeAutoDiscover(this.hass, this.config, 'area');
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
-    }
-  }
-
   static styles = i$4`
-    :host { display: block; }
+    :host {
+      display: block;
+    }
+    /* Shape chip Material Web */
     --md-filter-chip-container-shape: 16px;
 
     /* Glass panel */
@@ -446,14 +432,55 @@ class RoomPanel extends i$1 {
     }
   `;
 
+  constructor() {
+    super();
+    this.hass          = {};
+    this.config        = {};
+    this._expanded     = false;
+    this.activeFilters = [];
+
+    // Import dinamico di Material Web: eseguito solo una volta
+    if (!customElements.get('md-focus-ring')) {
+      Promise.resolve().then(function () { return chipSet; });
+      Promise.resolve().then(function () { return filterChip; });
+    }
+  }
+
+  updated(changed) {
+    if (changed.has('config') || changed.has('hass')) {
+      maybeAutoDiscover(this.hass, this.config, 'area');
+      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
+
+      // Sincronizzo activeFilters con la config al primo caricamento
+      if (changed.has('config') && Array.isArray(this.config.presence_filters)) {
+        this.activeFilters = [...this.config.presence_filters];
+      }
+    }
+  }
+
+  addFilter(filter) {
+    if (!this.activeFilters.includes(filter)) {
+      this.activeFilters = [...this.activeFilters, filter];
+    }
+  }
+
+  removeFilter(filter) {
+    this.activeFilters = this.activeFilters.filter(f => f !== filter);
+  }
+
+  toggleFilter(filter) {
+    if (this.activeFilters.includes(filter)) {
+      this.removeFilter(filter);
+    } else {
+      this.addFilter(filter);
+    }
+    this._fire('presence_filters', this.activeFilters);
+  }
+
   render() {
-    const cfg           = this.config;
-    const area          = cfg.area || '';
-    const name          = cfg.name || '';
-    const icon          = cfg.icon || '';
-    const presValue     = cfg.entities?.presence?.entity || cfg.presence_entity || '';
-    const autoDisc      = cfg.auto_discovery_sections?.presence ?? false;
-    const presFilters   = cfg.presence_filters ?? [...PRESENCE_CATS];
+    const cfg            = this.config;
+    const presFilters    = cfg.presence_filters ?? [...PRESENCE_CATS];
+    const presValue      = cfg.entities?.presence?.entity ?? cfg.presence_entity ?? '';
     const presCandidates = candidatesFor(this.hass, this.config, 'presence', presFilters);
 
     return x`
@@ -469,9 +496,9 @@ class RoomPanel extends i$1 {
           <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input
               type="checkbox"
-              .checked=${autoDisc}
+              .checked=${cfg.auto_discovery_sections?.presence ?? false}
               @change=${e =>
-                this._emit('auto_discovery_sections.presence', e.target.checked)}
+                this._fire('auto_discovery_sections.presence', e.target.checked)}
             />
             <span>🔍 Auto-discover Presence</span>
           </label>
@@ -485,7 +512,7 @@ class RoomPanel extends i$1 {
               <label>Room name:</label>
               <input
                 type="text"
-                .value=${name}
+                .value=${cfg.name ?? ''}
                 @input=${e => this._fire('name', e.target.value)}
               />
             </div>
@@ -493,7 +520,7 @@ class RoomPanel extends i$1 {
               <label>Area:</label>
               <ha-selector
                 .hass=${this.hass}
-                .value=${area}
+                .value=${cfg.area ?? ''}
                 .selector=${{ area: {} }}
                 @value-changed=${this._onAreaChanged}
               ></ha-selector>
@@ -509,7 +536,7 @@ class RoomPanel extends i$1 {
               <label>Room Icon:</label>
               <ha-icon-picker
                 .hass=${this.hass}
-                .value=${icon}
+                .value=${cfg.icon ?? ''}
                 allow-custom-icon
                 @value-changed=${e => this._fire('icon', e.detail.value)}
               ></ha-icon-picker>
@@ -517,11 +544,16 @@ class RoomPanel extends i$1 {
 
             <div class="input-group">
               <label>Filtra per categoria:</label>
-              <filter-chips
-                .value=${presFilters}
-                .allowed=${PRESENCE_CATS}
-                @value-changed=${e => this._fire('presence_filters', e.detail.value)}
-              ></filter-chips>
+              <md-chip-set aria-label="Categorie di Presence" selectable>
+                ${PRESENCE_CATS.map(cat => x`
+                  <md-filter-chip
+                    .label=${cat}
+                    ?selected=${this.activeFilters.includes(cat)}
+                    ?removable=${this.activeFilters.includes(cat)}
+                    @click=${() => this.toggleFilter(cat)}
+                  ></md-filter-chip>
+                `)}
+              </md-chip-set>
             </div>
 
             <div class="input-group">
@@ -554,18 +586,15 @@ class RoomPanel extends i$1 {
     `;
   }
 
-  // forza auto-discover quando cambia area
   _onAreaChanged = (e) => {
     const v = e.detail.value;
     this._fire('area', v);
-    if (v) {
-      this._emit('auto_discovery_sections.presence', true);
-    }
+    if (v) this._fire('auto_discovery_sections.presence', true);
   };
 
   _renderActions(type) {
     const cfg     = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle','more-info','navigate','call-service','none'];
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
     return x`
       <div class="input-group">
         <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
@@ -610,10 +639,7 @@ class RoomPanel extends i$1 {
   }
 
   _resetRoom() {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' }},
-      bubbles: true, composed: true,
-    }));
+    this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' });
   }
 
   _emit(prop, val) {
