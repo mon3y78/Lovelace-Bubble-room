@@ -4,11 +4,6 @@ import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor } from '../helpers/entity-filters.js';
 
 // ── IMPORT dei Web-components del frontend HA ──────────────────────────────
-import '@home-assistant/frontend/src/components/ha-selector/ha-selector';
-import '@home-assistant/frontend/src/components/ha-icon-picker/ha-icon-picker';
-import '@home-assistant/frontend/src/components/ha-expansion-panel/ha-expansion-panel';
-// (gli altri, come <paper-button>, sono già registrati dal bundle principale)
-// ───────────────────────────────────────────────────────────────────────────
 
 export class RoomPanel extends LitElement {
   static properties = {
