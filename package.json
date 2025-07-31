@@ -26,11 +26,11 @@
     "jest-worker": "^26.6.2",
     "js-tokens": "^4.0.0",
     "lit": "^3.2.1",
-    "custom-card-helpers": "^1.9.0", // helper HA (se li usi)
-    "memoize-one": "^6.0.0", // per caching di funzioni
-    "@material/mwc-chip": "^0.27.0", // se usi <mwc-chip>
-    "@material/mwc-chip-set": "^0.27.0", // se usi <mwc-chip-set>
-    "@mdi/js": "^7.4.47", // se gestisci path SVG di icone
+    "custom-card-helpers": "^1.9.0", 
+    "memoize-one": "^6.0.0", 
+    "@material/mwc-chip": "^0.27.0",
+    "@material/mwc-chip-set": "^0.27.0",
+    "@mdi/js": "^7.4.47",
     "magic-string": "^0.30.17",
     "merge-stream": "^2.0.0",
     "path-parse": "^1.0.7",
