@@ -58,9 +58,21 @@ export const FILTERS = {
 /* ────────────────────────────────────────────────────────────────── */
 export function entitiesInArea(hass, areaId) {
   if (!hass?.states || !areaId) return [];
+
+  const entReg = hass.entities ?? {};
+  const devReg = hass.devices ?? {};
+
   return Object.keys(hass.states).filter((eid) => {
+    /* 1️⃣  entity-registry: area_id diretto */
+    const entEntry = entReg[eid];
+    if (entEntry?.area_id === areaId) return true;
+
+    /* 2️⃣  device-registry: area_id ereditato dal device */
+    const devId = entEntry?.device_id;
+    if (devId && devReg[devId]?.area_id === areaId) return true;
+
+    /* 3️⃣  (fallback) attributi nello state, utile per vecchie integrazioni */
     const attr = hass.states[eid]?.attributes ?? {};
-    // area_id = entity-registry / area = attributo legacy di alcune integrazioni
     return attr.area_id === areaId || attr.area === areaId;
   });
 }
