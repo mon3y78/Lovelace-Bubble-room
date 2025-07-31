@@ -1,8 +1,10 @@
 // src/panels/RoomPanel.js
 import { LitElement, html, css } from 'lit';
+im
+import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor } from '../helpers/entity-filters.js';
-import '../helpers/filter-chips.js';  // chip di filtro <filter-chips>
+import '../helpers/filter-chips.js';  // custom <filter-chips> component
 
 const PRESENCE_CATS = ['presence', 'motion', 'occupancy', 'light', 'switch', 'fan'];
 
@@ -15,21 +17,17 @@ export class RoomPanel extends LitElement {
 
   constructor() {
     super();
-    this.hass      = {};
-    // inizializziamo always il flag e i filtri
-    this.config    = {
-      auto_discovery_sections: { presence: false },
-      presence_filters: [...PRESENCE_CATS],
-    };
     this._expanded = false;
   }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
+      // assicurati che il core registri i pickers
       maybeAutoDiscover(this.hass, this.config, 'area');
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
     }
   }
+
 
   static styles = css`
     :host { display: block; }
@@ -132,20 +130,22 @@ export class RoomPanel extends LitElement {
   `;
 
   render() {
-    const cfg        = this.config;
-    const area       = cfg.area || '';
-    const name       = cfg.name || '';
-    const icon       = cfg.icon || '';
-    const presFilters= cfg.presence_filters ?? [...PRESENCE_CATS];
-    const autoDisc   = cfg.auto_discovery_sections?.presence ?? false;
-
+    const cfg = this.config || {};
+    const area = cfg.area || '';
+    const name = cfg.name || '';
+    const icon = cfg.icon || '';
+    const presValue = cfg.entities?.presence?.entity || cfg.presence_entity || '';
+    // se non definito in config, tutti i chip sono attivi
+    const presFilters = cfg.presence_filters ?? [...PRESENCE_CATS];
+    // se non definito in config, auto-discover è disabled
+    const autoDisc = cfg.auto_discovery_sections?.presence ?? false;
+    // ricalcola ogni render, filtra per chip + area (solo se autoDisc true)
     const presCandidates = candidatesFor(
       this.hass,
-      this.config,
+      cfg,
       'presence',
       presFilters
     );
-    const presValue = cfg.entities?.presence?.entity || cfg.presence_entity || '';
 
     return html`
       <ha-expansion-panel
@@ -155,19 +155,20 @@ export class RoomPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
-        <!-- Auto-discover toggle -->
+        <!-- Auto-discover Presence -->
         <div class="input-group ad-top">
           <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input
               type="checkbox"
               .checked=${autoDisc}
-              @change=${e => this._emit('auto_discovery_sections.presence', e.target.checked)}
+              @change=${e =>
+                this._emit('auto_discovery_sections.presence', e.target.checked)}
             />
             <span>🔍 Auto-discover Presence</span>
           </label>
         </div>
 
-        <!-- Room name & area -->
+        <!-- Room name & Area -->
         <div class="mini-pill">
           <div class="mini-pill-header">Room</div>
           <div class="mini-pill-content">
@@ -211,7 +212,8 @@ export class RoomPanel extends LitElement {
               <filter-chips
                 .value=${presFilters}
                 .allowed=${PRESENCE_CATS}
-                @value-changed=${e => this._fire('presence_filters', e.detail.value)}
+                @value-changed=${e =>
+                  this._fire('presence_filters', e.detail.value)}
               ></filter-chips>
             </div>
 
@@ -224,11 +226,12 @@ export class RoomPanel extends LitElement {
                 .selector=${{
                   entity: {
                     multiple: false,
-                    include_entities: presCandidates
+                    include_entities: presCandidates,
                   }
                 }}
                 allow-custom-entity
-                @value-changed=${e => this._emit('entities.presence.entity', e.detail.value)}
+                @value-changed=${e =>
+                  this._emit('entities.presence.entity', e.detail.value)}
               ></ha-selector>
             </div>
 
@@ -237,7 +240,7 @@ export class RoomPanel extends LitElement {
           </div>
         </div>
 
-        <!-- Reset Room -->
+        <!-- Reset -->
         <div style="text-align:center;margin-top:1.2em;">
           <button class="reset-button" @click=${this._resetRoom}>
             🧹 Reset Room
@@ -247,14 +250,15 @@ export class RoomPanel extends LitElement {
     `;
   }
 
-  _onAreaChanged = e => {
+  _onAreaChanged(e) {
     const v = e.detail.value;
     this._fire('area', v);
+    // auto-spunta Auto-discover se seleziono area
     if (v) this._emit('auto_discovery_sections.presence', true);
-  };
+  }
 
   _renderActions(type) {
-    const cfg     = this.config?.[`${type}_action`] || {};
+    const cfg = this.config?.[`${type}_action`] || {};
     const actions = ['toggle','more-info','navigate','call-service','none'];
     return html`
       <div class="input-group">
@@ -280,7 +284,7 @@ export class RoomPanel extends LitElement {
             type="text"
             placeholder="service: domain.service_name"
             .value=${cfg.service || ''}
-            @input=${e => this._fire(`${type}_action.service`, e.target.value)}
+            @input=${e => this._fire(`${type}_action.service`, e.detail.value)}
           />
           <input
             type="text"
@@ -300,18 +304,18 @@ export class RoomPanel extends LitElement {
   _resetRoom() {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' } },
-      bubbles: true, composed: true
+      bubbles: true, composed: true,
     }));
   }
 
   _emit(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val }, bubbles: true, composed: true
+      detail: { prop, val },
+      bubbles: true,
+      composed: true,
     }));
   }
-  _fire(prop, val) {
-    this._emit(prop, val);
-  }
+  _fire(prop, val) { this._emit(prop, val); }
 }
 
 customElements.define('room-panel', RoomPanel);
