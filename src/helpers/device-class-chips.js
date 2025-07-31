@@ -1,7 +1,7 @@
 // src/helpers/device-class-chips.js
 import { LitElement, html, css } from 'lit';
 
-/* componenti ufficiali MWC v3 (pacchetto @material/web) */
+/* componenti ufficiali v3 (pacchetto @material/web) */
 import '@material/web/chips/chip-set.js';
 import '@material/web/chips/filter-chip.js';
 
