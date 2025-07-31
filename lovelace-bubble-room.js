@@ -327,32 +327,31 @@ const PRESENCE_CATS = ['presence', 'motion', 'occupancy', 'light', 'switch', 'fa
 
 class RoomPanel extends i {
   static properties = {
-    hass: { type: Object },
-    config: { type: Object },
+    hass:      { type: Object },
+    config:    { type: Object },
     _expanded: { type: Boolean },
   };
-  
+
   constructor() {
     super();
-    this.hass = {};
-    this.config = {};
+    this.hass      = {};
+    this.config    = {};
     this._expanded = false;
   }
-  
+
   updated(changed) {
-    /* tiene in sync auto-discover se arriva dall’esterno */
+    /* tiene in sync auto-discover se valori esterni cambiano */
     if (changed.has('config') || changed.has('hass')) {
       maybeAutoDiscover(this.hass, this.config, 'area');
-      maybeAutoDiscover(this.hass, this.config,
-        'auto_discovery_sections.presence');
+      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
     }
   }
-  
-  /* ──────────────── STILI  */
+
+  /* ───────────────────────────── STILI ───────────────────────────── */
   static styles = i$3`
     :host { display: block; }
 
-    /* ── Pannello glass ───────────────── */
+    /* pannello “glass” */
     .glass-panel {
       margin: 0 !important;
       width: 100%;
@@ -360,12 +359,12 @@ class RoomPanel extends i {
       border-radius: 40px;
       position: relative;
       border: none;
-      --glass-bg: rgba(73,164,255,0.38);
-      --glass-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
+      --glass-bg: rgba(73, 164, 255, 0.38);
+      --glass-shadow: 0 2px 24px 0 rgba(50, 180, 255, 0.25);
       --glass-sheen: linear-gradient(
         120deg,
-        rgba(255,255,255,0.26),
-        rgba(255,255,255,0.11) 70%,
+        rgba(255, 255, 255, 0.26),
+        rgba(255, 255, 255, 0.11) 70%,
         transparent 100%
       );
       background: var(--glass-bg);
@@ -390,7 +389,7 @@ class RoomPanel extends i {
       color: #fff;
     }
 
-    /* ── mini-pill ─────────────────────── */
+    /* pillole */
     .mini-pill {
       background: rgba(44, 70, 100, 0.23);
       border: 1.5px solid rgba(255, 255, 255, 0.12);
@@ -408,16 +407,14 @@ class RoomPanel extends i {
       font-family: 'Inter', sans-serif;
       font-weight: 800;
       color: #55afff;
-      cursor: pointer;
-      user-select: none;
     }
     .mini-pill-content { padding: 15px 22px; }
 
-    /* ── Input group ───────────────────── */
+    /* gruppi input */
     .input-group {
       background: rgba(44, 70, 100, 0.23);
       border: 1.5px solid rgba(255, 255, 255, 0.13);
-      box-shadow: 0 2px 14px 0 rgba(70, 120, 220, 0.10);
+      box-shadow: 0 2px 14px 0 rgba(70, 120, 220, 0.1);
       border-radius: 18px;
       margin-bottom: 13px;
       padding: 14px 18px 10px;
@@ -432,7 +429,8 @@ class RoomPanel extends i {
       margin-bottom: 6px;
     }
 
-    ha-selector, ha-icon-picker {
+    ha-selector,
+    ha-icon-picker {
       display: block;
       width: 100%;
       min-height: 56px;
@@ -440,7 +438,7 @@ class RoomPanel extends i {
     }
     ha-selector::part(combobox) { min-height: 56px; }
 
-    /* ── Reset ─────────────────────────── */
+    /* reset */
     .reset-button {
       border: 2px solid #ff4c6a;
       color: #ff4c6a;
@@ -450,7 +448,7 @@ class RoomPanel extends i {
       cursor: pointer;
     }
 
-    /* ── Tap / hold pills ──────────────── */
+    /* tap / hold chip */
     .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
     .pill-button {
       padding: 6px 10px;
@@ -460,7 +458,7 @@ class RoomPanel extends i {
     }
     .pill-button.active { border-color: #55afff; color: #55afff; }
 
-    /* fix Vaadin overlay */
+    /* fix vaadin overlay */
     vaadin-combo-box-overlay,
     vaadin-combo-box-item,
     vaadin-combo-box-item::part(content) {
@@ -468,22 +466,23 @@ class RoomPanel extends i {
     }
   `;
 
-
-  /* ────────────────────────── RENDER ────────────────────────── */
+  /* ───────────────────────────── RENDER ───────────────────────────── */
   render() {
     const cfg  = this.config;
 
-    /* valori di stato */
-    const area  = cfg.area  || '';
-    const name  = cfg.name  || '';
-    const icon  = cfg.icon  || '';
+    /* stato attuale */
+    const area   = cfg.area || '';
+    const name   = cfg.name || '';
+    const icon   = cfg.icon || '';
 
-    /* chip selezionati (se mancano => tutti attivi) */
-    const presCats = cfg.presence_filters ?? [...PRESENCE_CATS];
+    const presFilters = cfg.presence_filters ?? [...PRESENCE_CATS];
 
-    /* lista entità filtrate */
+    /* entità disponibili secondo chip + area */
     const presCandidates = candidatesFor(
-      this.hass, this.config, 'presence', presCats,
+      this.hass,
+      this.config,
+      'presence',
+      presFilters,
     );
 
     const presValue = cfg.entities?.presence?.entity
@@ -500,7 +499,7 @@ class RoomPanel extends i {
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
-        <!-- ── AUTO-DISCOVER ── -->
+        <!-- AUTO-DISCOVER -->
         <div class="input-group ad-top">
           <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input
@@ -513,10 +512,11 @@ class RoomPanel extends i {
           </label>
         </div>
 
-        <!-- ── ROOM / AREA ── -->
+        <!-- PILL: ROOM -->
         <div class="mini-pill">
           <div class="mini-pill-header">Room</div>
           <div class="mini-pill-content">
+
             <div class="input-group">
               <label>Room name:</label>
               <input
@@ -538,10 +538,11 @@ class RoomPanel extends i {
           </div>
         </div>
 
-        <!-- ── ICON & PRESENCE ── -->
+        <!-- PILL: ICON & PRESENCE -->
         <div class="mini-pill">
           <div class="mini-pill-header">Icon & Presence</div>
           <div class="mini-pill-content">
+
             <div class="input-group">
               <label>Room Icon:</label>
               <ha-icon-picker
@@ -556,14 +557,14 @@ class RoomPanel extends i {
             <div class="input-group">
               <label>Filtra per categoria:</label>
               <filter-chips
-                .value=${presCats}
+                .value=${presFilters}
                 .allowed=${PRESENCE_CATS}
                 @value-changed=${e =>
                   this._fire('presence_filters', e.detail.value)}
               ></filter-chips>
             </div>
 
-            <!-- SELECTOR ENTITÀ -->
+            <!-- SELECTOR -->
             <div class="input-group">
               <label>Presence (ID):</label>
               <ha-selector
@@ -580,10 +581,13 @@ class RoomPanel extends i {
                   this._emit('entities.presence.entity', e.detail.value)}
               ></ha-selector>
             </div>
+
+            ${this._renderActions('tap')}
+            ${this._renderActions('hold')}
           </div>
         </div>
 
-        <!-- ── RESET ── -->
+        <!-- RESET -->
         <div style="text-align:center;margin-top:1.2em;">
           <button class="reset-button" @click=${this._resetRoom}>
             🧹 Reset Room
@@ -593,7 +597,55 @@ class RoomPanel extends i {
     `;
   }
 
-  /* quando l’utente cambia Area -> salva + forza auto-discover */
+  /* ───────────────────────── helpers ───────────────────────── */
+  _renderActions(type) {
+    const cfg     = this.config?.[`${type}_action`] || {};
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+
+    return x`
+      <div class="input-group">
+        <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
+        <div class="pill-group">
+          ${actions.map((a) => x`
+            <paper-button
+              class="pill-button ${cfg.action === a ? 'active' : ''}"
+              @click=${() => this._fire(`${type}_action.action`, a)}
+            >${a}</paper-button>
+          `)}
+        </div>
+
+        ${cfg.action === 'navigate' ? x`
+          <input
+            type="text"
+            placeholder="Path"
+            .value=${cfg.navigation_path || ''}
+            @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
+          />
+        ` : ''}
+
+        ${cfg.action === 'call-service' ? x`
+          <input
+            type="text"
+            placeholder="service: domain.service_name"
+            .value=${cfg.service || ''}
+            @input=${e => this._fire(`${type}_action.service`, e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder='service_data (JSON)'
+            .value=${cfg.service_data ? JSON.stringify(cfg.service_data) : ''}
+            @input=${e => {
+              let v = e.target.value;
+              try { v = v ? JSON.parse(v) : undefined; } catch { v = undefined; }
+              this._fire(`${type}_action.service_data`, v);
+            }}
+          />
+        ` : ''}
+      </div>
+    `;
+  }
+
+  /* area cambiata -> attiva auto-discover */
   _onAreaChanged = (e) => {
     const v = e.detail.value;
     this._fire('area', v);
@@ -602,18 +654,16 @@ class RoomPanel extends i {
     }
   };
 
-  /* ── helper azioni tap/hold (identico a prima) ── */
-  _renderActions(type) { /* …uguale… */ }
-
-  /* ── reset stanza ── */
+  /* reset pannello */
   _resetRoom() {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'room' } },
-      bubbles: true, composed: true,
+      bubbles: true,
+      composed: true,
     }));
   }
 
-  /* shortcut per dispatch di panel-changed */
+  /* scorciatoie dispatch */
   _emit(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop, val }, bubbles: true, composed: true,
