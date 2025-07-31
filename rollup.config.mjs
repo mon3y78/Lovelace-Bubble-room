@@ -1,20 +1,30 @@
-// rollup.config.mjs
-import resolve  from '@rollup/plugin-node-resolve';
+// rollup.config.js
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-// …
+import json from '@rollup/plugin-json';
+
 
 export default {
   input: 'src/bubble-room.js',
   output: {
-    file: 'dist/lovelace-bubble-room.js',
+    // genera un unico bundle
+    file: 'lovelace-bubble-room.js',
     format: 'esm',
+    // inietta dentro questo file TUTTI i vostri import(...) dinamici
     inlineDynamicImports: true,
   },
-  // esternalizza solo i componenti HA core:
-  external: id => id.startsWith('home-assistant-frontend/'),
+  external: [
+    // escludi solo i componenti HA che sono già caricati globalmente
+    'home-assistant-frontend/src/components/ha-entity-picker.js',
+    'home-assistant-frontend/src/components/ha-expansion-panel.js',
+  ],
   plugins: [
-    resolve({ browser: true, preferBuiltins: false, dedupe: ['lit'] }),
+    json(),
+    // risolve i pacchetti node_modules, inclusi lit e fitty
+    nodeResolve({ browser: true }),
+    // converte eventuali CommonJS (per es. fitty)
     commonjs(),
-    // …
+    // minimizza
+    //terser(),
   ],
 };
