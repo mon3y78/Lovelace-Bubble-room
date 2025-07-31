@@ -468,7 +468,6 @@ class RoomPanel extends i {
     }
   `;
 
-  static styles = i$3`/* …stili tagliati per brevità… */`;
 
   /* ────────────────────────── RENDER ────────────────────────── */
   render() {
