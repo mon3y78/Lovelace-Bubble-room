@@ -1,9 +1,7 @@
 // src/helpers/filter-chips.js
 import { LitElement, html, css } from 'lit';
-import '@material/mwc-chip/mwc-chip.js';
-import '@material/mwc-chip-set/mwc-chip-set.js';
-
-
+import '@material/web/chips/chip-set.js';
+import '@material/web/chips/filter-chip.js';
 
 
 import { FILTER_LABELS } from './entity-filters.js';
