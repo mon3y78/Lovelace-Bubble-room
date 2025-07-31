@@ -1,6 +1,3 @@
-import '@home-assistant/frontend/src/components/chip/ha-chip-set.js';
-import '@home-assistant/frontend/src/components/chip/ha-chip.js';
-
 /**
  * @license
  * Copyright 2019 Google LLC
