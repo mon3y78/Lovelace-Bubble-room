@@ -2,6 +2,8 @@
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover }       from '../helpers/auto-discovery.js';
 import { candidatesFor }           from '../helpers/entity-filters.js';
+import { state } from 'lit/decorators.js';
+
 
 const PRESENCE_CATS = [
   'presence',   // binary_sensor.device_class = presence
@@ -168,6 +170,33 @@ export class RoomPanel extends LitElement {
       color: var(--primary-text-color, #eaeef8) !important;
     }
   `;
+
+  export class RoomPanel extends LitElement {
+    static styles = css`
+      /* …override variabili… */
+      --md-filter-chip-container-shape: 16px;
+    `;
+  
+    /** array di filtri attivi (es. presence_id) */
+    @state()
+    activeFilters = [];
+    /**
+   * Aggiunge un filtro (se non già presente)
+   * @param {string} filter
+   */
+  addFilter(filter) {
+    if (!this.activeFilters.includes(filter)) {
+      this.activeFilters = [...this.activeFilters, filter];
+    }
+  }
+
+  /**
+   * Rimuove un filtro esistente
+   * @param {string} filter
+   */
+  removeFilter(filter) {
+    this.activeFilters = this.activeFilters.filter(f => f !== filter);
+  }
 
   render() {
     const cfg           = this.config;
