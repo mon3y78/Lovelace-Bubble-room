@@ -1,50 +1,63 @@
+// src/helpers/device-class-chips.js
 import { LitElement, html, css } from 'lit';
-import { DEVICE_CLASS_LABELS } from './entity-filters.js';   // 👈 stesso folder
+
+/* componenti ufficiali MWC v3 (pacchetto @material/web) */
+import '@material/web/chips/chip-set.js';
+import '@material/web/chips/filter-chip.js';
+
+import { DEVICE_CLASS_LABELS } from './entity-filters.js'; // stesso folder
 
 /**
  * <device-class-chips>
- *  • value   = array di device_class selezionate
- *  • allowed = device_class che si possono scegliere
- * Emette:  { type: 'value-changed', detail: { value: [...] } }
+ *  • value   – array di device_class selezionate
+ *  • allowed – array di device_class disponibili
+ *
+ * Emesso: "value-changed" → detail.value = nuovo array
  */
 export class DeviceClassChips extends LitElement {
   static properties = {
-    value:   { type: Array },   // selezionate
-    allowed: { type: Array },   // possibili
+    value: { type: Array },
+    allowed: { type: Array },
   };
-
+  
   constructor() {
     super();
-    this.value   = [];
+    this.value = [];
     this.allowed = [];
   }
-
+  
   static styles = css`
-    mwc-chip { margin: 4px; --mdc-theme-primary: var(--primary-color); }
-    mwc-chip[selected] { --mdc-chip-elevated-shadow: 0 1px 4px rgba(0,0,0,.3); }
+    md-filter-chip { margin: 4px; }
   `;
-
+  
   _toggle(dc) {
     const set = new Set(this.value);
     set.has(dc) ? set.delete(dc) : set.add(dc);
-    this.dispatchEvent(new CustomEvent('value-changed', {
-      detail: { value: Array.from(set) },
-      bubbles: true, composed: true,
-    }));
+    this.dispatchEvent(
+      new CustomEvent('value-changed', {
+        detail: { value: Array.from(set) },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
-
+  
   render() {
+    if (!this.allowed?.length) return html``;
     return html`
-      <mwc-chip-set choice>
-        ${this.allowed.map(dc => html`
-          <mwc-chip
-            .label=${DEVICE_CLASS_LABELS[dc] ?? dc}
-            ?selected=${this.value.includes(dc)}
-            @click=${() => this._toggle(dc)}
-          ></mwc-chip>
-        `)}
-      </mwc-chip-set>
+      <md-chip-set choice>
+        ${this.allowed.map(
+          (dc) => html`
+            <md-filter-chip
+              .label=${DEVICE_CLASS_LABELS[dc] ?? dc}
+              .selected=${this.value.includes(dc)}
+              @click=${() => this._toggle(dc)}
+            ></md-filter-chip>
+          `,
+        )}
+      </md-chip-set>
     `;
   }
 }
+
 customElements.define('device-class-chips', DeviceClassChips);
