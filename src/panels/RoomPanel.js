@@ -1,9 +1,7 @@
 // src/panels/RoomPanel.js
 import { LitElement, html, css } from 'lit';
-import '@material/web/chips/chip-set.js';
-import '@material/web/chips/filter-chip.js';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
-import { candidatesFor }     from '../helpers/entity-filters.js';
+import { maybeAutoDiscover }      from '../helpers/auto-discovery.js';
+import { candidatesFor }          from '../helpers/entity-filters.js';
 
 const PRESENCE_CATS = [
   'presence',   // binary_sensor.device_class = presence
@@ -160,6 +158,19 @@ export class RoomPanel extends LitElement {
     this.config        = {};
     this._expanded     = false;
     this.activeFilters = [];
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._loadMaterialChips();
+  }
+
+  async _loadMaterialChips() {
+    // Carica i Material Web Chips solo se non già definiti
+    if (!customElements.get('md-focus-ring')) {
+      await import('@material/web/chips/chip-set.js');
+      await import('@material/web/chips/filter-chip.js');
+    }
   }
 
   updated(changed) {
