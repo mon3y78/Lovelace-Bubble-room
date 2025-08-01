@@ -1,3 +1,6 @@
+import '@material/web/chips/chip-set.js';
+import '@material/web/chips/filter-chip.js';
+
 /**
  * @license
  * Copyright 2019 Google LLC
@@ -441,8 +444,7 @@ class RoomPanel extends i {
     if (changed.has('config') || changed.has('hass')) {
       maybeAutoDiscover(this.hass, this.config, 'area');
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
-      if (changed.has('config') &&
-          Array.isArray(this.config.presence_filters)) {
+      if (changed.has('config') && Array.isArray(this.config.presence_filters)) {
         this.activeFilters = [...this.config.presence_filters];
       }
     }
@@ -468,17 +470,22 @@ class RoomPanel extends i {
   }
 
   render() {
-    const cfg            = this.config;
-    const autoDisc       = cfg.auto_discovery_sections?.presence ?? false;
-    const area           = cfg.area  ?? '';
-    const name           = cfg.name  ?? '';
-    const icon           = cfg.icon  ?? '';
-    const presFilters    = cfg.presence_filters ?? [...PRESENCE_CATS];
-    const presValue      = cfg.entities?.presence?.entity
-                            ?? cfg.presence_entity
-                            ?? '';
+    const cfg         = this.config;
+    const autoDisc    = cfg.auto_discovery_sections?.presence ?? false;
+    const area        = cfg.area  ?? '';
+    const name        = cfg.name  ?? '';
+    const icon        = cfg.icon  ?? '';
+    const presFilters = this.activeFilters.length
+      ? this.activeFilters
+      : (cfg.presence_filters ?? [...PRESENCE_CATS]);
+    const presValue   = cfg.entities?.presence?.entity
+      ?? cfg.presence_entity
+      ?? '';
     const presCandidates = candidatesFor(
-      this.hass, this.config, 'presence', presFilters
+      this.hass,
+      this.config,
+      'presence',
+      presFilters
     );
 
     return x`
@@ -491,7 +498,7 @@ class RoomPanel extends i {
 
         <!-- Auto-discover -->
         <div class="input-group ad-top">
-          <label style="display:flex;align-items:center;gap:8px;margin:0;">
+          <label style="display:flex;align-items:center;gap:8px;margin:0">
             <input
               type="checkbox"
               .checked=${autoDisc}
@@ -542,7 +549,6 @@ class RoomPanel extends i {
 
             <div class="input-group">
               <label>Filtra per categoria:</label>
-              <!-- Ecco i chips senza import: HUI-Element li ha già registrati -->
               <md-chip-set aria-label="Categorie di Presence" selectable>
                 ${PRESENCE_CATS.map(cat => x`
                   <md-filter-chip
@@ -607,7 +613,6 @@ class RoomPanel extends i {
             >${a}</paper-button>
           `)}
         </div>
-
         ${cfg.action === 'navigate' ? x`
           <input
             type="text"
@@ -616,7 +621,6 @@ class RoomPanel extends i {
             @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
           />
         ` : ''}
-
         ${cfg.action === 'call-service' ? x`
           <input
             type="text"
@@ -648,7 +652,9 @@ class RoomPanel extends i {
       detail: { prop, val }, bubbles: true, composed: true,
     }));
   }
-  _fire(prop, val) { this._emit(prop, val); }
+  _fire(prop, val) {
+    this._emit(prop, val);
+  }
 }
 
 customElements.define('room-panel', RoomPanel);
