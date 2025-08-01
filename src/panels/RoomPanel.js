@@ -166,10 +166,12 @@ export class RoomPanel extends LitElement {
   }
 
   async _loadMaterialChips() {
-    // Carica i Material Web Chips solo se non già definiti
+    console.log('🔄 _loadMaterialChips guard:', !!customElements.get('md-chip-set'));
     if (!customElements.get('md-chip-set')) {
+      console.log('⏬ Importo i Material Web Chips...');
       await import('@material/web/chips/chip-set.js');
       await import('@material/web/chips/filter-chip.js');
+      console.log('✅ Chips importati');
     }
   }
 
