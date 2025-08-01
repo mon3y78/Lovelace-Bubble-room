@@ -160,7 +160,7 @@ export class RoomPanel extends LitElement {
 
   async _loadMaterialChips() {
     // Carica solo se non definiti
-    if (!customElements.get('md-filter-chip')) {
+    if (!customElements.get('md-focus-ring')) {
       await import('@material/web/chips/chip-set.js');
       await import('@material/web/chips/filter-chip.js');
     }
