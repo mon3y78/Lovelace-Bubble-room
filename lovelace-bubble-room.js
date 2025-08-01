@@ -278,8 +278,6 @@ function maybeAutoDiscover(hass, config, changedProp, debug = false) {
   return next;
 }
 
-// src/panels/RoomPanel.js
-
 const PRESENCE_CATS = [
   'presence',   // binary_sensor.device_class = presence
   'motion',     // binary_sensor.device_class = motion
@@ -289,12 +287,12 @@ const PRESENCE_CATS = [
   'fan',        // dominio fan.*
 ];
 
-class RoomPanel extends i$1 {
+class BubbleRoomPanel extends i$1 {
   static properties = {
     hass:           { type: Object },
     config:         { type: Object },
-    _expanded:      { type: Boolean },
-    activeFilters:  { type: Array, state: true },
+    _expanded:      { type: Boolean, state: true },
+    activeFilters:  { type: Array,  state: true },
   };
 
   static styles = i$4`
@@ -436,24 +434,28 @@ class RoomPanel extends i$1 {
   }
 
   async _loadMaterialChips() {
-    const hasFocus  = !!customElements.get('md-focus-ring');
-    const hasFilter = !!customElements.get('md-filter-chip');
-    console.log(
-      '_loadMaterialChips hasFocus:', hasFocus,
-      'hasFilter:', hasFilter
-    );
-    // se non abbiamo mai caricato chip-set.js (cioè md-focus-ring),
-    // importalo solo una volta
-    if (!hasFocus) {
+    const hasChipSet = !!customElements.get('md-chip-set');
+    const hasFilter  = !!customElements.get('md-filter-chip');
+
+    if (!hasChipSet) {
       await Promise.resolve().then(function () { return chipSet; });
     }
-    // e se non abbiamo ancora il filter-chip, importalo
     if (!hasFilter) {
       await Promise.resolve().then(function () { return filterChip; });
     }
+    console.log(
+      '🟢 Material Chips:',
+      'md-chip-set?', customElements.get('md-chip-set'),
+      'md-filter-chip?', customElements.get('md-filter-chip')
+    );
   }
 
-
+  setConfig(config) {
+    if (!config || typeof config !== 'object') {
+      throw new Error('Invalid configuration for BubbleRoomPanel');
+    }
+    this.config = { ...config };
+  }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
@@ -468,52 +470,59 @@ class RoomPanel extends i$1 {
   addFilter(filter) {
     if (!this.activeFilters.includes(filter)) {
       this.activeFilters = [...this.activeFilters, filter];
+      this._fire('presence_filters', this.activeFilters);
     }
   }
 
   removeFilter(filter) {
     this.activeFilters = this.activeFilters.filter(f => f !== filter);
+    this._fire('presence_filters', this.activeFilters);
   }
 
   toggleFilter(filter) {
     this.activeFilters.includes(filter)
       ? this.removeFilter(filter)
       : this.addFilter(filter);
-    this._fire('presence_filters', this.activeFilters);
+  }
+
+  _fire(prop, val) {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop, val },
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   render() {
-    const cfg = this.config;
-    const autoDisc = cfg.auto_discovery_sections?.presence ?? false;
-    const area     = cfg.area ?? '';
-    const name     = cfg.name ?? '';
-    const icon     = cfg.icon ?? '';
-    const presFilters = this.activeFilters.length
+    const cfg        = this.config;
+    const autoDisc   = cfg.auto_discovery_sections?.presence ?? false;
+    const area       = cfg.area ?? '';
+    const name       = cfg.name ?? '';
+    const icon       = cfg.icon ?? '';
+    const presVal    = cfg.entities?.presence?.entity
+                     || cfg.presence_entity || '';
+    const presFilters  = this.activeFilters.length
       ? this.activeFilters
       : (cfg.presence_filters ?? [...PRESENCE_CATS]);
-    const presValue = cfg.entities?.presence?.entity
-      ?? cfg.presence_entity
-      ?? '';
-    const presCandidates = candidatesFor(
-      this.hass, this.config, 'presence', presFilters
-    );
+    const presCandidates = candidatesFor(this.hass, cfg, 'presence', presFilters);
 
     return x`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
-        @expanded-changed=${e => (this._expanded = e.detail.expanded)}
+        @expanded-changed=${e => this._expanded = e.detail.expanded}
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
-        <!-- AUTO-DISCOVER -->
+        <!-- AUTO-DISCOVERY -->
         <div class="input-group ad-top">
-          <label style="display:flex;align-items:center;gap:8px;margin:0;">
+          <label>
             <input
               type="checkbox"
               .checked=${autoDisc}
               @change=${e => this._fire('auto_discovery_sections.presence', e.target.checked)}
-            /><span>🔍 Auto-discover Presence</span>
+            />
+            🔍 Auto-discover Presence
           </label>
         </div>
 
@@ -535,13 +544,13 @@ class RoomPanel extends i$1 {
                 .hass=${this.hass}
                 .value=${area}
                 .selector=${{ area: {} }}
-                @value-changed=${this._onAreaChanged}
+                @value-changed=${e => this._fire('area', e.detail.value)}
               ></ha-selector>
             </div>
           </div>
         </div>
 
-        <!-- ICON & PRESENCE + CHIPS -->
+        <!-- ICON & PRESENCE & CHIPS -->
         <div class="mini-pill">
           <div class="mini-pill-header">Icon & Presence</div>
           <div class="mini-pill-content">
@@ -557,12 +566,12 @@ class RoomPanel extends i$1 {
 
             <div class="input-group">
               <label>Filtra per categoria:</label>
-              <md-chip-set aria-label="Categorie di Presence" selectable>
+              <md-chip-set selectable>
                 ${PRESENCE_CATS.map(cat => x`
                   <md-filter-chip
                     .label=${cat}
-                    ?selected=${this.activeFilters.includes(cat)}
-                    ?removable=${this.activeFilters.includes(cat)}
+                    ?selected=${presFilters.includes(cat)}
+                    ?removable=${presFilters.includes(cat)}
                     @click=${() => this.toggleFilter(cat)}
                   ></md-filter-chip>
                 `)}
@@ -573,7 +582,7 @@ class RoomPanel extends i$1 {
               <label>Presence (ID):</label>
               <ha-selector
                 .hass=${this.hass}
-                .value=${presValue}
+                .value=${presVal}
                 .selector=${{
                   entity: {
                     multiple: false,
@@ -592,19 +601,13 @@ class RoomPanel extends i$1 {
 
         <!-- RESET -->
         <div style="text-align:center;margin-top:1.2em;">
-          <button class="reset-button" @click=${this._resetRoom}>
+          <button class="reset-button" @click=${() => this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' })}>
             🧹 Reset Room
           </button>
         </div>
       </ha-expansion-panel>
     `;
   }
-
-  _onAreaChanged = e => {
-    const v = e.detail.value;
-    this._fire('area', v);
-    if (v) this._fire('auto_discovery_sections.presence', true);
-  };
 
   _renderActions(type) {
     const cfg     = this.config?.[`${type}_action`] || {};
@@ -651,24 +654,9 @@ class RoomPanel extends i$1 {
       </div>
     `;
   }
-
-  _resetRoom() {
-    this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' });
-  }
-
-  _emit(prop, val) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-  _fire(prop, val) {
-    this._emit(prop, val);
-  }
 }
 
-customElements.define('room-panel', RoomPanel);
+customElements.define('bubble-room-panel', BubbleRoomPanel);
 
 // src/panels/SensorsPanel.js
 // Se hai un mapping tipi/etichette, puoi importarlo. Qui rendo opzionale.
