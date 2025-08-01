@@ -1,3 +1,4 @@
+// src/panels/RoomPanel.js
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover }      from '../helpers/auto-discovery.js';
 import { candidatesFor }          from '../helpers/entity-filters.js';
@@ -11,7 +12,7 @@ const PRESENCE_CATS = [
   'fan',        // dominio fan.*
 ];
 
-export class BubbleRoomPanel extends LitElement {
+export class RoomPanel extends LitElement {
   static properties = {
     hass:           { type: Object },
     config:         { type: Object },
@@ -89,7 +90,9 @@ export class BubbleRoomPanel extends LitElement {
       margin-bottom: 13px;
       padding: 14px 18px 10px;
     }
-    .ad-top { margin: 0 16px 14px; }
+    .ad-top {
+      margin: 0 16px 14px;
+    }
     label {
       display: block;
       font-size: 1.13rem;
@@ -152,35 +155,6 @@ export class BubbleRoomPanel extends LitElement {
     this.activeFilters = [];
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this._loadMaterialChips();
-  }
-
-  async _loadMaterialChips() {
-    const hasChipSet = !!customElements.get('md-chip-set');
-    const hasFilter  = !!customElements.get('md-filter-chip');
-
-    if (!hasChipSet) {
-      await import('@material/web/chips/chip-set.js');
-    }
-    if (!hasFilter) {
-      await import('@material/web/chips/filter-chip.js');
-    }
-    console.log(
-      '🟢 Material Chips:',
-      'md-chip-set?', customElements.get('md-chip-set'),
-      'md-filter-chip?', customElements.get('md-filter-chip')
-    );
-  }
-
-  setConfig(config) {
-    if (!config || typeof config !== 'object') {
-      throw new Error('Invalid configuration for BubbleRoomPanel');
-    }
-    this.config = { ...config };
-  }
-
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
       maybeAutoDiscover(this.hass, this.config, 'area');
@@ -189,24 +163,6 @@ export class BubbleRoomPanel extends LitElement {
         this.activeFilters = [...this.config.presence_filters];
       }
     }
-  }
-
-  addFilter(filter) {
-    if (!this.activeFilters.includes(filter)) {
-      this.activeFilters = [...this.activeFilters, filter];
-      this._fire('presence_filters', this.activeFilters);
-    }
-  }
-
-  removeFilter(filter) {
-    this.activeFilters = this.activeFilters.filter(f => f !== filter);
-    this._fire('presence_filters', this.activeFilters);
-  }
-
-  toggleFilter(filter) {
-    this.activeFilters.includes(filter)
-      ? this.removeFilter(filter)
-      : this.addFilter(filter);
   }
 
   _fire(prop, val) {
@@ -218,17 +174,30 @@ export class BubbleRoomPanel extends LitElement {
   }
 
   render() {
-    const cfg        = this.config;
-    const autoDisc   = cfg.auto_discovery_sections?.presence ?? false;
-    const area       = cfg.area ?? '';
-    const name       = cfg.name ?? '';
-    const icon       = cfg.icon ?? '';
-    const presVal    = cfg.entities?.presence?.entity
-                     || cfg.presence_entity || '';
-    const presFilters  = this.activeFilters.length
+    const cfg         = this.config;
+    const autoDisc    = cfg.auto_discovery_sections?.presence ?? false;
+    const area        = cfg.area              ?? '';
+    const name        = cfg.name              ?? '';
+    const icon        = cfg.icon              ?? '';
+    const presValue   = cfg.entities?.presence?.entity
+                          ?? cfg.presence_entity
+                          ?? '';
+
+    // Decide which filters to show: live or from config/default
+    const presFilters = this.activeFilters.length
       ? this.activeFilters
       : (cfg.presence_filters ?? [...PRESENCE_CATS]);
-    const presCandidates = candidatesFor(this.hass, cfg, 'presence', presFilters);
+
+    // Build options list for ha-selector
+    const filterOptions = PRESENCE_CATS.map(cat => ({
+      value: cat,
+      label: cat.charAt(0).toUpperCase() + cat.slice(1),
+    }));
+
+    // Compute candidate entities filtered by presFilters
+    const presCandidates = candidatesFor(
+      this.hass, this.config, 'presence', presFilters
+    );
 
     return html`
       <ha-expansion-panel
@@ -238,19 +207,18 @@ export class BubbleRoomPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
-        <!-- AUTO-DISCOVERY -->
+        <!-- 1. Auto-discover Presence -->
         <div class="input-group ad-top">
-          <label>
+          <label style="display:flex;align-items:center;gap:8px">
             <input
               type="checkbox"
               .checked=${autoDisc}
               @change=${e => this._fire('auto_discovery_sections.presence', e.target.checked)}
-            />
-            🔍 Auto-discover Presence
+            />🔍 Auto-discover Presence
           </label>
         </div>
 
-        <!-- ROOM NAME & AREA -->
+        <!-- 2. Room name & Area -->
         <div class="mini-pill">
           <div class="mini-pill-header">Room</div>
           <div class="mini-pill-content">
@@ -274,10 +242,12 @@ export class BubbleRoomPanel extends LitElement {
           </div>
         </div>
 
-        <!-- ICON & PRESENCE & CHIPS -->
+        <!-- 3. Icon, Presence & Filters -->
         <div class="mini-pill">
           <div class="mini-pill-header">Icon & Presence</div>
           <div class="mini-pill-content">
+
+            <!-- Icon picker -->
             <div class="input-group">
               <label>Room Icon:</label>
               <ha-icon-picker
@@ -288,29 +258,33 @@ export class BubbleRoomPanel extends LitElement {
               ></ha-icon-picker>
             </div>
 
+            <!-- Filter categories via ha-selector in box mode -->
             <div class="input-group">
-              <label>Filtra per categoria:</label>
-              <md-chip-set selectable>
-                ${PRESENCE_CATS.map(cat => html`
-                  <md-filter-chip
-                    .label=${cat}
-                    ?selected=${presFilters.includes(cat)}
-                    ?removable=${presFilters.includes(cat)}
-                    @click=${() => this.toggleFilter(cat)}
-                  ></md-filter-chip>
-                `)}
-              </md-chip-set>
+              <label>Filter categories:</label>
+              <ha-selector
+                .hass=${this.hass}
+                .value=${presFilters}
+                .selector=${{
+                  select: {
+                    multiple: true,
+                    mode: 'box',
+                    options: filterOptions,
+                  }
+                }}
+                @value-changed=${e => this._fire('presence_filters', e.detail.value)}
+              ></ha-selector>
             </div>
 
+            <!-- Presence entity, filtered live -->
             <div class="input-group">
               <label>Presence (ID):</label>
               <ha-selector
                 .hass=${this.hass}
-                .value=${presVal}
+                .value=${presValue}
                 .selector=${{
                   entity: {
                     multiple: false,
-                    include_entities: presCandidates
+                    include_entities: presCandidates,
                   }
                 }}
                 allow-custom-entity
@@ -320,14 +294,15 @@ export class BubbleRoomPanel extends LitElement {
 
             ${this._renderActions('tap')}
             ${this._renderActions('hold')}
+
           </div>
         </div>
 
-        <!-- RESET -->
+        <!-- 4. Reset -->
         <div style="text-align:center;margin-top:1.2em;">
-          <button class="reset-button" @click=${() => this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' })}>
-            🧹 Reset Room
-          </button>
+          <button class="reset-button" @click=${() =>
+            this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' })}
+          >🧹 Reset Room</button>
         </div>
       </ha-expansion-panel>
     `;
@@ -362,7 +337,7 @@ export class BubbleRoomPanel extends LitElement {
             type="text"
             placeholder="service: domain.service_name"
             .value=${cfg.service || ''}
-            @input=${e => this._fire(`${type}_action.service`, e.target.value)}
+            @input=${e => this._fire(`${type}_action.service`, e.detail.value)}
           />
           <input
             type="text"
@@ -380,4 +355,4 @@ export class BubbleRoomPanel extends LitElement {
   }
 }
 
-customElements.define('bubble-room-panel', BubbleRoomPanel);
+customElements.define('room-panel', RoomPanel);
