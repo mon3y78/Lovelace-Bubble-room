@@ -443,10 +443,12 @@ class RoomPanel extends i$1 {
   }
 
   async _loadMaterialChips() {
-    // Carica i Material Web Chips solo se non già definiti
+    console.log('🔄 _loadMaterialChips guard:', !!customElements.get('md-chip-set'));
     if (!customElements.get('md-chip-set')) {
+      console.log('⏬ Importo i Material Web Chips...');
       await Promise.resolve().then(function () { return chipSet; });
       await Promise.resolve().then(function () { return filterChip; });
+      console.log('✅ Chips importati');
     }
   }
 
