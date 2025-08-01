@@ -1,17 +1,9 @@
 // src/panels/RoomPanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover }      from '../helpers/auto-discovery.js';
-import { candidatesFor }          from '../helpers/entity-filters.js';
-
-//
-// ─── CARICO UNA SOLA VOLTA I CHIP DI @material/web ───────────────────────────
-//
-if (!customElements.get('md-chip-set')) {
-  import('@material/web/chips/chip-set.js');
-}
-if (!customElements.get('md-filter-chip')) {
-  import('@material/web/chips/filter-chip.js');
-}
+import '@material/web/chips/chip-set.js';
+import '@material/web/chips/filter-chip.js';
+import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
+import { candidatesFor }     from '../helpers/entity-filters.js';
 
 const PRESENCE_CATS = [
   'presence',   // binary_sensor.device_class = presence
@@ -32,7 +24,6 @@ export class RoomPanel extends LitElement {
 
   static styles = css`
     :host { display: block; }
-    /* arrotondamento chip Material Web */
     --md-filter-chip-container-shape: 16px;
 
     /* Glass panel */
@@ -317,7 +308,7 @@ export class RoomPanel extends LitElement {
 
   _renderActions(type) {
     const cfg     = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+    const actions = ['toggle','more-info','navigate','call-service','none'];
     return html`
       <div class="input-group">
         <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
