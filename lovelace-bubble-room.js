@@ -436,8 +436,8 @@ class RoomPanel extends i$1 {
   }
 
   async _loadMaterialChips() {
-    console.log('_loadMaterialChips guard:', !!customElements.get('md-focus-ring'));
-    if (!customElements.get('md-focus-ring')) {
+    console.log('_loadMaterialChips guard (filter-chip):', !!customElements.get('md-filter-chip'));
+    if (!customElements.get('md-filter-chip')) {
       await Promise.resolve().then(function () { return chipSet; });
       await Promise.resolve().then(function () { return filterChip; });
     }
