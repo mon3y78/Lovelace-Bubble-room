@@ -1,16 +1,6 @@
 /* ==== src/bubble-room.js  (ver. 29-lug-22:13 patched) ==== */
 // src/bubble-room.js (all’inizio del file)
-const _origDefine = customElements.define;
-customElements.define = function(name, constructor, options) {
-  console.groupCollapsed(`⟮define⟯ ${name}`);
-  console.log(`– constructor:`, constructor);
-  console.log(`– call site:`);
-  console.trace();
-  console.groupEnd();
-  return _origDefine.call(this, name, constructor, options);
-};
-import '@material/web/chips/chip-set.js';
-import '@material/web/chips/filter-chip.js';
+
 import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
 import './components/BubbleIcon.js';
