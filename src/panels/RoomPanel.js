@@ -1,9 +1,7 @@
 // src/panels/RoomPanel.js
 import { LitElement, html, css } from 'lit';
-import '@material/web/chips/chip-set.js';
-import '@material/web/chips/filter-chip.js';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
-import { candidatesFor }     from '../helpers/entity-filters.js';
+import { maybeAutoDiscover }      from '../helpers/auto-discovery.js';
+import { candidatesFor }          from '../helpers/entity-filters.js';
 
 const PRESENCE_CATS = [
   'presence',   // binary_sensor.device_class = presence
@@ -166,7 +164,8 @@ export class RoomPanel extends LitElement {
     if (changed.has('config') || changed.has('hass')) {
       maybeAutoDiscover(this.hass, this.config, 'area');
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
-      if (changed.has('config') && Array.isArray(this.config.presence_filters)) {
+      if (changed.has('config') &&
+          Array.isArray(this.config.presence_filters)) {
         this.activeFilters = [...this.config.presence_filters];
       }
     }
@@ -194,12 +193,16 @@ export class RoomPanel extends LitElement {
   render() {
     const cfg            = this.config;
     const autoDisc       = cfg.auto_discovery_sections?.presence ?? false;
-    const area           = cfg.area ?? '';
-    const name           = cfg.name ?? '';
-    const icon           = cfg.icon ?? '';
+    const area           = cfg.area  ?? '';
+    const name           = cfg.name  ?? '';
+    const icon           = cfg.icon  ?? '';
     const presFilters    = cfg.presence_filters ?? [...PRESENCE_CATS];
-    const presValue      = cfg.entities?.presence?.entity ?? cfg.presence_entity ?? '';
-    const presCandidates = candidatesFor(this.hass, this.config, 'presence', presFilters);
+    const presValue      = cfg.entities?.presence?.entity
+                            ?? cfg.presence_entity
+                            ?? '';
+    const presCandidates = candidatesFor(
+      this.hass, this.config, 'presence', presFilters
+    );
 
     return html`
       <ha-expansion-panel
@@ -262,6 +265,7 @@ export class RoomPanel extends LitElement {
 
             <div class="input-group">
               <label>Filtra per categoria:</label>
+              <!-- Ecco i chips senza import: HUI-Element li ha già registrati -->
               <md-chip-set aria-label="Categorie di Presence" selectable>
                 ${PRESENCE_CATS.map(cat => html`
                   <md-filter-chip
@@ -298,7 +302,9 @@ export class RoomPanel extends LitElement {
 
         <!-- Reset -->
         <div style="text-align:center;margin-top:1.2em;">
-          <button class="reset-button" @click=${this._resetRoom}>🧹 Reset Room</button>
+          <button class="reset-button" @click=${this._resetRoom}>
+            🧹 Reset Room
+          </button>
         </div>
       </ha-expansion-panel>
     `;
@@ -312,7 +318,7 @@ export class RoomPanel extends LitElement {
 
   _renderActions(type) {
     const cfg     = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+    const actions = ['toggle','more-info','navigate','call-service','none'];
     return html`
       <div class="input-group">
         <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
@@ -343,7 +349,7 @@ export class RoomPanel extends LitElement {
           />
           <input
             type="text"
-            placeholder='service_data (JSON)'
+            placeholder="service_data (JSON)"
             .value=${cfg.service_data ? JSON.stringify(cfg.service_data) : ''}
             @input=${e => {
               let v = e.target.value;
@@ -365,9 +371,7 @@ export class RoomPanel extends LitElement {
       detail: { prop, val }, bubbles: true, composed: true,
     }));
   }
-  _fire(prop, val) {
-    this._emit(prop, val);
-  }
+  _fire(prop, val) { this._emit(prop, val); }
 }
 
 customElements.define('room-panel', RoomPanel);
