@@ -159,12 +159,23 @@ export class RoomPanel extends LitElement {
   }
 
   async _loadMaterialChips() {
-    console.log('_loadMaterialChips guard (filter-chip):', !!customElements.get('md-filter-chip'));
-    if (!customElements.get('md-filter-chip')) {
+    const hasFocus  = !!customElements.get('md-focus-ring');
+    const hasFilter = !!customElements.get('md-filter-chip');
+    console.log(
+      '_loadMaterialChips hasFocus:', hasFocus,
+      'hasFilter:', hasFilter
+    );
+    // se non abbiamo mai caricato chip-set.js (cioè md-focus-ring),
+    // importalo solo una volta
+    if (!hasFocus) {
       await import('@material/web/chips/chip-set.js');
+    }
+    // e se non abbiamo ancora il filter-chip, importalo
+    if (!hasFilter) {
       await import('@material/web/chips/filter-chip.js');
     }
   }
+
 
 
   updated(changed) {
