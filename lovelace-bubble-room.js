@@ -502,7 +502,7 @@ class RoomPanel extends i$1 {
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
-        @expanded-changed=${e => (this._expanded = e.detail.expanded)}
+        @expanded-changed=${e => this._expanded = e.detail.expanded}
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
