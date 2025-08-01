@@ -21,43 +21,44 @@ export class RoomPanel extends LitElement {
   };
 
   static styles = css`
-    :host { display: block; }
-    --md-filter-chip-container-shape: 16px;
-
-    /* Glass panel */
+    :host { display:block; }
+  
+    /* Glass panel (stile condiviso da tutti i pannelli) */
     .glass-panel {
-      margin: 0 !important;
-      width: 100%;
-      box-sizing: border-box;
-      border-radius: 40px;
-      position: relative;
-      border: none;
-      --glass-bg: rgba(73,164,255,0.38);
-      --glass-shadow: 0 2px 24px rgba(50,180,255,0.25);
-      --glass-sheen: linear-gradient(
-        120deg,
-        rgba(255,255,255,0.26),
-        rgba(255,255,255,0.11) 70%,
-        transparent 100%
-      );
-      background: var(--glass-bg);
-      box-shadow: var(--glass-shadow);
+      margin:0!important;
+      width:100%;
+      box-sizing:border-box;
+      border-radius:40px;
+      /* usa fallback blu identico a prima: */
+      background: var(--glass-bg, rgba(73,164,255,0.38));
+      box-shadow: var(--glass-shadow, 0 2px 24px 0 rgba(50,180,255,0.25));
+      position:relative;
+      border:none;
     }
     .glass-panel::after {
       content: '';
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background: var(--glass-sheen);
+      /* richiama la tua variabile esistente: */
+      background: var(--glass-sheen, linear-gradient(
+        120deg,
+        rgba(255,255,255,0.26),
+        rgba(255,255,255,0.11) 70%,
+        transparent 100%
+      ));
       pointer-events: none;
     }
     .glass-header {
-      padding: 22px 0 18px;
-      text-align: center;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #fff;
+      position:relative;
+      padding:22px 0 18px;
+      text-align:center;
+      font-size:1.12rem;
+      font-weight:700;
+      /* il testo rimane bianco */
+      color:#fff;
     }
+
 
     /* Mini-pill */
     .mini-pill {
