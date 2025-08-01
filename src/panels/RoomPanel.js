@@ -4,43 +4,41 @@ import { maybeAutoDiscover }      from '../helpers/auto-discovery.js';
 import { candidatesFor }          from '../helpers/entity-filters.js';
 
 const PRESENCE_CATS = [
-  'presence',   // binary_sensor.device_class = presence
-  'motion',     // binary_sensor.device_class = motion
-  'occupancy',  // binary_sensor.device_class = occupancy
-  'light',      // dominio light.*
-  'switch',     // dominio switch.*
-  'fan',        // dominio fan.*
+  'presence',
+  'motion',
+  'occupancy',
+  'light',
+  'switch',
+  'fan',
 ];
 
 export class RoomPanel extends LitElement {
   static properties = {
     hass:           { type: Object },
     config:         { type: Object },
-    _expanded:      { type: Boolean, state: true },
-    activeFilters:  { type: Array,  state: true },
+    expanded:       { type: Boolean },
+    activeFilters:  { type: Array, state: true },
   };
 
   static styles = css`
-    :host { display:block; }
-  
-    /* Glass panel (stile condiviso da tutti i pannelli) */
+    :host { display: block; }
+
+    /* Glass panel */
     .glass-panel {
-      margin:0!important;
-      width:100%;
-      box-sizing:border-box;
-      border-radius:40px;
-      /* usa fallback blu identico a prima: */
+      margin: 0 !important;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 40px;
+      position: relative;
+      border: none;
       background: var(--glass-bg, rgba(73,164,255,0.38));
       box-shadow: var(--glass-shadow, 0 2px 24px 0 rgba(50,180,255,0.25));
-      position:relative;
-      border:none;
     }
     .glass-panel::after {
       content: '';
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      /* richiama la tua variabile esistente: */
       background: var(--glass-sheen, linear-gradient(
         120deg,
         rgba(255,255,255,0.26),
@@ -50,15 +48,13 @@ export class RoomPanel extends LitElement {
       pointer-events: none;
     }
     .glass-header {
-      position:relative;
-      padding:22px 0 18px;
-      text-align:center;
-      font-size:1.12rem;
-      font-weight:700;
-      /* il testo rimane bianco */
-      color:#fff;
+      position: relative;
+      padding: 22px 0 18px;
+      text-align: center;
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: #fff;
     }
-
 
     /* Mini-pill */
     .mini-pill {
@@ -150,24 +146,20 @@ export class RoomPanel extends LitElement {
     super();
     this.hass          = {};
     this.config        = {};
-    this._expanded     = false;
+    this.expanded      = false;
     this.activeFilters = [];
   }
 
   updated(changed) {
-    // ad ogni cambio di config/hass, rilancia l'autodiscover iniziale
     if (changed.has('config') || changed.has('hass')) {
       maybeAutoDiscover(this.hass, this.config, 'area');
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
-
-      // sincronizza i filtri se sono definiti in config
       if (changed.has('config') && Array.isArray(this.config.presence_filters)) {
         this.activeFilters = [...this.config.presence_filters];
       }
     }
   }
 
-  // intercetta il cambio di area, abilita subito l'autodiscovery presence
   _onAreaChanged(e) {
     const v = e.detail.value;
     this._fire('area', v);
@@ -194,18 +186,15 @@ export class RoomPanel extends LitElement {
                         ?? cfg.presence_entity
                         ?? '';
 
-    // se ho filtri in stato interno uso quelli, altrimenti quelli da config (o default)
     const presFilters = this.activeFilters.length
       ? this.activeFilters
       : (cfg.presence_filters ?? [...PRESENCE_CATS]);
 
-    // mappa i domini in options per ha-selector a box
     const filterOptions = PRESENCE_CATS.map(cat => ({
       value: cat,
       label: cat.charAt(0).toUpperCase() + cat.slice(1),
     }));
 
-    // costruisco la lista di entità candidate col filtro corrente
     const presCandidates = candidatesFor(
       this.hass, this.config, 'presence', presFilters
     );
@@ -213,8 +202,8 @@ export class RoomPanel extends LitElement {
     return html`
       <ha-expansion-panel
         class="glass-panel"
-        .expanded=${this._expanded}
-        @expanded-changed=${e => this._expanded = e.detail.expanded}
+        .expanded=${this.expanded}
+        @expanded-changed=${this._onExpandedChanged}
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
@@ -257,8 +246,6 @@ export class RoomPanel extends LitElement {
         <div class="mini-pill">
           <div class="mini-pill-header">Icon & Presence</div>
           <div class="mini-pill-content">
-
-            <!-- Icon -->
             <div class="input-group">
               <label>Room Icon:</label>
               <ha-icon-picker
@@ -268,8 +255,6 @@ export class RoomPanel extends LitElement {
                 @value-changed=${e => this._fire('icon', e.detail.value)}
               ></ha-icon-picker>
             </div>
-
-            <!-- Filtra per categoria -->
             <div class="input-group">
               <label>Filter categories:</label>
               <ha-selector
@@ -285,8 +270,6 @@ export class RoomPanel extends LitElement {
                 @value-changed=${e => this._fire('presence_filters', e.detail.value)}
               ></ha-selector>
             </div>
-
-            <!-- Presence entity -->
             <div class="input-group">
               <label>Presence (ID):</label>
               <ha-selector
@@ -305,7 +288,6 @@ export class RoomPanel extends LitElement {
 
             ${this._renderActions('tap')}
             ${this._renderActions('hold')}
-
           </div>
         </div>
 
@@ -316,7 +298,6 @@ export class RoomPanel extends LitElement {
             @click=${() => this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' })}
           >🧹 Reset Room</button>
         </div>
-
       </ha-expansion-panel>
     `;
   }
@@ -365,6 +346,15 @@ export class RoomPanel extends LitElement {
         ` : ''}
       </div>
     `;
+  }
+
+  _onExpandedChanged(e) {
+    this.expanded = e.detail.expanded;
+    this.dispatchEvent(new CustomEvent('expanded-changed', {
+      detail: { expanded: e.detail.expanded },
+      bubbles: true,
+      composed: true,
+    }));
   }
 }
 
