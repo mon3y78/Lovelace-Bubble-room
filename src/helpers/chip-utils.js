@@ -1,19 +1,24 @@
-// src/helpers/chip-utils.js
-
 /**
- * Carica i componenti di @material/web/chips solo se non sono già stati definiti,
- * evitando il doppio customElements.define(...) e le eccezioni in console.
+ * Centralizza il caricamento dei componenti Material Chips:
+ * - md-focus-ring (chip-set.js)  
+ * - md-filter-chip (filter-chip.js)
+ *
+ * Chiama loadMaterialChips() da tutti i pannelli che usano i chips
+ * (RoomPanel, SensorPanel, …) per evitare doppie definizioni.
  */
 
 export async function loadMaterialChips() {
-  // md-focus-ring viene definito in chip-set.js
-  if (!customElements.get('md-focus-ring')) {
-    // registra <md-focus-ring> e <md-chip-set>
+  // Verifica se md-focus-ring e md-filter-chip sono già stati definiti
+  const hasFocus = !!customElements.get('md-focus-ring');
+  const hasFilter = !!customElements.get('md-filter-chip');
+  
+  // Se non abbiamo mai caricato md-focus-ring, importalo
+  if (!hasFocus) {
     await import('@material/web/chips/chip-set.js');
   }
-  // md-filter-chip viene definito in filter-chip.js
-  if (!customElements.get('md-filter-chip')) {
-    // registra <md-filter-chip>
+  
+  // Se non abbiamo ancora il filter-chip, importalo
+  if (!hasFilter) {
     await import('@material/web/chips/filter-chip.js');
   }
 }

@@ -1,7 +1,7 @@
-// src/panels/RoomPanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover }      from '../helpers/auto-discovery.js';
-import { candidatesFor }          from '../helpers/entity-filters.js';
+import { loadMaterialChips }       from '../helpers/chip-utils.js';
+import { maybeAutoDiscover }       from '../helpers/auto-discovery.js';
+import { candidatesFor }           from '../helpers/entity-filters.js';
 
 const PRESENCE_CATS = [
   'presence',   // binary_sensor.device_class = presence
@@ -155,25 +155,8 @@ export class RoomPanel extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this._loadMaterialChips();
-  }
-
-  async _loadMaterialChips() {
-    const hasFocus  = !!customElements.get('md-focus-ring');
-    const hasFilter = !!customElements.get('md-filter-chip');
-    console.log(
-      '_loadMaterialChips hasFocus:', hasFocus,
-      'hasFilter:', hasFilter
-    );
-    // se non abbiamo mai caricato chip-set.js (cioè md-focus-ring),
-    // importalo solo una volta
-    if (!hasFocus) {
-      await import('@material/web/chips/chip-set.js');
-    }
-    // e se non abbiamo ancora il filter-chip, importalo
-    if (!hasFilter) {
-      await import('@material/web/chips/filter-chip.js');
-    }
+    // Carica i Material Chips una sola volta
+    loadMaterialChips();
   }
 
   updated(changed) {
@@ -203,16 +186,70 @@ export class RoomPanel extends LitElement {
     this._fire('presence_filters', this.activeFilters);
   }
 
+  _fire(prop, val) {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop, val },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  _renderActions(type) {
+    const cfg     = this.config?.[`${type}_action`] || {};
+    const actions = ['toggle','more-info','navigate','call-service','none'];
+    return html`
+      <div class="input-group">
+        <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
+        <div class="pill-group">
+          ${actions.map(a => html`
+            <paper-button
+              class="pill-button ${cfg.action === a ? 'active' : ''}"
+              @click=${() => this._fire(`${type}_action.action`, a)}
+            >${a}</paper-button>
+          `)}
+        </div>
+
+        ${cfg.action === 'navigate' ? html`
+          <input
+            type="text"
+            placeholder="Path"
+            .value=${cfg.navigation_path || ''}
+            @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
+          />
+        ` : ''}
+
+        ${cfg.action === 'call-service' ? html`
+          <input
+            type="text"
+            placeholder="service: domain.service_name"
+            .value=${cfg.service || ''}
+            @input=${e => this._fire(`${type}_action.service`, e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="service_data (JSON)"
+            .value=${cfg.service_data ? JSON.stringify(cfg.service_data) : ''}
+            @input=${e => {
+              let v = e.target.value;
+              try { v = v ? JSON.parse(v) : undefined; } catch { v = undefined; }
+              this._fire(`${type}_action.service_data`, v);
+            }}
+          />
+        ` : ''}
+      </div>
+    `;
+  }
+
   render() {
-    const cfg = this.config;
-    const autoDisc = cfg.auto_discovery_sections?.presence ?? false;
-    const area     = cfg.area ?? '';
-    const name     = cfg.name ?? '';
-    const icon     = cfg.icon ?? '';
-    const presFilters = this.activeFilters.length
+    const cfg            = this.config;
+    const autoDisc       = cfg.auto_discovery_sections?.presence ?? false;
+    const area           = cfg.area ?? '';
+    const name           = cfg.name ?? '';
+    const icon           = cfg.icon ?? '';
+    const presFilters    = this.activeFilters.length
       ? this.activeFilters
       : (cfg.presence_filters ?? [...PRESENCE_CATS]);
-    const presValue = cfg.entities?.presence?.entity
+    const presValue      = cfg.entities?.presence?.entity
       ?? cfg.presence_entity
       ?? '';
     const presCandidates = candidatesFor(
@@ -256,7 +293,11 @@ export class RoomPanel extends LitElement {
                 .hass=${this.hass}
                 .value=${area}
                 .selector=${{ area: {} }}
-                @value-changed=${this._onAreaChanged}
+                @value-changed=${e => {
+                  const v = e.detail.value;
+                  this._fire('area', v);
+                  if (v) this._fire('auto_discovery_sections.presence', true);
+                }}
               ></ha-selector>
             </div>
           </div>
@@ -313,79 +354,12 @@ export class RoomPanel extends LitElement {
 
         <!-- RESET -->
         <div style="text-align:center;margin-top:1.2em;">
-          <button class="reset-button" @click=${this._resetRoom}>
+          <button class="reset-button" @click=${() => this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' })}>
             🧹 Reset Room
           </button>
         </div>
       </ha-expansion-panel>
     `;
-  }
-
-  _onAreaChanged = e => {
-    const v = e.detail.value;
-    this._fire('area', v);
-    if (v) this._fire('auto_discovery_sections.presence', true);
-  };
-
-  _renderActions(type) {
-    const cfg     = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle','more-info','navigate','call-service','none'];
-    return html`
-      <div class="input-group">
-        <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
-        <div class="pill-group">
-          ${actions.map(a => html`
-            <paper-button
-              class="pill-button ${cfg.action === a ? 'active' : ''}"
-              @click=${() => this._fire(`${type}_action.action`, a)}
-            >${a}</paper-button>
-          `)}
-        </div>
-
-        ${cfg.action === 'navigate' ? html`
-          <input
-            type="text"
-            placeholder="Path"
-            .value=${cfg.navigation_path || ''}
-            @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
-          />
-        ` : ''}
-
-        ${cfg.action === 'call-service' ? html`
-          <input
-            type="text"
-            placeholder="service: domain.service_name"
-            .value=${cfg.service || ''}
-            @input=${e => this._fire(`${type}_action.service`, e.detail.value)}
-          />
-          <input
-            type="text"
-            placeholder="service_data (JSON)"
-            .value=${cfg.service_data ? JSON.stringify(cfg.service_data) : ''}
-            @input=${e => {
-              let v = e.target.value;
-              try { v = v ? JSON.parse(v) : undefined; } catch { v = undefined; }
-              this._fire(`${type}_action.service_data`, v);
-            }}
-          />
-        ` : ''}
-      </div>
-    `;
-  }
-
-  _resetRoom() {
-    this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' });
-  }
-
-  _emit(prop, val) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-  _fire(prop, val) {
-    this._emit(prop, val);
   }
 }
 
