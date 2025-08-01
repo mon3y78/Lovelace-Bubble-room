@@ -444,7 +444,7 @@ class RoomPanel extends i$1 {
 
   async _loadMaterialChips() {
     // Carica i Material Web Chips solo se non già definiti
-    if (!customElements.get('md-focus-ring')) {
+    if (!customElements.get('md-chip-set')) {
       await Promise.resolve().then(function () { return chipSet; });
       await Promise.resolve().then(function () { return filterChip; });
     }
