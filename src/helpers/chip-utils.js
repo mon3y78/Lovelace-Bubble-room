@@ -1,35 +1,50 @@
 // src/helpers/chip-utils.js
 import { html } from 'lit';
 
-/** Carica solo una volta i componenti Material Chips */
+/**
+ * Carica dinamicamente i componenti Material Web Chips
+ * (md-focus-ring e md-filter-chip) solo la prima volta.
+ */
 export async function loadMaterialChips() {
-  const hasSet = !!customElements.get('md-chip-set');
-  const hasFilter = !!customElements.get('md-filter-chip');
-  if (!hasSet) await import('@material/web/chips/chip-set.js');
-  if (!hasFilter) await import('@material/web/chips/filter-chip.js');
+  // md-focus-ring viene definito in chip-set.js
+  if (!customElements.get('md-focus-ring')) {
+    await import('@material/web/chips/chip-set.js');
+  }
+  // md-filter-chip viene definito in filter-chip.js
+  if (!customElements.get('md-filter-chip')) {
+    await import('@material/web/chips/filter-chip.js');
+  }
 }
 
-/** Toggles an item in an array immutably */
-export function toggleItemInArray(arr, item) {
-  return arr.includes(item) ?
-    arr.filter(i => i !== item) :
-    [...arr, item];
-}
-
-/** Ritorna il template dei chip basandosi su tutti gli elementi e quelli selezionati */
-export function renderFilterChips(allItems, selectedItems, onToggle) {
+/**
+ * Rende un set di filter-chip in Lit grazie a @material/web.
+ *
+ * @param {Object}   options
+ * @param {string[]} options.categories  – lista di tutti i nomi dei chip possibili
+ * @param {string[]} options.selected    – lista dei chip attualmente selezionati
+ * @param {Function} options.onToggle    – callback chiamata con il nome del chip cliccato
+ * @param {string}   [options.ariaLabel="Filter chips"] – label ARIA per md-chip-set
+ *
+ * @returns {TemplateResult}
+ */
+export function renderFilterChips({
+  categories,
+  selected,
+  onToggle,
+  ariaLabel = 'Filter chips',
+}) {
   return html`
-    <md-chip-set aria-label="Filter categories" selectable>
-      ${allItems.map(item => html`
-        <md-filter-chip
-          .label=${item}
-          ?selected=${selectedItems.includes(item)}
-          ?removable=${selectedItems.includes(item)}
-          @click=${() => onToggle(item)}
-        >
-          ${item}
-        </md-filter-chip>
-      `)}
+    <md-chip-set aria-label="${ariaLabel}" selectable>
+      ${categories.map(
+        (cat) => html`
+          <md-filter-chip
+            .label=${cat}
+            ?selected=${selected.includes(cat)}
+            ?removable=${selected.includes(cat)}
+            @click=${() => onToggle(cat)}
+          ></md-filter-chip>
+        `
+      )}
     </md-chip-set>
   `;
 }
