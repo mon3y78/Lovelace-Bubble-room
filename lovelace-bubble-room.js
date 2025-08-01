@@ -443,12 +443,10 @@ class RoomPanel extends i$1 {
   }
 
   async _loadMaterialChips() {
-    console.log('🔄 _loadMaterialChips guard:', !!customElements.get('md-chip-set'));
-    if (!customElements.get('md-chip-set')) {
-      console.log('⏬ Importo i Material Web Chips...');
+    // Carica i Material Web Chips solo se non esistono ancora
+    if (!customElements.get('md-filter-chip')) {
       await Promise.resolve().then(function () { return chipSet; });
       await Promise.resolve().then(function () { return filterChip; });
-      console.log('✅ Chips importati');
     }
   }
 
@@ -508,14 +506,13 @@ class RoomPanel extends i$1 {
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
-        <!-- Auto-discover -->
+        <!-- Auto-discover Presence -->
         <div class="input-group ad-top">
           <label style="display:flex;align-items:center;gap:8px;margin:0">
             <input
               type="checkbox"
               .checked=${autoDisc}
-              @change=${e =>
-                this._fire('auto_discovery_sections.presence', e.target.checked)}
+              @change=${e => this._fire('auto_discovery_sections.presence', e.target.checked)}
             />
             <span>🔍 Auto-discover Presence</span>
           </label>
@@ -585,8 +582,7 @@ class RoomPanel extends i$1 {
                   }
                 }}
                 allow-custom-entity
-                @value-changed=${e =>
-                  this._fire('entities.presence.entity', e.detail.value)}
+                @value-changed=${e => this._fire('entities.presence.entity', e.detail.value)}
               ></ha-selector>
             </div>
 
@@ -608,12 +604,14 @@ class RoomPanel extends i$1 {
   _onAreaChanged = e => {
     const v = e.detail.value;
     this._fire('area', v);
-    if (v) this._fire('auto_discovery_sections.presence', true);
+    if (v) {
+      this._fire('auto_discovery_sections.presence', true);
+    }
   };
 
   _renderActions(type) {
     const cfg     = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle','more-info','navigate','call-service','none'];
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
     return x`
       <div class="input-group">
         <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
@@ -625,6 +623,7 @@ class RoomPanel extends i$1 {
             >${a}</paper-button>
           `)}
         </div>
+
         ${cfg.action === 'navigate' ? x`
           <input
             type="text"
@@ -633,6 +632,7 @@ class RoomPanel extends i$1 {
             @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
           />
         ` : ''}
+
         ${cfg.action === 'call-service' ? x`
           <input
             type="text"
@@ -661,9 +661,12 @@ class RoomPanel extends i$1 {
 
   _emit(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val }, bubbles: true, composed: true,
+      detail: { prop, val },
+      bubbles: true,
+      composed: true,
     }));
   }
+
   _fire(prop, val) {
     this._emit(prop, val);
   }
