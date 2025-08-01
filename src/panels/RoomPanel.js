@@ -158,7 +158,6 @@ export class RoomPanel extends LitElement {
     // Carica i Material Chips una sola volta
     loadMaterialChips();
   }
-
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
       maybeAutoDiscover(this.hass, this.config, 'area');
