@@ -300,7 +300,8 @@ class RoomPanel extends i$1 {
   static styles = i$4`
     :host { display: block; }
     --md-filter-chip-container-shape: 16px;
-    /* --- Glass panel --- */
+
+    /* Glass panel */
     .glass-panel {
       margin: 0 !important;
       width: 100%;
@@ -309,7 +310,7 @@ class RoomPanel extends i$1 {
       position: relative;
       border: none;
       --glass-bg: rgba(73,164,255,0.38);
-      --glass-shadow: 0 2px 24px 0 rgba(50,180,255,0.25);
+      --glass-shadow: 0 2px 24px rgba(50,180,255,0.25);
       --glass-sheen: linear-gradient(
         120deg,
         rgba(255,255,255,0.26),
@@ -328,20 +329,18 @@ class RoomPanel extends i$1 {
       pointer-events: none;
     }
     .glass-header {
-      position: relative;
-      z-index: 1;
       padding: 22px 0 18px;
-      margin: 0;
       text-align: center;
       font-size: 1.2rem;
       font-weight: 700;
       color: #fff;
     }
-    /* --- Mini-pill --- */
+
+    /* Mini-pill */
     .mini-pill {
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.12);
-      box-shadow: 0 3px 22px 0 rgba(70,120,220,0.13);
+      box-shadow: 0 3px 22px rgba(70,120,220,0.13);
       backdrop-filter: blur(10px) saturate(1.2);
       border-radius: 24px;
       margin-bottom: 18px;
@@ -351,27 +350,24 @@ class RoomPanel extends i$1 {
       display: flex;
       align-items: center;
       padding: 15px 22px;
-      font-size: 1.09em;
       font-family: 'Inter', sans-serif;
       font-weight: 800;
       color: #55afff;
-      user-select: none;
     }
     .mini-pill-content {
       padding: 15px 22px;
     }
-    /* --- Input group --- */
+
+    /* Input group */
     .input-group {
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.13);
-      box-shadow: 0 2px 14px 0 rgba(70,120,220,0.10);
+      box-shadow: 0 2px 14px rgba(70,120,220,0.10);
       border-radius: 18px;
       margin-bottom: 13px;
       padding: 14px 18px 10px;
     }
-    .ad-top {
-      margin: 0 16px 14px;
-    }
+    .ad-top { margin: 0 16px 14px; }
     label {
       display: block;
       font-size: 1.13rem;
@@ -389,7 +385,8 @@ class RoomPanel extends i$1 {
     ha-selector::part(combobox) {
       min-height: 56px;
     }
-    /* --- Reset button --- */
+
+    /* Reset button */
     .reset-button {
       border: 2px solid #ff4c6a;
       color: #ff4c6a;
@@ -398,7 +395,8 @@ class RoomPanel extends i$1 {
       background: transparent;
       cursor: pointer;
     }
-    /* --- Tap/Hold action pills --- */
+
+    /* Tap/Hold action pills */
     .pill-group {
       display: flex;
       flex-wrap: wrap;
@@ -415,7 +413,8 @@ class RoomPanel extends i$1 {
       border-color: #55afff;
       color: #55afff;
     }
-    /* --- Vaadin overlay fix --- */
+
+    /* Vaadin overlay fix */
     vaadin-combo-box-overlay,
     vaadin-combo-box-item,
     vaadin-combo-box-item::part(content) {
@@ -437,7 +436,7 @@ class RoomPanel extends i$1 {
   }
 
   async _loadMaterialChips() {
-    // caricamento dinamico dei chip solo se non definiti
+    // Carica solo se non definiti
     if (!customElements.get('md-filter-chip')) {
       await Promise.resolve().then(function () { return chipSet; });
       await Promise.resolve().then(function () { return filterChip; });
@@ -465,31 +464,26 @@ class RoomPanel extends i$1 {
   }
 
   toggleFilter(filter) {
-    if (this.activeFilters.includes(filter)) {
-      this.removeFilter(filter);
-    } else {
-      this.addFilter(filter);
-    }
+    this.activeFilters.includes(filter)
+      ? this.removeFilter(filter)
+      : this.addFilter(filter);
     this._fire('presence_filters', this.activeFilters);
   }
 
   render() {
-    const cfg         = this.config;
-    const autoDisc    = cfg.auto_discovery_sections?.presence ?? false;
-    const area        = cfg.area  ?? '';
-    const name        = cfg.name  ?? '';
-    const icon        = cfg.icon  ?? '';
+    const cfg = this.config;
+    const autoDisc = cfg.auto_discovery_sections?.presence ?? false;
+    const area     = cfg.area ?? '';
+    const name     = cfg.name ?? '';
+    const icon     = cfg.icon ?? '';
     const presFilters = this.activeFilters.length
       ? this.activeFilters
       : (cfg.presence_filters ?? [...PRESENCE_CATS]);
-    const presValue   = cfg.entities?.presence?.entity
+    const presValue = cfg.entities?.presence?.entity
       ?? cfg.presence_entity
       ?? '';
     const presCandidates = candidatesFor(
-      this.hass,
-      this.config,
-      'presence',
-      presFilters
+      this.hass, this.config, 'presence', presFilters
     );
 
     return x`
@@ -500,19 +494,18 @@ class RoomPanel extends i$1 {
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
-        <!-- Auto-discover Presence -->
+        <!-- AUTO-DISCOVER -->
         <div class="input-group ad-top">
-          <label style="display:flex;align-items:center;gap:8px;margin:0">
+          <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input
               type="checkbox"
               .checked=${autoDisc}
               @change=${e => this._fire('auto_discovery_sections.presence', e.target.checked)}
-            />
-            <span>🔍 Auto-discover Presence</span>
+            /><span>🔍 Auto-discover Presence</span>
           </label>
         </div>
 
-        <!-- Room name & Area -->
+        <!-- ROOM NAME & AREA -->
         <div class="mini-pill">
           <div class="mini-pill-header">Room</div>
           <div class="mini-pill-content">
@@ -536,7 +529,7 @@ class RoomPanel extends i$1 {
           </div>
         </div>
 
-        <!-- Icon & Presence + Chips -->
+        <!-- ICON & PRESENCE + CHIPS -->
         <div class="mini-pill">
           <div class="mini-pill-header">Icon & Presence</div>
           <div class="mini-pill-content">
@@ -585,7 +578,7 @@ class RoomPanel extends i$1 {
           </div>
         </div>
 
-        <!-- Reset -->
+        <!-- RESET -->
         <div style="text-align:center;margin-top:1.2em;">
           <button class="reset-button" @click=${this._resetRoom}>
             🧹 Reset Room
@@ -630,7 +623,7 @@ class RoomPanel extends i$1 {
             type="text"
             placeholder="service: domain.service_name"
             .value=${cfg.service || ''}
-            @input=${e => this._fire(`${type}_action.service`, e.detail.value)}
+            @input=${e => this._fire(`${type}_action.service`, e.target.value)}
           />
           <input
             type="text"
@@ -654,7 +647,8 @@ class RoomPanel extends i$1 {
   _emit(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop, val },
-      bubbles: true, composed: true,
+      bubbles: true,
+      composed: true,
     }));
   }
   _fire(prop, val) {
