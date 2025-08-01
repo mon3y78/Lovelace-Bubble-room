@@ -90,9 +90,7 @@ export class RoomPanel extends LitElement {
       margin-bottom: 13px;
       padding: 14px 18px 10px;
     }
-    .ad-top {
-      margin: 0 16px 14px;
-    }
+    .ad-top { margin: 0 16px 14px; }
     label {
       display: block;
       font-size: 1.13rem;
@@ -156,12 +154,24 @@ export class RoomPanel extends LitElement {
   }
 
   updated(changed) {
+    // ad ogni cambio di config/hass, rilancia l'autodiscover iniziale
     if (changed.has('config') || changed.has('hass')) {
       maybeAutoDiscover(this.hass, this.config, 'area');
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
+
+      // sincronizza i filtri se sono definiti in config
       if (changed.has('config') && Array.isArray(this.config.presence_filters)) {
         this.activeFilters = [...this.config.presence_filters];
       }
+    }
+  }
+
+  // intercetta il cambio di area, abilita subito l'autodiscovery presence
+  _onAreaChanged(e) {
+    const v = e.detail.value;
+    this._fire('area', v);
+    if (v) {
+      this._fire('auto_discovery_sections.presence', true);
     }
   }
 
@@ -174,27 +184,27 @@ export class RoomPanel extends LitElement {
   }
 
   render() {
-    const cfg         = this.config;
-    const autoDisc    = cfg.auto_discovery_sections?.presence ?? false;
-    const area        = cfg.area              ?? '';
-    const name        = cfg.name              ?? '';
-    const icon        = cfg.icon              ?? '';
-    const presValue   = cfg.entities?.presence?.entity
-                          ?? cfg.presence_entity
-                          ?? '';
+    const cfg       = this.config;
+    const autoDisc  = cfg.auto_discovery_sections?.presence ?? false;
+    const area      = cfg.area              ?? '';
+    const name      = cfg.name              ?? '';
+    const icon      = cfg.icon              ?? '';
+    const presEntity= cfg.entities?.presence?.entity
+                        ?? cfg.presence_entity
+                        ?? '';
 
-    // Decide which filters to show: live or from config/default
+    // se ho filtri in stato interno uso quelli, altrimenti quelli da config (o default)
     const presFilters = this.activeFilters.length
       ? this.activeFilters
       : (cfg.presence_filters ?? [...PRESENCE_CATS]);
 
-    // Build options list for ha-selector
+    // mappa i domini in options per ha-selector a box
     const filterOptions = PRESENCE_CATS.map(cat => ({
       value: cat,
       label: cat.charAt(0).toUpperCase() + cat.slice(1),
     }));
 
-    // Compute candidate entities filtered by presFilters
+    // costruisco la lista di entità candidate col filtro corrente
     const presCandidates = candidatesFor(
       this.hass, this.config, 'presence', presFilters
     );
@@ -207,7 +217,7 @@ export class RoomPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
-        <!-- 1. Auto-discover Presence -->
+        <!-- 1️⃣ Auto-discover -->
         <div class="input-group ad-top">
           <label style="display:flex;align-items:center;gap:8px">
             <input
@@ -218,7 +228,7 @@ export class RoomPanel extends LitElement {
           </label>
         </div>
 
-        <!-- 2. Room name & Area -->
+        <!-- 2️⃣ Room name & Area -->
         <div class="mini-pill">
           <div class="mini-pill-header">Room</div>
           <div class="mini-pill-content">
@@ -236,18 +246,18 @@ export class RoomPanel extends LitElement {
                 .hass=${this.hass}
                 .value=${area}
                 .selector=${{ area: {} }}
-                @value-changed=${e => this._fire('area', e.detail.value)}
+                @value-changed=${this._onAreaChanged}
               ></ha-selector>
             </div>
           </div>
         </div>
 
-        <!-- 3. Icon, Presence & Filters -->
+        <!-- 3️⃣ Icon & Presence + Filtri -->
         <div class="mini-pill">
           <div class="mini-pill-header">Icon & Presence</div>
           <div class="mini-pill-content">
 
-            <!-- Icon picker -->
+            <!-- Icon -->
             <div class="input-group">
               <label>Room Icon:</label>
               <ha-icon-picker
@@ -258,7 +268,7 @@ export class RoomPanel extends LitElement {
               ></ha-icon-picker>
             </div>
 
-            <!-- Filter categories via ha-selector in box mode -->
+            <!-- Filtra per categoria -->
             <div class="input-group">
               <label>Filter categories:</label>
               <ha-selector
@@ -275,12 +285,12 @@ export class RoomPanel extends LitElement {
               ></ha-selector>
             </div>
 
-            <!-- Presence entity, filtered live -->
+            <!-- Presence entity -->
             <div class="input-group">
               <label>Presence (ID):</label>
               <ha-selector
                 .hass=${this.hass}
-                .value=${presValue}
+                .value=${presEntity}
                 .selector=${{
                   entity: {
                     multiple: false,
@@ -298,12 +308,14 @@ export class RoomPanel extends LitElement {
           </div>
         </div>
 
-        <!-- 4. Reset -->
+        <!-- 4️⃣ Reset -->
         <div style="text-align:center;margin-top:1.2em;">
-          <button class="reset-button" @click=${() =>
-            this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' })}
+          <button
+            class="reset-button"
+            @click=${() => this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' })}
           >🧹 Reset Room</button>
         </div>
+
       </ha-expansion-panel>
     `;
   }
