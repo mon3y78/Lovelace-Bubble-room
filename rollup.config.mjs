@@ -6,28 +6,26 @@ import json            from '@rollup/plugin-json';
 export default {
   input: 'src/bubble-room.js',
   output: {
-    file:               'lovelace-bubble-room.js',
-    format:             'esm',
+    file:                 'lovelace-bubble-room.js',
+    format:               'esm',
     inlineDynamicImports: true,
   },
   external: [
-    // escludi solo i componenti HA già presenti in frontend
+    // modulI HA già presenti:
     'home-assistant-frontend/src/components/ha-entity-picker.js',
     'home-assistant-frontend/src/components/ha-expansion-panel.js',
+
+    // ESCLUDI Material Web (non la tua card, ma i suoi moduli)
+    '@material/web/chips/chip-set.js',
+    '@material/web/chips/filter-chip.js',
+
+    // altre “core” node:
     'fs', 'path', 'os', 'url', 'module', 'util', 'child_process',
   ],
   plugins: [
-    // Supporto per import .json
     json(),
-
-    // Risolvi i node_modules; deduplica @material/web (e lit) così:
-//                                         ──────────┬──────────                       
-    nodeResolve({ browser: true, dedupe: ['@material/web', 'lit'] }),
-
-    // Trasforma eventuali CJS in ESM
+    nodeResolve({ browser: true }),  // dedupe non serve più perché è esterno
     commonjs(),
-
-    // Se vuoi minimizzare il bundle, decommenta:
     // terser(),
   ],
 };

@@ -193,6 +193,10 @@ export class RoomPanel extends LitElement {
 
   render() {
     const cfg            = this.config;
+    const autoDisc       = cfg.auto_discovery_sections?.presence ?? false;
+    const area           = cfg.area ?? '';
+    const name           = cfg.name ?? '';
+    const icon           = cfg.icon ?? '';
     const presFilters    = cfg.presence_filters ?? [...PRESENCE_CATS];
     const presValue      = cfg.entities?.presence?.entity ?? cfg.presence_entity ?? '';
     const presCandidates = candidatesFor(this.hass, this.config, 'presence', presFilters);
@@ -210,7 +214,7 @@ export class RoomPanel extends LitElement {
           <label style="display:flex;align-items:center;gap:8px;margin:0;">
             <input
               type="checkbox"
-              .checked=${cfg.auto_discovery_sections?.presence ?? false}
+              .checked=${autoDisc}
               @change=${e =>
                 this._fire('auto_discovery_sections.presence', e.target.checked)}
             />
@@ -226,7 +230,7 @@ export class RoomPanel extends LitElement {
               <label>Room name:</label>
               <input
                 type="text"
-                .value=${cfg.name ?? ''}
+                .value=${name}
                 @input=${e => this._fire('name', e.target.value)}
               />
             </div>
@@ -234,7 +238,7 @@ export class RoomPanel extends LitElement {
               <label>Area:</label>
               <ha-selector
                 .hass=${this.hass}
-                .value=${cfg.area ?? ''}
+                .value=${area}
                 .selector=${{ area: {} }}
                 @value-changed=${this._onAreaChanged}
               ></ha-selector>
@@ -250,7 +254,7 @@ export class RoomPanel extends LitElement {
               <label>Room Icon:</label>
               <ha-icon-picker
                 .hass=${this.hass}
-                .value=${cfg.icon ?? ''}
+                .value=${icon}
                 allow-custom-icon
                 @value-changed=${e => this._fire('icon', e.detail.value)}
               ></ha-icon-picker>
@@ -300,7 +304,7 @@ export class RoomPanel extends LitElement {
     `;
   }
 
-  _onAreaChanged = (e) => {
+  _onAreaChanged = e => {
     const v = e.detail.value;
     this._fire('area', v);
     if (v) this._fire('auto_discovery_sections.presence', true);
@@ -308,7 +312,7 @@ export class RoomPanel extends LitElement {
 
   _renderActions(type) {
     const cfg     = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle','more-info','navigate','call-service','none'];
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
     return html`
       <div class="input-group">
         <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
@@ -361,7 +365,9 @@ export class RoomPanel extends LitElement {
       detail: { prop, val }, bubbles: true, composed: true,
     }));
   }
-  _fire(prop, val) { this._emit(prop, val); }
+  _fire(prop, val) {
+    this._emit(prop, val);
+  }
 }
 
 customElements.define('room-panel', RoomPanel);
