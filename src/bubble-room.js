@@ -9,7 +9,8 @@ customElements.define = function(name, constructor, options) {
   console.groupEnd();
   return _origDefine.call(this, name, constructor, options);
 };
-
+import '@material/web/chips/chip-set.js';
+import '@material/web/chips/filter-chip.js';
 import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
 import './components/BubbleIcon.js';
