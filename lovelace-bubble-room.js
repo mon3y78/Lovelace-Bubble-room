@@ -24,6 +24,1752 @@ const t$2=globalThis,i$2=t$2.trustedTypes,s$1=i$2?i$2.createPolicy("lit-html",{c
  * SPDX-License-Identifier: BSD-3-Clause
  */const s=globalThis;class i$1 extends y$1{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0;}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const r=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=B(r,this.renderRoot,this.renderOptions);}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0);}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1);}render(){return T}}i$1._$litElement$=!0,i$1["finalized"]=!0,s.litElementHydrateSupport?.({LitElement:i$1});const o$2=s.litElementPolyfillSupport;o$2?.({LitElement:i$1});(s.litElementVersions??=[]).push("4.2.1");
 
+/******************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+
+function __decorate(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+  var e = new Error(message);
+  return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+const t$1=t=>(e,o)=>{void 0!==o?o.addInitializer((()=>{customElements.define(t,e);})):customElements.define(t,e);};
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */const o$1={attribute:!0,type:String,converter:u$1,reflect:!1,hasChanged:f$1},r$1=(t=o$1,e,r)=>{const{kind:n,metadata:i}=r;let s=globalThis.litPropertyMetadata.get(i);if(void 0===s&&globalThis.litPropertyMetadata.set(i,s=new Map),"setter"===n&&((t=Object.create(t)).wrapped=!0),s.set(r.name,t),"accessor"===n){const{name:o}=r;return {set(r){const n=e.get.call(this);e.set.call(this,r),this.requestUpdate(o,n,t);},init(e){return void 0!==e&&this.C(o,void 0,t,e),e}}}if("setter"===n){const{name:o}=r;return function(r){const n=this[o];e.call(this,r),this.requestUpdate(o,n,t);}}throw Error("Unsupported decorator location: "+n)};function n(t){return (e,o)=>"object"==typeof o?r$1(t,e,o):((t,e,o)=>{const r=e.hasOwnProperty(o);return e.constructor.createProperty(o,t),r?Object.getOwnPropertyDescriptor(e,o):void 0})(t,e,o)}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */function r(r){return n({...r,state:!0,attribute:!1})}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+const e$3=(e,t,c)=>(c.configurable=!0,c.enumerable=!0,Reflect.decorate&&"object"!=typeof t&&Object.defineProperty(e,t,c),c);
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */function e$2(e,r){return (n,s,i)=>{const o=t=>t.renderRoot?.querySelector(e)??null;if(r){const{get:e,set:r}="object"==typeof s?n:i??(()=>{const t=Symbol();return {get(){return this[t]},set(e){this[t]=e;}}})();return e$3(n,s,{get(){let t=e.call(this);return void 0===t&&(t=o(this),(null!==t||this.hasUpdated)&&r.call(this,t)),t}})}return e$3(n,s,{get(){return o(this)}})}}
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */function o(o){return (e,n)=>{const{slot:r,selector:s}=o??{},c="slot"+(r?`[name=${r}]`:":not([name])");return e$3(e,n,{get(){const t=this.renderRoot?.querySelector(c),e=t?.assignedElements(o)??[];return void 0===s?e:e.filter((t=>t.matches(s)))}})}}
+
+/**
+ * @license
+ * Copyright 2023 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/**
+ * A key to retrieve an `Attachable` element's `AttachableController` from a
+ * global `MutationObserver`.
+ */
+const ATTACHABLE_CONTROLLER = Symbol('attachableController');
+let FOR_ATTRIBUTE_OBSERVER;
+{
+    /**
+     * A global `MutationObserver` that reacts to `for` attribute changes on
+     * `Attachable` elements. If the `for` attribute changes, the controller will
+     * re-attach to the new referenced element.
+     */
+    FOR_ATTRIBUTE_OBSERVER = new MutationObserver((records) => {
+        for (const record of records) {
+            // When a control's `for` attribute changes, inform its
+            // `AttachableController` to update to a new control.
+            record.target[ATTACHABLE_CONTROLLER]?.hostConnected();
+        }
+    });
+}
+/**
+ * A controller that provides an implementation for `Attachable` elements.
+ *
+ * @example
+ * ```ts
+ * class MyElement extends LitElement implements Attachable {
+ *   get control() { return this.attachableController.control; }
+ *
+ *   private readonly attachableController = new AttachableController(
+ *     this,
+ *     (previousControl, newControl) => {
+ *       previousControl?.removeEventListener('click', this.handleClick);
+ *       newControl?.addEventListener('click', this.handleClick);
+ *     }
+ *   );
+ *
+ *   // Implement remaining `Attachable` properties/methods that call the
+ *   // controller's properties/methods.
+ * }
+ * ```
+ */
+class AttachableController {
+    get htmlFor() {
+        return this.host.getAttribute('for');
+    }
+    set htmlFor(htmlFor) {
+        if (htmlFor === null) {
+            this.host.removeAttribute('for');
+        }
+        else {
+            this.host.setAttribute('for', htmlFor);
+        }
+    }
+    get control() {
+        if (this.host.hasAttribute('for')) {
+            if (!this.htmlFor || !this.host.isConnected) {
+                return null;
+            }
+            return this.host.getRootNode().querySelector(`#${this.htmlFor}`);
+        }
+        return this.currentControl || this.host.parentElement;
+    }
+    set control(control) {
+        if (control) {
+            this.attach(control);
+        }
+        else {
+            this.detach();
+        }
+    }
+    /**
+     * Creates a new controller for an `Attachable` element.
+     *
+     * @param host The `Attachable` element.
+     * @param onControlChange A callback with two parameters for the previous and
+     *     next control. An `Attachable` element may perform setup or teardown
+     *     logic whenever the control changes.
+     */
+    constructor(host, onControlChange) {
+        this.host = host;
+        this.onControlChange = onControlChange;
+        this.currentControl = null;
+        host.addController(this);
+        host[ATTACHABLE_CONTROLLER] = this;
+        FOR_ATTRIBUTE_OBSERVER?.observe(host, { attributeFilter: ['for'] });
+    }
+    attach(control) {
+        if (control === this.currentControl) {
+            return;
+        }
+        this.setCurrentControl(control);
+        // When imperatively attaching, remove the `for` attribute so
+        // that the attached control is used instead of a referenced one.
+        this.host.removeAttribute('for');
+    }
+    detach() {
+        this.setCurrentControl(null);
+        // When imperatively detaching, add an empty `for=""` attribute. This will
+        // ensure the control is `null` rather than the `parentElement`.
+        this.host.setAttribute('for', '');
+    }
+    /** @private */
+    hostConnected() {
+        this.setCurrentControl(this.control);
+    }
+    /** @private */
+    hostDisconnected() {
+        this.setCurrentControl(null);
+    }
+    setCurrentControl(control) {
+        this.onControlChange(this.currentControl, control);
+        this.currentControl = control;
+    }
+}
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/**
+ * Events that the focus ring listens to.
+ */
+const EVENTS$1 = ['focusin', 'focusout', 'pointerdown'];
+/**
+ * A focus ring component.
+ *
+ * @fires visibility-changed {Event} Fired whenever `visible` changes.
+ */
+class FocusRing extends i$1 {
+    constructor() {
+        super(...arguments);
+        /**
+         * Makes the focus ring visible.
+         */
+        this.visible = false;
+        /**
+         * Makes the focus ring animate inwards instead of outwards.
+         */
+        this.inward = false;
+        this.attachableController = new AttachableController(this, this.onControlChange.bind(this));
+    }
+    get htmlFor() {
+        return this.attachableController.htmlFor;
+    }
+    set htmlFor(htmlFor) {
+        this.attachableController.htmlFor = htmlFor;
+    }
+    get control() {
+        return this.attachableController.control;
+    }
+    set control(control) {
+        this.attachableController.control = control;
+    }
+    attach(control) {
+        this.attachableController.attach(control);
+    }
+    detach() {
+        this.attachableController.detach();
+    }
+    connectedCallback() {
+        super.connectedCallback();
+        // Needed for VoiceOver, which will create a "group" if the element is a
+        // sibling to other content.
+        this.setAttribute('aria-hidden', 'true');
+    }
+    /** @private */
+    handleEvent(event) {
+        if (event[HANDLED_BY_FOCUS_RING]) {
+            // This ensures the focus ring does not activate when multiple focus rings
+            // are used within a single component.
+            return;
+        }
+        switch (event.type) {
+            default:
+                return;
+            case 'focusin':
+                this.visible = this.control?.matches(':focus-visible') ?? false;
+                break;
+            case 'focusout':
+            case 'pointerdown':
+                this.visible = false;
+                break;
+        }
+        event[HANDLED_BY_FOCUS_RING] = true;
+    }
+    onControlChange(prev, next) {
+        for (const event of EVENTS$1) {
+            prev?.removeEventListener(event, this);
+            next?.addEventListener(event, this);
+        }
+    }
+    update(changed) {
+        if (changed.has('visible')) {
+            // This logic can be removed once the `:has` selector has been introduced
+            // to Firefox. This is necessary to allow correct submenu styles.
+            this.dispatchEvent(new Event('visibility-changed'));
+        }
+        super.update(changed);
+    }
+}
+__decorate([
+    n({ type: Boolean, reflect: true })
+], FocusRing.prototype, "visible", void 0);
+__decorate([
+    n({ type: Boolean, reflect: true })
+], FocusRing.prototype, "inward", void 0);
+const HANDLED_BY_FOCUS_RING = Symbol('handledByFocusRing');
+
+/**
+ * @license
+ * Copyright 2024 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+const styles$8 = i$4 `:host{animation-delay:0s,calc(var(--md-focus-ring-duration, 600ms)*.25);animation-duration:calc(var(--md-focus-ring-duration, 600ms)*.25),calc(var(--md-focus-ring-duration, 600ms)*.75);animation-timing-function:cubic-bezier(0.2, 0, 0, 1);box-sizing:border-box;color:var(--md-focus-ring-color, var(--md-sys-color-secondary, #625b71));display:none;pointer-events:none;position:absolute}:host([visible]){display:flex}:host(:not([inward])){animation-name:outward-grow,outward-shrink;border-end-end-radius:calc(var(--md-focus-ring-shape-end-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));border-end-start-radius:calc(var(--md-focus-ring-shape-end-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));border-start-end-radius:calc(var(--md-focus-ring-shape-start-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));border-start-start-radius:calc(var(--md-focus-ring-shape-start-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));inset:calc(-1*var(--md-focus-ring-outward-offset, 2px));outline:var(--md-focus-ring-width, 3px) solid currentColor}:host([inward]){animation-name:inward-grow,inward-shrink;border-end-end-radius:calc(var(--md-focus-ring-shape-end-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border-end-start-radius:calc(var(--md-focus-ring-shape-end-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border-start-end-radius:calc(var(--md-focus-ring-shape-start-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border-start-start-radius:calc(var(--md-focus-ring-shape-start-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border:var(--md-focus-ring-width, 3px) solid currentColor;inset:var(--md-focus-ring-inward-offset, 0px)}@keyframes outward-grow{from{outline-width:0}to{outline-width:var(--md-focus-ring-active-width, 8px)}}@keyframes outward-shrink{from{outline-width:var(--md-focus-ring-active-width, 8px)}}@keyframes inward-grow{from{border-width:0}to{border-width:var(--md-focus-ring-active-width, 8px)}}@keyframes inward-shrink{from{border-width:var(--md-focus-ring-active-width, 8px)}}@media(prefers-reduced-motion){:host{animation:none}}
+`;
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/**
+ * TODO(b/267336424): add docs
+ *
+ * @final
+ * @suppress {visibility}
+ */
+let MdFocusRing = class MdFocusRing extends FocusRing {
+};
+MdFocusRing.styles = [styles$8];
+MdFocusRing = __decorate([
+    t$1('md-focus-ring')
+], MdFocusRing);
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+const t={ATTRIBUTE:1,CHILD:2,PROPERTY:3,BOOLEAN_ATTRIBUTE:4,EVENT:5,ELEMENT:6},e$1=t=>(...e)=>({_$litDirective$:t,values:e});class i{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,i){this._$Ct=t,this._$AM=e,this._$Ci=i;}_$AS(t,e){return this.update(t,e)}update(t,e){return this.render(...e)}}
+
+/**
+ * @license
+ * Copyright 2018 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */const e=e$1(class extends i{constructor(t$1){if(super(t$1),t$1.type!==t.ATTRIBUTE||"class"!==t$1.name||t$1.strings?.length>2)throw Error("`classMap()` can only be used in the `class` attribute and must be the only part in the attribute.")}render(t){return " "+Object.keys(t).filter((s=>t[s])).join(" ")+" "}update(s,[i]){if(void 0===this.st){this.st=new Set,void 0!==s.strings&&(this.nt=new Set(s.strings.join(" ").split(/\s/).filter((t=>""!==t))));for(const t in i)i[t]&&!this.nt?.has(t)&&this.st.add(t);return this.render(i)}const r=s.element.classList;for(const t of this.st)t in i||(r.remove(t),this.st.delete(t));for(const t in i){const s=!!i[t];s===this.st.has(t)||this.nt?.has(t)||(s?(r.add(t),this.st.add(t)):(r.remove(t),this.st.delete(t)));}return T}});
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/**
+ * Easing functions to use for web animations.
+ *
+ * **NOTE:** `EASING.EMPHASIZED` is approximated with unknown accuracy.
+ *
+ * TODO(b/241113345): replace with tokens
+ */
+const EASING = {
+    STANDARD: 'cubic-bezier(0.2, 0, 0, 1)',
+    STANDARD_ACCELERATE: 'cubic-bezier(.3,0,1,1)',
+    STANDARD_DECELERATE: 'cubic-bezier(0,0,0,1)',
+    EMPHASIZED: 'cubic-bezier(.3,0,0,1)',
+    EMPHASIZED_ACCELERATE: 'cubic-bezier(.3,0,.8,.15)',
+    EMPHASIZED_DECELERATE: 'cubic-bezier(.05,.7,.1,1)',
+};
+
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+const PRESS_GROW_MS = 450;
+const MINIMUM_PRESS_MS = 225;
+const INITIAL_ORIGIN_SCALE = 0.2;
+const PADDING = 10;
+const SOFT_EDGE_MINIMUM_SIZE = 75;
+const SOFT_EDGE_CONTAINER_RATIO = 0.35;
+const PRESS_PSEUDO = '::after';
+const ANIMATION_FILL = 'forwards';
+/**
+ * Interaction states for the ripple.
+ *
+ * On Touch:
+ *  - `INACTIVE -> TOUCH_DELAY -> WAITING_FOR_CLICK -> INACTIVE`
+ *  - `INACTIVE -> TOUCH_DELAY -> HOLDING -> WAITING_FOR_CLICK -> INACTIVE`
+ *
+ * On Mouse or Pen:
+ *   - `INACTIVE -> WAITING_FOR_CLICK -> INACTIVE`
+ */
+var State;
+(function (State) {
+    /**
+     * Initial state of the control, no touch in progress.
+     *
+     * Transitions:
+     *   - on touch down: transition to `TOUCH_DELAY`.
+     *   - on mouse down: transition to `WAITING_FOR_CLICK`.
+     */
+    State[State["INACTIVE"] = 0] = "INACTIVE";
+    /**
+     * Touch down has been received, waiting to determine if it's a swipe or
+     * scroll.
+     *
+     * Transitions:
+     *   - on touch up: begin press; transition to `WAITING_FOR_CLICK`.
+     *   - on cancel: transition to `INACTIVE`.
+     *   - after `TOUCH_DELAY_MS`: begin press; transition to `HOLDING`.
+     */
+    State[State["TOUCH_DELAY"] = 1] = "TOUCH_DELAY";
+    /**
+     * A touch has been deemed to be a press
+     *
+     * Transitions:
+     *  - on up: transition to `WAITING_FOR_CLICK`.
+     */
+    State[State["HOLDING"] = 2] = "HOLDING";
+    /**
+     * The user touch has finished, transition into rest state.
+     *
+     * Transitions:
+     *   - on click end press; transition to `INACTIVE`.
+     */
+    State[State["WAITING_FOR_CLICK"] = 3] = "WAITING_FOR_CLICK";
+})(State || (State = {}));
+/**
+ * Events that the ripple listens to.
+ */
+const EVENTS = [
+    'click',
+    'contextmenu',
+    'pointercancel',
+    'pointerdown',
+    'pointerenter',
+    'pointerleave',
+    'pointerup',
+];
+/**
+ * Delay reacting to touch so that we do not show the ripple for a swipe or
+ * scroll interaction.
+ */
+const TOUCH_DELAY_MS = 150;
+/**
+ * Used to detect if HCM is active. Events do not process during HCM when the
+ * ripple is not displayed.
+ */
+const FORCED_COLORS = window.matchMedia('(forced-colors: active)');
+/**
+ * A ripple component.
+ */
+class Ripple extends i$1 {
+    constructor() {
+        super(...arguments);
+        /**
+         * Disables the ripple.
+         */
+        this.disabled = false;
+        this.hovered = false;
+        this.pressed = false;
+        this.rippleSize = '';
+        this.rippleScale = '';
+        this.initialSize = 0;
+        this.state = State.INACTIVE;
+        this.checkBoundsAfterContextMenu = false;
+        this.attachableController = new AttachableController(this, this.onControlChange.bind(this));
+    }
+    get htmlFor() {
+        return this.attachableController.htmlFor;
+    }
+    set htmlFor(htmlFor) {
+        this.attachableController.htmlFor = htmlFor;
+    }
+    get control() {
+        return this.attachableController.control;
+    }
+    set control(control) {
+        this.attachableController.control = control;
+    }
+    attach(control) {
+        this.attachableController.attach(control);
+    }
+    detach() {
+        this.attachableController.detach();
+    }
+    connectedCallback() {
+        super.connectedCallback();
+        // Needed for VoiceOver, which will create a "group" if the element is a
+        // sibling to other content.
+        this.setAttribute('aria-hidden', 'true');
+    }
+    render() {
+        const classes = {
+            'hovered': this.hovered,
+            'pressed': this.pressed,
+        };
+        return x `<div class="surface ${e(classes)}"></div>`;
+    }
+    update(changedProps) {
+        if (changedProps.has('disabled') && this.disabled) {
+            this.hovered = false;
+            this.pressed = false;
+        }
+        super.update(changedProps);
+    }
+    /**
+     * TODO(b/269799771): make private
+     * @private only public for slider
+     */
+    handlePointerenter(event) {
+        if (!this.shouldReactToEvent(event)) {
+            return;
+        }
+        this.hovered = true;
+    }
+    /**
+     * TODO(b/269799771): make private
+     * @private only public for slider
+     */
+    handlePointerleave(event) {
+        if (!this.shouldReactToEvent(event)) {
+            return;
+        }
+        this.hovered = false;
+        // release a held mouse or pen press that moves outside the element
+        if (this.state !== State.INACTIVE) {
+            this.endPressAnimation();
+        }
+    }
+    handlePointerup(event) {
+        if (!this.shouldReactToEvent(event)) {
+            return;
+        }
+        if (this.state === State.HOLDING) {
+            this.state = State.WAITING_FOR_CLICK;
+            return;
+        }
+        if (this.state === State.TOUCH_DELAY) {
+            this.state = State.WAITING_FOR_CLICK;
+            this.startPressAnimation(this.rippleStartEvent);
+            return;
+        }
+    }
+    async handlePointerdown(event) {
+        if (!this.shouldReactToEvent(event)) {
+            return;
+        }
+        this.rippleStartEvent = event;
+        if (!this.isTouch(event)) {
+            this.state = State.WAITING_FOR_CLICK;
+            this.startPressAnimation(event);
+            return;
+        }
+        // after a longpress contextmenu event, an extra `pointerdown` can be
+        // dispatched to the pressed element. Check that the down is within
+        // bounds of the element in this case.
+        if (this.checkBoundsAfterContextMenu && !this.inBounds(event)) {
+            return;
+        }
+        this.checkBoundsAfterContextMenu = false;
+        // Wait for a hold after touch delay
+        this.state = State.TOUCH_DELAY;
+        await new Promise((resolve) => {
+            setTimeout(resolve, TOUCH_DELAY_MS);
+        });
+        if (this.state !== State.TOUCH_DELAY) {
+            return;
+        }
+        this.state = State.HOLDING;
+        this.startPressAnimation(event);
+    }
+    handleClick() {
+        // Click is a MouseEvent in Firefox and Safari, so we cannot use
+        // `shouldReactToEvent`
+        if (this.disabled) {
+            return;
+        }
+        if (this.state === State.WAITING_FOR_CLICK) {
+            this.endPressAnimation();
+            return;
+        }
+        if (this.state === State.INACTIVE) {
+            // keyboard synthesized click event
+            this.startPressAnimation();
+            this.endPressAnimation();
+        }
+    }
+    handlePointercancel(event) {
+        if (!this.shouldReactToEvent(event)) {
+            return;
+        }
+        this.endPressAnimation();
+    }
+    handleContextmenu() {
+        if (this.disabled) {
+            return;
+        }
+        this.checkBoundsAfterContextMenu = true;
+        this.endPressAnimation();
+    }
+    determineRippleSize() {
+        const { height, width } = this.getBoundingClientRect();
+        const maxDim = Math.max(height, width);
+        const softEdgeSize = Math.max(SOFT_EDGE_CONTAINER_RATIO * maxDim, SOFT_EDGE_MINIMUM_SIZE);
+        const initialSize = Math.floor(maxDim * INITIAL_ORIGIN_SCALE);
+        const hypotenuse = Math.sqrt(width ** 2 + height ** 2);
+        const maxRadius = hypotenuse + PADDING;
+        this.initialSize = initialSize;
+        this.rippleScale = `${(maxRadius + softEdgeSize) / initialSize}`;
+        this.rippleSize = `${initialSize}px`;
+    }
+    getNormalizedPointerEventCoords(pointerEvent) {
+        const { scrollX, scrollY } = window;
+        const { left, top } = this.getBoundingClientRect();
+        const documentX = scrollX + left;
+        const documentY = scrollY + top;
+        const { pageX, pageY } = pointerEvent;
+        return { x: pageX - documentX, y: pageY - documentY };
+    }
+    getTranslationCoordinates(positionEvent) {
+        const { height, width } = this.getBoundingClientRect();
+        // end in the center
+        const endPoint = {
+            x: (width - this.initialSize) / 2,
+            y: (height - this.initialSize) / 2,
+        };
+        let startPoint;
+        if (positionEvent instanceof PointerEvent) {
+            startPoint = this.getNormalizedPointerEventCoords(positionEvent);
+        }
+        else {
+            startPoint = {
+                x: width / 2,
+                y: height / 2,
+            };
+        }
+        // center around start point
+        startPoint = {
+            x: startPoint.x - this.initialSize / 2,
+            y: startPoint.y - this.initialSize / 2,
+        };
+        return { startPoint, endPoint };
+    }
+    startPressAnimation(positionEvent) {
+        if (!this.mdRoot) {
+            return;
+        }
+        this.pressed = true;
+        this.growAnimation?.cancel();
+        this.determineRippleSize();
+        const { startPoint, endPoint } = this.getTranslationCoordinates(positionEvent);
+        const translateStart = `${startPoint.x}px, ${startPoint.y}px`;
+        const translateEnd = `${endPoint.x}px, ${endPoint.y}px`;
+        this.growAnimation = this.mdRoot.animate({
+            top: [0, 0],
+            left: [0, 0],
+            height: [this.rippleSize, this.rippleSize],
+            width: [this.rippleSize, this.rippleSize],
+            transform: [
+                `translate(${translateStart}) scale(1)`,
+                `translate(${translateEnd}) scale(${this.rippleScale})`,
+            ],
+        }, {
+            pseudoElement: PRESS_PSEUDO,
+            duration: PRESS_GROW_MS,
+            easing: EASING.STANDARD,
+            fill: ANIMATION_FILL,
+        });
+    }
+    async endPressAnimation() {
+        this.rippleStartEvent = undefined;
+        this.state = State.INACTIVE;
+        const animation = this.growAnimation;
+        let pressAnimationPlayState = Infinity;
+        if (typeof animation?.currentTime === 'number') {
+            pressAnimationPlayState = animation.currentTime;
+        }
+        else if (animation?.currentTime) {
+            pressAnimationPlayState = animation.currentTime.to('ms').value;
+        }
+        if (pressAnimationPlayState >= MINIMUM_PRESS_MS) {
+            this.pressed = false;
+            return;
+        }
+        await new Promise((resolve) => {
+            setTimeout(resolve, MINIMUM_PRESS_MS - pressAnimationPlayState);
+        });
+        if (this.growAnimation !== animation) {
+            // A new press animation was started. The old animation was canceled and
+            // should not finish the pressed state.
+            return;
+        }
+        this.pressed = false;
+    }
+    /**
+     * Returns `true` if
+     *  - the ripple element is enabled
+     *  - the pointer is primary for the input type
+     *  - the pointer is the pointer that started the interaction, or will start
+     * the interaction
+     *  - the pointer is a touch, or the pointer state has the primary button
+     * held, or the pointer is hovering
+     */
+    shouldReactToEvent(event) {
+        if (this.disabled || !event.isPrimary) {
+            return false;
+        }
+        if (this.rippleStartEvent &&
+            this.rippleStartEvent.pointerId !== event.pointerId) {
+            return false;
+        }
+        if (event.type === 'pointerenter' || event.type === 'pointerleave') {
+            return !this.isTouch(event);
+        }
+        const isPrimaryButton = event.buttons === 1;
+        return this.isTouch(event) || isPrimaryButton;
+    }
+    /**
+     * Check if the event is within the bounds of the element.
+     *
+     * This is only needed for the "stuck" contextmenu longpress on Chrome.
+     */
+    inBounds({ x, y }) {
+        const { top, left, bottom, right } = this.getBoundingClientRect();
+        return x >= left && x <= right && y >= top && y <= bottom;
+    }
+    isTouch({ pointerType }) {
+        return pointerType === 'touch';
+    }
+    /** @private */
+    async handleEvent(event) {
+        if (FORCED_COLORS?.matches) {
+            // Skip event logic since the ripple is `display: none`.
+            return;
+        }
+        switch (event.type) {
+            case 'click':
+                this.handleClick();
+                break;
+            case 'contextmenu':
+                this.handleContextmenu();
+                break;
+            case 'pointercancel':
+                this.handlePointercancel(event);
+                break;
+            case 'pointerdown':
+                await this.handlePointerdown(event);
+                break;
+            case 'pointerenter':
+                this.handlePointerenter(event);
+                break;
+            case 'pointerleave':
+                this.handlePointerleave(event);
+                break;
+            case 'pointerup':
+                this.handlePointerup(event);
+                break;
+        }
+    }
+    onControlChange(prev, next) {
+        for (const event of EVENTS) {
+            prev?.removeEventListener(event, this);
+            next?.addEventListener(event, this);
+        }
+    }
+}
+__decorate([
+    n({ type: Boolean, reflect: true })
+], Ripple.prototype, "disabled", void 0);
+__decorate([
+    r()
+], Ripple.prototype, "hovered", void 0);
+__decorate([
+    r()
+], Ripple.prototype, "pressed", void 0);
+__decorate([
+    e$2('.surface')
+], Ripple.prototype, "mdRoot", void 0);
+
+/**
+ * @license
+ * Copyright 2024 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+const styles$7 = i$4 `:host{display:flex;margin:auto;pointer-events:none}:host([disabled]){display:none}@media(forced-colors: active){:host{display:none}}:host,.surface{border-radius:inherit;position:absolute;inset:0;overflow:hidden}.surface{-webkit-tap-highlight-color:rgba(0,0,0,0)}.surface::before,.surface::after{content:"";opacity:0;position:absolute}.surface::before{background-color:var(--md-ripple-hover-color, var(--md-sys-color-on-surface, #1d1b20));inset:0;transition:opacity 15ms linear,background-color 15ms linear}.surface::after{background:radial-gradient(closest-side, var(--md-ripple-pressed-color, var(--md-sys-color-on-surface, #1d1b20)) max(100% - 70px, 65%), transparent 100%);transform-origin:center center;transition:opacity 375ms linear}.hovered::before{background-color:var(--md-ripple-hover-color, var(--md-sys-color-on-surface, #1d1b20));opacity:var(--md-ripple-hover-opacity, 0.08)}.pressed::after{opacity:var(--md-ripple-pressed-opacity, 0.12);transition-duration:105ms}
+`;
+
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/**
+ * @summary Ripples, also known as state layers, are visual indicators used to
+ * communicate the status of a component or interactive element.
+ *
+ * @description A state layer is a semi-transparent covering on an element that
+ * indicates its state. State layers provide a systematic approach to
+ * visualizing states by using opacity. A layer can be applied to an entire
+ * element or in a circular shape and only one state layer can be applied at a
+ * given time.
+ *
+ * @final
+ * @suppress {visibility}
+ */
+let MdRipple = class MdRipple extends Ripple {
+};
+MdRipple.styles = [styles$7];
+MdRipple = __decorate([
+    t$1('md-ripple')
+], MdRipple);
+
+/**
+ * @license
+ * Copyright 2023 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/**
+ * Accessibility Object Model reflective aria properties.
+ */
+const ARIA_PROPERTIES = [
+    'role',
+    'ariaAtomic',
+    'ariaAutoComplete',
+    'ariaBusy',
+    'ariaChecked',
+    'ariaColCount',
+    'ariaColIndex',
+    'ariaColSpan',
+    'ariaCurrent',
+    'ariaDisabled',
+    'ariaExpanded',
+    'ariaHasPopup',
+    'ariaHidden',
+    'ariaInvalid',
+    'ariaKeyShortcuts',
+    'ariaLabel',
+    'ariaLevel',
+    'ariaLive',
+    'ariaModal',
+    'ariaMultiLine',
+    'ariaMultiSelectable',
+    'ariaOrientation',
+    'ariaPlaceholder',
+    'ariaPosInSet',
+    'ariaPressed',
+    'ariaReadOnly',
+    'ariaRequired',
+    'ariaRoleDescription',
+    'ariaRowCount',
+    'ariaRowIndex',
+    'ariaRowSpan',
+    'ariaSelected',
+    'ariaSetSize',
+    'ariaSort',
+    'ariaValueMax',
+    'ariaValueMin',
+    'ariaValueNow',
+    'ariaValueText',
+];
+/**
+ * Accessibility Object Model aria attributes.
+ */
+const ARIA_ATTRIBUTES = ARIA_PROPERTIES.map(ariaPropertyToAttribute);
+/**
+ * Checks if an attribute is one of the AOM aria attributes.
+ *
+ * @example
+ * isAriaAttribute('aria-label'); // true
+ *
+ * @param attribute The attribute to check.
+ * @return True if the attribute is an aria attribute, or false if not.
+ */
+function isAriaAttribute(attribute) {
+    return ARIA_ATTRIBUTES.includes(attribute);
+}
+/**
+ * Converts an AOM aria property into its corresponding attribute.
+ *
+ * @example
+ * ariaPropertyToAttribute('ariaLabel'); // 'aria-label'
+ *
+ * @param property The aria property.
+ * @return The aria attribute.
+ */
+function ariaPropertyToAttribute(property) {
+    return property
+        .replace('aria', 'aria-')
+        // IDREF attributes also include an "Element" or "Elements" suffix
+        .replace(/Elements?/g, '')
+        .toLowerCase();
+}
+
+/**
+ * @license
+ * Copyright 2023 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+// Private symbols
+const privateIgnoreAttributeChangesFor = Symbol('privateIgnoreAttributeChangesFor');
+/**
+ * Mixes in aria delegation for elements that delegate focus and aria to inner
+ * shadow root elements.
+ *
+ * This mixin fixes invalid aria announcements with shadow roots, caused by
+ * duplicate aria attributes on both the host and the inner shadow root element.
+ *
+ * Note: this mixin **does not yet support** ID reference attributes, such as
+ * `aria-labelledby` or `aria-controls`.
+ *
+ * @example
+ * ```ts
+ * class MyButton extends mixinDelegatesAria(LitElement) {
+ *   static shadowRootOptions = {mode: 'open', delegatesFocus: true};
+ *
+ *   render() {
+ *     return html`
+ *       <button aria-label=${this.ariaLabel || nothing}>
+ *         <slot></slot>
+ *       </button>
+ *     `;
+ *   }
+ * }
+ * ```
+ * ```html
+ * <my-button aria-label="Plus one">+1</my-button>
+ * ```
+ *
+ * Use `ARIAMixinStrict` for lit analyzer strict types, such as the "role"
+ * attribute.
+ *
+ * @example
+ * ```ts
+ * return html`
+ *   <button role=${(this as ARIAMixinStrict).role || nothing}>
+ *     <slot></slot>
+ *   </button>
+ * `;
+ * ```
+ *
+ * In the future, updates to the Accessibility Object Model (AOM) will provide
+ * built-in aria delegation features that will replace this mixin.
+ *
+ * @param base The class to mix functionality into.
+ * @return The provided class with aria delegation mixed in.
+ */
+function mixinDelegatesAria(base) {
+    var _a;
+    class WithDelegatesAriaElement extends base {
+        constructor() {
+            super(...arguments);
+            this[_a] = new Set();
+        }
+        attributeChangedCallback(name, oldValue, newValue) {
+            if (!isAriaAttribute(name)) {
+                super.attributeChangedCallback(name, oldValue, newValue);
+                return;
+            }
+            if (this[privateIgnoreAttributeChangesFor].has(name)) {
+                return;
+            }
+            // Don't trigger another `attributeChangedCallback` once we remove the
+            // aria attribute from the host. We check the explicit name of the
+            // attribute to ignore since `attributeChangedCallback` can be called
+            // multiple times out of an expected order when hydrating an element with
+            // multiple attributes.
+            this[privateIgnoreAttributeChangesFor].add(name);
+            this.removeAttribute(name);
+            this[privateIgnoreAttributeChangesFor].delete(name);
+            const dataProperty = ariaAttributeToDataProperty(name);
+            if (newValue === null) {
+                delete this.dataset[dataProperty];
+            }
+            else {
+                this.dataset[dataProperty] = newValue;
+            }
+            this.requestUpdate(ariaAttributeToDataProperty(name), oldValue);
+        }
+        getAttribute(name) {
+            if (isAriaAttribute(name)) {
+                return super.getAttribute(ariaAttributeToDataAttribute(name));
+            }
+            return super.getAttribute(name);
+        }
+        removeAttribute(name) {
+            super.removeAttribute(name);
+            if (isAriaAttribute(name)) {
+                super.removeAttribute(ariaAttributeToDataAttribute(name));
+                // Since `aria-*` attributes are already removed`, we need to request
+                // an update because `attributeChangedCallback` will not be called.
+                this.requestUpdate();
+            }
+        }
+    }
+    _a = privateIgnoreAttributeChangesFor;
+    setupDelegatesAriaProperties(WithDelegatesAriaElement);
+    return WithDelegatesAriaElement;
+}
+/**
+ * Overrides the constructor's native `ARIAMixin` properties to ensure that
+ * aria properties reflect the values that were shifted to a data attribute.
+ *
+ * @param ctor The `ReactiveElement` constructor to patch.
+ */
+function setupDelegatesAriaProperties(ctor) {
+    for (const ariaProperty of ARIA_PROPERTIES) {
+        // The casing between ariaProperty and the dataProperty may be different.
+        // ex: aria-haspopup -> ariaHasPopup
+        const ariaAttribute = ariaPropertyToAttribute(ariaProperty);
+        // ex: aria-haspopup -> data-aria-haspopup
+        const dataAttribute = ariaAttributeToDataAttribute(ariaAttribute);
+        // ex: aria-haspopup -> dataset.ariaHaspopup
+        const dataProperty = ariaAttributeToDataProperty(ariaAttribute);
+        // Call `ReactiveElement.createProperty()` so that the `aria-*` and `data-*`
+        // attributes are added to the `static observedAttributes` array. This
+        // triggers `attributeChangedCallback` for the delegates aria mixin to
+        // handle.
+        ctor.createProperty(ariaProperty, {
+            attribute: ariaAttribute,
+            noAccessor: true,
+        });
+        ctor.createProperty(Symbol(dataAttribute), {
+            attribute: dataAttribute,
+            noAccessor: true,
+        });
+        // Re-define the `ARIAMixin` properties to handle data attribute shifting.
+        // It is safe to use `Object.defineProperty` here because the properties
+        // are native and not renamed.
+        // tslint:disable-next-line:ban-unsafe-reflection
+        Object.defineProperty(ctor.prototype, ariaProperty, {
+            configurable: true,
+            enumerable: true,
+            get() {
+                return this.dataset[dataProperty] ?? null;
+            },
+            set(value) {
+                const prevValue = this.dataset[dataProperty] ?? null;
+                if (value === prevValue) {
+                    return;
+                }
+                if (value === null) {
+                    delete this.dataset[dataProperty];
+                }
+                else {
+                    this.dataset[dataProperty] = value;
+                }
+                this.requestUpdate(ariaProperty, prevValue);
+            },
+        });
+    }
+}
+function ariaAttributeToDataAttribute(ariaAttribute) {
+    // aria-haspopup -> data-aria-haspopup
+    return `data-${ariaAttribute}`;
+}
+function ariaAttributeToDataProperty(ariaAttribute) {
+    // aria-haspopup -> dataset.ariaHaspopup
+    return ariaAttribute.replace(/-\w/, (dashLetter) => dashLetter[1].toUpperCase());
+}
+
+/**
+ * @license
+ * Copyright 2023 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+// Separate variable needed for closure.
+const chipBaseClass = mixinDelegatesAria(i$1);
+/**
+ * A chip component.
+ *
+ * @fires update-focus {Event} Dispatched when `disabled` is toggled. --bubbles
+ */
+class Chip extends chipBaseClass {
+    /**
+     * Whether or not the primary ripple is disabled (defaults to `disabled`).
+     * Some chip actions such as links cannot be disabled.
+     */
+    get rippleDisabled() {
+        return this.disabled || this.softDisabled;
+    }
+    constructor() {
+        super();
+        /**
+         * Whether or not the chip is disabled.
+         *
+         * Disabled chips are not focusable, unless `always-focusable` is set.
+         */
+        this.disabled = false;
+        /**
+         * Whether or not the chip is "soft-disabled" (disabled but still
+         * focusable).
+         *
+         * Use this when a chip needs increased visibility when disabled. See
+         * https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_disabled_controls
+         * for more guidance on when this is needed.
+         */
+        this.softDisabled = false;
+        /**
+         * When true, allow disabled chips to be focused with arrow keys.
+         *
+         * Add this when a chip needs increased visibility when disabled. See
+         * https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_disabled_controls
+         * for more guidance on when this is needed.
+         *
+         * @deprecated Use `softDisabled` instead of `alwaysFocusable` + `disabled`.
+         */
+        this.alwaysFocusable = false;
+        // TODO(b/350810013): remove the label property.
+        /**
+         * The label of the chip.
+         *
+         * @deprecated Set text as content of the chip instead.
+         */
+        this.label = '';
+        /**
+         * Only needed for SSR.
+         *
+         * Add this attribute when a chip has a `slot="icon"` to avoid a Flash Of
+         * Unstyled Content.
+         */
+        this.hasIcon = false;
+        {
+            this.addEventListener('click', this.handleClick.bind(this));
+        }
+    }
+    focus(options) {
+        if (this.disabled && !this.alwaysFocusable) {
+            return;
+        }
+        super.focus(options);
+    }
+    render() {
+        return x `
+      <div class="container ${e(this.getContainerClasses())}">
+        ${this.renderContainerContent()}
+      </div>
+    `;
+    }
+    updated(changed) {
+        if (changed.has('disabled') && changed.get('disabled') !== undefined) {
+            this.dispatchEvent(new Event('update-focus', { bubbles: true }));
+        }
+    }
+    getContainerClasses() {
+        return {
+            'disabled': this.disabled || this.softDisabled,
+            'has-icon': this.hasIcon,
+        };
+    }
+    renderContainerContent() {
+        return x `
+      ${this.renderOutline()}
+      <md-focus-ring part="focus-ring" for=${this.primaryId}></md-focus-ring>
+      <md-ripple
+        for=${this.primaryId}
+        ?disabled=${this.rippleDisabled}></md-ripple>
+      ${this.renderPrimaryAction(this.renderPrimaryContent())}
+    `;
+    }
+    renderOutline() {
+        return x `<span class="outline"></span>`;
+    }
+    renderLeadingIcon() {
+        return x `<slot name="icon" @slotchange=${this.handleIconChange}></slot>`;
+    }
+    renderPrimaryContent() {
+        return x `
+      <span class="leading icon" aria-hidden="true">
+        ${this.renderLeadingIcon()}
+      </span>
+      <span class="label">
+        <span class="label-text" id="label">
+          ${this.label ? this.label : x `<slot></slot>`}
+        </span>
+      </span>
+      <span class="touch"></span>
+    `;
+    }
+    handleIconChange(event) {
+        const slot = event.target;
+        this.hasIcon = slot.assignedElements({ flatten: true }).length > 0;
+    }
+    handleClick(event) {
+        // If the chip is soft-disabled or disabled + always-focusable, we need to
+        // explicitly prevent the click from propagating to other event listeners
+        // as well as prevent the default action.
+        if (this.softDisabled || (this.disabled && this.alwaysFocusable)) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            return;
+        }
+    }
+}
+/** @nocollapse */
+Chip.shadowRootOptions = {
+    ...i$1.shadowRootOptions,
+    delegatesFocus: true,
+};
+__decorate([
+    n({ type: Boolean, reflect: true })
+], Chip.prototype, "disabled", void 0);
+__decorate([
+    n({ type: Boolean, attribute: 'soft-disabled', reflect: true })
+], Chip.prototype, "softDisabled", void 0);
+__decorate([
+    n({ type: Boolean, attribute: 'always-focusable' })
+], Chip.prototype, "alwaysFocusable", void 0);
+__decorate([
+    n()
+], Chip.prototype, "label", void 0);
+__decorate([
+    n({ type: Boolean, reflect: true, attribute: 'has-icon' })
+], Chip.prototype, "hasIcon", void 0);
+
+/**
+ * @license
+ * Copyright 2023 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/**
+ * A chip set component.
+ */
+class ChipSet extends i$1 {
+    get chips() {
+        return this.childElements.filter((child) => child instanceof Chip);
+    }
+    constructor() {
+        super();
+        this.internals = 
+        // Cast needed for closure
+        this.attachInternals();
+        {
+            this.addEventListener('focusin', this.updateTabIndices.bind(this));
+            this.addEventListener('update-focus', this.updateTabIndices.bind(this));
+            this.addEventListener('keydown', this.handleKeyDown.bind(this));
+            this.internals.role = 'toolbar';
+        }
+    }
+    render() {
+        return x `<slot @slotchange=${this.updateTabIndices}></slot>`;
+    }
+    handleKeyDown(event) {
+        const isLeft = event.key === 'ArrowLeft';
+        const isRight = event.key === 'ArrowRight';
+        const isHome = event.key === 'Home';
+        const isEnd = event.key === 'End';
+        // Ignore non-navigation keys
+        if (!isLeft && !isRight && !isHome && !isEnd) {
+            return;
+        }
+        const { chips } = this;
+        // Don't try to select another chip if there aren't any.
+        if (chips.length < 2) {
+            return;
+        }
+        // Prevent default interactions, such as scrolling.
+        event.preventDefault();
+        if (isHome || isEnd) {
+            const index = isHome ? 0 : chips.length - 1;
+            chips[index].focus({ trailing: isEnd });
+            this.updateTabIndices();
+            return;
+        }
+        // Check if moving forwards or backwards
+        const isRtl = getComputedStyle(this).direction === 'rtl';
+        const forwards = isRtl ? isLeft : isRight;
+        const focusedChip = chips.find((chip) => chip.matches(':focus-within'));
+        if (!focusedChip) {
+            // If there is not already a chip focused, select the first or last chip
+            // based on the direction we're traveling.
+            const nextChip = forwards ? chips[0] : chips[chips.length - 1];
+            nextChip.focus({ trailing: !forwards });
+            this.updateTabIndices();
+            return;
+        }
+        const currentIndex = chips.indexOf(focusedChip);
+        let nextIndex = forwards ? currentIndex + 1 : currentIndex - 1;
+        // Search for the next sibling that is not disabled to select.
+        // If we return to the host index, there is nothing to select.
+        while (nextIndex !== currentIndex) {
+            if (nextIndex >= chips.length) {
+                // Return to start if moving past the last item.
+                nextIndex = 0;
+            }
+            else if (nextIndex < 0) {
+                // Go to end if moving before the first item.
+                nextIndex = chips.length - 1;
+            }
+            // Check if the next sibling is disabled. If so,
+            // move the index and continue searching.
+            //
+            // Some toolbar items may be focusable when disabled for increased
+            // visibility.
+            const nextChip = chips[nextIndex];
+            if (nextChip.disabled && !nextChip.alwaysFocusable) {
+                if (forwards) {
+                    nextIndex++;
+                }
+                else {
+                    nextIndex--;
+                }
+                continue;
+            }
+            nextChip.focus({ trailing: !forwards });
+            this.updateTabIndices();
+            break;
+        }
+    }
+    updateTabIndices() {
+        // The chip that should be focusable is either the chip that currently has
+        // focus or the first chip that can be focused.
+        const { chips } = this;
+        let chipToFocus;
+        for (const chip of chips) {
+            const isChipFocusable = chip.alwaysFocusable || !chip.disabled;
+            const chipIsFocused = chip.matches(':focus-within');
+            if (chipIsFocused && isChipFocusable) {
+                // Found the first chip that is actively focused. This overrides the
+                // first focusable chip found.
+                chipToFocus = chip;
+                continue;
+            }
+            if (isChipFocusable && !chipToFocus) {
+                chipToFocus = chip;
+            }
+            // Disable non-focused chips. If we disable all of them, we'll grant focus
+            // to the first focusable child that was found.
+            chip.tabIndex = -1;
+        }
+        if (chipToFocus) {
+            chipToFocus.tabIndex = 0;
+        }
+    }
+}
+__decorate([
+    o()
+], ChipSet.prototype, "childElements", void 0);
+
+/**
+ * @license
+ * Copyright 2024 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+const styles$6 = i$4 `:host{display:flex;flex-wrap:wrap;gap:8px}
+`;
+
+/**
+ * @license
+ * Copyright 2023 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/**
+ * TODO(b/243982145): add docs
+ *
+ * @final
+ * @suppress {visibility}
+ */
+let MdChipSet = class MdChipSet extends ChipSet {
+};
+MdChipSet.styles = [styles$6];
+MdChipSet = __decorate([
+    t$1('md-chip-set')
+], MdChipSet);
+
+/**
+ * @license
+ * Copyright 2024 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+const styles$5 = i$4 `.elevated{--md-elevation-level: var(--_elevated-container-elevation);--md-elevation-shadow-color: var(--_elevated-container-shadow-color)}.elevated::before{background:var(--_elevated-container-color)}.elevated:hover{--md-elevation-level: var(--_elevated-hover-container-elevation)}.elevated:focus-within{--md-elevation-level: var(--_elevated-focus-container-elevation)}.elevated:active{--md-elevation-level: var(--_elevated-pressed-container-elevation)}.elevated.disabled{--md-elevation-level: var(--_elevated-disabled-container-elevation)}.elevated.disabled::before{background:var(--_elevated-disabled-container-color);opacity:var(--_elevated-disabled-container-opacity)}@media(forced-colors: active){.elevated md-elevation{border:1px solid CanvasText}.elevated.disabled md-elevation{border-color:GrayText}}
+`;
+
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/**
+ * A component for elevation.
+ */
+class Elevation extends i$1 {
+    connectedCallback() {
+        super.connectedCallback();
+        // Needed for VoiceOver, which will create a "group" if the element is a
+        // sibling to other content.
+        this.setAttribute('aria-hidden', 'true');
+    }
+    render() {
+        return x `<span class="shadow"></span>`;
+    }
+}
+
+/**
+ * @license
+ * Copyright 2024 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+const styles$4 = i$4 `:host,.shadow,.shadow::before,.shadow::after{border-radius:inherit;inset:0;position:absolute;transition-duration:inherit;transition-property:inherit;transition-timing-function:inherit}:host{display:flex;pointer-events:none;transition-property:box-shadow,opacity}.shadow::before,.shadow::after{content:"";transition-property:box-shadow,opacity;--_level: var(--md-elevation-level, 0);--_shadow-color: var(--md-elevation-shadow-color, var(--md-sys-color-shadow, #000))}.shadow::before{box-shadow:0px calc(1px*(clamp(0,var(--_level),1) + clamp(0,var(--_level) - 3,1) + 2*clamp(0,var(--_level) - 4,1))) calc(1px*(2*clamp(0,var(--_level),1) + clamp(0,var(--_level) - 2,1) + clamp(0,var(--_level) - 4,1))) 0px var(--_shadow-color);opacity:.3}.shadow::after{box-shadow:0px calc(1px*(clamp(0,var(--_level),1) + clamp(0,var(--_level) - 1,1) + 2*clamp(0,var(--_level) - 2,3))) calc(1px*(3*clamp(0,var(--_level),2) + 2*clamp(0,var(--_level) - 2,3))) calc(1px*(clamp(0,var(--_level),4) + 2*clamp(0,var(--_level) - 4,1))) var(--_shadow-color);opacity:.15}
+`;
+
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/**
+ * The `<md-elevation>` custom element with default styles.
+ *
+ * Elevation is the relative distance between two surfaces along the z-axis.
+ *
+ * @final
+ * @suppress {visibility}
+ */
+let MdElevation = class MdElevation extends Elevation {
+};
+MdElevation.styles = [styles$4];
+MdElevation = __decorate([
+    t$1('md-elevation')
+], MdElevation);
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/**
+ * Re-dispatches an event from the provided element.
+ *
+ * This function is useful for forwarding non-composed events, such as `change`
+ * events.
+ *
+ * @example
+ * class MyInput extends LitElement {
+ *   render() {
+ *     return html`<input @change=${this.redispatchEvent}>`;
+ *   }
+ *
+ *   protected redispatchEvent(event: Event) {
+ *     redispatchEvent(this, event);
+ *   }
+ * }
+ *
+ * @param element The element to dispatch the event from.
+ * @param event The event to re-dispatch.
+ * @return Whether or not the event was dispatched (if cancelable).
+ */
+function redispatchEvent(element, event) {
+    // For bubbling events in SSR light DOM (or composed), stop their propagation
+    // and dispatch the copy.
+    if (event.bubbles && (!element.shadowRoot || event.composed)) {
+        event.stopPropagation();
+    }
+    const copy = Reflect.construct(event.constructor, [event.type, event]);
+    const dispatched = element.dispatchEvent(copy);
+    if (!dispatched) {
+        event.preventDefault();
+    }
+    return dispatched;
+}
+
+/**
+ * @license
+ * Copyright 2023 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+const ARIA_LABEL_REMOVE = 'aria-label-remove';
+/**
+ * A chip component with multiple actions.
+ */
+class MultiActionChip extends Chip {
+    get ariaLabelRemove() {
+        if (this.hasAttribute(ARIA_LABEL_REMOVE)) {
+            return this.getAttribute(ARIA_LABEL_REMOVE);
+        }
+        const { ariaLabel } = this;
+        // TODO(b/350810013): remove `this.label` when label property is removed.
+        if (ariaLabel || this.label) {
+            return `Remove ${ariaLabel || this.label}`;
+        }
+        return null;
+    }
+    set ariaLabelRemove(ariaLabel) {
+        const prev = this.ariaLabelRemove;
+        if (ariaLabel === prev) {
+            return;
+        }
+        if (ariaLabel === null) {
+            this.removeAttribute(ARIA_LABEL_REMOVE);
+        }
+        else {
+            this.setAttribute(ARIA_LABEL_REMOVE, ariaLabel);
+        }
+        this.requestUpdate();
+    }
+    constructor() {
+        super();
+        this.handleTrailingActionFocus = this.handleTrailingActionFocus.bind(this);
+        {
+            this.addEventListener('keydown', this.handleKeyDown.bind(this));
+        }
+    }
+    focus(options) {
+        const isFocusable = this.alwaysFocusable || !this.disabled;
+        if (isFocusable && options?.trailing && this.trailingAction) {
+            this.trailingAction.focus(options);
+            return;
+        }
+        super.focus(options);
+    }
+    renderContainerContent() {
+        return x `
+      ${super.renderContainerContent()}
+      ${this.renderTrailingAction(this.handleTrailingActionFocus)}
+    `;
+    }
+    handleKeyDown(event) {
+        const isLeft = event.key === 'ArrowLeft';
+        const isRight = event.key === 'ArrowRight';
+        // Ignore non-navigation keys.
+        if (!isLeft && !isRight) {
+            return;
+        }
+        if (!this.primaryAction || !this.trailingAction) {
+            // Does not have multiple actions.
+            return;
+        }
+        // Check if moving forwards or backwards
+        const isRtl = getComputedStyle(this).direction === 'rtl';
+        const forwards = isRtl ? isLeft : isRight;
+        const isPrimaryFocused = this.primaryAction?.matches(':focus-within');
+        const isTrailingFocused = this.trailingAction?.matches(':focus-within');
+        if ((forwards && isTrailingFocused) || (!forwards && isPrimaryFocused)) {
+            // Moving outside of the chip, it will be handled by the chip set.
+            return;
+        }
+        // Prevent default interactions, such as scrolling.
+        event.preventDefault();
+        // Don't let the chip set handle this navigation event.
+        event.stopPropagation();
+        const actionToFocus = forwards ? this.trailingAction : this.primaryAction;
+        actionToFocus.focus();
+    }
+    handleTrailingActionFocus() {
+        const { primaryAction, trailingAction } = this;
+        if (!primaryAction || !trailingAction) {
+            return;
+        }
+        // Temporarily turn off the primary action's focusability. This allows
+        // shift+tab from the trailing action to move to the previous chip rather
+        // than the primary action in the same chip.
+        primaryAction.tabIndex = -1;
+        trailingAction.addEventListener('focusout', () => {
+            primaryAction.tabIndex = 0;
+        }, { once: true });
+    }
+}
+
+/**
+ * @license
+ * Copyright 2023 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/** @protected */
+function renderRemoveButton({ ariaLabel, disabled, focusListener, tabbable = false, }) {
+    // When an aria-label is not provided, we use two spans with aria-labelledby
+    // to create the "Remove <textContent>" label for the remove button. The first
+    // is this #remove-label span, the second is the chip's #label slot span.
+    return x `
+    <span id="remove-label" hidden aria-hidden="true">Remove</span>
+    <button
+      class="trailing action"
+      aria-label=${ariaLabel || E}
+      aria-labelledby=${!ariaLabel ? 'remove-label label' : E}
+      tabindex=${!tabbable ? -1 : E}
+      @click=${handleRemoveClick}
+      @focus=${focusListener}>
+      <md-focus-ring part="trailing-focus-ring"></md-focus-ring>
+      <md-ripple ?disabled=${disabled}></md-ripple>
+      <span class="trailing icon" aria-hidden="true">
+        <slot name="remove-trailing-icon">
+          <svg viewBox="0 96 960 960">
+            <path
+              d="m249 849-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z" />
+          </svg>
+        </slot>
+      </span>
+      <span class="touch"></span>
+    </button>
+  `;
+}
+function handleRemoveClick(event) {
+    if (this.disabled || this.softDisabled) {
+        return;
+    }
+    event.stopPropagation();
+    const preventDefault = !this.dispatchEvent(new Event('remove', { cancelable: true }));
+    if (preventDefault) {
+        return;
+    }
+    this.remove();
+}
+
+/**
+ * @license
+ * Copyright 2023 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/**
+ * A filter chip component.
+ *
+ * @fires remove {Event} Dispatched when the remove button is clicked.
+ */
+class FilterChip extends MultiActionChip {
+    constructor() {
+        super(...arguments);
+        this.elevated = false;
+        this.removable = false;
+        this.selected = false;
+        /**
+         * Only needed for SSR.
+         *
+         * Add this attribute when a filter chip has a `slot="selected-icon"` to avoid
+         * a Flash Of Unstyled Content.
+         */
+        this.hasSelectedIcon = false;
+    }
+    get primaryId() {
+        return 'button';
+    }
+    getContainerClasses() {
+        return {
+            ...super.getContainerClasses(),
+            elevated: this.elevated,
+            selected: this.selected,
+            'has-trailing': this.removable,
+            'has-icon': this.hasIcon || this.selected,
+        };
+    }
+    renderPrimaryAction(content) {
+        const { ariaLabel } = this;
+        return x `
+      <button
+        class="primary action"
+        id="button"
+        aria-label=${ariaLabel || E}
+        aria-pressed=${this.selected}
+        aria-disabled=${this.softDisabled || E}
+        ?disabled=${this.disabled && !this.alwaysFocusable}
+        @click=${this.handleClickOnChild}
+        >${content}</button
+      >
+    `;
+    }
+    renderLeadingIcon() {
+        if (!this.selected) {
+            return super.renderLeadingIcon();
+        }
+        return x `
+      <slot name="selected-icon">
+        <svg class="checkmark" viewBox="0 0 18 18" aria-hidden="true">
+          <path
+            d="M6.75012 12.1274L3.62262 8.99988L2.55762 10.0574L6.75012 14.2499L15.7501 5.24988L14.6926 4.19238L6.75012 12.1274Z" />
+        </svg>
+      </slot>
+    `;
+    }
+    renderTrailingAction(focusListener) {
+        if (this.removable) {
+            return renderRemoveButton({
+                focusListener,
+                ariaLabel: this.ariaLabelRemove,
+                disabled: this.disabled || this.softDisabled,
+            });
+        }
+        return E;
+    }
+    renderOutline() {
+        if (this.elevated) {
+            return x `<md-elevation part="elevation"></md-elevation>`;
+        }
+        return super.renderOutline();
+    }
+    handleClickOnChild(event) {
+        if (this.disabled || this.softDisabled) {
+            return;
+        }
+        // Store prevValue to revert in case `chip.selected` is changed during an
+        // event listener.
+        const prevValue = this.selected;
+        this.selected = !this.selected;
+        const preventDefault = !redispatchEvent(this, event);
+        if (preventDefault) {
+            // We should not do `this.selected = !this.selected`, since a client
+            // click listener could change its value. Instead, always revert to the
+            // original value.
+            this.selected = prevValue;
+            return;
+        }
+    }
+}
+__decorate([
+    n({ type: Boolean })
+], FilterChip.prototype, "elevated", void 0);
+__decorate([
+    n({ type: Boolean })
+], FilterChip.prototype, "removable", void 0);
+__decorate([
+    n({ type: Boolean, reflect: true })
+], FilterChip.prototype, "selected", void 0);
+__decorate([
+    n({ type: Boolean, reflect: true, attribute: 'has-selected-icon' })
+], FilterChip.prototype, "hasSelectedIcon", void 0);
+__decorate([
+    e$2('.primary.action')
+], FilterChip.prototype, "primaryAction", void 0);
+__decorate([
+    e$2('.trailing.action')
+], FilterChip.prototype, "trailingAction", void 0);
+
+/**
+ * @license
+ * Copyright 2024 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+const styles$3 = i$4 `:host{--_container-height: var(--md-filter-chip-container-height, 32px);--_disabled-label-text-color: var(--md-filter-chip-disabled-label-text-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-label-text-opacity: var(--md-filter-chip-disabled-label-text-opacity, 0.38);--_elevated-container-elevation: var(--md-filter-chip-elevated-container-elevation, 1);--_elevated-container-shadow-color: var(--md-filter-chip-elevated-container-shadow-color, var(--md-sys-color-shadow, #000));--_elevated-disabled-container-color: var(--md-filter-chip-elevated-disabled-container-color, var(--md-sys-color-on-surface, #1d1b20));--_elevated-disabled-container-elevation: var(--md-filter-chip-elevated-disabled-container-elevation, 0);--_elevated-disabled-container-opacity: var(--md-filter-chip-elevated-disabled-container-opacity, 0.12);--_elevated-focus-container-elevation: var(--md-filter-chip-elevated-focus-container-elevation, 1);--_elevated-hover-container-elevation: var(--md-filter-chip-elevated-hover-container-elevation, 2);--_elevated-pressed-container-elevation: var(--md-filter-chip-elevated-pressed-container-elevation, 1);--_elevated-selected-container-color: var(--md-filter-chip-elevated-selected-container-color, var(--md-sys-color-secondary-container, #e8def8));--_label-text-font: var(--md-filter-chip-label-text-font, var(--md-sys-typescale-label-large-font, var(--md-ref-typeface-plain, Roboto)));--_label-text-line-height: var(--md-filter-chip-label-text-line-height, var(--md-sys-typescale-label-large-line-height, 1.25rem));--_label-text-size: var(--md-filter-chip-label-text-size, var(--md-sys-typescale-label-large-size, 0.875rem));--_label-text-weight: var(--md-filter-chip-label-text-weight, var(--md-sys-typescale-label-large-weight, var(--md-ref-typeface-weight-medium, 500)));--_selected-focus-label-text-color: var(--md-filter-chip-selected-focus-label-text-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-hover-label-text-color: var(--md-filter-chip-selected-hover-label-text-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-hover-state-layer-color: var(--md-filter-chip-selected-hover-state-layer-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-hover-state-layer-opacity: var(--md-filter-chip-selected-hover-state-layer-opacity, 0.08);--_selected-label-text-color: var(--md-filter-chip-selected-label-text-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-pressed-label-text-color: var(--md-filter-chip-selected-pressed-label-text-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-pressed-state-layer-color: var(--md-filter-chip-selected-pressed-state-layer-color, var(--md-sys-color-on-surface-variant, #49454f));--_selected-pressed-state-layer-opacity: var(--md-filter-chip-selected-pressed-state-layer-opacity, 0.12);--_elevated-container-color: var(--md-filter-chip-elevated-container-color, var(--md-sys-color-surface-container-low, #f7f2fa));--_disabled-outline-color: var(--md-filter-chip-disabled-outline-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-outline-opacity: var(--md-filter-chip-disabled-outline-opacity, 0.12);--_disabled-selected-container-color: var(--md-filter-chip-disabled-selected-container-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-selected-container-opacity: var(--md-filter-chip-disabled-selected-container-opacity, 0.12);--_focus-outline-color: var(--md-filter-chip-focus-outline-color, var(--md-sys-color-on-surface-variant, #49454f));--_outline-color: var(--md-filter-chip-outline-color, var(--md-sys-color-outline, #79747e));--_outline-width: var(--md-filter-chip-outline-width, 1px);--_selected-container-color: var(--md-filter-chip-selected-container-color, var(--md-sys-color-secondary-container, #e8def8));--_selected-outline-width: var(--md-filter-chip-selected-outline-width, 0px);--_focus-label-text-color: var(--md-filter-chip-focus-label-text-color, var(--md-sys-color-on-surface-variant, #49454f));--_hover-label-text-color: var(--md-filter-chip-hover-label-text-color, var(--md-sys-color-on-surface-variant, #49454f));--_hover-state-layer-color: var(--md-filter-chip-hover-state-layer-color, var(--md-sys-color-on-surface-variant, #49454f));--_hover-state-layer-opacity: var(--md-filter-chip-hover-state-layer-opacity, 0.08);--_label-text-color: var(--md-filter-chip-label-text-color, var(--md-sys-color-on-surface-variant, #49454f));--_pressed-label-text-color: var(--md-filter-chip-pressed-label-text-color, var(--md-sys-color-on-surface-variant, #49454f));--_pressed-state-layer-color: var(--md-filter-chip-pressed-state-layer-color, var(--md-sys-color-on-secondary-container, #1d192b));--_pressed-state-layer-opacity: var(--md-filter-chip-pressed-state-layer-opacity, 0.12);--_icon-size: var(--md-filter-chip-icon-size, 18px);--_disabled-leading-icon-color: var(--md-filter-chip-disabled-leading-icon-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-leading-icon-opacity: var(--md-filter-chip-disabled-leading-icon-opacity, 0.38);--_selected-focus-leading-icon-color: var(--md-filter-chip-selected-focus-leading-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-hover-leading-icon-color: var(--md-filter-chip-selected-hover-leading-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-leading-icon-color: var(--md-filter-chip-selected-leading-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-pressed-leading-icon-color: var(--md-filter-chip-selected-pressed-leading-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_focus-leading-icon-color: var(--md-filter-chip-focus-leading-icon-color, var(--md-sys-color-primary, #6750a4));--_hover-leading-icon-color: var(--md-filter-chip-hover-leading-icon-color, var(--md-sys-color-primary, #6750a4));--_leading-icon-color: var(--md-filter-chip-leading-icon-color, var(--md-sys-color-primary, #6750a4));--_pressed-leading-icon-color: var(--md-filter-chip-pressed-leading-icon-color, var(--md-sys-color-primary, #6750a4));--_disabled-trailing-icon-color: var(--md-filter-chip-disabled-trailing-icon-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-trailing-icon-opacity: var(--md-filter-chip-disabled-trailing-icon-opacity, 0.38);--_selected-focus-trailing-icon-color: var(--md-filter-chip-selected-focus-trailing-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-hover-trailing-icon-color: var(--md-filter-chip-selected-hover-trailing-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-pressed-trailing-icon-color: var(--md-filter-chip-selected-pressed-trailing-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-trailing-icon-color: var(--md-filter-chip-selected-trailing-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_focus-trailing-icon-color: var(--md-filter-chip-focus-trailing-icon-color, var(--md-sys-color-on-surface-variant, #49454f));--_hover-trailing-icon-color: var(--md-filter-chip-hover-trailing-icon-color, var(--md-sys-color-on-surface-variant, #49454f));--_pressed-trailing-icon-color: var(--md-filter-chip-pressed-trailing-icon-color, var(--md-sys-color-on-surface-variant, #49454f));--_trailing-icon-color: var(--md-filter-chip-trailing-icon-color, var(--md-sys-color-on-surface-variant, #49454f));--_container-shape-start-start: var(--md-filter-chip-container-shape-start-start, var(--md-filter-chip-container-shape, var(--md-sys-shape-corner-small, 8px)));--_container-shape-start-end: var(--md-filter-chip-container-shape-start-end, var(--md-filter-chip-container-shape, var(--md-sys-shape-corner-small, 8px)));--_container-shape-end-end: var(--md-filter-chip-container-shape-end-end, var(--md-filter-chip-container-shape, var(--md-sys-shape-corner-small, 8px)));--_container-shape-end-start: var(--md-filter-chip-container-shape-end-start, var(--md-filter-chip-container-shape, var(--md-sys-shape-corner-small, 8px)));--_leading-space: var(--md-filter-chip-leading-space, 16px);--_trailing-space: var(--md-filter-chip-trailing-space, 16px);--_icon-label-space: var(--md-filter-chip-icon-label-space, 8px);--_with-leading-icon-leading-space: var(--md-filter-chip-with-leading-icon-leading-space, 8px);--_with-trailing-icon-trailing-space: var(--md-filter-chip-with-trailing-icon-trailing-space, 8px)}.selected.elevated::before{background:var(--_elevated-selected-container-color)}.checkmark{height:var(--_icon-size);width:var(--_icon-size)}.disabled .checkmark{opacity:var(--_disabled-leading-icon-opacity)}@media(forced-colors: active){.disabled .checkmark{opacity:1}}
+`;
+
+/**
+ * @license
+ * Copyright 2024 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+const styles$2 = i$4 `.selected{--md-ripple-hover-color: var(--_selected-hover-state-layer-color);--md-ripple-hover-opacity: var(--_selected-hover-state-layer-opacity);--md-ripple-pressed-color: var(--_selected-pressed-state-layer-color);--md-ripple-pressed-opacity: var(--_selected-pressed-state-layer-opacity)}:where(.selected)::before{background:var(--_selected-container-color)}:where(.selected) .outline{border-width:var(--_selected-outline-width)}:where(.selected.disabled)::before{background:var(--_disabled-selected-container-color);opacity:var(--_disabled-selected-container-opacity)}:where(.selected) .label{color:var(--_selected-label-text-color)}:where(.selected:hover) .label{color:var(--_selected-hover-label-text-color)}:where(.selected:focus) .label{color:var(--_selected-focus-label-text-color)}:where(.selected:active) .label{color:var(--_selected-pressed-label-text-color)}:where(.selected) .leading.icon{color:var(--_selected-leading-icon-color)}:where(.selected:hover) .leading.icon{color:var(--_selected-hover-leading-icon-color)}:where(.selected:focus) .leading.icon{color:var(--_selected-focus-leading-icon-color)}:where(.selected:active) .leading.icon{color:var(--_selected-pressed-leading-icon-color)}@media(forced-colors: active){:where(.selected:not(.elevated))::before{border:1px solid CanvasText}:where(.selected) .outline{border-width:1px}}
+`;
+
+/**
+ * @license
+ * Copyright 2024 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+const styles$1 = i$4 `:host{border-start-start-radius:var(--_container-shape-start-start);border-start-end-radius:var(--_container-shape-start-end);border-end-start-radius:var(--_container-shape-end-start);border-end-end-radius:var(--_container-shape-end-end);display:inline-flex;height:var(--_container-height);cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,0);--md-ripple-hover-color: var(--_hover-state-layer-color);--md-ripple-hover-opacity: var(--_hover-state-layer-opacity);--md-ripple-pressed-color: var(--_pressed-state-layer-color);--md-ripple-pressed-opacity: var(--_pressed-state-layer-opacity)}:host(:is([disabled],[soft-disabled])){pointer-events:none}:host([touch-target=wrapper]){margin:max(0px,(48px - var(--_container-height))/2) 0}md-focus-ring{--md-focus-ring-shape-start-start: var(--_container-shape-start-start);--md-focus-ring-shape-start-end: var(--_container-shape-start-end);--md-focus-ring-shape-end-end: var(--_container-shape-end-end);--md-focus-ring-shape-end-start: var(--_container-shape-end-start)}.container{border-radius:inherit;box-sizing:border-box;display:flex;height:100%;position:relative;width:100%}.container::before{border-radius:inherit;content:"";inset:0;pointer-events:none;position:absolute}.container:not(.disabled){cursor:pointer}.container.disabled{pointer-events:none}.cell{display:flex}.action{align-items:baseline;appearance:none;background:none;border:none;border-radius:inherit;display:flex;outline:none;padding:0;position:relative;text-decoration:none}.primary.action{min-width:0;padding-inline-start:var(--_leading-space);padding-inline-end:var(--_trailing-space)}.has-icon .primary.action{padding-inline-start:var(--_with-leading-icon-leading-space)}.touch{height:48px;inset:50% 0 0;position:absolute;transform:translateY(-50%);width:100%}:host([touch-target=none]) .touch{display:none}.outline{border:var(--_outline-width) solid var(--_outline-color);border-radius:inherit;inset:0;pointer-events:none;position:absolute}:where(:focus) .outline{border-color:var(--_focus-outline-color)}:where(.disabled) .outline{border-color:var(--_disabled-outline-color);opacity:var(--_disabled-outline-opacity)}md-ripple{border-radius:inherit}.label,.icon,.touch{z-index:1}.label{align-items:center;color:var(--_label-text-color);display:flex;font-family:var(--_label-text-font);font-size:var(--_label-text-size);font-weight:var(--_label-text-weight);height:100%;line-height:var(--_label-text-line-height);overflow:hidden;user-select:none}.label-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:where(:hover) .label{color:var(--_hover-label-text-color)}:where(:focus) .label{color:var(--_focus-label-text-color)}:where(:active) .label{color:var(--_pressed-label-text-color)}:where(.disabled) .label{color:var(--_disabled-label-text-color);opacity:var(--_disabled-label-text-opacity)}.icon{align-self:center;display:flex;fill:currentColor;position:relative}.icon ::slotted(:first-child){font-size:var(--_icon-size);height:var(--_icon-size);width:var(--_icon-size)}.leading.icon{color:var(--_leading-icon-color)}.leading.icon ::slotted(*),.leading.icon svg{margin-inline-end:var(--_icon-label-space)}:where(:hover) .leading.icon{color:var(--_hover-leading-icon-color)}:where(:focus) .leading.icon{color:var(--_focus-leading-icon-color)}:where(:active) .leading.icon{color:var(--_pressed-leading-icon-color)}:where(.disabled) .leading.icon{color:var(--_disabled-leading-icon-color);opacity:var(--_disabled-leading-icon-opacity)}@media(forced-colors: active){:where(.disabled) :is(.label,.outline,.leading.icon){color:GrayText;opacity:1}}a,button{text-transform:inherit}a,button:not(:disabled,[aria-disabled=true]){cursor:inherit}
+`;
+
+/**
+ * @license
+ * Copyright 2024 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+const styles = i$4 `.trailing.action{align-items:center;justify-content:center;padding-inline-start:var(--_icon-label-space);padding-inline-end:var(--_with-trailing-icon-trailing-space)}.trailing.action :is(md-ripple,md-focus-ring){border-radius:50%;height:calc(1.3333333333*var(--_icon-size));width:calc(1.3333333333*var(--_icon-size))}.trailing.action md-focus-ring{inset:unset}.has-trailing .primary.action{padding-inline-end:0}.trailing.icon{color:var(--_trailing-icon-color);height:var(--_icon-size);width:var(--_icon-size)}:where(:hover) .trailing.icon{color:var(--_hover-trailing-icon-color)}:where(:focus) .trailing.icon{color:var(--_focus-trailing-icon-color)}:where(:active) .trailing.icon{color:var(--_pressed-trailing-icon-color)}:where(.disabled) .trailing.icon{color:var(--_disabled-trailing-icon-color);opacity:var(--_disabled-trailing-icon-opacity)}:where(.selected) .trailing.icon{color:var(--_selected-trailing-icon-color)}:where(.selected:hover) .trailing.icon{color:var(--_selected-hover-trailing-icon-color)}:where(.selected:focus) .trailing.icon{color:var(--_selected-focus-trailing-icon-color)}:where(.selected:active) .trailing.icon{color:var(--_selected-pressed-trailing-icon-color)}@media(forced-colors: active){.trailing.icon{color:ButtonText}:where(.disabled) .trailing.icon{color:GrayText;opacity:1}}
+`;
+
+/**
+ * @license
+ * Copyright 2023 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/**
+ * TODO(b/243982145): add docs
+ *
+ * @final
+ * @suppress {visibility}
+ */
+let MdFilterChip = class MdFilterChip extends FilterChip {
+};
+MdFilterChip.styles = [
+    styles$1,
+    styles$5,
+    styles,
+    styles$2,
+    styles$3,
+];
+MdFilterChip = __decorate([
+    t$1('md-filter-chip')
+], MdFilterChip);
+
 // src/helpers/entity-filters.js
 
 /* ───────────── filtri di sezione ───────────── */
@@ -280,16 +2026,6 @@ function maybeAutoDiscover(hass, config, changedProp, debug = false) {
 
 // src/panels/RoomPanel.js
 
-//
-// ─── CARICO UNA SOLA VOLTA I CHIP DI @material/web ───────────────────────────
-//
-if (!customElements.get('md-chip-set')) {
-  Promise.resolve().then(function () { return chipSet; });
-}
-if (!customElements.get('md-filter-chip')) {
-  Promise.resolve().then(function () { return filterChip; });
-}
-
 const PRESENCE_CATS = [
   'presence',   // binary_sensor.device_class = presence
   'motion',     // binary_sensor.device_class = motion
@@ -309,7 +2045,6 @@ class RoomPanel extends i$1 {
 
   static styles = i$4`
     :host { display: block; }
-    /* arrotondamento chip Material Web */
     --md-filter-chip-container-shape: 16px;
 
     /* Glass panel */
@@ -594,7 +2329,7 @@ class RoomPanel extends i$1 {
 
   _renderActions(type) {
     const cfg     = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+    const actions = ['toggle','more-info','navigate','call-service','none'];
     return x`
       <div class="input-group">
         <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
@@ -2357,1761 +4092,5 @@ class BubbleRoom extends i$1 {
 
 customElements.define('bubble-room', BubbleRoom);
 /* ==== fine bubble-room.js ==== */
-
-/******************************************************************************
-Copyright (c) Microsoft Corporation.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */
-
-function __decorate(decorators, target, key, desc) {
-  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-  return c > 3 && r && Object.defineProperty(target, key, r), r;
-}
-
-typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
-  var e = new Error(message);
-  return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
-};
-
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-const t$1=t=>(e,o)=>{void 0!==o?o.addInitializer((()=>{customElements.define(t,e);})):customElements.define(t,e);};
-
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */const o$1={attribute:!0,type:String,converter:u$1,reflect:!1,hasChanged:f$1},r$1=(t=o$1,e,r)=>{const{kind:n,metadata:i}=r;let s=globalThis.litPropertyMetadata.get(i);if(void 0===s&&globalThis.litPropertyMetadata.set(i,s=new Map),"setter"===n&&((t=Object.create(t)).wrapped=!0),s.set(r.name,t),"accessor"===n){const{name:o}=r;return {set(r){const n=e.get.call(this);e.set.call(this,r),this.requestUpdate(o,n,t);},init(e){return void 0!==e&&this.C(o,void 0,t,e),e}}}if("setter"===n){const{name:o}=r;return function(r){const n=this[o];e.call(this,r),this.requestUpdate(o,n,t);}}throw Error("Unsupported decorator location: "+n)};function n(t){return (e,o)=>"object"==typeof o?r$1(t,e,o):((t,e,o)=>{const r=e.hasOwnProperty(o);return e.constructor.createProperty(o,t),r?Object.getOwnPropertyDescriptor(e,o):void 0})(t,e,o)}
-
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */function r(r){return n({...r,state:!0,attribute:!1})}
-
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-const e$3=(e,t,c)=>(c.configurable=!0,c.enumerable=!0,Reflect.decorate&&"object"!=typeof t&&Object.defineProperty(e,t,c),c);
-
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */function e$2(e,r){return (n,s,i)=>{const o=t=>t.renderRoot?.querySelector(e)??null;if(r){const{get:e,set:r}="object"==typeof s?n:i??(()=>{const t=Symbol();return {get(){return this[t]},set(e){this[t]=e;}}})();return e$3(n,s,{get(){let t=e.call(this);return void 0===t&&(t=o(this),(null!==t||this.hasUpdated)&&r.call(this,t)),t}})}return e$3(n,s,{get(){return o(this)}})}}
-
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */function o(o){return (e,n)=>{const{slot:r,selector:s}=o??{},c="slot"+(r?`[name=${r}]`:":not([name])");return e$3(e,n,{get(){const t=this.renderRoot?.querySelector(c),e=t?.assignedElements(o)??[];return void 0===s?e:e.filter((t=>t.matches(s)))}})}}
-
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-/**
- * A key to retrieve an `Attachable` element's `AttachableController` from a
- * global `MutationObserver`.
- */
-const ATTACHABLE_CONTROLLER = Symbol('attachableController');
-let FOR_ATTRIBUTE_OBSERVER;
-{
-    /**
-     * A global `MutationObserver` that reacts to `for` attribute changes on
-     * `Attachable` elements. If the `for` attribute changes, the controller will
-     * re-attach to the new referenced element.
-     */
-    FOR_ATTRIBUTE_OBSERVER = new MutationObserver((records) => {
-        for (const record of records) {
-            // When a control's `for` attribute changes, inform its
-            // `AttachableController` to update to a new control.
-            record.target[ATTACHABLE_CONTROLLER]?.hostConnected();
-        }
-    });
-}
-/**
- * A controller that provides an implementation for `Attachable` elements.
- *
- * @example
- * ```ts
- * class MyElement extends LitElement implements Attachable {
- *   get control() { return this.attachableController.control; }
- *
- *   private readonly attachableController = new AttachableController(
- *     this,
- *     (previousControl, newControl) => {
- *       previousControl?.removeEventListener('click', this.handleClick);
- *       newControl?.addEventListener('click', this.handleClick);
- *     }
- *   );
- *
- *   // Implement remaining `Attachable` properties/methods that call the
- *   // controller's properties/methods.
- * }
- * ```
- */
-class AttachableController {
-    get htmlFor() {
-        return this.host.getAttribute('for');
-    }
-    set htmlFor(htmlFor) {
-        if (htmlFor === null) {
-            this.host.removeAttribute('for');
-        }
-        else {
-            this.host.setAttribute('for', htmlFor);
-        }
-    }
-    get control() {
-        if (this.host.hasAttribute('for')) {
-            if (!this.htmlFor || !this.host.isConnected) {
-                return null;
-            }
-            return this.host.getRootNode().querySelector(`#${this.htmlFor}`);
-        }
-        return this.currentControl || this.host.parentElement;
-    }
-    set control(control) {
-        if (control) {
-            this.attach(control);
-        }
-        else {
-            this.detach();
-        }
-    }
-    /**
-     * Creates a new controller for an `Attachable` element.
-     *
-     * @param host The `Attachable` element.
-     * @param onControlChange A callback with two parameters for the previous and
-     *     next control. An `Attachable` element may perform setup or teardown
-     *     logic whenever the control changes.
-     */
-    constructor(host, onControlChange) {
-        this.host = host;
-        this.onControlChange = onControlChange;
-        this.currentControl = null;
-        host.addController(this);
-        host[ATTACHABLE_CONTROLLER] = this;
-        FOR_ATTRIBUTE_OBSERVER?.observe(host, { attributeFilter: ['for'] });
-    }
-    attach(control) {
-        if (control === this.currentControl) {
-            return;
-        }
-        this.setCurrentControl(control);
-        // When imperatively attaching, remove the `for` attribute so
-        // that the attached control is used instead of a referenced one.
-        this.host.removeAttribute('for');
-    }
-    detach() {
-        this.setCurrentControl(null);
-        // When imperatively detaching, add an empty `for=""` attribute. This will
-        // ensure the control is `null` rather than the `parentElement`.
-        this.host.setAttribute('for', '');
-    }
-    /** @private */
-    hostConnected() {
-        this.setCurrentControl(this.control);
-    }
-    /** @private */
-    hostDisconnected() {
-        this.setCurrentControl(null);
-    }
-    setCurrentControl(control) {
-        this.onControlChange(this.currentControl, control);
-        this.currentControl = control;
-    }
-}
-
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-/**
- * Events that the focus ring listens to.
- */
-const EVENTS$1 = ['focusin', 'focusout', 'pointerdown'];
-/**
- * A focus ring component.
- *
- * @fires visibility-changed {Event} Fired whenever `visible` changes.
- */
-class FocusRing extends i$1 {
-    constructor() {
-        super(...arguments);
-        /**
-         * Makes the focus ring visible.
-         */
-        this.visible = false;
-        /**
-         * Makes the focus ring animate inwards instead of outwards.
-         */
-        this.inward = false;
-        this.attachableController = new AttachableController(this, this.onControlChange.bind(this));
-    }
-    get htmlFor() {
-        return this.attachableController.htmlFor;
-    }
-    set htmlFor(htmlFor) {
-        this.attachableController.htmlFor = htmlFor;
-    }
-    get control() {
-        return this.attachableController.control;
-    }
-    set control(control) {
-        this.attachableController.control = control;
-    }
-    attach(control) {
-        this.attachableController.attach(control);
-    }
-    detach() {
-        this.attachableController.detach();
-    }
-    connectedCallback() {
-        super.connectedCallback();
-        // Needed for VoiceOver, which will create a "group" if the element is a
-        // sibling to other content.
-        this.setAttribute('aria-hidden', 'true');
-    }
-    /** @private */
-    handleEvent(event) {
-        if (event[HANDLED_BY_FOCUS_RING]) {
-            // This ensures the focus ring does not activate when multiple focus rings
-            // are used within a single component.
-            return;
-        }
-        switch (event.type) {
-            default:
-                return;
-            case 'focusin':
-                this.visible = this.control?.matches(':focus-visible') ?? false;
-                break;
-            case 'focusout':
-            case 'pointerdown':
-                this.visible = false;
-                break;
-        }
-        event[HANDLED_BY_FOCUS_RING] = true;
-    }
-    onControlChange(prev, next) {
-        for (const event of EVENTS$1) {
-            prev?.removeEventListener(event, this);
-            next?.addEventListener(event, this);
-        }
-    }
-    update(changed) {
-        if (changed.has('visible')) {
-            // This logic can be removed once the `:has` selector has been introduced
-            // to Firefox. This is necessary to allow correct submenu styles.
-            this.dispatchEvent(new Event('visibility-changed'));
-        }
-        super.update(changed);
-    }
-}
-__decorate([
-    n({ type: Boolean, reflect: true })
-], FocusRing.prototype, "visible", void 0);
-__decorate([
-    n({ type: Boolean, reflect: true })
-], FocusRing.prototype, "inward", void 0);
-const HANDLED_BY_FOCUS_RING = Symbol('handledByFocusRing');
-
-/**
- * @license
- * Copyright 2024 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-const styles$8 = i$4 `:host{animation-delay:0s,calc(var(--md-focus-ring-duration, 600ms)*.25);animation-duration:calc(var(--md-focus-ring-duration, 600ms)*.25),calc(var(--md-focus-ring-duration, 600ms)*.75);animation-timing-function:cubic-bezier(0.2, 0, 0, 1);box-sizing:border-box;color:var(--md-focus-ring-color, var(--md-sys-color-secondary, #625b71));display:none;pointer-events:none;position:absolute}:host([visible]){display:flex}:host(:not([inward])){animation-name:outward-grow,outward-shrink;border-end-end-radius:calc(var(--md-focus-ring-shape-end-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));border-end-start-radius:calc(var(--md-focus-ring-shape-end-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));border-start-end-radius:calc(var(--md-focus-ring-shape-start-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));border-start-start-radius:calc(var(--md-focus-ring-shape-start-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));inset:calc(-1*var(--md-focus-ring-outward-offset, 2px));outline:var(--md-focus-ring-width, 3px) solid currentColor}:host([inward]){animation-name:inward-grow,inward-shrink;border-end-end-radius:calc(var(--md-focus-ring-shape-end-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border-end-start-radius:calc(var(--md-focus-ring-shape-end-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border-start-end-radius:calc(var(--md-focus-ring-shape-start-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border-start-start-radius:calc(var(--md-focus-ring-shape-start-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border:var(--md-focus-ring-width, 3px) solid currentColor;inset:var(--md-focus-ring-inward-offset, 0px)}@keyframes outward-grow{from{outline-width:0}to{outline-width:var(--md-focus-ring-active-width, 8px)}}@keyframes outward-shrink{from{outline-width:var(--md-focus-ring-active-width, 8px)}}@keyframes inward-grow{from{border-width:0}to{border-width:var(--md-focus-ring-active-width, 8px)}}@keyframes inward-shrink{from{border-width:var(--md-focus-ring-active-width, 8px)}}@media(prefers-reduced-motion){:host{animation:none}}
-`;
-
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-/**
- * TODO(b/267336424): add docs
- *
- * @final
- * @suppress {visibility}
- */
-let MdFocusRing = class MdFocusRing extends FocusRing {
-};
-MdFocusRing.styles = [styles$8];
-MdFocusRing = __decorate([
-    t$1('md-focus-ring')
-], MdFocusRing);
-
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-const t={ATTRIBUTE:1,CHILD:2,PROPERTY:3,BOOLEAN_ATTRIBUTE:4,EVENT:5,ELEMENT:6},e$1=t=>(...e)=>({_$litDirective$:t,values:e});class i{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,i){this._$Ct=t,this._$AM=e,this._$Ci=i;}_$AS(t,e){return this.update(t,e)}update(t,e){return this.render(...e)}}
-
-/**
- * @license
- * Copyright 2018 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */const e=e$1(class extends i{constructor(t$1){if(super(t$1),t$1.type!==t.ATTRIBUTE||"class"!==t$1.name||t$1.strings?.length>2)throw Error("`classMap()` can only be used in the `class` attribute and must be the only part in the attribute.")}render(t){return " "+Object.keys(t).filter((s=>t[s])).join(" ")+" "}update(s,[i]){if(void 0===this.st){this.st=new Set,void 0!==s.strings&&(this.nt=new Set(s.strings.join(" ").split(/\s/).filter((t=>""!==t))));for(const t in i)i[t]&&!this.nt?.has(t)&&this.st.add(t);return this.render(i)}const r=s.element.classList;for(const t of this.st)t in i||(r.remove(t),this.st.delete(t));for(const t in i){const s=!!i[t];s===this.st.has(t)||this.nt?.has(t)||(s?(r.add(t),this.st.add(t)):(r.remove(t),this.st.delete(t)));}return T}});
-
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-/**
- * Easing functions to use for web animations.
- *
- * **NOTE:** `EASING.EMPHASIZED` is approximated with unknown accuracy.
- *
- * TODO(b/241113345): replace with tokens
- */
-const EASING = {
-    STANDARD: 'cubic-bezier(0.2, 0, 0, 1)',
-    STANDARD_ACCELERATE: 'cubic-bezier(.3,0,1,1)',
-    STANDARD_DECELERATE: 'cubic-bezier(0,0,0,1)',
-    EMPHASIZED: 'cubic-bezier(.3,0,0,1)',
-    EMPHASIZED_ACCELERATE: 'cubic-bezier(.3,0,.8,.15)',
-    EMPHASIZED_DECELERATE: 'cubic-bezier(.05,.7,.1,1)',
-};
-
-/**
- * @license
- * Copyright 2022 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-const PRESS_GROW_MS = 450;
-const MINIMUM_PRESS_MS = 225;
-const INITIAL_ORIGIN_SCALE = 0.2;
-const PADDING = 10;
-const SOFT_EDGE_MINIMUM_SIZE = 75;
-const SOFT_EDGE_CONTAINER_RATIO = 0.35;
-const PRESS_PSEUDO = '::after';
-const ANIMATION_FILL = 'forwards';
-/**
- * Interaction states for the ripple.
- *
- * On Touch:
- *  - `INACTIVE -> TOUCH_DELAY -> WAITING_FOR_CLICK -> INACTIVE`
- *  - `INACTIVE -> TOUCH_DELAY -> HOLDING -> WAITING_FOR_CLICK -> INACTIVE`
- *
- * On Mouse or Pen:
- *   - `INACTIVE -> WAITING_FOR_CLICK -> INACTIVE`
- */
-var State;
-(function (State) {
-    /**
-     * Initial state of the control, no touch in progress.
-     *
-     * Transitions:
-     *   - on touch down: transition to `TOUCH_DELAY`.
-     *   - on mouse down: transition to `WAITING_FOR_CLICK`.
-     */
-    State[State["INACTIVE"] = 0] = "INACTIVE";
-    /**
-     * Touch down has been received, waiting to determine if it's a swipe or
-     * scroll.
-     *
-     * Transitions:
-     *   - on touch up: begin press; transition to `WAITING_FOR_CLICK`.
-     *   - on cancel: transition to `INACTIVE`.
-     *   - after `TOUCH_DELAY_MS`: begin press; transition to `HOLDING`.
-     */
-    State[State["TOUCH_DELAY"] = 1] = "TOUCH_DELAY";
-    /**
-     * A touch has been deemed to be a press
-     *
-     * Transitions:
-     *  - on up: transition to `WAITING_FOR_CLICK`.
-     */
-    State[State["HOLDING"] = 2] = "HOLDING";
-    /**
-     * The user touch has finished, transition into rest state.
-     *
-     * Transitions:
-     *   - on click end press; transition to `INACTIVE`.
-     */
-    State[State["WAITING_FOR_CLICK"] = 3] = "WAITING_FOR_CLICK";
-})(State || (State = {}));
-/**
- * Events that the ripple listens to.
- */
-const EVENTS = [
-    'click',
-    'contextmenu',
-    'pointercancel',
-    'pointerdown',
-    'pointerenter',
-    'pointerleave',
-    'pointerup',
-];
-/**
- * Delay reacting to touch so that we do not show the ripple for a swipe or
- * scroll interaction.
- */
-const TOUCH_DELAY_MS = 150;
-/**
- * Used to detect if HCM is active. Events do not process during HCM when the
- * ripple is not displayed.
- */
-const FORCED_COLORS = window.matchMedia('(forced-colors: active)');
-/**
- * A ripple component.
- */
-class Ripple extends i$1 {
-    constructor() {
-        super(...arguments);
-        /**
-         * Disables the ripple.
-         */
-        this.disabled = false;
-        this.hovered = false;
-        this.pressed = false;
-        this.rippleSize = '';
-        this.rippleScale = '';
-        this.initialSize = 0;
-        this.state = State.INACTIVE;
-        this.checkBoundsAfterContextMenu = false;
-        this.attachableController = new AttachableController(this, this.onControlChange.bind(this));
-    }
-    get htmlFor() {
-        return this.attachableController.htmlFor;
-    }
-    set htmlFor(htmlFor) {
-        this.attachableController.htmlFor = htmlFor;
-    }
-    get control() {
-        return this.attachableController.control;
-    }
-    set control(control) {
-        this.attachableController.control = control;
-    }
-    attach(control) {
-        this.attachableController.attach(control);
-    }
-    detach() {
-        this.attachableController.detach();
-    }
-    connectedCallback() {
-        super.connectedCallback();
-        // Needed for VoiceOver, which will create a "group" if the element is a
-        // sibling to other content.
-        this.setAttribute('aria-hidden', 'true');
-    }
-    render() {
-        const classes = {
-            'hovered': this.hovered,
-            'pressed': this.pressed,
-        };
-        return x `<div class="surface ${e(classes)}"></div>`;
-    }
-    update(changedProps) {
-        if (changedProps.has('disabled') && this.disabled) {
-            this.hovered = false;
-            this.pressed = false;
-        }
-        super.update(changedProps);
-    }
-    /**
-     * TODO(b/269799771): make private
-     * @private only public for slider
-     */
-    handlePointerenter(event) {
-        if (!this.shouldReactToEvent(event)) {
-            return;
-        }
-        this.hovered = true;
-    }
-    /**
-     * TODO(b/269799771): make private
-     * @private only public for slider
-     */
-    handlePointerleave(event) {
-        if (!this.shouldReactToEvent(event)) {
-            return;
-        }
-        this.hovered = false;
-        // release a held mouse or pen press that moves outside the element
-        if (this.state !== State.INACTIVE) {
-            this.endPressAnimation();
-        }
-    }
-    handlePointerup(event) {
-        if (!this.shouldReactToEvent(event)) {
-            return;
-        }
-        if (this.state === State.HOLDING) {
-            this.state = State.WAITING_FOR_CLICK;
-            return;
-        }
-        if (this.state === State.TOUCH_DELAY) {
-            this.state = State.WAITING_FOR_CLICK;
-            this.startPressAnimation(this.rippleStartEvent);
-            return;
-        }
-    }
-    async handlePointerdown(event) {
-        if (!this.shouldReactToEvent(event)) {
-            return;
-        }
-        this.rippleStartEvent = event;
-        if (!this.isTouch(event)) {
-            this.state = State.WAITING_FOR_CLICK;
-            this.startPressAnimation(event);
-            return;
-        }
-        // after a longpress contextmenu event, an extra `pointerdown` can be
-        // dispatched to the pressed element. Check that the down is within
-        // bounds of the element in this case.
-        if (this.checkBoundsAfterContextMenu && !this.inBounds(event)) {
-            return;
-        }
-        this.checkBoundsAfterContextMenu = false;
-        // Wait for a hold after touch delay
-        this.state = State.TOUCH_DELAY;
-        await new Promise((resolve) => {
-            setTimeout(resolve, TOUCH_DELAY_MS);
-        });
-        if (this.state !== State.TOUCH_DELAY) {
-            return;
-        }
-        this.state = State.HOLDING;
-        this.startPressAnimation(event);
-    }
-    handleClick() {
-        // Click is a MouseEvent in Firefox and Safari, so we cannot use
-        // `shouldReactToEvent`
-        if (this.disabled) {
-            return;
-        }
-        if (this.state === State.WAITING_FOR_CLICK) {
-            this.endPressAnimation();
-            return;
-        }
-        if (this.state === State.INACTIVE) {
-            // keyboard synthesized click event
-            this.startPressAnimation();
-            this.endPressAnimation();
-        }
-    }
-    handlePointercancel(event) {
-        if (!this.shouldReactToEvent(event)) {
-            return;
-        }
-        this.endPressAnimation();
-    }
-    handleContextmenu() {
-        if (this.disabled) {
-            return;
-        }
-        this.checkBoundsAfterContextMenu = true;
-        this.endPressAnimation();
-    }
-    determineRippleSize() {
-        const { height, width } = this.getBoundingClientRect();
-        const maxDim = Math.max(height, width);
-        const softEdgeSize = Math.max(SOFT_EDGE_CONTAINER_RATIO * maxDim, SOFT_EDGE_MINIMUM_SIZE);
-        const initialSize = Math.floor(maxDim * INITIAL_ORIGIN_SCALE);
-        const hypotenuse = Math.sqrt(width ** 2 + height ** 2);
-        const maxRadius = hypotenuse + PADDING;
-        this.initialSize = initialSize;
-        this.rippleScale = `${(maxRadius + softEdgeSize) / initialSize}`;
-        this.rippleSize = `${initialSize}px`;
-    }
-    getNormalizedPointerEventCoords(pointerEvent) {
-        const { scrollX, scrollY } = window;
-        const { left, top } = this.getBoundingClientRect();
-        const documentX = scrollX + left;
-        const documentY = scrollY + top;
-        const { pageX, pageY } = pointerEvent;
-        return { x: pageX - documentX, y: pageY - documentY };
-    }
-    getTranslationCoordinates(positionEvent) {
-        const { height, width } = this.getBoundingClientRect();
-        // end in the center
-        const endPoint = {
-            x: (width - this.initialSize) / 2,
-            y: (height - this.initialSize) / 2,
-        };
-        let startPoint;
-        if (positionEvent instanceof PointerEvent) {
-            startPoint = this.getNormalizedPointerEventCoords(positionEvent);
-        }
-        else {
-            startPoint = {
-                x: width / 2,
-                y: height / 2,
-            };
-        }
-        // center around start point
-        startPoint = {
-            x: startPoint.x - this.initialSize / 2,
-            y: startPoint.y - this.initialSize / 2,
-        };
-        return { startPoint, endPoint };
-    }
-    startPressAnimation(positionEvent) {
-        if (!this.mdRoot) {
-            return;
-        }
-        this.pressed = true;
-        this.growAnimation?.cancel();
-        this.determineRippleSize();
-        const { startPoint, endPoint } = this.getTranslationCoordinates(positionEvent);
-        const translateStart = `${startPoint.x}px, ${startPoint.y}px`;
-        const translateEnd = `${endPoint.x}px, ${endPoint.y}px`;
-        this.growAnimation = this.mdRoot.animate({
-            top: [0, 0],
-            left: [0, 0],
-            height: [this.rippleSize, this.rippleSize],
-            width: [this.rippleSize, this.rippleSize],
-            transform: [
-                `translate(${translateStart}) scale(1)`,
-                `translate(${translateEnd}) scale(${this.rippleScale})`,
-            ],
-        }, {
-            pseudoElement: PRESS_PSEUDO,
-            duration: PRESS_GROW_MS,
-            easing: EASING.STANDARD,
-            fill: ANIMATION_FILL,
-        });
-    }
-    async endPressAnimation() {
-        this.rippleStartEvent = undefined;
-        this.state = State.INACTIVE;
-        const animation = this.growAnimation;
-        let pressAnimationPlayState = Infinity;
-        if (typeof animation?.currentTime === 'number') {
-            pressAnimationPlayState = animation.currentTime;
-        }
-        else if (animation?.currentTime) {
-            pressAnimationPlayState = animation.currentTime.to('ms').value;
-        }
-        if (pressAnimationPlayState >= MINIMUM_PRESS_MS) {
-            this.pressed = false;
-            return;
-        }
-        await new Promise((resolve) => {
-            setTimeout(resolve, MINIMUM_PRESS_MS - pressAnimationPlayState);
-        });
-        if (this.growAnimation !== animation) {
-            // A new press animation was started. The old animation was canceled and
-            // should not finish the pressed state.
-            return;
-        }
-        this.pressed = false;
-    }
-    /**
-     * Returns `true` if
-     *  - the ripple element is enabled
-     *  - the pointer is primary for the input type
-     *  - the pointer is the pointer that started the interaction, or will start
-     * the interaction
-     *  - the pointer is a touch, or the pointer state has the primary button
-     * held, or the pointer is hovering
-     */
-    shouldReactToEvent(event) {
-        if (this.disabled || !event.isPrimary) {
-            return false;
-        }
-        if (this.rippleStartEvent &&
-            this.rippleStartEvent.pointerId !== event.pointerId) {
-            return false;
-        }
-        if (event.type === 'pointerenter' || event.type === 'pointerleave') {
-            return !this.isTouch(event);
-        }
-        const isPrimaryButton = event.buttons === 1;
-        return this.isTouch(event) || isPrimaryButton;
-    }
-    /**
-     * Check if the event is within the bounds of the element.
-     *
-     * This is only needed for the "stuck" contextmenu longpress on Chrome.
-     */
-    inBounds({ x, y }) {
-        const { top, left, bottom, right } = this.getBoundingClientRect();
-        return x >= left && x <= right && y >= top && y <= bottom;
-    }
-    isTouch({ pointerType }) {
-        return pointerType === 'touch';
-    }
-    /** @private */
-    async handleEvent(event) {
-        if (FORCED_COLORS?.matches) {
-            // Skip event logic since the ripple is `display: none`.
-            return;
-        }
-        switch (event.type) {
-            case 'click':
-                this.handleClick();
-                break;
-            case 'contextmenu':
-                this.handleContextmenu();
-                break;
-            case 'pointercancel':
-                this.handlePointercancel(event);
-                break;
-            case 'pointerdown':
-                await this.handlePointerdown(event);
-                break;
-            case 'pointerenter':
-                this.handlePointerenter(event);
-                break;
-            case 'pointerleave':
-                this.handlePointerleave(event);
-                break;
-            case 'pointerup':
-                this.handlePointerup(event);
-                break;
-        }
-    }
-    onControlChange(prev, next) {
-        for (const event of EVENTS) {
-            prev?.removeEventListener(event, this);
-            next?.addEventListener(event, this);
-        }
-    }
-}
-__decorate([
-    n({ type: Boolean, reflect: true })
-], Ripple.prototype, "disabled", void 0);
-__decorate([
-    r()
-], Ripple.prototype, "hovered", void 0);
-__decorate([
-    r()
-], Ripple.prototype, "pressed", void 0);
-__decorate([
-    e$2('.surface')
-], Ripple.prototype, "mdRoot", void 0);
-
-/**
- * @license
- * Copyright 2024 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-const styles$7 = i$4 `:host{display:flex;margin:auto;pointer-events:none}:host([disabled]){display:none}@media(forced-colors: active){:host{display:none}}:host,.surface{border-radius:inherit;position:absolute;inset:0;overflow:hidden}.surface{-webkit-tap-highlight-color:rgba(0,0,0,0)}.surface::before,.surface::after{content:"";opacity:0;position:absolute}.surface::before{background-color:var(--md-ripple-hover-color, var(--md-sys-color-on-surface, #1d1b20));inset:0;transition:opacity 15ms linear,background-color 15ms linear}.surface::after{background:radial-gradient(closest-side, var(--md-ripple-pressed-color, var(--md-sys-color-on-surface, #1d1b20)) max(100% - 70px, 65%), transparent 100%);transform-origin:center center;transition:opacity 375ms linear}.hovered::before{background-color:var(--md-ripple-hover-color, var(--md-sys-color-on-surface, #1d1b20));opacity:var(--md-ripple-hover-opacity, 0.08)}.pressed::after{opacity:var(--md-ripple-pressed-opacity, 0.12);transition-duration:105ms}
-`;
-
-/**
- * @license
- * Copyright 2022 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-/**
- * @summary Ripples, also known as state layers, are visual indicators used to
- * communicate the status of a component or interactive element.
- *
- * @description A state layer is a semi-transparent covering on an element that
- * indicates its state. State layers provide a systematic approach to
- * visualizing states by using opacity. A layer can be applied to an entire
- * element or in a circular shape and only one state layer can be applied at a
- * given time.
- *
- * @final
- * @suppress {visibility}
- */
-let MdRipple = class MdRipple extends Ripple {
-};
-MdRipple.styles = [styles$7];
-MdRipple = __decorate([
-    t$1('md-ripple')
-], MdRipple);
-
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-/**
- * Accessibility Object Model reflective aria properties.
- */
-const ARIA_PROPERTIES = [
-    'role',
-    'ariaAtomic',
-    'ariaAutoComplete',
-    'ariaBusy',
-    'ariaChecked',
-    'ariaColCount',
-    'ariaColIndex',
-    'ariaColSpan',
-    'ariaCurrent',
-    'ariaDisabled',
-    'ariaExpanded',
-    'ariaHasPopup',
-    'ariaHidden',
-    'ariaInvalid',
-    'ariaKeyShortcuts',
-    'ariaLabel',
-    'ariaLevel',
-    'ariaLive',
-    'ariaModal',
-    'ariaMultiLine',
-    'ariaMultiSelectable',
-    'ariaOrientation',
-    'ariaPlaceholder',
-    'ariaPosInSet',
-    'ariaPressed',
-    'ariaReadOnly',
-    'ariaRequired',
-    'ariaRoleDescription',
-    'ariaRowCount',
-    'ariaRowIndex',
-    'ariaRowSpan',
-    'ariaSelected',
-    'ariaSetSize',
-    'ariaSort',
-    'ariaValueMax',
-    'ariaValueMin',
-    'ariaValueNow',
-    'ariaValueText',
-];
-/**
- * Accessibility Object Model aria attributes.
- */
-const ARIA_ATTRIBUTES = ARIA_PROPERTIES.map(ariaPropertyToAttribute);
-/**
- * Checks if an attribute is one of the AOM aria attributes.
- *
- * @example
- * isAriaAttribute('aria-label'); // true
- *
- * @param attribute The attribute to check.
- * @return True if the attribute is an aria attribute, or false if not.
- */
-function isAriaAttribute(attribute) {
-    return ARIA_ATTRIBUTES.includes(attribute);
-}
-/**
- * Converts an AOM aria property into its corresponding attribute.
- *
- * @example
- * ariaPropertyToAttribute('ariaLabel'); // 'aria-label'
- *
- * @param property The aria property.
- * @return The aria attribute.
- */
-function ariaPropertyToAttribute(property) {
-    return property
-        .replace('aria', 'aria-')
-        // IDREF attributes also include an "Element" or "Elements" suffix
-        .replace(/Elements?/g, '')
-        .toLowerCase();
-}
-
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-// Private symbols
-const privateIgnoreAttributeChangesFor = Symbol('privateIgnoreAttributeChangesFor');
-/**
- * Mixes in aria delegation for elements that delegate focus and aria to inner
- * shadow root elements.
- *
- * This mixin fixes invalid aria announcements with shadow roots, caused by
- * duplicate aria attributes on both the host and the inner shadow root element.
- *
- * Note: this mixin **does not yet support** ID reference attributes, such as
- * `aria-labelledby` or `aria-controls`.
- *
- * @example
- * ```ts
- * class MyButton extends mixinDelegatesAria(LitElement) {
- *   static shadowRootOptions = {mode: 'open', delegatesFocus: true};
- *
- *   render() {
- *     return html`
- *       <button aria-label=${this.ariaLabel || nothing}>
- *         <slot></slot>
- *       </button>
- *     `;
- *   }
- * }
- * ```
- * ```html
- * <my-button aria-label="Plus one">+1</my-button>
- * ```
- *
- * Use `ARIAMixinStrict` for lit analyzer strict types, such as the "role"
- * attribute.
- *
- * @example
- * ```ts
- * return html`
- *   <button role=${(this as ARIAMixinStrict).role || nothing}>
- *     <slot></slot>
- *   </button>
- * `;
- * ```
- *
- * In the future, updates to the Accessibility Object Model (AOM) will provide
- * built-in aria delegation features that will replace this mixin.
- *
- * @param base The class to mix functionality into.
- * @return The provided class with aria delegation mixed in.
- */
-function mixinDelegatesAria(base) {
-    var _a;
-    class WithDelegatesAriaElement extends base {
-        constructor() {
-            super(...arguments);
-            this[_a] = new Set();
-        }
-        attributeChangedCallback(name, oldValue, newValue) {
-            if (!isAriaAttribute(name)) {
-                super.attributeChangedCallback(name, oldValue, newValue);
-                return;
-            }
-            if (this[privateIgnoreAttributeChangesFor].has(name)) {
-                return;
-            }
-            // Don't trigger another `attributeChangedCallback` once we remove the
-            // aria attribute from the host. We check the explicit name of the
-            // attribute to ignore since `attributeChangedCallback` can be called
-            // multiple times out of an expected order when hydrating an element with
-            // multiple attributes.
-            this[privateIgnoreAttributeChangesFor].add(name);
-            this.removeAttribute(name);
-            this[privateIgnoreAttributeChangesFor].delete(name);
-            const dataProperty = ariaAttributeToDataProperty(name);
-            if (newValue === null) {
-                delete this.dataset[dataProperty];
-            }
-            else {
-                this.dataset[dataProperty] = newValue;
-            }
-            this.requestUpdate(ariaAttributeToDataProperty(name), oldValue);
-        }
-        getAttribute(name) {
-            if (isAriaAttribute(name)) {
-                return super.getAttribute(ariaAttributeToDataAttribute(name));
-            }
-            return super.getAttribute(name);
-        }
-        removeAttribute(name) {
-            super.removeAttribute(name);
-            if (isAriaAttribute(name)) {
-                super.removeAttribute(ariaAttributeToDataAttribute(name));
-                // Since `aria-*` attributes are already removed`, we need to request
-                // an update because `attributeChangedCallback` will not be called.
-                this.requestUpdate();
-            }
-        }
-    }
-    _a = privateIgnoreAttributeChangesFor;
-    setupDelegatesAriaProperties(WithDelegatesAriaElement);
-    return WithDelegatesAriaElement;
-}
-/**
- * Overrides the constructor's native `ARIAMixin` properties to ensure that
- * aria properties reflect the values that were shifted to a data attribute.
- *
- * @param ctor The `ReactiveElement` constructor to patch.
- */
-function setupDelegatesAriaProperties(ctor) {
-    for (const ariaProperty of ARIA_PROPERTIES) {
-        // The casing between ariaProperty and the dataProperty may be different.
-        // ex: aria-haspopup -> ariaHasPopup
-        const ariaAttribute = ariaPropertyToAttribute(ariaProperty);
-        // ex: aria-haspopup -> data-aria-haspopup
-        const dataAttribute = ariaAttributeToDataAttribute(ariaAttribute);
-        // ex: aria-haspopup -> dataset.ariaHaspopup
-        const dataProperty = ariaAttributeToDataProperty(ariaAttribute);
-        // Call `ReactiveElement.createProperty()` so that the `aria-*` and `data-*`
-        // attributes are added to the `static observedAttributes` array. This
-        // triggers `attributeChangedCallback` for the delegates aria mixin to
-        // handle.
-        ctor.createProperty(ariaProperty, {
-            attribute: ariaAttribute,
-            noAccessor: true,
-        });
-        ctor.createProperty(Symbol(dataAttribute), {
-            attribute: dataAttribute,
-            noAccessor: true,
-        });
-        // Re-define the `ARIAMixin` properties to handle data attribute shifting.
-        // It is safe to use `Object.defineProperty` here because the properties
-        // are native and not renamed.
-        // tslint:disable-next-line:ban-unsafe-reflection
-        Object.defineProperty(ctor.prototype, ariaProperty, {
-            configurable: true,
-            enumerable: true,
-            get() {
-                return this.dataset[dataProperty] ?? null;
-            },
-            set(value) {
-                const prevValue = this.dataset[dataProperty] ?? null;
-                if (value === prevValue) {
-                    return;
-                }
-                if (value === null) {
-                    delete this.dataset[dataProperty];
-                }
-                else {
-                    this.dataset[dataProperty] = value;
-                }
-                this.requestUpdate(ariaProperty, prevValue);
-            },
-        });
-    }
-}
-function ariaAttributeToDataAttribute(ariaAttribute) {
-    // aria-haspopup -> data-aria-haspopup
-    return `data-${ariaAttribute}`;
-}
-function ariaAttributeToDataProperty(ariaAttribute) {
-    // aria-haspopup -> dataset.ariaHaspopup
-    return ariaAttribute.replace(/-\w/, (dashLetter) => dashLetter[1].toUpperCase());
-}
-
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-// Separate variable needed for closure.
-const chipBaseClass = mixinDelegatesAria(i$1);
-/**
- * A chip component.
- *
- * @fires update-focus {Event} Dispatched when `disabled` is toggled. --bubbles
- */
-class Chip extends chipBaseClass {
-    /**
-     * Whether or not the primary ripple is disabled (defaults to `disabled`).
-     * Some chip actions such as links cannot be disabled.
-     */
-    get rippleDisabled() {
-        return this.disabled || this.softDisabled;
-    }
-    constructor() {
-        super();
-        /**
-         * Whether or not the chip is disabled.
-         *
-         * Disabled chips are not focusable, unless `always-focusable` is set.
-         */
-        this.disabled = false;
-        /**
-         * Whether or not the chip is "soft-disabled" (disabled but still
-         * focusable).
-         *
-         * Use this when a chip needs increased visibility when disabled. See
-         * https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_disabled_controls
-         * for more guidance on when this is needed.
-         */
-        this.softDisabled = false;
-        /**
-         * When true, allow disabled chips to be focused with arrow keys.
-         *
-         * Add this when a chip needs increased visibility when disabled. See
-         * https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_disabled_controls
-         * for more guidance on when this is needed.
-         *
-         * @deprecated Use `softDisabled` instead of `alwaysFocusable` + `disabled`.
-         */
-        this.alwaysFocusable = false;
-        // TODO(b/350810013): remove the label property.
-        /**
-         * The label of the chip.
-         *
-         * @deprecated Set text as content of the chip instead.
-         */
-        this.label = '';
-        /**
-         * Only needed for SSR.
-         *
-         * Add this attribute when a chip has a `slot="icon"` to avoid a Flash Of
-         * Unstyled Content.
-         */
-        this.hasIcon = false;
-        {
-            this.addEventListener('click', this.handleClick.bind(this));
-        }
-    }
-    focus(options) {
-        if (this.disabled && !this.alwaysFocusable) {
-            return;
-        }
-        super.focus(options);
-    }
-    render() {
-        return x `
-      <div class="container ${e(this.getContainerClasses())}">
-        ${this.renderContainerContent()}
-      </div>
-    `;
-    }
-    updated(changed) {
-        if (changed.has('disabled') && changed.get('disabled') !== undefined) {
-            this.dispatchEvent(new Event('update-focus', { bubbles: true }));
-        }
-    }
-    getContainerClasses() {
-        return {
-            'disabled': this.disabled || this.softDisabled,
-            'has-icon': this.hasIcon,
-        };
-    }
-    renderContainerContent() {
-        return x `
-      ${this.renderOutline()}
-      <md-focus-ring part="focus-ring" for=${this.primaryId}></md-focus-ring>
-      <md-ripple
-        for=${this.primaryId}
-        ?disabled=${this.rippleDisabled}></md-ripple>
-      ${this.renderPrimaryAction(this.renderPrimaryContent())}
-    `;
-    }
-    renderOutline() {
-        return x `<span class="outline"></span>`;
-    }
-    renderLeadingIcon() {
-        return x `<slot name="icon" @slotchange=${this.handleIconChange}></slot>`;
-    }
-    renderPrimaryContent() {
-        return x `
-      <span class="leading icon" aria-hidden="true">
-        ${this.renderLeadingIcon()}
-      </span>
-      <span class="label">
-        <span class="label-text" id="label">
-          ${this.label ? this.label : x `<slot></slot>`}
-        </span>
-      </span>
-      <span class="touch"></span>
-    `;
-    }
-    handleIconChange(event) {
-        const slot = event.target;
-        this.hasIcon = slot.assignedElements({ flatten: true }).length > 0;
-    }
-    handleClick(event) {
-        // If the chip is soft-disabled or disabled + always-focusable, we need to
-        // explicitly prevent the click from propagating to other event listeners
-        // as well as prevent the default action.
-        if (this.softDisabled || (this.disabled && this.alwaysFocusable)) {
-            event.stopImmediatePropagation();
-            event.preventDefault();
-            return;
-        }
-    }
-}
-/** @nocollapse */
-Chip.shadowRootOptions = {
-    ...i$1.shadowRootOptions,
-    delegatesFocus: true,
-};
-__decorate([
-    n({ type: Boolean, reflect: true })
-], Chip.prototype, "disabled", void 0);
-__decorate([
-    n({ type: Boolean, attribute: 'soft-disabled', reflect: true })
-], Chip.prototype, "softDisabled", void 0);
-__decorate([
-    n({ type: Boolean, attribute: 'always-focusable' })
-], Chip.prototype, "alwaysFocusable", void 0);
-__decorate([
-    n()
-], Chip.prototype, "label", void 0);
-__decorate([
-    n({ type: Boolean, reflect: true, attribute: 'has-icon' })
-], Chip.prototype, "hasIcon", void 0);
-
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-/**
- * A chip set component.
- */
-class ChipSet extends i$1 {
-    get chips() {
-        return this.childElements.filter((child) => child instanceof Chip);
-    }
-    constructor() {
-        super();
-        this.internals = 
-        // Cast needed for closure
-        this.attachInternals();
-        {
-            this.addEventListener('focusin', this.updateTabIndices.bind(this));
-            this.addEventListener('update-focus', this.updateTabIndices.bind(this));
-            this.addEventListener('keydown', this.handleKeyDown.bind(this));
-            this.internals.role = 'toolbar';
-        }
-    }
-    render() {
-        return x `<slot @slotchange=${this.updateTabIndices}></slot>`;
-    }
-    handleKeyDown(event) {
-        const isLeft = event.key === 'ArrowLeft';
-        const isRight = event.key === 'ArrowRight';
-        const isHome = event.key === 'Home';
-        const isEnd = event.key === 'End';
-        // Ignore non-navigation keys
-        if (!isLeft && !isRight && !isHome && !isEnd) {
-            return;
-        }
-        const { chips } = this;
-        // Don't try to select another chip if there aren't any.
-        if (chips.length < 2) {
-            return;
-        }
-        // Prevent default interactions, such as scrolling.
-        event.preventDefault();
-        if (isHome || isEnd) {
-            const index = isHome ? 0 : chips.length - 1;
-            chips[index].focus({ trailing: isEnd });
-            this.updateTabIndices();
-            return;
-        }
-        // Check if moving forwards or backwards
-        const isRtl = getComputedStyle(this).direction === 'rtl';
-        const forwards = isRtl ? isLeft : isRight;
-        const focusedChip = chips.find((chip) => chip.matches(':focus-within'));
-        if (!focusedChip) {
-            // If there is not already a chip focused, select the first or last chip
-            // based on the direction we're traveling.
-            const nextChip = forwards ? chips[0] : chips[chips.length - 1];
-            nextChip.focus({ trailing: !forwards });
-            this.updateTabIndices();
-            return;
-        }
-        const currentIndex = chips.indexOf(focusedChip);
-        let nextIndex = forwards ? currentIndex + 1 : currentIndex - 1;
-        // Search for the next sibling that is not disabled to select.
-        // If we return to the host index, there is nothing to select.
-        while (nextIndex !== currentIndex) {
-            if (nextIndex >= chips.length) {
-                // Return to start if moving past the last item.
-                nextIndex = 0;
-            }
-            else if (nextIndex < 0) {
-                // Go to end if moving before the first item.
-                nextIndex = chips.length - 1;
-            }
-            // Check if the next sibling is disabled. If so,
-            // move the index and continue searching.
-            //
-            // Some toolbar items may be focusable when disabled for increased
-            // visibility.
-            const nextChip = chips[nextIndex];
-            if (nextChip.disabled && !nextChip.alwaysFocusable) {
-                if (forwards) {
-                    nextIndex++;
-                }
-                else {
-                    nextIndex--;
-                }
-                continue;
-            }
-            nextChip.focus({ trailing: !forwards });
-            this.updateTabIndices();
-            break;
-        }
-    }
-    updateTabIndices() {
-        // The chip that should be focusable is either the chip that currently has
-        // focus or the first chip that can be focused.
-        const { chips } = this;
-        let chipToFocus;
-        for (const chip of chips) {
-            const isChipFocusable = chip.alwaysFocusable || !chip.disabled;
-            const chipIsFocused = chip.matches(':focus-within');
-            if (chipIsFocused && isChipFocusable) {
-                // Found the first chip that is actively focused. This overrides the
-                // first focusable chip found.
-                chipToFocus = chip;
-                continue;
-            }
-            if (isChipFocusable && !chipToFocus) {
-                chipToFocus = chip;
-            }
-            // Disable non-focused chips. If we disable all of them, we'll grant focus
-            // to the first focusable child that was found.
-            chip.tabIndex = -1;
-        }
-        if (chipToFocus) {
-            chipToFocus.tabIndex = 0;
-        }
-    }
-}
-__decorate([
-    o()
-], ChipSet.prototype, "childElements", void 0);
-
-/**
- * @license
- * Copyright 2024 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-const styles$6 = i$4 `:host{display:flex;flex-wrap:wrap;gap:8px}
-`;
-
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-/**
- * TODO(b/243982145): add docs
- *
- * @final
- * @suppress {visibility}
- */
-let MdChipSet = class MdChipSet extends ChipSet {
-};
-MdChipSet.styles = [styles$6];
-MdChipSet = __decorate([
-    t$1('md-chip-set')
-], MdChipSet);
-
-var chipSet = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  get MdChipSet () { return MdChipSet; }
-});
-
-/**
- * @license
- * Copyright 2024 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-const styles$5 = i$4 `.elevated{--md-elevation-level: var(--_elevated-container-elevation);--md-elevation-shadow-color: var(--_elevated-container-shadow-color)}.elevated::before{background:var(--_elevated-container-color)}.elevated:hover{--md-elevation-level: var(--_elevated-hover-container-elevation)}.elevated:focus-within{--md-elevation-level: var(--_elevated-focus-container-elevation)}.elevated:active{--md-elevation-level: var(--_elevated-pressed-container-elevation)}.elevated.disabled{--md-elevation-level: var(--_elevated-disabled-container-elevation)}.elevated.disabled::before{background:var(--_elevated-disabled-container-color);opacity:var(--_elevated-disabled-container-opacity)}@media(forced-colors: active){.elevated md-elevation{border:1px solid CanvasText}.elevated.disabled md-elevation{border-color:GrayText}}
-`;
-
-/**
- * @license
- * Copyright 2022 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-/**
- * A component for elevation.
- */
-class Elevation extends i$1 {
-    connectedCallback() {
-        super.connectedCallback();
-        // Needed for VoiceOver, which will create a "group" if the element is a
-        // sibling to other content.
-        this.setAttribute('aria-hidden', 'true');
-    }
-    render() {
-        return x `<span class="shadow"></span>`;
-    }
-}
-
-/**
- * @license
- * Copyright 2024 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-const styles$4 = i$4 `:host,.shadow,.shadow::before,.shadow::after{border-radius:inherit;inset:0;position:absolute;transition-duration:inherit;transition-property:inherit;transition-timing-function:inherit}:host{display:flex;pointer-events:none;transition-property:box-shadow,opacity}.shadow::before,.shadow::after{content:"";transition-property:box-shadow,opacity;--_level: var(--md-elevation-level, 0);--_shadow-color: var(--md-elevation-shadow-color, var(--md-sys-color-shadow, #000))}.shadow::before{box-shadow:0px calc(1px*(clamp(0,var(--_level),1) + clamp(0,var(--_level) - 3,1) + 2*clamp(0,var(--_level) - 4,1))) calc(1px*(2*clamp(0,var(--_level),1) + clamp(0,var(--_level) - 2,1) + clamp(0,var(--_level) - 4,1))) 0px var(--_shadow-color);opacity:.3}.shadow::after{box-shadow:0px calc(1px*(clamp(0,var(--_level),1) + clamp(0,var(--_level) - 1,1) + 2*clamp(0,var(--_level) - 2,3))) calc(1px*(3*clamp(0,var(--_level),2) + 2*clamp(0,var(--_level) - 2,3))) calc(1px*(clamp(0,var(--_level),4) + 2*clamp(0,var(--_level) - 4,1))) var(--_shadow-color);opacity:.15}
-`;
-
-/**
- * @license
- * Copyright 2022 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-/**
- * The `<md-elevation>` custom element with default styles.
- *
- * Elevation is the relative distance between two surfaces along the z-axis.
- *
- * @final
- * @suppress {visibility}
- */
-let MdElevation = class MdElevation extends Elevation {
-};
-MdElevation.styles = [styles$4];
-MdElevation = __decorate([
-    t$1('md-elevation')
-], MdElevation);
-
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-/**
- * Re-dispatches an event from the provided element.
- *
- * This function is useful for forwarding non-composed events, such as `change`
- * events.
- *
- * @example
- * class MyInput extends LitElement {
- *   render() {
- *     return html`<input @change=${this.redispatchEvent}>`;
- *   }
- *
- *   protected redispatchEvent(event: Event) {
- *     redispatchEvent(this, event);
- *   }
- * }
- *
- * @param element The element to dispatch the event from.
- * @param event The event to re-dispatch.
- * @return Whether or not the event was dispatched (if cancelable).
- */
-function redispatchEvent(element, event) {
-    // For bubbling events in SSR light DOM (or composed), stop their propagation
-    // and dispatch the copy.
-    if (event.bubbles && (!element.shadowRoot || event.composed)) {
-        event.stopPropagation();
-    }
-    const copy = Reflect.construct(event.constructor, [event.type, event]);
-    const dispatched = element.dispatchEvent(copy);
-    if (!dispatched) {
-        event.preventDefault();
-    }
-    return dispatched;
-}
-
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-const ARIA_LABEL_REMOVE = 'aria-label-remove';
-/**
- * A chip component with multiple actions.
- */
-class MultiActionChip extends Chip {
-    get ariaLabelRemove() {
-        if (this.hasAttribute(ARIA_LABEL_REMOVE)) {
-            return this.getAttribute(ARIA_LABEL_REMOVE);
-        }
-        const { ariaLabel } = this;
-        // TODO(b/350810013): remove `this.label` when label property is removed.
-        if (ariaLabel || this.label) {
-            return `Remove ${ariaLabel || this.label}`;
-        }
-        return null;
-    }
-    set ariaLabelRemove(ariaLabel) {
-        const prev = this.ariaLabelRemove;
-        if (ariaLabel === prev) {
-            return;
-        }
-        if (ariaLabel === null) {
-            this.removeAttribute(ARIA_LABEL_REMOVE);
-        }
-        else {
-            this.setAttribute(ARIA_LABEL_REMOVE, ariaLabel);
-        }
-        this.requestUpdate();
-    }
-    constructor() {
-        super();
-        this.handleTrailingActionFocus = this.handleTrailingActionFocus.bind(this);
-        {
-            this.addEventListener('keydown', this.handleKeyDown.bind(this));
-        }
-    }
-    focus(options) {
-        const isFocusable = this.alwaysFocusable || !this.disabled;
-        if (isFocusable && options?.trailing && this.trailingAction) {
-            this.trailingAction.focus(options);
-            return;
-        }
-        super.focus(options);
-    }
-    renderContainerContent() {
-        return x `
-      ${super.renderContainerContent()}
-      ${this.renderTrailingAction(this.handleTrailingActionFocus)}
-    `;
-    }
-    handleKeyDown(event) {
-        const isLeft = event.key === 'ArrowLeft';
-        const isRight = event.key === 'ArrowRight';
-        // Ignore non-navigation keys.
-        if (!isLeft && !isRight) {
-            return;
-        }
-        if (!this.primaryAction || !this.trailingAction) {
-            // Does not have multiple actions.
-            return;
-        }
-        // Check if moving forwards or backwards
-        const isRtl = getComputedStyle(this).direction === 'rtl';
-        const forwards = isRtl ? isLeft : isRight;
-        const isPrimaryFocused = this.primaryAction?.matches(':focus-within');
-        const isTrailingFocused = this.trailingAction?.matches(':focus-within');
-        if ((forwards && isTrailingFocused) || (!forwards && isPrimaryFocused)) {
-            // Moving outside of the chip, it will be handled by the chip set.
-            return;
-        }
-        // Prevent default interactions, such as scrolling.
-        event.preventDefault();
-        // Don't let the chip set handle this navigation event.
-        event.stopPropagation();
-        const actionToFocus = forwards ? this.trailingAction : this.primaryAction;
-        actionToFocus.focus();
-    }
-    handleTrailingActionFocus() {
-        const { primaryAction, trailingAction } = this;
-        if (!primaryAction || !trailingAction) {
-            return;
-        }
-        // Temporarily turn off the primary action's focusability. This allows
-        // shift+tab from the trailing action to move to the previous chip rather
-        // than the primary action in the same chip.
-        primaryAction.tabIndex = -1;
-        trailingAction.addEventListener('focusout', () => {
-            primaryAction.tabIndex = 0;
-        }, { once: true });
-    }
-}
-
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-/** @protected */
-function renderRemoveButton({ ariaLabel, disabled, focusListener, tabbable = false, }) {
-    // When an aria-label is not provided, we use two spans with aria-labelledby
-    // to create the "Remove <textContent>" label for the remove button. The first
-    // is this #remove-label span, the second is the chip's #label slot span.
-    return x `
-    <span id="remove-label" hidden aria-hidden="true">Remove</span>
-    <button
-      class="trailing action"
-      aria-label=${ariaLabel || E}
-      aria-labelledby=${!ariaLabel ? 'remove-label label' : E}
-      tabindex=${!tabbable ? -1 : E}
-      @click=${handleRemoveClick}
-      @focus=${focusListener}>
-      <md-focus-ring part="trailing-focus-ring"></md-focus-ring>
-      <md-ripple ?disabled=${disabled}></md-ripple>
-      <span class="trailing icon" aria-hidden="true">
-        <slot name="remove-trailing-icon">
-          <svg viewBox="0 96 960 960">
-            <path
-              d="m249 849-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z" />
-          </svg>
-        </slot>
-      </span>
-      <span class="touch"></span>
-    </button>
-  `;
-}
-function handleRemoveClick(event) {
-    if (this.disabled || this.softDisabled) {
-        return;
-    }
-    event.stopPropagation();
-    const preventDefault = !this.dispatchEvent(new Event('remove', { cancelable: true }));
-    if (preventDefault) {
-        return;
-    }
-    this.remove();
-}
-
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-/**
- * A filter chip component.
- *
- * @fires remove {Event} Dispatched when the remove button is clicked.
- */
-class FilterChip extends MultiActionChip {
-    constructor() {
-        super(...arguments);
-        this.elevated = false;
-        this.removable = false;
-        this.selected = false;
-        /**
-         * Only needed for SSR.
-         *
-         * Add this attribute when a filter chip has a `slot="selected-icon"` to avoid
-         * a Flash Of Unstyled Content.
-         */
-        this.hasSelectedIcon = false;
-    }
-    get primaryId() {
-        return 'button';
-    }
-    getContainerClasses() {
-        return {
-            ...super.getContainerClasses(),
-            elevated: this.elevated,
-            selected: this.selected,
-            'has-trailing': this.removable,
-            'has-icon': this.hasIcon || this.selected,
-        };
-    }
-    renderPrimaryAction(content) {
-        const { ariaLabel } = this;
-        return x `
-      <button
-        class="primary action"
-        id="button"
-        aria-label=${ariaLabel || E}
-        aria-pressed=${this.selected}
-        aria-disabled=${this.softDisabled || E}
-        ?disabled=${this.disabled && !this.alwaysFocusable}
-        @click=${this.handleClickOnChild}
-        >${content}</button
-      >
-    `;
-    }
-    renderLeadingIcon() {
-        if (!this.selected) {
-            return super.renderLeadingIcon();
-        }
-        return x `
-      <slot name="selected-icon">
-        <svg class="checkmark" viewBox="0 0 18 18" aria-hidden="true">
-          <path
-            d="M6.75012 12.1274L3.62262 8.99988L2.55762 10.0574L6.75012 14.2499L15.7501 5.24988L14.6926 4.19238L6.75012 12.1274Z" />
-        </svg>
-      </slot>
-    `;
-    }
-    renderTrailingAction(focusListener) {
-        if (this.removable) {
-            return renderRemoveButton({
-                focusListener,
-                ariaLabel: this.ariaLabelRemove,
-                disabled: this.disabled || this.softDisabled,
-            });
-        }
-        return E;
-    }
-    renderOutline() {
-        if (this.elevated) {
-            return x `<md-elevation part="elevation"></md-elevation>`;
-        }
-        return super.renderOutline();
-    }
-    handleClickOnChild(event) {
-        if (this.disabled || this.softDisabled) {
-            return;
-        }
-        // Store prevValue to revert in case `chip.selected` is changed during an
-        // event listener.
-        const prevValue = this.selected;
-        this.selected = !this.selected;
-        const preventDefault = !redispatchEvent(this, event);
-        if (preventDefault) {
-            // We should not do `this.selected = !this.selected`, since a client
-            // click listener could change its value. Instead, always revert to the
-            // original value.
-            this.selected = prevValue;
-            return;
-        }
-    }
-}
-__decorate([
-    n({ type: Boolean })
-], FilterChip.prototype, "elevated", void 0);
-__decorate([
-    n({ type: Boolean })
-], FilterChip.prototype, "removable", void 0);
-__decorate([
-    n({ type: Boolean, reflect: true })
-], FilterChip.prototype, "selected", void 0);
-__decorate([
-    n({ type: Boolean, reflect: true, attribute: 'has-selected-icon' })
-], FilterChip.prototype, "hasSelectedIcon", void 0);
-__decorate([
-    e$2('.primary.action')
-], FilterChip.prototype, "primaryAction", void 0);
-__decorate([
-    e$2('.trailing.action')
-], FilterChip.prototype, "trailingAction", void 0);
-
-/**
- * @license
- * Copyright 2024 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-const styles$3 = i$4 `:host{--_container-height: var(--md-filter-chip-container-height, 32px);--_disabled-label-text-color: var(--md-filter-chip-disabled-label-text-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-label-text-opacity: var(--md-filter-chip-disabled-label-text-opacity, 0.38);--_elevated-container-elevation: var(--md-filter-chip-elevated-container-elevation, 1);--_elevated-container-shadow-color: var(--md-filter-chip-elevated-container-shadow-color, var(--md-sys-color-shadow, #000));--_elevated-disabled-container-color: var(--md-filter-chip-elevated-disabled-container-color, var(--md-sys-color-on-surface, #1d1b20));--_elevated-disabled-container-elevation: var(--md-filter-chip-elevated-disabled-container-elevation, 0);--_elevated-disabled-container-opacity: var(--md-filter-chip-elevated-disabled-container-opacity, 0.12);--_elevated-focus-container-elevation: var(--md-filter-chip-elevated-focus-container-elevation, 1);--_elevated-hover-container-elevation: var(--md-filter-chip-elevated-hover-container-elevation, 2);--_elevated-pressed-container-elevation: var(--md-filter-chip-elevated-pressed-container-elevation, 1);--_elevated-selected-container-color: var(--md-filter-chip-elevated-selected-container-color, var(--md-sys-color-secondary-container, #e8def8));--_label-text-font: var(--md-filter-chip-label-text-font, var(--md-sys-typescale-label-large-font, var(--md-ref-typeface-plain, Roboto)));--_label-text-line-height: var(--md-filter-chip-label-text-line-height, var(--md-sys-typescale-label-large-line-height, 1.25rem));--_label-text-size: var(--md-filter-chip-label-text-size, var(--md-sys-typescale-label-large-size, 0.875rem));--_label-text-weight: var(--md-filter-chip-label-text-weight, var(--md-sys-typescale-label-large-weight, var(--md-ref-typeface-weight-medium, 500)));--_selected-focus-label-text-color: var(--md-filter-chip-selected-focus-label-text-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-hover-label-text-color: var(--md-filter-chip-selected-hover-label-text-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-hover-state-layer-color: var(--md-filter-chip-selected-hover-state-layer-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-hover-state-layer-opacity: var(--md-filter-chip-selected-hover-state-layer-opacity, 0.08);--_selected-label-text-color: var(--md-filter-chip-selected-label-text-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-pressed-label-text-color: var(--md-filter-chip-selected-pressed-label-text-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-pressed-state-layer-color: var(--md-filter-chip-selected-pressed-state-layer-color, var(--md-sys-color-on-surface-variant, #49454f));--_selected-pressed-state-layer-opacity: var(--md-filter-chip-selected-pressed-state-layer-opacity, 0.12);--_elevated-container-color: var(--md-filter-chip-elevated-container-color, var(--md-sys-color-surface-container-low, #f7f2fa));--_disabled-outline-color: var(--md-filter-chip-disabled-outline-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-outline-opacity: var(--md-filter-chip-disabled-outline-opacity, 0.12);--_disabled-selected-container-color: var(--md-filter-chip-disabled-selected-container-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-selected-container-opacity: var(--md-filter-chip-disabled-selected-container-opacity, 0.12);--_focus-outline-color: var(--md-filter-chip-focus-outline-color, var(--md-sys-color-on-surface-variant, #49454f));--_outline-color: var(--md-filter-chip-outline-color, var(--md-sys-color-outline, #79747e));--_outline-width: var(--md-filter-chip-outline-width, 1px);--_selected-container-color: var(--md-filter-chip-selected-container-color, var(--md-sys-color-secondary-container, #e8def8));--_selected-outline-width: var(--md-filter-chip-selected-outline-width, 0px);--_focus-label-text-color: var(--md-filter-chip-focus-label-text-color, var(--md-sys-color-on-surface-variant, #49454f));--_hover-label-text-color: var(--md-filter-chip-hover-label-text-color, var(--md-sys-color-on-surface-variant, #49454f));--_hover-state-layer-color: var(--md-filter-chip-hover-state-layer-color, var(--md-sys-color-on-surface-variant, #49454f));--_hover-state-layer-opacity: var(--md-filter-chip-hover-state-layer-opacity, 0.08);--_label-text-color: var(--md-filter-chip-label-text-color, var(--md-sys-color-on-surface-variant, #49454f));--_pressed-label-text-color: var(--md-filter-chip-pressed-label-text-color, var(--md-sys-color-on-surface-variant, #49454f));--_pressed-state-layer-color: var(--md-filter-chip-pressed-state-layer-color, var(--md-sys-color-on-secondary-container, #1d192b));--_pressed-state-layer-opacity: var(--md-filter-chip-pressed-state-layer-opacity, 0.12);--_icon-size: var(--md-filter-chip-icon-size, 18px);--_disabled-leading-icon-color: var(--md-filter-chip-disabled-leading-icon-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-leading-icon-opacity: var(--md-filter-chip-disabled-leading-icon-opacity, 0.38);--_selected-focus-leading-icon-color: var(--md-filter-chip-selected-focus-leading-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-hover-leading-icon-color: var(--md-filter-chip-selected-hover-leading-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-leading-icon-color: var(--md-filter-chip-selected-leading-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-pressed-leading-icon-color: var(--md-filter-chip-selected-pressed-leading-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_focus-leading-icon-color: var(--md-filter-chip-focus-leading-icon-color, var(--md-sys-color-primary, #6750a4));--_hover-leading-icon-color: var(--md-filter-chip-hover-leading-icon-color, var(--md-sys-color-primary, #6750a4));--_leading-icon-color: var(--md-filter-chip-leading-icon-color, var(--md-sys-color-primary, #6750a4));--_pressed-leading-icon-color: var(--md-filter-chip-pressed-leading-icon-color, var(--md-sys-color-primary, #6750a4));--_disabled-trailing-icon-color: var(--md-filter-chip-disabled-trailing-icon-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-trailing-icon-opacity: var(--md-filter-chip-disabled-trailing-icon-opacity, 0.38);--_selected-focus-trailing-icon-color: var(--md-filter-chip-selected-focus-trailing-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-hover-trailing-icon-color: var(--md-filter-chip-selected-hover-trailing-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-pressed-trailing-icon-color: var(--md-filter-chip-selected-pressed-trailing-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_selected-trailing-icon-color: var(--md-filter-chip-selected-trailing-icon-color, var(--md-sys-color-on-secondary-container, #1d192b));--_focus-trailing-icon-color: var(--md-filter-chip-focus-trailing-icon-color, var(--md-sys-color-on-surface-variant, #49454f));--_hover-trailing-icon-color: var(--md-filter-chip-hover-trailing-icon-color, var(--md-sys-color-on-surface-variant, #49454f));--_pressed-trailing-icon-color: var(--md-filter-chip-pressed-trailing-icon-color, var(--md-sys-color-on-surface-variant, #49454f));--_trailing-icon-color: var(--md-filter-chip-trailing-icon-color, var(--md-sys-color-on-surface-variant, #49454f));--_container-shape-start-start: var(--md-filter-chip-container-shape-start-start, var(--md-filter-chip-container-shape, var(--md-sys-shape-corner-small, 8px)));--_container-shape-start-end: var(--md-filter-chip-container-shape-start-end, var(--md-filter-chip-container-shape, var(--md-sys-shape-corner-small, 8px)));--_container-shape-end-end: var(--md-filter-chip-container-shape-end-end, var(--md-filter-chip-container-shape, var(--md-sys-shape-corner-small, 8px)));--_container-shape-end-start: var(--md-filter-chip-container-shape-end-start, var(--md-filter-chip-container-shape, var(--md-sys-shape-corner-small, 8px)));--_leading-space: var(--md-filter-chip-leading-space, 16px);--_trailing-space: var(--md-filter-chip-trailing-space, 16px);--_icon-label-space: var(--md-filter-chip-icon-label-space, 8px);--_with-leading-icon-leading-space: var(--md-filter-chip-with-leading-icon-leading-space, 8px);--_with-trailing-icon-trailing-space: var(--md-filter-chip-with-trailing-icon-trailing-space, 8px)}.selected.elevated::before{background:var(--_elevated-selected-container-color)}.checkmark{height:var(--_icon-size);width:var(--_icon-size)}.disabled .checkmark{opacity:var(--_disabled-leading-icon-opacity)}@media(forced-colors: active){.disabled .checkmark{opacity:1}}
-`;
-
-/**
- * @license
- * Copyright 2024 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-const styles$2 = i$4 `.selected{--md-ripple-hover-color: var(--_selected-hover-state-layer-color);--md-ripple-hover-opacity: var(--_selected-hover-state-layer-opacity);--md-ripple-pressed-color: var(--_selected-pressed-state-layer-color);--md-ripple-pressed-opacity: var(--_selected-pressed-state-layer-opacity)}:where(.selected)::before{background:var(--_selected-container-color)}:where(.selected) .outline{border-width:var(--_selected-outline-width)}:where(.selected.disabled)::before{background:var(--_disabled-selected-container-color);opacity:var(--_disabled-selected-container-opacity)}:where(.selected) .label{color:var(--_selected-label-text-color)}:where(.selected:hover) .label{color:var(--_selected-hover-label-text-color)}:where(.selected:focus) .label{color:var(--_selected-focus-label-text-color)}:where(.selected:active) .label{color:var(--_selected-pressed-label-text-color)}:where(.selected) .leading.icon{color:var(--_selected-leading-icon-color)}:where(.selected:hover) .leading.icon{color:var(--_selected-hover-leading-icon-color)}:where(.selected:focus) .leading.icon{color:var(--_selected-focus-leading-icon-color)}:where(.selected:active) .leading.icon{color:var(--_selected-pressed-leading-icon-color)}@media(forced-colors: active){:where(.selected:not(.elevated))::before{border:1px solid CanvasText}:where(.selected) .outline{border-width:1px}}
-`;
-
-/**
- * @license
- * Copyright 2024 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-const styles$1 = i$4 `:host{border-start-start-radius:var(--_container-shape-start-start);border-start-end-radius:var(--_container-shape-start-end);border-end-start-radius:var(--_container-shape-end-start);border-end-end-radius:var(--_container-shape-end-end);display:inline-flex;height:var(--_container-height);cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,0);--md-ripple-hover-color: var(--_hover-state-layer-color);--md-ripple-hover-opacity: var(--_hover-state-layer-opacity);--md-ripple-pressed-color: var(--_pressed-state-layer-color);--md-ripple-pressed-opacity: var(--_pressed-state-layer-opacity)}:host(:is([disabled],[soft-disabled])){pointer-events:none}:host([touch-target=wrapper]){margin:max(0px,(48px - var(--_container-height))/2) 0}md-focus-ring{--md-focus-ring-shape-start-start: var(--_container-shape-start-start);--md-focus-ring-shape-start-end: var(--_container-shape-start-end);--md-focus-ring-shape-end-end: var(--_container-shape-end-end);--md-focus-ring-shape-end-start: var(--_container-shape-end-start)}.container{border-radius:inherit;box-sizing:border-box;display:flex;height:100%;position:relative;width:100%}.container::before{border-radius:inherit;content:"";inset:0;pointer-events:none;position:absolute}.container:not(.disabled){cursor:pointer}.container.disabled{pointer-events:none}.cell{display:flex}.action{align-items:baseline;appearance:none;background:none;border:none;border-radius:inherit;display:flex;outline:none;padding:0;position:relative;text-decoration:none}.primary.action{min-width:0;padding-inline-start:var(--_leading-space);padding-inline-end:var(--_trailing-space)}.has-icon .primary.action{padding-inline-start:var(--_with-leading-icon-leading-space)}.touch{height:48px;inset:50% 0 0;position:absolute;transform:translateY(-50%);width:100%}:host([touch-target=none]) .touch{display:none}.outline{border:var(--_outline-width) solid var(--_outline-color);border-radius:inherit;inset:0;pointer-events:none;position:absolute}:where(:focus) .outline{border-color:var(--_focus-outline-color)}:where(.disabled) .outline{border-color:var(--_disabled-outline-color);opacity:var(--_disabled-outline-opacity)}md-ripple{border-radius:inherit}.label,.icon,.touch{z-index:1}.label{align-items:center;color:var(--_label-text-color);display:flex;font-family:var(--_label-text-font);font-size:var(--_label-text-size);font-weight:var(--_label-text-weight);height:100%;line-height:var(--_label-text-line-height);overflow:hidden;user-select:none}.label-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:where(:hover) .label{color:var(--_hover-label-text-color)}:where(:focus) .label{color:var(--_focus-label-text-color)}:where(:active) .label{color:var(--_pressed-label-text-color)}:where(.disabled) .label{color:var(--_disabled-label-text-color);opacity:var(--_disabled-label-text-opacity)}.icon{align-self:center;display:flex;fill:currentColor;position:relative}.icon ::slotted(:first-child){font-size:var(--_icon-size);height:var(--_icon-size);width:var(--_icon-size)}.leading.icon{color:var(--_leading-icon-color)}.leading.icon ::slotted(*),.leading.icon svg{margin-inline-end:var(--_icon-label-space)}:where(:hover) .leading.icon{color:var(--_hover-leading-icon-color)}:where(:focus) .leading.icon{color:var(--_focus-leading-icon-color)}:where(:active) .leading.icon{color:var(--_pressed-leading-icon-color)}:where(.disabled) .leading.icon{color:var(--_disabled-leading-icon-color);opacity:var(--_disabled-leading-icon-opacity)}@media(forced-colors: active){:where(.disabled) :is(.label,.outline,.leading.icon){color:GrayText;opacity:1}}a,button{text-transform:inherit}a,button:not(:disabled,[aria-disabled=true]){cursor:inherit}
-`;
-
-/**
- * @license
- * Copyright 2024 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-const styles = i$4 `.trailing.action{align-items:center;justify-content:center;padding-inline-start:var(--_icon-label-space);padding-inline-end:var(--_with-trailing-icon-trailing-space)}.trailing.action :is(md-ripple,md-focus-ring){border-radius:50%;height:calc(1.3333333333*var(--_icon-size));width:calc(1.3333333333*var(--_icon-size))}.trailing.action md-focus-ring{inset:unset}.has-trailing .primary.action{padding-inline-end:0}.trailing.icon{color:var(--_trailing-icon-color);height:var(--_icon-size);width:var(--_icon-size)}:where(:hover) .trailing.icon{color:var(--_hover-trailing-icon-color)}:where(:focus) .trailing.icon{color:var(--_focus-trailing-icon-color)}:where(:active) .trailing.icon{color:var(--_pressed-trailing-icon-color)}:where(.disabled) .trailing.icon{color:var(--_disabled-trailing-icon-color);opacity:var(--_disabled-trailing-icon-opacity)}:where(.selected) .trailing.icon{color:var(--_selected-trailing-icon-color)}:where(.selected:hover) .trailing.icon{color:var(--_selected-hover-trailing-icon-color)}:where(.selected:focus) .trailing.icon{color:var(--_selected-focus-trailing-icon-color)}:where(.selected:active) .trailing.icon{color:var(--_selected-pressed-trailing-icon-color)}@media(forced-colors: active){.trailing.icon{color:ButtonText}:where(.disabled) .trailing.icon{color:GrayText;opacity:1}}
-`;
-
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-/**
- * TODO(b/243982145): add docs
- *
- * @final
- * @suppress {visibility}
- */
-let MdFilterChip = class MdFilterChip extends FilterChip {
-};
-MdFilterChip.styles = [
-    styles$1,
-    styles$5,
-    styles,
-    styles$2,
-    styles$3,
-];
-MdFilterChip = __decorate([
-    t$1('md-filter-chip')
-], MdFilterChip);
-
-var filterChip = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  get MdFilterChip () { return MdFilterChip; }
-});
 
 export { BubbleRoom };
