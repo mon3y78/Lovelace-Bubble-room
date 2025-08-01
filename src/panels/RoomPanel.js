@@ -166,12 +166,10 @@ export class RoomPanel extends LitElement {
   }
 
   async _loadMaterialChips() {
-    console.log('🔄 _loadMaterialChips guard:', !!customElements.get('md-chip-set'));
-    if (!customElements.get('md-chip-set')) {
-      console.log('⏬ Importo i Material Web Chips...');
+    // Carica i Material Web Chips solo se non esistono ancora
+    if (!customElements.get('md-filter-chip')) {
       await import('@material/web/chips/chip-set.js');
       await import('@material/web/chips/filter-chip.js');
-      console.log('✅ Chips importati');
     }
   }
 
@@ -231,14 +229,13 @@ export class RoomPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
-        <!-- Auto-discover -->
+        <!-- Auto-discover Presence -->
         <div class="input-group ad-top">
           <label style="display:flex;align-items:center;gap:8px;margin:0">
             <input
               type="checkbox"
               .checked=${autoDisc}
-              @change=${e =>
-                this._fire('auto_discovery_sections.presence', e.target.checked)}
+              @change=${e => this._fire('auto_discovery_sections.presence', e.target.checked)}
             />
             <span>🔍 Auto-discover Presence</span>
           </label>
@@ -308,8 +305,7 @@ export class RoomPanel extends LitElement {
                   }
                 }}
                 allow-custom-entity
-                @value-changed=${e =>
-                  this._fire('entities.presence.entity', e.detail.value)}
+                @value-changed=${e => this._fire('entities.presence.entity', e.detail.value)}
               ></ha-selector>
             </div>
 
@@ -331,12 +327,14 @@ export class RoomPanel extends LitElement {
   _onAreaChanged = e => {
     const v = e.detail.value;
     this._fire('area', v);
-    if (v) this._fire('auto_discovery_sections.presence', true);
+    if (v) {
+      this._fire('auto_discovery_sections.presence', true);
+    }
   };
 
   _renderActions(type) {
     const cfg     = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle','more-info','navigate','call-service','none'];
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
     return html`
       <div class="input-group">
         <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
@@ -348,6 +346,7 @@ export class RoomPanel extends LitElement {
             >${a}</paper-button>
           `)}
         </div>
+
         ${cfg.action === 'navigate' ? html`
           <input
             type="text"
@@ -356,6 +355,7 @@ export class RoomPanel extends LitElement {
             @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
           />
         ` : ''}
+
         ${cfg.action === 'call-service' ? html`
           <input
             type="text"
@@ -384,9 +384,12 @@ export class RoomPanel extends LitElement {
 
   _emit(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val }, bubbles: true, composed: true,
+      detail: { prop, val },
+      bubbles: true,
+      composed: true,
     }));
   }
+
   _fire(prop, val) {
     this._emit(prop, val);
   }
