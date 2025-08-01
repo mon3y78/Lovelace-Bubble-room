@@ -23,8 +23,7 @@ export class RoomPanel extends LitElement {
   static styles = css`
     :host { display: block; }
     --md-filter-chip-container-shape: 16px;
-
-    /* Glass panel */
+    /* --- Glass panel --- */
     .glass-panel {
       margin: 0 !important;
       width: 100%;
@@ -61,8 +60,7 @@ export class RoomPanel extends LitElement {
       font-weight: 700;
       color: #fff;
     }
-
-    /* Mini-pill */
+    /* --- Mini-pill --- */
     .mini-pill {
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.12);
@@ -85,8 +83,7 @@ export class RoomPanel extends LitElement {
     .mini-pill-content {
       padding: 15px 22px;
     }
-
-    /* Input group */
+    /* --- Input group --- */
     .input-group {
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.13);
@@ -115,8 +112,7 @@ export class RoomPanel extends LitElement {
     ha-selector::part(combobox) {
       min-height: 56px;
     }
-
-    /* Reset button */
+    /* --- Reset button --- */
     .reset-button {
       border: 2px solid #ff4c6a;
       color: #ff4c6a;
@@ -125,8 +121,7 @@ export class RoomPanel extends LitElement {
       background: transparent;
       cursor: pointer;
     }
-
-    /* Tap/Hold action pills */
+    /* --- Tap/Hold action pills --- */
     .pill-group {
       display: flex;
       flex-wrap: wrap;
@@ -143,8 +138,7 @@ export class RoomPanel extends LitElement {
       border-color: #55afff;
       color: #55afff;
     }
-
-    /* Vaadin overlay fix */
+    /* --- Vaadin overlay fix --- */
     vaadin-combo-box-overlay,
     vaadin-combo-box-item,
     vaadin-combo-box-item::part(content) {
@@ -166,7 +160,7 @@ export class RoomPanel extends LitElement {
   }
 
   async _loadMaterialChips() {
-    // Carica i Material Web Chips solo se non esistono ancora
+    // caricamento dinamico dei chip solo se non definiti
     if (!customElements.get('md-filter-chip')) {
       await import('@material/web/chips/chip-set.js');
       await import('@material/web/chips/filter-chip.js');
@@ -225,7 +219,7 @@ export class RoomPanel extends LitElement {
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
-        @expanded-changed=${e => this._expanded = e.detail.expanded}
+        @expanded-changed=${e => (this._expanded = e.detail.expanded)}
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
 
@@ -327,14 +321,12 @@ export class RoomPanel extends LitElement {
   _onAreaChanged = e => {
     const v = e.detail.value;
     this._fire('area', v);
-    if (v) {
-      this._fire('auto_discovery_sections.presence', true);
-    }
+    if (v) this._fire('auto_discovery_sections.presence', true);
   };
 
   _renderActions(type) {
     const cfg     = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+    const actions = ['toggle','more-info','navigate','call-service','none'];
     return html`
       <div class="input-group">
         <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
@@ -361,7 +353,7 @@ export class RoomPanel extends LitElement {
             type="text"
             placeholder="service: domain.service_name"
             .value=${cfg.service || ''}
-            @input=${e => this._fire(`${type}_action.service`, e.target.value)}
+            @input=${e => this._fire(`${type}_action.service`, e.detail.value)}
           />
           <input
             type="text"
@@ -385,11 +377,9 @@ export class RoomPanel extends LitElement {
   _emit(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop, val },
-      bubbles: true,
-      composed: true,
+      bubbles: true, composed: true,
     }));
   }
-
   _fire(prop, val) {
     this._emit(prop, val);
   }
