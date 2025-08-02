@@ -15,7 +15,9 @@ export class SensorPanel extends LitElement {
   
   static styles = css`
     :host { display: block; }
+
     .glass-panel {
+      position: relative;
       margin: 8px;
       border-radius: 24px;
       background: var(--glass-bg, rgba(200,200,200,0.1));
@@ -23,7 +25,8 @@ export class SensorPanel extends LitElement {
     }
     .glass-panel::after {
       content: '';
-      position: absolute; inset: 0;
+      position: absolute;
+      inset: 0;
       border-radius: inherit;
       background: var(--glass-sheen, rgba(255,255,255,0.03));
       pointer-events: none;
@@ -40,9 +43,15 @@ export class SensorPanel extends LitElement {
       background: rgba(255,214,0,0.08) !important;
       border-radius: 24px !important;
       backdrop-filter: blur(7px) saturate(1.2) !important;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 16px 12px; padding: 14px 0;
-      cursor: pointer; color: #fff; font-weight: 700; gap: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 16px 12px;
+      padding: 14px 0;
+      cursor: pointer;
+      color: #fff;
+      font-weight: 700;
+      gap: 8px;
       position: relative;
     }
     .autodiscover-box input {
@@ -66,14 +75,21 @@ export class SensorPanel extends LitElement {
       border: 1.5px solid rgba(255,255,255,0.13);
       box-shadow: 0 2px 14px rgba(70,120,220,0.10);
       backdrop-filter: blur(7px) saturate(1.2);
-      border-radius: 24px; margin: 8px 16px; overflow: hidden;
+      border-radius: 24px;
+      margin: 8px 16px;
+      overflow: hidden;
     }
     .mini-pill-header {
-      display: flex; align-items: center; padding: 12px 16px;
-      cursor: pointer; user-select: none; font-weight: 700;
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 700;
     }
     .mini-pill-header .chevron {
-      margin-left: auto; transition: transform 0.2s;
+      margin-left: auto;
+      transition: transform 0.2s;
     }
     .mini-pill.expanded .mini-pill-header .chevron {
       transform: rotate(90deg);
@@ -87,11 +103,17 @@ export class SensorPanel extends LitElement {
       to   { opacity: 1; transform: translateY(0); }
     }
     .preview {
-      display: flex; align-items: center; gap: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
       padding: 0 16px 16px;
     }
-    .preview ha-icon { --mdc-icon-size: 32px; }
-    .preview .state { font-size: 1.2rem; }
+    .preview ha-icon {
+      --mdc-icon-size: 32px;
+    }
+    .preview .state {
+      font-size: 1.2rem;
+    }
   `;
   
   constructor() {
@@ -101,36 +123,35 @@ export class SensorPanel extends LitElement {
     this.expanded = false;
     this.filterType = '';
     this.selectedEntity = '';
-    this._expandedPills = false;
   }
   
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // 1) Autodiscover per sezione "sensors"
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensors');
-      // 2) Sincronizza filterType da config.sensor_filters (primo elemento)
-      const cfgFilters = this.config.sensor_filters;
-      if (Array.isArray(cfgFilters) && cfgFilters[0] !== this.filterType) {
-        this.filterType = cfgFilters[0] || '';
+      // Abilita il filtro per area quando cambia config o hass
+      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
+      // Sincronizza filterType da config.sensor_filters[0]
+      const filters = this.config.sensor_filters;
+      if (Array.isArray(filters) && filters[0] !== this.filterType) {
+        this.filterType = filters[0] || '';
       }
-      // 3) Sincronizza selectedEntity da config.entities.sensors.entity
-      const e = this.config.entities?.sensors?.entity;
-      if (e && e !== this.selectedEntity) this.selectedEntity = e;
+      // Sincronizza selectedEntity da config.entities.sensor.entity
+      const ent = this.config.entities?.sensor?.entity;
+      if (ent && ent !== this.selectedEntity) {
+        this.selectedEntity = ent;
+      }
     }
   }
   
   render() {
-    const autoDisc = this.config.auto_discovery_sections?.sensors ?? false;
-    
-    // Opzioni chip dai tipi definiti in SENSOR_TYPE_MAP
+    const autoDisc = this.config.auto_discovery_sections?.sensor ?? false;
+    // Costruisci le opzioni chip da SENSOR_TYPE_MAP
     const options = Object.entries(SENSOR_TYPE_MAP).map(([type, info]) => ({
       value: type,
       label: info.label,
     }));
-    
-    // Entità candidate: dominio "sensor", filtro device_class e area
+    // Filtra le entità sensore per device_class e area
     const cats = this.filterType ? [this.filterType] : [];
-    const candidates = candidatesFor(this.hass, this.config, 'sensors', cats);
+    const candidates = candidatesFor(this.hass, this.config, 'sensor', cats);
     
     return html`
       <ha-expansion-panel
@@ -140,15 +161,14 @@ export class SensorPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🔢 Sensor</div>
 
-        <!-- Autodiscover -->
-        <div class="autodiscover-box"
-             @click=${() => this._toggleAuto(!autoDisc)}>
+        <!-- Auto-discovery -->
+        <div class="autodiscover-box" @click=${() => this._toggleAuto(!autoDisc)}>
           <input
             type="checkbox"
             .checked=${autoDisc}
             @change=${e => this._toggleAuto(e.target.checked)}
             @click=${e => e.stopPropagation()}
-          />🪄 Auto-discover Sensors
+          />🪄 Auto-discover Sensor
         </div>
 
         <!-- Filter device_class -->
@@ -195,9 +215,9 @@ export class SensorPanel extends LitElement {
   
   _toggleAuto(enabled) {
     const auto = { ...(this.config.auto_discovery_sections || {}) };
-    auto.sensors = enabled;
+    auto.sensor = enabled;
     this.config = { ...this.config, auto_discovery_sections: auto };
-    this._fire('auto_discovery_sections.sensors', enabled);
+    this._fire('auto_discovery_sections.sensor', enabled);
   }
   
   _onFilterChanged(type) {
@@ -207,7 +227,7 @@ export class SensorPanel extends LitElement {
   
   _onEntityChanged(entity) {
     this.selectedEntity = entity;
-    this._fire('entities.sensors.entity', entity);
+    this._fire('entities.sensor.entity', entity);
   }
   
   _stateFor(id) {
@@ -215,22 +235,26 @@ export class SensorPanel extends LitElement {
   }
   
   _unitFor(id) {
-    return this.hass.states[id]?.attributes?.unit_of_measurement ||
+    return (
+      this.hass.states[id]?.attributes?.unit_of_measurement ||
       SENSOR_TYPE_MAP[this.filterType]?.units[0] ||
-      '';
+      ''
+    );
   }
   
   _iconFor(id) {
-    return this.hass.states[id]?.attributes?.icon ||
+    return (
+      this.hass.states[id]?.attributes?.icon ||
       SENSOR_TYPE_MAP[this.filterType]?.icon ||
-      'mdi:thermometer';
+      'mdi:thermometer'
+    );
   }
   
   _reset() {
     this.filterType = '';
     this.selectedEntity = '';
     this._fire('sensor_filters', []);
-    this._fire('entities.sensors.entity', '');
+    this._fire('entities.sensor.entity', '');
   }
   
   _fire(prop, val) {
@@ -242,4 +266,4 @@ export class SensorPanel extends LitElement {
   }
 }
 
-customElements.define('sensors-panel', SensorsPanel);
+customElements.define('sensor-panel', SensorPanel);
