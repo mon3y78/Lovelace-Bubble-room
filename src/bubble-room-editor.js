@@ -1,7 +1,5 @@
 // src/bubble-room-editor.js
 import { LitElement, html, css } from 'lit';
-
-// Import dei singolari
 import './panels/RoomPanel.js';
 import './panels/SensorPanel.js';
 import './panels/MushroomPanel.js';
@@ -18,8 +16,8 @@ export class BubbleRoomEditor extends LitElement {
   static styles = css`
     :host {
       display: block;
-      padding: 0;
-      margin: 0;
+      padding: 0 !important;
+      margin: 0 !important;
       background: transparent;
     }
   `;
@@ -28,12 +26,30 @@ export class BubbleRoomEditor extends LitElement {
     super();
     this.hass = {};
     this.config = {};
-    this.openPanel = ''; // nessun pannello aperto di default
+    this.openPanel = ''; // nessun pannello aperto
+  }
+  
+  setConfig(config) {
+    config = { ...config };
+    config.auto_discovery_sections = {
+      room: !!config.area,
+      sensor: !!config.area,
+      mushroom: !!config.area,
+      subbutton: !!config.area,
+      color: true,
+      ...(config.auto_discovery_sections || {}),
+    };
+    if (!Array.isArray(config.sensor_filters)) {
+      config.sensor_filters = [];
+    }
+    if (!config.entities) {
+      config.entities = {};
+    }
+    this.config = config;
   }
   
   render() {
     return html`
-      <!-- Room Settings -->
       <room-panel
         .hass=${this.hass}
         .config=${this.config}
@@ -42,7 +58,6 @@ export class BubbleRoomEditor extends LitElement {
         @panel-changed=${this._onPanelChanged}
       ></room-panel>
 
-      <!-- Sensor Settings -->
       <sensor-panel
         .hass=${this.hass}
         .config=${this.config}
@@ -51,7 +66,6 @@ export class BubbleRoomEditor extends LitElement {
         @panel-changed=${this._onPanelChanged}
       ></sensor-panel>
 
-      <!-- Mushroom Entities -->
       <mushroom-panel
         .hass=${this.hass}
         .config=${this.config}
@@ -60,7 +74,6 @@ export class BubbleRoomEditor extends LitElement {
         @panel-changed=${this._onPanelChanged}
       ></mushroom-panel>
 
-      <!-- Sub-Button Settings -->
       <sub-button-panel
         .hass=${this.hass}
         .config=${this.config}
@@ -69,7 +82,6 @@ export class BubbleRoomEditor extends LitElement {
         @panel-changed=${this._onPanelChanged}
       ></sub-button-panel>
 
-      <!-- Color Settings -->
       <color-panel
         .hass=${this.hass}
         .config=${this.config}
@@ -90,24 +102,11 @@ export class BubbleRoomEditor extends LitElement {
   
   _onPanelChanged(e) {
     const { prop, val } = e.detail;
-    this.dispatchEvent(new CustomEvent('editor-changed', {
-      detail: { prop, val },
+    this.dispatchEvent(new CustomEvent('config-changed', {
+      detail: { config: { ...this.config, [prop]: val } },
       bubbles: true,
       composed: true,
     }));
-  }
-  
-  setConfig(config) {
-    config = { ...config };
-    config.auto_discovery_sections = {
-      room: !!config.area,
-      sensor: !!config.area,
-      mushroom: !!config.area,
-      subbutton: !!config.area,
-      color: true,
-      ...(config.auto_discovery_sections || {}),
-    };
-    this.config = config;
   }
 }
 
