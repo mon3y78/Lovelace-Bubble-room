@@ -5,7 +5,7 @@
  * File completo e chiuso.
  */
 
-export const SENSOR_TYPES = [
+export const SENSOR_TYPE_MAP = [
   { type: 'temperature', label: 'Temperature', emoji: '🌡️', icon: 'mdi:thermometer', unit: '°C' },
   { type: 'humidity',    label: 'Humidity',    emoji: '💧',  icon: 'mdi:water-percent', unit: '%' },
   { type: 'co2',         label: 'CO2',         emoji: '🟩',  icon: 'mdi:molecule-co2',  unit: 'ppm' },
