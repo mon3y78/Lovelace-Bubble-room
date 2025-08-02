@@ -1,329 +1,302 @@
+// src/panels/MushroomPanel.js
 import { LitElement, html, css } from 'lit';
-
-const DEBUG = !!window.__BUBBLE_DEBUG__;
-import { FILTERS, candidatesFor } from '../helpers/entity-filters.js';
+import { maybeAutoDiscover }      from '../helpers/auto-discovery.js';
+import { candidatesFor }          from '../helpers/entity-filters.js';
 
 export class MushroomPanel extends LitElement {
   static properties = {
-    hass: { type: Object },
-    config: { type: Object },
-    _expanded: { type: Boolean },
-    _expandedItems: { type: Array },
+    hass:         { type: Object },
+    config:       { type: Object },
+    expanded:     { type: Boolean },
+    _expanded:    { type: Array, state: true }, // quale pill è aperta
+    _filters:     { type: Array, state: true }, // array di 5: device_class selezionate
+    _entities:    { type: Array, state: true }, // array di 5: entity_id selezionate
   };
 
   constructor() {
     super();
-    
-    if (!customElements.get('ha-entity-picker')) {
-      customElements.whenDefined('ha-entity-picker').then(() => this.requestUpdate());
+    this.hass      = {};
+    this.config    = {};
+    this.expanded  = false;
+    this._expanded = Array(5).fill(false);
+
+    // Trova tutte le device_class di binary_sensor presenti
+    const classes = Object.values(this.hass.states || {})
+      .filter(s => s.entity_id.startsWith('binary_sensor.'))
+      .map(s => s.attributes.device_class)
+      .filter(dc => dc)
+      .filter((v,i,a) => a.indexOf(v)===i);
+
+    // inizializza con TUTTE le classi selezionate
+    this._filters  = Array(5).fill().map(() => [...classes]);
+    this._entities = Array(5).fill('');
+  }
+
+  updated(changed) {
+    if (changed.has('config') || changed.has('hass')) {
+      // 1️⃣ Auto-discover
+      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.mushroom');
+
+      // 2️⃣ Sync da config
+      const cfgFilters = this.config.mushroom_filters;
+      const ents       = this.config.entities || {};
+      if (Array.isArray(cfgFilters) && cfgFilters.length === 5) {
+        this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : []);
+      }
+      for (let i = 0; i < 5; i++) {
+        const key = `mushroom${i+1}`;
+        const e   = ents[key]?.entity;
+        if (e) this._entities[i] = e;
+      }
     }
-this.hass = {};
-    this.config = {};
-    this._expanded = false;
-    this._expandedItems = Array(7).fill(false); // entities1..5 + climate + camera
-  }
-
-  setConfig(config) {
-    this.config = config;
-  }
-
-  getConfig() {
-    return this.config;
   }
 
   static styles = css`
     :host { display: block; }
+
     .glass-panel {
-      margin: 0!important;
+      margin: 0 !important;
       width: 100%;
       box-sizing: border-box;
       border-radius: 40px;
-      background: var(--glass-bg, rgba(80,235,175,0.28));
-      box-shadow: var(--glass-shadow, 0 2px 24px 0 rgba(40,220,145,0.18));
       position: relative;
-      border: none;
-      --glass-sheen: linear-gradient(120deg,rgba(255,255,255,0.18),rgba(255,255,255,0.10) 70%,transparent 100%);
+      background: var(--glass-bg, rgba(80,235,175,0.28));
+      box-shadow: var(--glass-shadow, 0 2px 24px rgba(40,220,145,0.18));
+      overflow: hidden;
     }
     .glass-panel::after {
       content: '';
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       border-radius: inherit;
-      background: var(--glass-sheen);
+      background: var(--glass-sheen,
+        linear-gradient(120deg,rgba(255,255,255,0.18),
+        rgba(255,255,255,0.10) 70%,transparent 100%));
       pointer-events: none;
-      z-index: 0;
     }
     .glass-header {
-      position: relative;
-      z-index: 1;
-      background: none!important;
-      box-shadow: none!important;
-      border-radius: 0!important;
-      padding: 22px 0 18px;
-      margin: 0;
+      padding: 22px 0;
       text-align: center;
       font-size: 1.12rem;
       font-weight: 700;
       color: #fff;
     }
+
+    .input-group.autodiscover {
+      margin: 0 16px 13px;
+      padding: 14px 18px 10px;
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.13);
+      box-shadow: 0 2px 14px rgba(70,120,220,0.10);
+      border-radius: 18px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .input-group.autodiscover input { margin-right: 8px; }
+    .input-group.autodiscover label {
+      margin: 0; font-weight: 700; color: #fff;
+    }
+
     .mini-pill {
       background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.12);
-      box-shadow: 0 2px 14px 0 rgba(70,120,220,0.10);
+      border: 1.5px solid rgba(255,255,255,0.13);
+      box-shadow: 0 2px 14px rgba(70,120,220,0.10);
       backdrop-filter: blur(7px) saturate(1.2);
       border-radius: 24px;
-      margin-bottom: 13px;
+      margin: 8px 16px;
       overflow: hidden;
     }
     .mini-pill-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 15px 22px;
-      font-size: 1.12rem;
-      font-weight: 800;
-      color: #36e6a0;
-      letter-spacing: 0.03em;
-      cursor: pointer;
-      user-select: none;
-      position: relative;
-      z-index: 1;
-      text-shadow: 0 2px 7px #0004;
-      font-family: 'Inter', sans-serif;
+      display: flex; align-items: center;
+      padding: 12px 16px;
+      cursor: pointer; user-select: none;
+      font-weight: 700; color: #36e6a0;
     }
     .mini-pill-header .chevron {
-      margin-left: auto;
-      font-size: 1.22em;
-      opacity: 0.64;
-      transition: transform 0.18s;
+      margin-left: auto; transition: transform 0.2s;
     }
     .mini-pill.expanded .mini-pill-header .chevron {
       transform: rotate(90deg);
     }
     .mini-pill-content {
-      padding: 15px 22px;
-      background: transparent;
-      position: relative;
-      z-index: 1;
+      padding: 12px 16px 16px;
+      animation: pill-expand 0.2s ease-out both;
     }
-    .autodiscover-box {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 18px;
-      padding: 18px 0;
-      font-size: 1.17rem;
-      color: #fff;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      text-align: center;
-      border: 1.5px solid #66baff!important;
-      box-shadow: 0 4px 24px 0 rgba(73,164,255,0.26)!important;
-      border-radius: 24px!important;
-      transition: box-shadow 0.18s, border 0.18s;
-      cursor: pointer;
-      max-width: 88%;
+    @keyframes pill-expand {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-    .autodiscover-box:hover {
-      border: 1.5px solid #4dabf7!important;
-    }
+
     .input-group {
-      background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.13);
-      box-shadow: 0 2px 14px 0 rgba(70,120,220,0.10);
-      border-radius: 18px;
-      margin-bottom: 13px;
-      padding: 14px 18px 10px;
+      margin-bottom: 12px;
     }
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 1.11rem;
-      font-weight: 700;
-      color: #36e6a0;
-      letter-spacing: 0.03em;
-      font-family: 'Inter', sans-serif;
+    .input-group label {
+      display: block; font-weight: 600;
+      margin-bottom: 6px; color: #36e6a0;
     }
-    input, select, ha-entity-picker, ha-icon-picker {
-      width: 100%;
+    ha-selector {
+      width: 100%; box-sizing: border-box;
     }
+    ha-selector::part(combobox) {
+      min-height: 40px;
+    }
+
     .reset-button {
-      border: 3.5px solid #ff4c6a!important;
-      color: #ff4c6a!important;
+      border: 3.5px solid #ff4c6a;
+      color: #ff4c6a;
+      border-radius: 24px;
+      padding: 12px 38px;
+      background: transparent;
+      cursor: pointer;
+      display: block;
+      margin: 20px auto;
       font-size: 1.15rem;
       font-weight: 700;
-      box-shadow: 0 2px 24px 0 #ff4c6a44;
-      padding: 12px 38px!important;
-      margin: 20px auto 0 auto!important;
-      display: block;
-      background: rgba(255,214,0,0.08);
-      border-radius: 24px!important;
-      transition: background 0.18s, color 0.18s, border 0.18s, box-shadow 0.18s;
+      box-shadow: 0 2px 24px #ff4c6a44;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
     }
     .reset-button:hover {
-      background: rgba(255,76,106,0.18)!important;
-      color: #fff!important;
-      border-color: #ff1744!important;
-      box-shadow: 0 6px 32px 0 #ff4c6abf;
+      background: rgba(255,76,106,0.18);
+      color: #fff;
+      box-shadow: 0 6px 32px #ff4c6abf;
     }
-  
-/* Ensure HA pickers are visible and not collapsed */
-ha-entity-picker,
-ha-icon-picker,
-ha-area-picker,
-ha-device-picker,
-ha-select {
-  display: block;
-  width: 100%;
-  min-height: 56px;
-  box-sizing: border-box;
-}
-/* Best-effort vaadin parts */
-ha-entity-picker::part(input),
-ha-entity-picker::part(text-field),
-ha-entity-picker::part(combobox) {
-  min-height: 56px;
-}
-`;
+  `;
 
   render() {
-    const cfg = this.config;
+    const autoDisc = this.config.auto_discovery_sections?.mushroom ?? false;
+
+    // Prepara le options dalle device_class disponibili
+    const allClasses = Object.values(this.hass.states || {})
+      .filter(s => s.entity_id.startsWith('binary_sensor.'))
+      .map(s => s.attributes.device_class)
+      .filter(dc => dc)
+      .filter((v,i,a) => a.indexOf(v)===i);
+    const options = allClasses.map(c => ({
+      value: c,
+      label: c.charAt(0).toUpperCase() + c.slice(1),
+    }));
+
     return html`
       <ha-expansion-panel
         class="glass-panel"
-        .expanded=${this._expanded}
-        @expanded-changed=${(e) => (this._expanded = e.detail.expanded)}
+        .expanded=${this.expanded}
+        @expanded-changed=${e => {
+          this.expanded = e.detail.expanded;
+          if (this.expanded) this._expanded = Array(5).fill(false);
+        }}
       >
         <div slot="header" class="glass-header">🍄 Mushroom Entities</div>
 
-        <div class="glass-content">
-          <div
-            class="autodiscover-box"
-            @click=${() => this._fire('auto_discovery_sections.mushroom', !cfg.auto_discovery_sections?.mushroom)}
-          >
-            <label>
-              <input
-                type="checkbox"
-                .checked=${cfg.auto_discovery_sections?.mushroom || false}
-                @change=${(e) => this._fire('auto_discovery_sections.mushroom', e.target.checked)}
-                @click=${(e) => e.stopPropagation()}
-              />
-              <span>🪄 Auto-discovery</span>
-            </label>
-          </div>
-
-          ${['entities1','entities2','entities3','entities4','entities5','climate','camera'].map(
-            (key, i) => this._renderSingle(i, key)
-          )}
-
-          <button class="reset-button" @click=${this._resetAll}>🧹 Reset Mushroom Entities</button>
+        <!-- Auto-discover -->
+        <div class="input-group autodiscover">
+          <input
+            type="checkbox"
+            .checked=${autoDisc}
+            @change=${e => this._toggleAuto(e.target.checked)}
+          />
+          <label>🪄 Auto-discover Mushroom</label>
         </div>
+
+        <!-- Cinque mini-pill -->
+        ${this._expanded.map((open, i) => this._renderMushroom(i, open, options))}
+
+        <!-- Reset -->
+        <button class="reset-button" @click=${() => this._reset()}>
+          🧹 Reset Mushrooms
+        </button>
       </ha-expansion-panel>
     `;
   }
 
-  _renderSingle(index, key) {
-    const item = this.config.entities?.[key] || {};
-    const expanded = this._expandedItems[index];
+  _renderMushroom(i, open, options) {
+    const key   = `mushroom${i+1}`;
+    const types = this._filters[i];
+    const ent   = this._entities[i];
+    const cands = candidatesFor(this.hass, this.config, 'mushroom', types);
 
     return html`
-      <div class="mini-pill ${expanded ? 'expanded' : ''}" @click=${() => this._toggleOne(index)}>
-        <div class="mini-pill-header">
-          ${item.icon || '🔘'} ${item.label || 'Entity ' + (index + 1)}
-          <span class="chevron">${expanded ? '▼' : '▶'}</span>
+      <div class="mini-pill ${open ? 'expanded' : ''}">
+        <div class="mini-pill-header" @click=${() => this._togglePill(i)}>
+          Mushroom ${i+1}
+          <span class="chevron">${open ? '▼' : '▶'}</span>
         </div>
-
-        ${expanded ? html`
+        ${open ? html`
           <div class="mini-pill-content">
+            <!-- Filter categories -->
             <div class="input-group">
-              <label>Entity</label>
-              <ha-entity-picker
+              <label>Filter categories:</label>
+              <ha-selector
                 .hass=${this.hass}
-                .includeEntities=${this._getMushroomCandidates()}
-                .value=${item.entity || ''}
+                .value=${types}
+                .selector=${{ select: { multiple: true, mode: 'box', options } }}
+                @value-changed=${e => this._onFilter(i, e.detail.value)}
+              ></ha-selector>
+            </div>
+
+            <!-- Entity selector -->
+            <div class="input-group">
+              <label>Entity:</label>
+              <ha-selector
+                .hass=${this.hass}
+                .value=${ent}
+                .selector=${{ entity: { include_entities: cands, multiple: false } }}
                 allow-custom-entity
-                @value-changed=${(e) => this._fire('entities.' + key + '.entity', e.detail.value)}
-              ></ha-entity-picker>
+                @value-changed=${e => this._onEntity(i, e.detail.value)}
+              ></ha-selector>
             </div>
-
-            <div class="input-group">
-              <label>Icon</label>
-              <ha-icon-picker
-                .hass=${this.hass}
-                .value=${item.icon || ''}
-                allow-custom-icon
-                @value-changed=${(e) => this._fire('entities.' + key + '.icon', e.detail.value)}
-              ></ha-icon-picker>
-            </div>
-
-            ${this._renderActions('tap', key)}
-            ${this._renderActions('hold', key)}
           </div>
         ` : ''}
       </div>
     `;
   }
 
-  _toggleOne(idx) {
-    this._expandedItems = this._expandedItems.map((_, i) => i === idx);
-    this.requestUpdate();
-  }
-
-  _renderActions(actionType, key) {
-    const cfg = this.config.entities?.[key] || {};
-    const actCfg = cfg[actionType + '_action'] || {};
-    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
-    return html`
-      <div class="input-group">
-        <label>${actionType === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
-        <div class="pill-group">
-          ${actions.map((a) => html`
-            <paper-button
-              class="pill-button ${actCfg.action === a ? 'active' : ''}"
-              @click=${() => this._fire('entities.' + key + '.' + actionType + '_action.action', a)}
-            >${a}</paper-button>
-          `)}
-        </div>
-
-        ${actCfg.action === 'navigate' ? html`
-          <input
-            type="text"
-            placeholder="Path"
-            .value=${actCfg.navigation_path || ''}
-            @input=${(e) => this._fire('entities.' + key + '.' + actionType + '_action.navigation_path', e.target.value)}
-          />
-        ` : ''}
-      </div>
-    `;
-  }
-
-  _fire(prop, value) {
+  _toggleAuto(on) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val: value },
-      bubbles: true,
-      composed: true,
+      detail: { prop: 'auto_discovery_sections.mushroom', val: on },
+      bubbles: true, composed: true,
     }));
   }
 
-  _resetAll() {
-  this.dispatchEvent(new CustomEvent('panel-changed', {
-    detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: 'mushroom' } },
-    bubbles: true, composed: true,
-  }));
-}
-// --- Wrapper locale: calcola candidati + log ---
-  _getMushroomCandidates() {
-    // Usa la logica centralizzata, ma aggiunge log locale (Opzione A)
-    const list = candidatesFor(this.hass, this.config, 'mushroom');
-    if (DEBUG) {
-      console.info('[MushroomPanel][Candidates]', {
-        area: this.config?.area || null,
-        count: list.length,
-        sample: list.slice(0, 8),
-      });
+  _togglePill(i) {
+    this._expanded = this._expanded.map((v, idx) => idx === i ? !v : false);
+    this.requestUpdate();
+  }
+
+  _onFilter(i, values) {
+    this._filters[i] = [...values];
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: 'mushroom_filters', val: this._filters },
+      bubbles: true, composed: true,
+    }));
+  }
+
+  _onEntity(i, ent) {
+    this._entities[i] = ent;
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: `entities.${`mushroom${i+1}`}.entity`, val: ent },
+      bubbles: true, composed: true,
+    }));
+  }
+
+  _reset() {
+    this._expanded = Array(5).fill(false);
+    // reset filters
+    const allClasses = Object.values(this.hass.states || {})
+      .filter(s => s.entity_id.startsWith('binary_sensor.'))
+      .map(s => s.attributes.device_class)
+      .filter(dc => dc)
+      .filter((v,i,a) => a.indexOf(v)===i);
+    this._filters  = Array(5).fill().map(() => [...allClasses]);
+    this._entities = Array(5).fill('');
+
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: 'mushroom_filters', val: this._filters },
+      bubbles: true, composed: true,
+    }));
+    for (let i = 1; i <= 5; i++) {
+      this.dispatchEvent(new CustomEvent('panel-changed', {
+        detail: { prop: `entities.mushroom${i}.entity`, val: '' },
+        bubbles: true, composed: true,
+      }));
     }
-    return list;
   }
 }
 
