@@ -363,6 +363,10 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       background: rgba(255,76,106,0.18); color: #fff;
       box-shadow: 0 6px 32px #ff4c6abf;
     }
+    .preview .emoji {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
   `;render(){const e=this.config.auto_discovery_sections?.sensor??!1,t=Object.entries(be).map(([e,t])=>({value:e,label:`${t.emoji} ${t.label}`}));return H`
       <ha-expansion-panel
         class="glass-panel"
@@ -424,7 +428,7 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
 
             <!-- Preview -->
             <div class="preview">
-              <ha-icon .icon=${be[s[0]]?.icon||"mdi:thermometer"}></ha-icon>
+              <span class="emoji">${be[s[0]]?.emoji||"❓"}</span>
               <div class="state">
                 ${this.hass.states?.[n]?.state||"-"}
                 ${this.hass.states?.[n]?.attributes?.unit_of_measurement||""}
