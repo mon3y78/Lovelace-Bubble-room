@@ -6,12 +6,12 @@ import { SENSOR_TYPE_MAP }   from '../helpers/sensor-mapping.js';
 
 export class SensorPanel extends LitElement {
   static properties = {
-    hass:          { type: Object },
-    config:        { type: Object },
-    expanded:      { type: Boolean },
-    _expanded:     { type: Array, state: true },
-    _filters:      { type: Array, state: true },
-    _entities:     { type: Array, state: true },
+    hass:       { type: Object },
+    config:     { type: Object },
+    expanded:   { type: Boolean },
+    _expanded:  { type: Array, state: true }, // quali mini-pill aperte
+    _filters:   { type: Array, state: true }, // tipi selezionati per ciascun sensore
+    _entities:  { type: Array, state: true }, // entità selezionate per ciascun sensore
   };
 
   constructor() {
@@ -26,9 +26,9 @@ export class SensorPanel extends LitElement {
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // Mantieni l’autodiscovery centralizzato su “sensor”
+      // 1️⃣ auto-discover per “sensor”
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
-      // Inizializza filtri e entità da config.entities.sensor1…sensor6
+      // 2️⃣ sincronizza da config.entities.sensor1…sensor6
       for (let i = 0; i < 6; i++) {
         const key = `sensor${i+1}`;
         const ent = this.config.entities?.[key]?.entity;
@@ -57,11 +57,10 @@ export class SensorPanel extends LitElement {
       position: absolute; inset: 0;
       border-radius: inherit;
       background: var(--glass-sheen,
-        linear-gradient(120deg,rgba(255,255,255,0.11),
-        rgba(255,255,255,0.07) 70%,transparent 100%));
+        linear-gradient(120deg, rgba(255,255,255,0.11),
+        rgba(255,255,255,0.07) 70%, transparent 100%));
       pointer-events: none;
     }
-
     .glass-header {
       padding: 22px 0;
       text-align: center;
@@ -70,7 +69,7 @@ export class SensorPanel extends LitElement {
       color: #fff;
     }
 
-    /* ===== Auto-discover identico a RoomPanel ===== */
+    /* === Auto-discover identico a RoomPanel === */
     .input-group.autodiscover {
       margin: 0 16px 13px;
       padding: 14px 18px 10px;
@@ -78,20 +77,14 @@ export class SensorPanel extends LitElement {
       border: 1.5px solid rgba(255,255,255,0.13);
       box-shadow: 0 2px 14px rgba(70,120,220,0.10);
       border-radius: 18px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      display: flex; align-items: center; gap: 8px;
     }
+    .input-group.autodiscover input { margin-right: 8px; }
     .input-group.autodiscover label {
-      margin: 0;
-      font-weight: 700;
-      color: #fff;
-    }
-    .input-group.autodiscover input {
-      margin-right: 8px;
+      margin: 0; font-weight: 700; color: #fff;
     }
 
-    /* ===== Mini-pill sensors ===== */
+    /* === Mini-pill === */
     .mini-pill {
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.13);
@@ -120,26 +113,33 @@ export class SensorPanel extends LitElement {
       to   { opacity: 1; transform: translateY(0); }
     }
 
+    /* === Input group (filter & entity) === */
     .input-group {
       margin-bottom: 12px;
     }
     .input-group label {
-      display: block; font-weight: 600; margin-bottom: 6px; color: #8cff8a;
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #8cff8a;
     }
     ha-selector {
-      width: 100%; box-sizing: border-box;
+      width: 100%;
+      box-sizing: border-box;
     }
     ha-selector::part(combobox) {
       min-height: 40px;
     }
 
+    /* === Preview === */
     .preview {
-      display: flex; align-items: center; gap: 12px; padding: 0 16px 16px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 16px 16px;
     }
     .preview ha-icon { --mdc-icon-size: 32px; color: #fff; }
     .preview .state { font-size: 1.2rem; color: #fff; }
 
-    /* ===== Reset identico a RoomPanel ===== */
+    /* === Reset identico a RoomPanel === */
     .reset-button {
       border: 3.5px solid #ff4c6a;
       color: #ff4c6a;
@@ -163,8 +163,10 @@ export class SensorPanel extends LitElement {
 
   render() {
     const autoDisc = this.config.auto_discovery_sections?.sensor ?? false;
-    const options  = Object.entries(SENSOR_TYPE_MAP)
-      .map(([type,info]) => ({ value: type, label: info.label }));
+    // opzioni pill da SENSOR_TYPE_MAP
+    const options = Object.entries(SENSOR_TYPE_MAP).map(
+      ([type,info]) => ({ value: type, label: info.label })
+    );
 
     return html`
       <ha-expansion-panel
@@ -187,7 +189,7 @@ export class SensorPanel extends LitElement {
           <label>🪄 Auto-discover Sensor</label>
         </div>
 
-        <!-- 2️⃣ Sei mini-pill -->
+        <!-- 2️⃣ Sei mini-pill con filter + entity + preview -->
         ${Array(6).fill(0).map((_, i) => this._renderSensor(i, options))}
 
         <!-- 3️⃣ Reset -->
@@ -199,11 +201,11 @@ export class SensorPanel extends LitElement {
   }
 
   _renderSensor(i, options) {
-    const open = this._expanded[i];
-    const type = this._filters[i];
-    const ent  = this._entities[i];
-    const key  = `sensor${i+1}`;
-    const candidates = candidatesFor(this.hass, this.config, 'sensor', type ? [type] : []);
+    const open  = this._expanded[i];
+    const type  = this._filters[i];
+    const ent   = this._entities[i];
+    const key   = `sensor${i+1}`;
+    const cands = candidatesFor(this.hass, this.config, 'sensor', type ? [type] : []);
 
     return html`
       <div class="mini-pill ${open ? 'expanded' : ''}">
@@ -213,24 +215,29 @@ export class SensorPanel extends LitElement {
         </div>
         ${open ? html`
           <div class="mini-pill-content">
-            <!-- Filter category -->
+
+            <!-- Filter category (pill box mode) -->
             <div class="input-group">
               <label>Filter category:</label>
               <ha-selector
                 .hass=${this.hass}
                 .value=${type ? [type] : []}
-                .selector=${{ select: { multiple: false, mode: 'box', options } }}
+                .selector=${{
+                  select: { multiple: false, mode: 'box', options }
+                }}
                 @value-changed=${e => this._onFilter(i, e.detail.value[0] || '')}
               ></ha-selector>
             </div>
 
-            <!-- Entity -->
+            <!-- Entity selector -->
             <div class="input-group">
               <label>Entity:</label>
               <ha-selector
                 .hass=${this.hass}
                 .value=${ent}
-                .selector=${{ entity: { include_entities: candidates, multiple: false } }}
+                .selector=${{
+                  entity: { include_entities: cands, multiple: false }
+                }}
                 allow-custom-entity
                 @value-changed=${e => this._onEntity(i, e.detail.value)}
               ></ha-selector>
@@ -258,7 +265,7 @@ export class SensorPanel extends LitElement {
   }
 
   _togglePill(i) {
-    this._expanded = this._expanded.map((v, idx) => idx === i ? !v : false);
+    this._expanded = this._expanded.map((v,idx) => idx === i ? !v : false);
     this.requestUpdate();
   }
 
@@ -270,23 +277,26 @@ export class SensorPanel extends LitElement {
     }));
   }
 
-  _onEntity(i, entity) {
-    this._entities[i] = entity;
+  _onEntity(i, ent) {
+    this._entities[i] = ent;
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: `entities.sensor${i+1}.entity`, val: entity },
+      detail: { prop: `entities.sensor${i+1}.entity`, val: ent },
       bubbles: true, composed: true,
     }));
   }
 
   _reset() {
-    // chiudi e resetta interno
+    // chiudi tutte e resetta
     this._expanded = Array(6).fill(false);
     this._filters  = Array(6).fill('');
     this._entities = Array(6).fill('');
-    // notifica reset per ciascun sensore
+    // emetti reset per ciascun sensore
     for (let i = 1; i <= 6; i++) {
       this.dispatchEvent(new CustomEvent('panel-changed', {
-        detail: { prop: '__panel_cmd__', val: { cmd: 'reset', section: `sensor${i}` } },
+        detail: {
+          prop: '__panel_cmd__',
+          val: { cmd: 'reset', section: `sensor${i}` }
+        },
         bubbles: true, composed: true,
       }));
     }
