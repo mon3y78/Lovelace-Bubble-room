@@ -60,8 +60,8 @@ export class SubButtonPanel extends LitElement {
       position: absolute; inset: 0;
       border-radius: inherit;
       background: var(--glass-sheen,
-        linear-gradient(120deg,rgba(255,255,255,0.22),
-        rgba(255,255,255,0.10) 70%,transparent 100%));
+        linear-gradient(120deg, rgba(255,255,255,0.22),
+        rgba(255,255,255,0.10) 70%, transparent 100%));
       pointer-events: none;
     }
     .glass-header {
@@ -129,15 +129,28 @@ export class SubButtonPanel extends LitElement {
       min-height: 40px;
     }
 
+    /* === STYLE TAP/HOLD like RoomPanel === */
     .pill-group {
-      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
     }
     .pill-button {
-      padding: 6px 10px; border-radius: 999px; border: 1px solid #555;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #555;
       cursor: pointer;
+      background: transparent;
+      font-weight: 600;
+      transition: background 0.18s, border-color 0.18s, color 0.18s;
     }
     .pill-button.active {
-      border-color: #b28fff; color: #b28fff;
+      border-color: #b28fff;
+      color: #b28fff;
+    }
+    .pill-button:hover:not(.active) {
+      background: rgba(178,143,255,0.1);
     }
 
     .reset-button {
@@ -306,25 +319,16 @@ export class SubButtonPanel extends LitElement {
 
   _onFilter(i, vals) {
     this._filters[i] = [...vals];
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'subbutton_filters', val: this._filters },
-      bubbles: true, composed: true,
-    }));
+    this.dispatchEvent(new CustomEvent('panel-changed', { detail: { prop: 'subbutton_filters', val: this._filters }, bubbles: true, composed: true }));
   }
 
   _onEntity(i, ent) {
     this._entities[i] = ent;
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: `entities.sub-button${i+1}.entity`, val: ent },
-      bubbles: true, composed: true,
-    }));
+    this.dispatchEvent(new CustomEvent('panel-changed', { detail: { prop: `entities.sub-button${i+1}.entity`, val: ent }, bubbles: true, composed: true }));
   }
 
   _onIcon(i, icon) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: `entities.sub-button${i+1}.icon`, val: icon },
-      bubbles: true, composed: true,
-    }));
+    this.dispatchEvent(new CustomEvent('panel-changed', { detail: { prop: `entities.sub-button${i+1}.icon`, val: icon }, bubbles: true, composed: true }));
   }
 
   _onAction(i, type, field, val) {
@@ -333,7 +337,8 @@ export class SubButtonPanel extends LitElement {
         prop: `entities.sub-button${i+1}.${type}_action.${field}`,
         val,
       },
-      bubbles: true, composed: true,
+      bubbles: true,
+      composed: true,
     }));
   }
 
@@ -342,20 +347,15 @@ export class SubButtonPanel extends LitElement {
     this._filters   = Array(4).fill().map(() => [...COMMON_CATS]);
     this._entities  = Array(4).fill('');
 
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'subbutton_filters', val: this._filters },
-      bubbles: true, composed: true,
-    }));
+    this.dispatchEvent(new CustomEvent('panel-changed', { detail: { prop: 'subbutton_filters', val: this._filters }, bubbles: true, composed: true }));
     for (let i = 1; i <= 4; i++) {
       const base = `entities.sub-button${i}`;
-      this.dispatchEvent(new CustomEvent('panel-changed', {
-        detail: { prop: `${base}.entity`, val: '' },
-        bubbles: true, composed: true,
-      }));
-      this.dispatchEvent(new CustomEvent('panel-changed', {
-        detail: { prop: `${base}.icon`, val: '' },
-        bubbles: true, composed: true,
-      }));
+      ['entity','icon'].forEach(f => {
+        this.dispatchEvent(new CustomEvent('panel-changed', {
+          detail: { prop: `${base}.${f}`, val: '' },
+          bubbles: true, composed: true,
+        }));
+      });
       ['tap_action','hold_action'].forEach(act => {
         this.dispatchEvent(new CustomEvent('panel-changed', {
           detail: {
