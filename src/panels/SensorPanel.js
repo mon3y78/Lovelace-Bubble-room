@@ -217,17 +217,19 @@ export class SensorPanel extends LitElement {
           <div class="mini-pill-content">
 
             <!-- Filter category (pill box mode) -->
+            <!-- Filter category (pill box mode) -->
             <div class="input-group">
               <label>Filter category:</label>
               <ha-selector
                 .hass=${this.hass}
                 .value=${type ? [type] : []}
                 .selector=${{
-                  select: { multiple: false, mode: 'box', options }
+                  select: { multiple: true, mode: 'box', options }
                 }}
                 @value-changed=${e => this._onFilter(i, e.detail.value[0] || '')}
               ></ha-selector>
             </div>
+
 
             <!-- Entity selector -->
             <div class="input-group">
