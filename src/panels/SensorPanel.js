@@ -139,6 +139,10 @@ export class SensorPanel extends LitElement {
       background: rgba(255,76,106,0.18); color: #fff;
       box-shadow: 0 6px 32px #ff4c6abf;
     }
+    .preview .emoji {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
   `;
 
   render() {
@@ -229,9 +233,9 @@ export class SensorPanel extends LitElement {
 
             <!-- Preview -->
             <div class="preview">
-              <ha-icon .icon=${SENSOR_TYPE_MAP[typeArr[0]]?.icon || 'mdi:thermometer'}></ha-icon>
+              <span class="emoji">${SENSOR_TYPE_MAP[typeArr[0]]?.emoji || '❓'}</span>
               <div class="state">
-                ${this.hass.states?.[ent]?.state  || '-'}
+                ${this.hass.states?.[ent]?.state || '-'}
                 ${this.hass.states?.[ent]?.attributes?.unit_of_measurement || ''}
               </div>
             </div>
