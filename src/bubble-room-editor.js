@@ -16,8 +16,8 @@ export class BubbleRoomEditor extends LitElement {
   static styles = css`
     :host {
       display: block;
-      padding: 0 !important;
-      margin: 0 !important;
+      padding: 0;
+      margin: 0;
       background: transparent;
     }
   `;
@@ -26,10 +26,11 @@ export class BubbleRoomEditor extends LitElement {
     super();
     this.hass = {};
     this.config = {};
-    this.openPanel = ''; // nessun pannello aperto
+    this.openPanel = ''; // nessun pannello aperto inizialmente
   }
   
   setConfig(config) {
+    // inizializza config e auto_discovery_sections con chiavi al singolare
     config = { ...config };
     config.auto_discovery_sections = {
       room: !!config.area,
@@ -44,6 +45,9 @@ export class BubbleRoomEditor extends LitElement {
     }
     if (!config.entities) {
       config.entities = {};
+    }
+    if (!config.colors) {
+      config.colors = {};
     }
     this.config = config;
   }
@@ -102,11 +106,29 @@ export class BubbleRoomEditor extends LitElement {
   
   _onPanelChanged(e) {
     const { prop, val } = e.detail;
+    this._updateConfig(prop, val);
+    // Notifica al frontend HA editor
     this.dispatchEvent(new CustomEvent('config-changed', {
-      detail: { config: { ...this.config, [prop]: val } },
+      detail: { config: this.config },
       bubbles: true,
       composed: true,
     }));
+  }
+  
+  _updateConfig(path, value) {
+    // Supporta path puntati: 'entities.sensor.sensor1.entity', 'colors.room.background_active', ecc.
+    const keys = path.split('.');
+    let obj = this.config;
+    for (let i = 0; i < keys.length - 1; i++) {
+      const k = keys[i];
+      if (obj[k] === undefined || obj[k] === null) {
+        obj[k] = {};
+      }
+      obj = obj[k];
+    }
+    obj[keys[keys.length - 1]] = value;
+    // Forza LitElement a riconoscere il cambiamento
+    this.config = { ...this.config };
   }
 }
 
