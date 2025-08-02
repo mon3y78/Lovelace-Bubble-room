@@ -267,19 +267,26 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       </div>
     `}_onExpandedChanged(e){this.expanded=e.detail.expanded,this.dispatchEvent(new CustomEvent("expanded-changed",{detail:{expanded:e.detail.expanded},bubbles:!0,composed:!0}))}}customElements.define("room-panel",he);const ue={temperature:{label:"Temperature",emoji:"🌡️",icon:"mdi:thermometer",units:["°C","°F"]},humidity:{label:"Humidity",emoji:"💧",icon:"mdi:water-percent",units:["%"]},co2:{label:"CO₂",emoji:"🟢",icon:"mdi:molecule-co2",units:["ppm"]},lux:{label:"Luminosity",emoji:"🔆",icon:"mdi:brightness-5",units:["lx"]},uv:{label:"UV Index",emoji:"🌞",icon:"mdi:weather-sunny-alert",units:["UV"]},pressure:{label:"Pressure",emoji:"⏲️",icon:"mdi:gauge",units:["hPa"]},noise:{label:"Noise",emoji:"🔊",icon:"mdi:volume-high",units:["dB"]},pm25:{label:"PM2.5",emoji:"🌫️",icon:"mdi:blur",units:["µg/m³"]},pm10:{label:"PM10",emoji:"🌫️",icon:"mdi:blur-linear",units:["µg/m³"]}};class be extends se{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},filterType:{type:String,state:!0},selectedEntity:{type:String,state:!0}};static styles=o`
     :host { display: block; }
-
     .glass-panel {
       margin: 8px;
       border-radius: 24px;
       background: var(--glass-bg, rgba(200,200,200,0.1));
       box-shadow: var(--glass-shadow, 0 2px 8px rgba(0,0,0,0.1));
     }
+    .glass-panel::after {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      background: var(--glass-sheen, rgba(255,255,255,0.03));
+      pointer-events: none;
+    }
     .glass-header {
       padding: 12px;
       font-weight: bold;
       color: var(--primary-text-color);
     }
-    .autodiscover-box, .reset-button {
+    .autodiscover-box,
+    .reset-button {
       border: 2.5px solid #FFD600 !important;
       box-shadow: 0 2px 24px 0 #FFD60033 !important;
       background: rgba(255,214,0,0.08) !important;
@@ -288,17 +295,23 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       display: flex; align-items: center; justify-content: center;
       margin: 0 16px 12px; padding: 14px 0;
       cursor: pointer; color: #fff; font-weight: 700; gap: 8px;
+      position: relative;
     }
     .autodiscover-box input {
       margin-right: 8px;
     }
-    .input-group { padding: 0 16px 12px; }
+    .input-group {
+      padding: 0 16px 12px;
+    }
     .input-group label {
-      display: block; font-weight: 600; margin-bottom: 4px;
+      display: block;
+      font-weight: 600;
+      margin-bottom: 4px;
       color: var(--secondary-text-color);
     }
     ha-selector {
-      width: 100%; box-sizing: border-box;
+      width: 100%;
+      box-sizing: border-box;
     }
     .mini-pill {
       background: rgba(44,70,100,0.23);
@@ -331,7 +344,7 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
     }
     .preview ha-icon { --mdc-icon-size: 32px; }
     .preview .state { font-size: 1.2rem; }
-  `;constructor(){super(),this.hass={},this.config={},this.expanded=!1,this.filterType="",this.selectedEntity="",this._expandedPill=!1}updated(e){if(e.has("config")||e.has("hass")){de(this.hass,this.config,"auto_discovery_sections.sensors");const e=this.config.sensor_filters;Array.isArray(e)&&e[0]!==this.filterType&&(this.filterType=e[0]||"");const t=this.config.entities?.sensor?.entity;t&&t!==this.selectedEntity&&(this.selectedEntity=t)}}render(){const e=this.config.auto_discovery_sections?.sensors??!1,t=Object.entries(ue).map(([e,t])=>({value:e,label:t.label})),i=this.filterType?[this.filterType]:[],s=ae(this.hass,this.config,"sensors",i);return R`
+  `;constructor(){super(),this.hass={},this.config={},this.expanded=!1,this.filterType="",this.selectedEntity="",this._expandedPills=!1}updated(e){if(e.has("config")||e.has("hass")){de(this.hass,this.config,"auto_discovery_sections.sensors");const e=this.config.sensor_filters;Array.isArray(e)&&e[0]!==this.filterType&&(this.filterType=e[0]||"");const t=this.config.entities?.sensors?.entity;t&&t!==this.selectedEntity&&(this.selectedEntity=t)}}render(){const e=this.config.auto_discovery_sections?.sensors??!1,t=Object.entries(ue).map(([e,t])=>({value:e,label:t.label})),i=this.filterType?[this.filterType]:[],s=ae(this.hass,this.config,"sensors",i);return R`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
@@ -339,8 +352,9 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       >
         <div slot="header" class="glass-header">🔢 Sensor</div>
 
-        <!-- Auto-discovery -->
-        <div class="autodiscover-box" @click=${()=>this._toggleAuto(!e)}>
+        <!-- Autodiscover -->
+        <div class="autodiscover-box"
+             @click=${()=>this._toggleAuto(!e)}>
           <input
             type="checkbox"
             .checked=${e}
@@ -349,7 +363,7 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
           />🪄 Auto-discover Sensors
         </div>
 
-        <!-- Filter Type as chips -->
+        <!-- Filter device_class -->
         <div class="input-group">
           <label>Filter category:</label>
           <ha-selector
@@ -388,7 +402,7 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
           🧹 Reset Sensor
         </div>
       </ha-expansion-panel>
-    `}_toggleAuto(e){const t={...this.config.auto_discovery_sections||{}};t.sensors=e,this.config={...this.config,auto_discovery_sections:t},this._fire("auto_discovery_sections.sensors",e)}_onFilterChanged(e){this.filterType=e,this._fire("sensor_filters",[e])}_onEntityChanged(e){this.selectedEntity=e,this._fire("entities.sensor.entity",e)}_stateFor(e){return this.hass.states[e]?.state??""}_unitFor(e){return this.hass.states[e]?.attributes?.unit_of_measurement||ue[this.filterType]?.units[0]||""}_iconFor(e){return this.hass.states[e]?.attributes?.icon||ue[this.filterType]?.icon||"mdi:thermometer"}_reset(){this.filterType="",this.selectedEntity="",this._fire("sensor_filters",[]),this._fire("entities.sensor.entity","")}_fire(e,t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:e,val:t},bubbles:!0,composed:!0}))}}customElements.define("sensor-panel",be);const ge=!!window.__BUBBLE_DEBUG__;class me extends se{static properties={hass:{type:Object},config:{type:Object},_expanded:{type:Boolean},_expandedItems:{type:Array}};constructor(){super(),customElements.get("ha-entity-picker")||customElements.whenDefined("ha-entity-picker").then(()=>this.requestUpdate()),this.hass={},this.config={},this._expanded=!1,this._expandedItems=Array(7).fill(!1)}setConfig(e){this.config=e}getConfig(){return this.config}static styles=o`
+    `}_toggleAuto(e){const t={...this.config.auto_discovery_sections||{}};t.sensors=e,this.config={...this.config,auto_discovery_sections:t},this._fire("auto_discovery_sections.sensors",e)}_onFilterChanged(e){this.filterType=e,this._fire("sensor_filters",[e])}_onEntityChanged(e){this.selectedEntity=e,this._fire("entities.sensors.entity",e)}_stateFor(e){return this.hass.states[e]?.state??""}_unitFor(e){return this.hass.states[e]?.attributes?.unit_of_measurement||ue[this.filterType]?.units[0]||""}_iconFor(e){return this.hass.states[e]?.attributes?.icon||ue[this.filterType]?.icon||"mdi:thermometer"}_reset(){this.filterType="",this.selectedEntity="",this._fire("sensor_filters",[]),this._fire("entities.sensors.entity","")}_fire(e,t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:e,val:t},bubbles:!0,composed:!0}))}}customElements.define("sensor-panel",be);const ge=!!window.__BUBBLE_DEBUG__;class me extends se{static properties={hass:{type:Object},config:{type:Object},_expanded:{type:Boolean},_expandedItems:{type:Array}};constructor(){super(),customElements.get("ha-entity-picker")||customElements.whenDefined("ha-entity-picker").then(()=>this.requestUpdate()),this.hass={},this.config={},this._expanded=!1,this._expandedItems=Array(7).fill(!1)}setConfig(e){this.config=e}getConfig(){return this.config}static styles=o`
     :host { display: block; }
     .glass-panel {
       margin: 0!important;
