@@ -1389,40 +1389,53 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       max-width: 100%;
       min-width: 0;
       box-sizing: border-box;
-      border: 2px dashed yellow;
+      border: 2px dashed yellow; /* per debug */
     }
+  
     .main-area {
       position: relative;
-      padding: 30px 0 18px 34px;
+      padding: 2vw 0 2vw 2vw;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      min-height: 300px;
+      min-height: 200px;
       z-index: 1;
     }
+  
     .icon-mushroom-area {
       position: relative;
-      width: 240px;
+      width: 100%;
+      max-width: 100%;
       height: auto;
-      margin-top: 12px;
-      margin-left: -10px;
-      margin-bottom: 12px;
+      margin: 1vw 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
+  
     .sidebar {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
       justify-content: flex-start;
-      padding: 28px 8px 8px 0;
-      min-width: 120px;
-      position: relative;
+      padding: 2vw 1vw;
+      min-width: 0;
+      width: 100%;
+      box-sizing: border-box;
       z-index: 3;
     }
+  
     @media (max-width: 600px) {
       .bubble-room-grid {
-        min-width: 100vw;
-        grid-template-columns: 1fr 90px;
-        border-radius: 19px;
+        grid-template-columns: 1fr;
+        border-radius: 12px;
+      }
+  
+      .sidebar {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
       }
     }
   `;render(){const e=this.config.icon||"mdi:sofa",t=this.config.colors?.room?.icon_active??this.config.icon_active??"#21df73",i=this.config.colors?.room?.icon_inactive??this.config.icon_inactive??"#173c16",s=this.config.name||"Room",o=this.config.area||"",n=this._getSensors(),a=this._getMushroomEntities(),r=this._getSubButtons();return N`
