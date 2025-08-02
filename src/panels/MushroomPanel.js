@@ -1,16 +1,20 @@
 // src/panels/MushroomPanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover }      from '../helpers/auto-discovery.js';
-import { candidatesFor }          from '../helpers/entity-filters.js';
+import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
+import {
+  candidatesFor,
+  COMMON_CATS,
+  FILTER_LABELS,
+} from '../helpers/entity-filters.js';
 
 export class MushroomPanel extends LitElement {
   static properties = {
-    hass:         { type: Object },
-    config:       { type: Object },
-    expanded:     { type: Boolean },
-    _expanded:    { type: Array, state: true }, // quale pill è aperta
-    _filters:     { type: Array, state: true }, // array di 5: device_class selezionate
-    _entities:    { type: Array, state: true }, // array di 5: entity_id selezionate
+    hass:      { type: Object },
+    config:    { type: Object },
+    expanded:  { type: Boolean },
+    _expanded: { type: Array,  state: true }, // quale pill è aperta
+    _filters:  { type: Array,  state: true }, // array di 5: categorie selezionate
+    _entities: { type: Array,  state: true }, // array di 5: entity_id selezionate
   };
 
   constructor() {
@@ -19,30 +23,21 @@ export class MushroomPanel extends LitElement {
     this.config    = {};
     this.expanded  = false;
     this._expanded = Array(5).fill(false);
-
-    // Trova tutte le device_class di binary_sensor presenti
-    const classes = Object.values(this.hass.states || {})
-      .filter(s => s.entity_id.startsWith('binary_sensor.'))
-      .map(s => s.attributes.device_class)
-      .filter(dc => dc)
-      .filter((v,i,a) => a.indexOf(v)===i);
-
-    // inizializza con TUTTE le classi selezionate
-    this._filters  = Array(5).fill().map(() => [...classes]);
+    // inizializza con TUTTE le categorie comuni
+    this._filters  = Array(5).fill().map(() => [...COMMON_CATS]);
     this._entities = Array(5).fill('');
   }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // 1️⃣ Auto-discover
+      // 1️⃣ auto-discover
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.mushroom');
-
-      // 2️⃣ Sync da config
+      // 2️⃣ sync da config
       const cfgFilters = this.config.mushroom_filters;
-      const ents       = this.config.entities || {};
       if (Array.isArray(cfgFilters) && cfgFilters.length === 5) {
-        this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : []);
+        this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...COMMON_CATS]);
       }
+      const ents = this.config.entities || {};
       for (let i = 0; i < 5; i++) {
         const key = `mushroom${i+1}`;
         const e   = ents[key]?.entity;
@@ -53,7 +48,6 @@ export class MushroomPanel extends LitElement {
 
   static styles = css`
     :host { display: block; }
-
     .glass-panel {
       margin: 0 !important;
       width: 100%;
@@ -69,8 +63,8 @@ export class MushroomPanel extends LitElement {
       position: absolute; inset: 0;
       border-radius: inherit;
       background: var(--glass-sheen,
-        linear-gradient(120deg,rgba(255,255,255,0.18),
-        rgba(255,255,255,0.10) 70%,transparent 100%));
+        linear-gradient(120deg, rgba(255,255,255,0.18),
+        rgba(255,255,255,0.10) 70%, transparent 100%));
       pointer-events: none;
     }
     .glass-header {
@@ -162,16 +156,10 @@ export class MushroomPanel extends LitElement {
 
   render() {
     const autoDisc = this.config.auto_discovery_sections?.mushroom ?? false;
-
-    // Prepara le options dalle device_class disponibili
-    const allClasses = Object.values(this.hass.states || {})
-      .filter(s => s.entity_id.startsWith('binary_sensor.'))
-      .map(s => s.attributes.device_class)
-      .filter(dc => dc)
-      .filter((v,i,a) => a.indexOf(v)===i);
-    const options = allClasses.map(c => ({
-      value: c,
-      label: c.charAt(0).toUpperCase() + c.slice(1),
+    // opzioni: domini comuni + device_class, etichettate da FILTER_LABELS
+    const options = COMMON_CATS.map(cat => ({
+      value: cat,
+      label: FILTER_LABELS[cat] || cat.charAt(0).toUpperCase() + cat.slice(1),
     }));
 
     return html`
@@ -185,7 +173,7 @@ export class MushroomPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🍄 Mushroom Entities</div>
 
-        <!-- Auto-discover -->
+        <!-- 1️⃣ Auto-discover -->
         <div class="input-group autodiscover">
           <input
             type="checkbox"
@@ -195,10 +183,10 @@ export class MushroomPanel extends LitElement {
           <label>🪄 Auto-discover Mushroom</label>
         </div>
 
-        <!-- Cinque mini-pill -->
+        <!-- 2️⃣ Cinque mini-pill -->
         ${this._expanded.map((open, i) => this._renderMushroom(i, open, options))}
 
-        <!-- Reset -->
+        <!-- 3️⃣ Reset -->
         <button class="reset-button" @click=${() => this._reset()}>
           🧹 Reset Mushrooms
         </button>
@@ -271,20 +259,14 @@ export class MushroomPanel extends LitElement {
   _onEntity(i, ent) {
     this._entities[i] = ent;
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: `entities.${`mushroom${i+1}`}.entity`, val: ent },
+      detail: { prop: `entities.mushroom${i+1}.entity`, val: ent },
       bubbles: true, composed: true,
     }));
   }
 
   _reset() {
     this._expanded = Array(5).fill(false);
-    // reset filters
-    const allClasses = Object.values(this.hass.states || {})
-      .filter(s => s.entity_id.startsWith('binary_sensor.'))
-      .map(s => s.attributes.device_class)
-      .filter(dc => dc)
-      .filter((v,i,a) => a.indexOf(v)===i);
-    this._filters  = Array(5).fill().map(() => [...allClasses]);
+    this._filters  = Array(5).fill().map(() => [...COMMON_CATS]);
     this._entities = Array(5).fill('');
 
     this.dispatchEvent(new CustomEvent('panel-changed', {
