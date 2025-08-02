@@ -5,8 +5,8 @@ import { candidatesFor }       from '../helpers/entity-filters.js';
 import { SENSOR_TYPE_MAP }     from '../helpers/sensor-mapping.js';
 
 const SENSOR_CATS = [
-  'temperature', 'humidity', 'illuminance', 'pressure',
-  'pm25', 'pm10', 'uv', 'noise', 'co2'
+  'temperature','humidity','illuminance','pressure',
+  'pm25','pm10','uv','noise','co2'
 ];
 
 export class SensorPanel extends LitElement {
@@ -123,17 +123,25 @@ export class SensorPanel extends LitElement {
   }
 
   updated(changed) {
-    if (changed.has('config') || changed.has('hass')) {
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
+    if (!changed.has('config') && !changed.has('hass')) return;
 
-      const cf = Array.isArray(this.config.sensor_filters)
-        ? this.config.sensor_filters : [];
-      this._filterTypes = cf.concat(Array(6)).slice(0,6);
+    maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
 
-      const ents = this.config.entities?.sensor || {};
-      this._selectedEnts = Array(6).fill(0).map((_, i) =>
-        ents[`sensor${i+1}`]?.entity || ''
+    const entConf = this.config.entities?.sensor || null;
+    const fallback = Array.isArray(this.config.sensors)
+      ? this.config.sensors
+      : [];
+
+    if (entConf) {
+      this._filterTypes = Array(6).fill('').map((_,i)=>
+        entConf[`sensor${i+1}`]?.type || ''
       );
+      this._selectedEnts = Array(6).fill('').map((_,i)=>
+        entConf[`sensor${i+1}`]?.entity || ''
+      );
+    } else {
+      this._filterTypes = fallback.concat(Array(6)).slice(0,6).map(s=>s?.type||'');
+      this._selectedEnts = fallback.concat(Array(6)).slice(0,6).map(s=>s?.entity_id||'');
     }
   }
 
@@ -144,29 +152,25 @@ export class SensorPanel extends LitElement {
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
-        @expanded-changed=${e => {
+        @expanded-changed=${e=>{
           this.expanded = e.detail.expanded;
           this._expandedIdx = -1;
-          this._fire('panel-changed', { prop: 'expanded', val: this.expanded });
+          this._fire('panel-changed', {prop:'expanded', val:this.expanded});
         }}
       >
         <div slot="header" class="glass-header">🧭 Sensors</div>
 
-        <!-- Auto-discover -->
-        <div class="autodiscover-box" @click=${() => this._toggleAuto(!autoDisc)}>
-          <input
-            type="checkbox"
+        <div class="autodiscover-box" @click=${()=>this._toggleAuto(!autoDisc)}>
+          <input type="checkbox"
             .checked=${autoDisc}
-            @change=${e => this._toggleAuto(e.target.checked)}
-            @click=${e => e.stopPropagation()}
-          />🪄 Auto-discover Sensor
+            @change=${e=>this._toggleAuto(e.target.checked)}
+            @click=${e=>e.stopPropagation()} />
+          🪄 Auto-discover Sensor
         </div>
 
-        <!-- Six mini-pills -->
-        ${[...Array(6)].map((_, i) => this._renderMini(i))}
+        ${[...Array(6)].map((_,i)=> this._renderMini(i))}
 
-        <!-- Reset -->
-        <button class="reset-button" @click=${() => this._resetAll()}>
+        <button class="reset-button" @click=${()=>this._resetAll()}>
           🧹 Reset Sensors
         </button>
       </ha-expansion-panel>
@@ -174,7 +178,7 @@ export class SensorPanel extends LitElement {
   }
 
   _renderMini(i) {
-    const type     = this._filterTypes[i] || '';
+    const type     = this._filterTypes[i]  || '';
     const entityId = this._selectedEnts[i] || '';
     const stateObj = this.hass.states[entityId];
     const val      = stateObj?.state ?? '-';
@@ -182,76 +186,85 @@ export class SensorPanel extends LitElement {
                    || SENSOR_TYPE_MAP[type]?.units[0] || '';
     const icon     = stateObj?.attributes.icon
                    || SENSOR_TYPE_MAP[type]?.icon || 'mdi:thermometer';
-    const opts     = SENSOR_CATS.map(cat => ({
-      value: cat,
-      label: SENSOR_TYPE_MAP[cat]?.label || cat
+    const opts     = SENSOR_CATS.map(cat=>({
+      value:cat, label:SENSOR_TYPE_MAP[cat]?.label||cat
     }));
-    const cands    = candidatesFor(this.hass, this.config, 'sensor', type ? [type] : []);
+    const cands    = candidatesFor(this.hass, this.config, 'sensor', type?[type]:[]);
 
     return html`
-      <div class="mini-pill ${this._expandedIdx === i ? 'expanded' : ''}">
-        <div class="mini-pill-header" @click=${() => this._toggleMini(i)}>
-          Sensor ${i + 1}<span class="chevron">▶</span>
+      <div class="mini-pill ${this._expandedIdx===i?'expanded':''}">
+        <div class="mini-pill-header" @click=${()=>this._toggleMini(i)}>
+          Sensor ${i+1}<span class="chevron">▶</span>
         </div>
-        ${this._expandedIdx === i ? html`
+        ${this._expandedIdx===i? html`
           <div class="mini-pill-content">
             <div class="input-group">
               <label>Filter category:</label>
               <ha-selector
                 .hass=${this.hass}
                 .value=${[type]}
-                .selector=${{ select: { multiple: false, mode: 'box', options: opts } }}
-                @value-changed=${e => this._onFilterChanged(i, e.detail.value[0] || '')}
+                .selector=${{select:{multiple:false,mode:'box',options:opts}}}
+                @value-changed=${e=>this._onFilterChanged(i,e.detail.value[0]||'')}
               ></ha-selector>
             </div>
-
             <div class="input-group">
               <label>Entity:</label>
               <ha-selector
                 .hass=${this.hass}
                 .value=${entityId}
-                .selector=${{ entity: { include_entities: cands, multiple: false } }}
+                .selector=${{entity:{include_entities:cands,multiple:false}}}
                 allow-custom-entity
-                @value-changed=${e => this._onEntityChanged(i, e.detail.value)}
+                @value-changed=${e=>this._onEntityChanged(i,e.detail.value)}
               ></ha-selector>
             </div>
-
             <div class="preview">
               <ha-icon .icon=${icon}></ha-icon>
-              <div class="state">${val}${unit ? ` ${unit}` : ''}</div>
+              <div class="state">${val}${unit?` ${unit}`:''}</div>
             </div>
-          </div>
-        ` : ''}
-      </div>
-    `;
+          </div>` : ''}
+      </div>`;
   }
 
   _toggleAuto(on) {
-    const ad = { ...(this.config.auto_discovery_sections || {}) };
+    const ad = {...(this.config.auto_discovery_sections||{})};
     ad.sensor = on;
-    this.config = { ...this.config, auto_discovery_sections: ad };
+    this.config = {...this.config, auto_discovery_sections:ad};
     this._fire('config-changed', this.config);
   }
 
   _toggleMini(i) {
-    this._expandedIdx = this._expandedIdx === i ? -1 : i;
+    this._expandedIdx = this._expandedIdx===i ? -1 : i;
     this.requestUpdate();
   }
 
   _onFilterChanged(i, cat) {
     this._filterTypes[i] = cat;
-    this.config = { ...this.config, sensor_filters: [...this._filterTypes] };
+    this.config = {
+      ...this.config,
+      sensor_filters: [...this._filterTypes],
+      ...(this.config.sensors
+        ? { sensors: this.config.sensors.map((s,j)=> j===i ? {...s, type:cat} : s) }
+        : {}
+      )
+    };
     this._fire('config-changed', this.config);
   }
 
   _onEntityChanged(i, ent) {
     this._selectedEnts[i] = ent;
-    const base = { ...(this.config.entities?.sensor || {}) };
-    base[`sensor${i + 1}`] = { ...(base[`sensor${i + 1}`] || {}), entity: ent };
-    this.config = {
+    const baseEnt = {...(this.config.entities?.sensor||{})};
+    baseEnt[`sensor${i+1}`] = {...(baseEnt[`sensor${i+1}`]||{}), entity:ent};
+    let newConf = {
       ...this.config,
-      entities: { ...this.config.entities, sensor: base }
+      entities: {...this.config.entities, sensor: baseEnt}
     };
+    if (this.config.sensors) {
+      newConf = {
+        ...newConf,
+        sensors: this.config.sensors.map((s,j)=> j===i ? {...s, entity_id:ent} : s)
+      };
+    }
+    this.config = newConf;
     this._fire('config-changed', this.config);
   }
 
@@ -259,14 +272,15 @@ export class SensorPanel extends LitElement {
     this.config = {
       ...this.config,
       sensor_filters: [],
-      entities: { ...this.config.entities, sensor: {} }
+      entities: {...this.config.entities, sensor:{}},
+      ...(this.config.sensors ? { sensors: [] } : {})
     };
     this._fire('config-changed', this.config);
   }
 
   _fire(evt, detail) {
-    this.dispatchEvent(new CustomEvent(evt, {
-      detail, bubbles: true, composed: true
+    this.dispatchEvent(new CustomEvent(evt,{
+      detail, bubbles:true, composed:true
     }));
   }
 }
