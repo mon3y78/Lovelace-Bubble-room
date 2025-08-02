@@ -2,7 +2,6 @@
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor } from '../helpers/entity-filters.js';
-// Import corretto della mappa come oggetto { [type]: { label, emoji, icon, units } }
 import { SENSOR_TYPE_MAP } from '../helpers/sensor-mapping.js';
 
 export class SensorPanel extends LitElement {
@@ -16,19 +15,26 @@ export class SensorPanel extends LitElement {
   
   static styles = css`
     :host { display: block; }
-
     .glass-panel {
       margin: 8px;
       border-radius: 24px;
       background: var(--glass-bg, rgba(200,200,200,0.1));
       box-shadow: var(--glass-shadow, 0 2px 8px rgba(0,0,0,0.1));
     }
+    .glass-panel::after {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      background: var(--glass-sheen, rgba(255,255,255,0.03));
+      pointer-events: none;
+    }
     .glass-header {
       padding: 12px;
       font-weight: bold;
       color: var(--primary-text-color);
     }
-    .autodiscover-box, .reset-button {
+    .autodiscover-box,
+    .reset-button {
       border: 2.5px solid #FFD600 !important;
       box-shadow: 0 2px 24px 0 #FFD60033 !important;
       background: rgba(255,214,0,0.08) !important;
@@ -37,17 +43,23 @@ export class SensorPanel extends LitElement {
       display: flex; align-items: center; justify-content: center;
       margin: 0 16px 12px; padding: 14px 0;
       cursor: pointer; color: #fff; font-weight: 700; gap: 8px;
+      position: relative;
     }
     .autodiscover-box input {
       margin-right: 8px;
     }
-    .input-group { padding: 0 16px 12px; }
+    .input-group {
+      padding: 0 16px 12px;
+    }
     .input-group label {
-      display: block; font-weight: 600; margin-bottom: 4px;
+      display: block;
+      font-weight: 600;
+      margin-bottom: 4px;
       color: var(--secondary-text-color);
     }
     ha-selector {
-      width: 100%; box-sizing: border-box;
+      width: 100%;
+      box-sizing: border-box;
     }
     .mini-pill {
       background: rgba(44,70,100,0.23);
@@ -89,32 +101,34 @@ export class SensorPanel extends LitElement {
     this.expanded = false;
     this.filterType = '';
     this.selectedEntity = '';
-    this._expandedPill = false;
+    this._expandedPills = false;
   }
   
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // Attiva autodiscovery per "sensors"
+      // 1) Autodiscover per sezione "sensors"
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensors');
-      // Inizializza filterType da config.sensor_filters (array)
+      // 2) Sincronizza filterType da config.sensor_filters (primo elemento)
       const cfgFilters = this.config.sensor_filters;
       if (Array.isArray(cfgFilters) && cfgFilters[0] !== this.filterType) {
         this.filterType = cfgFilters[0] || '';
       }
-      // Inizializza selectedEntity
-      const e = this.config.entities?.sensor?.entity;
+      // 3) Sincronizza selectedEntity da config.entities.sensors.entity
+      const e = this.config.entities?.sensors?.entity;
       if (e && e !== this.selectedEntity) this.selectedEntity = e;
     }
   }
   
   render() {
     const autoDisc = this.config.auto_discovery_sections?.sensors ?? false;
-    // 1) Opzioni chip da SENSOR_TYPE_MAP keys
+    
+    // Opzioni chip dai tipi definiti in SENSOR_TYPE_MAP
     const options = Object.entries(SENSOR_TYPE_MAP).map(([type, info]) => ({
       value: type,
       label: info.label,
     }));
-    // 2) Candidate entities: dominio "sensor", filtro type, area se autoDisc
+    
+    // Entità candidate: dominio "sensor", filtro device_class e area
     const cats = this.filterType ? [this.filterType] : [];
     const candidates = candidatesFor(this.hass, this.config, 'sensors', cats);
     
@@ -126,8 +140,9 @@ export class SensorPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🔢 Sensor</div>
 
-        <!-- Auto-discovery -->
-        <div class="autodiscover-box" @click=${() => this._toggleAuto(!autoDisc)}>
+        <!-- Autodiscover -->
+        <div class="autodiscover-box"
+             @click=${() => this._toggleAuto(!autoDisc)}>
           <input
             type="checkbox"
             .checked=${autoDisc}
@@ -136,15 +151,13 @@ export class SensorPanel extends LitElement {
           />🪄 Auto-discover Sensors
         </div>
 
-        <!-- Filter Type as chips -->
+        <!-- Filter device_class -->
         <div class="input-group">
           <label>Filter category:</label>
           <ha-selector
             .hass=${this.hass}
             .value=${this.filterType ? [this.filterType] : []}
-            .selector=${{
-              select: { multiple: false, mode: 'box', options }
-            }}
+            .selector=${{ select: { multiple: false, mode: 'box', options } }}
             @value-changed=${e => this._onFilterChanged(e.detail.value[0] || '')}
           ></ha-selector>
         </div>
@@ -155,9 +168,7 @@ export class SensorPanel extends LitElement {
           <ha-selector
             .hass=${this.hass}
             .value=${this.selectedEntity}
-            .selector=${{
-              entity: { include_entities: candidates, multiple: false }
-            }}
+            .selector=${{ entity: { include_entities: candidates, multiple: false } }}
             allow-custom-entity
             @value-changed=${e => this._onEntityChanged(e.detail.value)}
           ></ha-selector>
@@ -196,23 +207,21 @@ export class SensorPanel extends LitElement {
   
   _onEntityChanged(entity) {
     this.selectedEntity = entity;
-    this._fire('entities.sensor.entity', entity);
+    this._fire('entities.sensors.entity', entity);
   }
   
-  _stateFor(entityId) {
-    return this.hass.states[entityId]?.state ?? '';
+  _stateFor(id) {
+    return this.hass.states[id]?.state ?? '';
   }
   
-  _unitFor(entityId) {
-    return (
-      this.hass.states[entityId]?.attributes?.unit_of_measurement ||
+  _unitFor(id) {
+    return this.hass.states[id]?.attributes?.unit_of_measurement ||
       SENSOR_TYPE_MAP[this.filterType]?.units[0] ||
-      ''
-    );
+      '';
   }
   
-  _iconFor(entityId) {
-    return this.hass.states[entityId]?.attributes?.icon ||
+  _iconFor(id) {
+    return this.hass.states[id]?.attributes?.icon ||
       SENSOR_TYPE_MAP[this.filterType]?.icon ||
       'mdi:thermometer';
   }
@@ -221,7 +230,7 @@ export class SensorPanel extends LitElement {
     this.filterType = '';
     this.selectedEntity = '';
     this._fire('sensor_filters', []);
-    this._fire('entities.sensor.entity', '');
+    this._fire('entities.sensors.entity', '');
   }
   
   _fire(prop, val) {
