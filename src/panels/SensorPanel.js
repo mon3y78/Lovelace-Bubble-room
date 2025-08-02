@@ -1,75 +1,54 @@
 // src/panels/SensorPanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
-import { candidatesFor } from '../helpers/entity-filters.js';
-import { SENSOR_TYPE_MAP } from '../helpers/sensor-mapping.js';
+import { maybeAutoDiscover }   from '../helpers/auto-discovery.js';
+import { candidatesFor }       from '../helpers/entity-filters.js';
+import { SENSOR_TYPE_MAP }     from '../helpers/sensor-mapping.js';
 
 export class SensorPanel extends LitElement {
   static properties = {
-    hass: { type: Object },
-    config: { type: Object },
-    expanded: { type: Boolean },
-    filterType: { type: String, state: true },
-    selectedEntity: { type: String, state: true },
+    hass:           { type: Object },
+    config:         { type: Object },
+    expanded:       { type: Boolean },
   };
-  
+
   static styles = css`
     :host { display: block; }
-
     .glass-panel {
       position: relative;
       margin: 8px;
       border-radius: 24px;
-      background: var(--glass-bg, rgba(200,200,200,0.1));
-      box-shadow: var(--glass-shadow, 0 2px 8px rgba(0,0,0,0.1));
+      background: var(--glass-bg, rgba(167,255,175,0.22));
+      box-shadow: var(--glass-shadow, 0 2px 24px rgba(167,255,175,0.13));
     }
     .glass-panel::after {
       content: '';
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       border-radius: inherit;
-      background: var(--glass-sheen, rgba(255,255,255,0.03));
+      background: var(--glass-sheen, linear-gradient(
+        120deg,
+        rgba(255,255,255,0.11),
+        rgba(255,255,255,0.07) 70%,
+        transparent 100%
+      ));
       pointer-events: none;
     }
     .glass-header {
-      padding: 12px;
-      font-weight: bold;
-      color: var(--primary-text-color);
-    }
-    .autodiscover-box,
-    .reset-button {
-      border: 2.5px solid #FFD600 !important;
-      box-shadow: 0 2px 24px 0 #FFD60033 !important;
-      background: rgba(255,214,0,0.08) !important;
-      border-radius: 24px !important;
-      backdrop-filter: blur(7px) saturate(1.2) !important;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 16px 12px;
-      padding: 14px 0;
-      cursor: pointer;
-      color: #fff;
+      padding: 22px 0;
+      text-align: center;
+      font-size: 1.11rem;
       font-weight: 700;
-      gap: 8px;
-      position: relative;
+      color: #fff;
     }
-    .autodiscover-box input {
-      margin-right: 8px;
+    .autodiscover-box {
+      border: 2.5px solid #FFD600;
+      box-shadow: 0 2px 24px #FFD60033;
+      background: rgba(255,214,0,0.08);
+      border-radius: 24px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 16px 12px; padding: 14px 0;
+      cursor: pointer; color: #fff; font-weight: 700; gap: 8px;
     }
-    .input-group {
-      padding: 0 16px 12px;
-    }
-    .input-group label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: var(--secondary-text-color);
-    }
-    ha-selector {
-      width: 100%;
-      box-sizing: border-box;
-    }
+    .autodiscover-box input { margin-right: 8px; }
     .mini-pill {
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.13);
@@ -80,16 +59,11 @@ export class SensorPanel extends LitElement {
       overflow: hidden;
     }
     .mini-pill-header {
-      display: flex;
-      align-items: center;
-      padding: 12px 16px;
-      cursor: pointer;
-      user-select: none;
-      font-weight: 700;
+      display: flex; align-items: center; padding: 12px 16px;
+      cursor: pointer; user-select: none; font-weight: 700; color: #8cff8a;
     }
     .mini-pill-header .chevron {
-      margin-left: auto;
-      transition: transform 0.2s;
+      margin-left: auto; transition: transform 0.2s;
     }
     .mini-pill.expanded .mini-pill-header .chevron {
       transform: rotate(90deg);
@@ -102,164 +76,205 @@ export class SensorPanel extends LitElement {
       from { opacity: 0; transform: translateY(-8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .preview {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 0 16px 16px;
+    .input-group {
+      margin-bottom: 12px;
     }
-    .preview ha-icon {
-      --mdc-icon-size: 32px;
+    .input-group label {
+      display: block; margin-bottom: 4px;
+      font-weight: 600; color: #8cff8a;
     }
-    .preview .state {
-      font-size: 1.2rem;
+    select, ha-selector {
+      width: 100%; box-sizing: border-box; padding: 6px 8px;
+    }
+    .reset-button {
+      border: 3.5px solid #ff4c6a;
+      color: #ff4c6a;
+      background: transparent;
+      box-shadow: 0 2px 24px #ff4c6a44;
+      border-radius: 24px;
+      padding: 12px 38px;
+      margin: 20px auto;
+      display: block;
+      font-size: 1.15rem; font-weight: 700;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, border 0.18s, box-shadow 0.18s;
+    }
+    .reset-button:hover {
+      background: rgba(255,76,106,0.18);
+      color: #fff;
+      border-color: #ff1744;
+      box-shadow: 0 6px 32px #ff4c6abf;
     }
   `;
-  
+
   constructor() {
     super();
-    this.hass = {};
-    this.config = {};
-    this.expanded = false;
-    this.filterType = '';
-    this.selectedEntity = '';
+    this.hass            = {};
+    this.config          = {};
+    this.expanded        = false;
+    // track which of the 6 mini‐pills is open (only one at a time)
+    this._expandedIndex  = -1;
   }
-  
+
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // Abilita il filtro per area quando cambia config o hass
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
-      // Sincronizza filterType da config.sensor_filters[0]
-      const filters = this.config.sensor_filters;
-      if (Array.isArray(filters) && filters[0] !== this.filterType) {
-        this.filterType = filters[0] || '';
+      // keep autodiscovery in sync
+      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensors');
+      // ensure sensor_filters is at least an array
+      if (!Array.isArray(this.config.sensor_filters)) {
+        this.config.sensor_filters = [];
       }
-      // Sincronizza selectedEntity da config.entities.sensor.entity
-      const ent = this.config.entities?.sensor?.entity;
-      if (ent && ent !== this.selectedEntity) {
-        this.selectedEntity = ent;
-      }
+      // ensure entities.sensorN exist
+      if (!this.config.entities) this.config.entities = {};
     }
   }
-  
+
   render() {
-    const autoDisc = this.config.auto_discovery_sections?.sensor ?? false;
-    // Costruisci le opzioni chip da SENSOR_TYPE_MAP
-    const options = Object.entries(SENSOR_TYPE_MAP).map(([type, info]) => ({
-      value: type,
-      label: info.label,
-    }));
-    // Filtra le entità sensore per device_class e area
-    const cats = this.filterType ? [this.filterType] : [];
-    const candidates = candidatesFor(this.hass, this.config, 'sensor', cats);
-    
+    const autoDisc = this.config.auto_discovery_sections?.sensors ?? false;
     return html`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
-        @expanded-changed=${e => this.expanded = e.detail.expanded}
+        @expanded-changed=${e => {
+          this.expanded = e.detail.expanded;
+          if (this.expanded) this._expandedIndex = -1;
+          this._fire('panel-changed', { prop: 'expanded', val: this.expanded });
+        }}
       >
-        <div slot="header" class="glass-header">🔢 Sensor</div>
+        <div slot="header" class="glass-header">🧭 Sensors</div>
 
-        <!-- Auto-discovery -->
-        <div class="autodiscover-box" @click=${() => this._toggleAuto(!autoDisc)}>
+        <!-- 1️⃣ Auto-discover -->
+        <div class="autodiscover-box"
+             @click=${() => this._toggleAuto(!autoDisc)}>
           <input
             type="checkbox"
             .checked=${autoDisc}
             @change=${e => this._toggleAuto(e.target.checked)}
             @click=${e => e.stopPropagation()}
-          />🪄 Auto-discover Sensor
+          />
+          🪄 Auto-discover Sensors
         </div>
 
-        <!-- Filter device_class -->
-        <div class="input-group">
-          <label>Filter category:</label>
-          <ha-selector
-            .hass=${this.hass}
-            .value=${this.filterType ? [this.filterType] : []}
-            .selector=${{ select: { multiple: false, mode: 'box', options } }}
-            @value-changed=${e => this._onFilterChanged(e.detail.value[0] || '')}
-          ></ha-selector>
-        </div>
+        <!-- 2️⃣ Six sub‐panels -->
+        ${[...Array(6)].map((_, i) => this._renderSensorMiniPill(i))}
 
-        <!-- Entity selector -->
-        <div class="input-group">
-          <label>Entity:</label>
-          <ha-selector
-            .hass=${this.hass}
-            .value=${this.selectedEntity}
-            .selector=${{ entity: { include_entities: candidates, multiple: false } }}
-            allow-custom-entity
-            @value-changed=${e => this._onEntityChanged(e.detail.value)}
-          ></ha-selector>
-        </div>
-
-        <!-- Preview -->
-        ${this.selectedEntity ? html`
-          <div class="preview">
-            <ha-icon .icon=${this._iconFor(this.selectedEntity)}></ha-icon>
-            <div class="state">
-              ${this._stateFor(this.selectedEntity)}
-              ${this._unitFor(this.selectedEntity)}
-            </div>
-          </div>
-        ` : ''}
-
-        <!-- Reset -->
-        <div class="reset-button" @click=${() => this._reset()}>
-          🧹 Reset Sensor
-        </div>
+        <!-- 3️⃣ Reset -->
+        <button class="reset-button"
+                @click=${() => this._resetAllSensors()}>
+          🧹 Reset Sensors
+        </button>
       </ha-expansion-panel>
     `;
   }
-  
+
+  _renderSensorMiniPill(idx) {
+    const key     = `sensor${idx + 1}`;
+    const cfg     = this.config.entities[key] || {};
+    const type    = cfg.type || '';
+    const entity  = cfg.entity || '';
+    const unit    = cfg.unit  || (SENSOR_TYPE_MAP[type]?.units[0] || '');
+    const options = Object.entries(SENSOR_TYPE_MAP)
+                          .map(([t, info]) => html`<option value=${t}>${info.emoji} ${info.label}</option>`);
+    const candidates = candidatesFor(this.hass, this.config, 'sensors', type ? [type] : []);
+
+    return html`
+      <div class="mini-pill ${this._expandedIndex === idx ? 'expanded' : ''}">
+        <div class="mini-pill-header" @click=${() => this._toggleMini(idx)}>
+          Sensor ${idx + 1}
+          <span class="chevron">▶</span>
+        </div>
+        ${this._expandedIndex === idx ? html`
+          <div class="mini-pill-content">
+            <!-- Type -->
+            <div class="input-group">
+              <label>Type</label>
+              <select
+                .value=${type}
+                @change=${e => this._updateSensor(idx, 'type', e.target.value)}
+              >
+                <option value=''>— none —</option>
+                ${options}
+              </select>
+            </div>
+
+            <!-- Entity -->
+            <div class="input-group">
+              <label>Entity</label>
+              <ha-selector
+                .hass=${this.hass}
+                .value=${entity}
+                .selector=${{ entity: { include_entities: candidates, multiple: false } }}
+                allow-custom-entity
+                @value-changed=${e => this._updateSensor(idx, 'entity', e.detail.value)}
+              ></ha-selector>
+            </div>
+
+            <!-- Unit -->
+            <div class="input-group">
+              <label>Unit</label>
+              <select
+                .value=${unit}
+                @change=${e => this._updateSensor(idx, 'unit', e.target.value)}
+              >
+                ${(SENSOR_TYPE_MAP[type]?.units || []).map(u => html`<option value=${u}>${u}</option>`)}
+              </select>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
   _toggleAuto(enabled) {
-    const auto = { ...(this.config.auto_discovery_sections || {}) };
-    auto.sensor = enabled;
-    this.config = { ...this.config, auto_discovery_sections: auto };
-    this._fire('auto_discovery_sections.sensor', enabled);
+    this.config = {
+      ...this.config,
+      auto_discovery_sections: {
+        ...this.config.auto_discovery_sections,
+        sensors: enabled,
+      },
+    };
+    this._fire('config-changed', this.config);
   }
-  
-  _onFilterChanged(type) {
-    this.filterType = type;
-    this._fire('sensor_filters', [type]);
+
+  _toggleMini(idx) {
+    this._expandedIndex = this._expandedIndex === idx ? -1 : idx;
+    this.requestUpdate();
   }
-  
-  _onEntityChanged(entity) {
-    this.selectedEntity = entity;
-    this._fire('entities.sensor.entity', entity);
+
+  _updateSensor(idx, field, value) {
+    const key = `sensor${idx + 1}`;
+    const ent = { ...(this.config.entities[key] || {}) };
+    ent[field] = value;
+    // auto‐populate unit on type change
+    if (field === 'type') {
+      ent.unit = SENSOR_TYPE_MAP[value]?.units[0] || '';
+    }
+    this.config = {
+      ...this.config,
+      entities: {
+        ...this.config.entities,
+        [key]: ent,
+      },
+    };
+    this._fire('config-changed', this.config);
   }
-  
+
+  _resetAllSensors() {
+    const ents = { ...this.config.entities };
+    for (let i = 1; i <= 6; i++) {
+      delete ents[`sensor${i}`];
+    }
+    this.config = { ...this.config, entities: ents };
+    this._fire('config-changed', this.config);
+  }
+
   _stateFor(id) {
     return this.hass.states[id]?.state ?? '';
   }
-  
-  _unitFor(id) {
-    return (
-      this.hass.states[id]?.attributes?.unit_of_measurement ||
-      SENSOR_TYPE_MAP[this.filterType]?.units[0] ||
-      ''
-    );
-  }
-  
-  _iconFor(id) {
-    return (
-      this.hass.states[id]?.attributes?.icon ||
-      SENSOR_TYPE_MAP[this.filterType]?.icon ||
-      'mdi:thermometer'
-    );
-  }
-  
-  _reset() {
-    this.filterType = '';
-    this.selectedEntity = '';
-    this._fire('sensor_filters', []);
-    this._fire('entities.sensor.entity', '');
-  }
-  
-  _fire(prop, val) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val },
+
+  _fire(evt, detail) {
+    this.dispatchEvent(new CustomEvent(evt, {
+      detail,
       bubbles: true,
       composed: true,
     }));
