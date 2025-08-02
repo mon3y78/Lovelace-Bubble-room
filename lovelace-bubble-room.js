@@ -1403,7 +1403,7 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
     .icon-mushroom-area {
       position: relative;
       width: 240px;
-      height: 190px;
+      height: auto;
       margin-top: 12px;
       margin-left: -10px;
       margin-bottom: 12px;
