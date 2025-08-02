@@ -265,7 +265,7 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
           />
         `:""}
       </div>
-    `}_onExpandedChanged(e){this.expanded=e.detail.expanded,this.dispatchEvent(new CustomEvent("expanded-changed",{detail:{expanded:e.detail.expanded},bubbles:!0,composed:!0}))}}customElements.define("room-panel",he);const ue={temperature:{label:"Temperature",emoji:"🌡️",icon:"mdi:thermometer",units:["°C","°F"]},humidity:{label:"Humidity",emoji:"💧",icon:"mdi:water-percent",units:["%"]},co2:{label:"CO₂",emoji:"🟢",icon:"mdi:molecule-co2",units:["ppm"]},lux:{label:"Luminosity",emoji:"🔆",icon:"mdi:brightness-5",units:["lx"]},uv:{label:"UV Index",emoji:"🌞",icon:"mdi:weather-sunny-alert",units:["UV"]},pressure:{label:"Pressure",emoji:"⏲️",icon:"mdi:gauge",units:["hPa"]},noise:{label:"Noise",emoji:"🔊",icon:"mdi:volume-high",units:["dB"]},pm25:{label:"PM2.5",emoji:"🌫️",icon:"mdi:blur",units:["µg/m³"]},pm10:{label:"PM10",emoji:"🌫️",icon:"mdi:blur-linear",units:["µg/m³"]}};class be extends se{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expandedIdx:{type:Number,state:!0},_filterTypes:{type:Array,state:!0},_selectedEnts:{type:Array,state:!0}};static styles=o`
+    `}_onExpandedChanged(e){this.expanded=e.detail.expanded,this.dispatchEvent(new CustomEvent("expanded-changed",{detail:{expanded:e.detail.expanded},bubbles:!0,composed:!0}))}}customElements.define("room-panel",he);const ue={temperature:{label:"Temperature",emoji:"🌡️",icon:"mdi:thermometer",units:["°C","°F"]},humidity:{label:"Humidity",emoji:"💧",icon:"mdi:water-percent",units:["%"]},co2:{label:"CO₂",emoji:"🟢",icon:"mdi:molecule-co2",units:["ppm"]},lux:{label:"Luminosity",emoji:"🔆",icon:"mdi:brightness-5",units:["lx"]},uv:{label:"UV Index",emoji:"🌞",icon:"mdi:weather-sunny-alert",units:["UV"]},pressure:{label:"Pressure",emoji:"⏲️",icon:"mdi:gauge",units:["hPa"]},noise:{label:"Noise",emoji:"🔊",icon:"mdi:volume-high",units:["dB"]},pm25:{label:"PM2.5",emoji:"🌫️",icon:"mdi:blur",units:["µg/m³"]},pm10:{label:"PM10",emoji:"🌫️",icon:"mdi:blur-linear",units:["µg/m³"]}},be=["temperature","humidity","illuminance","pressure","pm25","pm10","uv","noise","co2"];class ge extends se{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expandedIdx:{type:Number,state:!0},_filterTypes:{type:Array,state:!0},_selectedEnts:{type:Array,state:!0}};static styles=o`
     :host { display: block; }
     .glass-panel {
       position: relative;
@@ -279,10 +279,8 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       position: absolute; inset: 0;
       border-radius: inherit;
       background: var(--glass-sheen, linear-gradient(
-        120deg,
-        rgba(255,255,255,0.11),
-        rgba(255,255,255,0.07) 70%,
-        transparent 100%
+        120deg, rgba(255,255,255,0.11),
+        rgba(255,255,255,0.07) 70%, transparent 100%
       ));
       pointer-events: none;
     }
@@ -309,8 +307,7 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       box-shadow: 0 2px 14px rgba(70,120,220,0.10);
       backdrop-filter: blur(7px) saturate(1.2);
       border-radius: 24px;
-      margin: 8px 16px;
-      overflow: hidden;
+      margin: 8px 16px; overflow: hidden;
     }
     .mini-pill-header {
       display: flex; align-items: center; padding: 12px 16px;
@@ -337,8 +334,19 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       display: block; margin-bottom: 4px;
       font-weight: 600; color: #8cff8a;
     }
-    select, ha-selector {
+    ha-selector, select {
       width: 100%; box-sizing: border-box; padding: 6px 8px;
+    }
+    .preview {
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 16px 16px;
+    }
+    .preview ha-icon {
+      --mdc-icon-size: 32px;
+      color: #fff;
+    }
+    .preview .state {
+      font-size: 1.2rem; color: #fff;
     }
     .reset-button {
       border: 3.5px solid #ff4c6a;
@@ -346,81 +354,70 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       background: transparent;
       box-shadow: 0 2px 24px #ff4c6a44;
       border-radius: 24px;
-      padding: 12px 38px;
-      margin: 20px auto;
-      display: block;
-      font-size: 1.15rem; font-weight: 700;
-      cursor: pointer;
+      padding: 12px 38px; margin: 20px auto; display: block;
+      font-size: 1.15rem; font-weight: 700; cursor: pointer;
       transition: background 0.18s, color 0.18s, border 0.18s, box-shadow 0.18s;
     }
     .reset-button:hover {
       background: rgba(255,76,106,0.18);
-      color: #fff;
-      border-color: #ff1744;
-      box-shadow: 0 6px 32px #ff4c6abf;
+      color: #fff; border-color: #ff1744; box-shadow: 0 6px 32px #ff4c6abf;
     }
-  `;constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expandedIdx=-1,this._filterTypes=Array(6).fill(""),this._selectedEnts=Array(6).fill("")}updated(e){if(e.has("config")||e.has("hass")){de(this.hass,this.config,"auto_discovery_sections.sensor");const e=this.config.sensor_filters;if(Array.isArray(e))for(let t=0;t<6;t++)this._filterTypes[t]=e[t]||"";const t=this.config.entities?.sensor||{};for(let e=0;e<6;e++)this._selectedEnts[e]=t[`sensor${e+1}`]?.entity||""}}render(){const e=this.config.auto_discovery_sections?.sensor??!1;return R`
+  `;constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expandedIdx=-1,this._filterTypes=Array(6).fill(""),this._selectedEnts=Array(6).fill("")}updated(e){if(e.has("config")||e.has("hass")){de(this.hass,this.config,"auto_discovery_sections.sensor");const e=Array.isArray(this.config.sensor_filters)?this.config.sensor_filters:[];this._filterTypes=e.concat(Array(6)).slice(0,6);const t=this.config.entities?.sensor||{};this._selectedEnts=Array(6).fill("").map((e,i)=>t[`sensor${i+1}`]?.entity||"")}}render(){const e=this.config.auto_discovery_sections?.sensor??!1;return R`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
-        @expanded-changed=${e=>{this.expanded=e.detail.expanded,this._expandedIdx=-1}}
+        @expanded-changed=${e=>{this.expanded=e.detail.expanded,this._expandedIdx=-1,this._fire("panel-changed",{prop:"expanded",val:this.expanded})}}
       >
         <div slot="header" class="glass-header">🧭 Sensors</div>
 
-        <!-- Auto-discover -->
         <div class="autodiscover-box" @click=${()=>this._toggleAuto(!e)}>
-          <input type="checkbox" .checked=${e}
+          <input type="checkbox"
+                 .checked=${e}
                  @change=${e=>this._toggleAuto(e.target.checked)}
                  @click=${e=>e.stopPropagation()} />
           🪄 Auto-discover Sensor
         </div>
 
-        <!-- 6 mini-pill -->
         ${[...Array(6)].map((e,t)=>this._renderMini(t))}
 
-        <!-- Reset -->
         <button class="reset-button" @click=${()=>this._resetAll()}>
           🧹 Reset Sensors
         </button>
       </ha-expansion-panel>
-    `}_renderMini(e){this.config.entities;const t=this._filterTypes[e]||"",i=this._selectedEnts[e]||"",s=this.hass.states[i],n=s?.state??"-",o=s?.attributes.unit_of_measurement||ue[t]?.units[0]||"",a=s?.attributes.icon||ue[t]?.icon||"mdi:thermometer",r=Object.entries(ue).map(([e,t])=>({value:e,label:t.label})),l=ae(this.hass,this.config,"sensor",t?[t]:[]);return R`
+    `}_renderMini(e){const t=this._filterTypes[e]||"",i=this._selectedEnts[e]||"",s=this.hass.states[i],n=s?.state??"-",o=s?.attributes.unit_of_measurement||ue[t]?.units[0]||"",a=s?.attributes.icon||ue[t]?.icon||"mdi:thermometer",r=be.map(e=>({value:e,label:ue[e]?.label||e})),l=ae(this.hass,this.config,"sensor",t?[t]:[]);return R`
       <div class="mini-pill ${this._expandedIdx===e?"expanded":""}">
         <div class="mini-pill-header" @click=${()=>this._toggleMini(e)}>
-          Sensor ${e+1}
-          <span class="chevron">▶</span>
+          Sensor ${e+1}<span class="chevron">▶</span>
         </div>
         ${this._expandedIdx===e?R`
-        <div class="mini-pill-content">
-          <!-- Filter category -->
-          <div class="input-group">
-            <label>Filter category:</label>
-            <ha-selector
-              .hass=${this.hass}
-              .value=${[t]}
-              .selector=${{select:{multiple:!1,mode:"box",options:r}}}
-              @value-changed=${t=>this._onFilterChanged(e,t.detail.value[0]||"")}
-            ></ha-selector>
+          <div class="mini-pill-content">
+            <div class="input-group">
+              <label>Filter category:</label>
+              <ha-selector
+                .hass=${this.hass}
+                .value=${[t]}
+                .selector=${{select:{multiple:!1,mode:"box",options:r}}}
+                @value-changed=${t=>this._onFilterChanged(e,t.detail.value[0]||"")}
+              ></ha-selector>
+            </div>
+            <div class="input-group">
+              <label>Entity:</label>
+              <ha-selector
+                .hass=${this.hass}
+                .value=${i}
+                .selector=${{entity:{include_entities:l,multiple:!1}}}
+                allow-custom-entity
+                @value-changed=${t=>this._onEntityChanged(e,t.detail.value)}
+              ></ha-selector>
+            </div>
+            <div class="preview">
+              <ha-icon .icon=${a}></ha-icon>
+              <div class="state">${n}${o?` ${o}`:""}</div>
+            </div>
           </div>
-
-          <!-- Entity -->
-          <div class="input-group">
-            <label>Entity:</label>
-            <ha-selector
-              .hass=${this.hass}
-              .value=${i}
-              .selector=${{entity:{include_entities:l,multiple:!1}}}
-              allow-custom-entity
-              @value-changed=${t=>this._onEntityChanged(e,t.detail.value)}
-            ></ha-selector>
-          </div>
-
-          <!-- Preview -->
-          <div class="preview">
-            <ha-icon .icon=${a}></ha-icon>
-            <div class="state">${n}${o?` ${o}`:""}</div>
-          </div>
-        </div>`:""}
-      </div>`}_toggleAuto(e){const t={...this.config.auto_discovery_sections||{}};t.sensor=e,this.config={...this.config,auto_discovery_sections:t},this._fire("config-changed",this.config)}_toggleMini(e){this._expandedIdx=this._expandedIdx===e?-1:e,this.requestUpdate()}_onFilterChanged(e,t){this._filterTypes[e]=t;const i=[...this._filterTypes];this.config={...this.config,sensor_filters:i},this._fire("config-changed",this.config)}_onEntityChanged(e,t){this._selectedEnts[e]=t;const i={...this.config.entities?.sensor||{}};i[`sensor${e+1}`]={...i[`sensor${e+1}`]||{},entity:t},this.config={...this.config,entities:{...this.config.entities,sensor:i}},this._fire("config-changed",this.config)}_resetAll(){this.config={...this.config,sensor_filters:[],entities:{...this.config.entities,sensor:{}}},this._fire("config-changed",this.config)}_fire(e,t){this.dispatchEvent(new CustomEvent(e,{detail:t,bubbles:!0,composed:!0}))}}customElements.define("sensor-panel",be);const ge=!!window.__BUBBLE_DEBUG__;class me extends se{static properties={hass:{type:Object},config:{type:Object},_expanded:{type:Boolean},_expandedItems:{type:Array}};constructor(){super(),customElements.get("ha-entity-picker")||customElements.whenDefined("ha-entity-picker").then(()=>this.requestUpdate()),this.hass={},this.config={},this._expanded=!1,this._expandedItems=Array(7).fill(!1)}setConfig(e){this.config=e}getConfig(){return this.config}static styles=o`
+        `:""}
+      </div>
+    `}_toggleAuto(e){const t={...this.config.auto_discovery_sections||{}};t.sensor=e,this.config={...this.config,auto_discovery_sections:t},this._fire("config-changed",this.config)}_toggleMini(e){this._expandedIdx=this._expandedIdx===e?-1:e,this.requestUpdate()}_onFilterChanged(e,t){this._filterTypes[e]=t;const i=[...this._filterTypes];this.config={...this.config,sensor_filters:i},this._fire("config-changed",this.config)}_onEntityChanged(e,t){this._selectedEnts[e]=t;const i={...this.config.entities?.sensor||{}};i[`sensor${e+1}`]={...i[`sensor${e+1}`]||{},entity:t},this.config={...this.config,entities:{...this.config.entities,sensor:i}},this._fire("config-changed",this.config)}_resetAll(){this.config={...this.config,sensor_filters:[],entities:{...this.config.entities,sensor:{}}},this._fire("config-changed",this.config)}_fire(e,t){this.dispatchEvent(new CustomEvent(e,{detail:t,bubbles:!0,composed:!0}))}}customElements.define("sensor-panel",ge);const me=!!window.__BUBBLE_DEBUG__;class fe extends se{static properties={hass:{type:Object},config:{type:Object},_expanded:{type:Boolean},_expandedItems:{type:Array}};constructor(){super(),customElements.get("ha-entity-picker")||customElements.whenDefined("ha-entity-picker").then(()=>this.requestUpdate()),this.hass={},this.config={},this._expanded=!1,this._expandedItems=Array(7).fill(!1)}setConfig(e){this.config=e}getConfig(){return this.config}static styles=o`
     :host { display: block; }
     .glass-panel {
       margin: 0!important;
@@ -659,7 +656,7 @@ ha-entity-picker::part(combobox) {
           />
         `:""}
       </div>
-    `}_fire(e,t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:e,val:t},bubbles:!0,composed:!0}))}_resetAll(){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"__panel_cmd__",val:{cmd:"reset",section:"mushroom"}},bubbles:!0,composed:!0}))}_getMushroomCandidates(){const e=ae(this.hass,this.config,"mushroom");return ge&&console.info("[MushroomPanel][Candidates]",{area:this.config?.area||null,count:e.length,sample:e.slice(0,8)}),e}}customElements.define("mushroom-panel",me);const fe=!!window.__BUBBLE_DEBUG__;class ve extends se{static properties={hass:{type:Object},config:{type:Object},_expanded:{type:Boolean},_expandedItems:{type:Array}};constructor(){super(),customElements.get("ha-entity-picker")||customElements.whenDefined("ha-entity-picker").then(()=>this.requestUpdate()),this.hass={},this.config={},this._expanded=!1,this._expandedItems=Array(6).fill(!1)}setConfig(e){this.config=e}getConfig(){return this.config}static styles=o`
+    `}_fire(e,t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:e,val:t},bubbles:!0,composed:!0}))}_resetAll(){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"__panel_cmd__",val:{cmd:"reset",section:"mushroom"}},bubbles:!0,composed:!0}))}_getMushroomCandidates(){const e=ae(this.hass,this.config,"mushroom");return me&&console.info("[MushroomPanel][Candidates]",{area:this.config?.area||null,count:e.length,sample:e.slice(0,8)}),e}}customElements.define("mushroom-panel",fe);const ve=!!window.__BUBBLE_DEBUG__;class xe extends se{static properties={hass:{type:Object},config:{type:Object},_expanded:{type:Boolean},_expandedItems:{type:Array}};constructor(){super(),customElements.get("ha-entity-picker")||customElements.whenDefined("ha-entity-picker").then(()=>this.requestUpdate()),this.hass={},this.config={},this._expanded=!1,this._expandedItems=Array(6).fill(!1)}setConfig(e){this.config=e}getConfig(){return this.config}static styles=o`
     :host { display: block; }
     .glass-panel {
       margin: 0!important;
@@ -836,7 +833,7 @@ ha-entity-picker::part(combobox) {
           />
         `:""}
       </div>
-    `}_toggleOne(e){this._expandedItems=this._expandedItems.map((t,i)=>i===e),this.requestUpdate()}_resetAll(){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"__panel_cmd__",val:{cmd:"reset",section:"subbutton"}},bubbles:!0,composed:!0}))}_fire(e,t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:e,val:t},bubbles:!0,composed:!0}))}_getSubButtonCandidates(){let e=[];try{e=ae(this.hass,this.config,"subbutton")}catch(t){const i=this.hass;if(!i||!i.states)return[];const s=new Set(["light","switch","media_player","fan","cover","humidifier","lock","scene","input_boolean","script","button"]);e=Object.keys(i.states||{}).filter(e=>s.has(e.split(".")[0]));const n=this.config?.area;if(n){const t=e.filter(e=>{const t=i.states[e],s=t?.attributes?.area_id,o=t?.attributes?.area;return s===n||o===n});t.length&&(e=t)}}return fe&&console.info("[SubButtonPanel][Candidates]",{area:this.config?.area||null,count:e.length,sample:e.slice(0,8)}),e}}customElements.define("subbutton-panel",ve);class xe extends se{static properties={config:{type:Object},_expanded:{type:Boolean},_expandedColors:{type:Array}};constructor(){super(),this.config={},this._expanded=!1,this._expandedColors=[!1,!1]}static styles=o`
+    `}_toggleOne(e){this._expandedItems=this._expandedItems.map((t,i)=>i===e),this.requestUpdate()}_resetAll(){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"__panel_cmd__",val:{cmd:"reset",section:"subbutton"}},bubbles:!0,composed:!0}))}_fire(e,t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:e,val:t},bubbles:!0,composed:!0}))}_getSubButtonCandidates(){let e=[];try{e=ae(this.hass,this.config,"subbutton")}catch(t){const i=this.hass;if(!i||!i.states)return[];const s=new Set(["light","switch","media_player","fan","cover","humidifier","lock","scene","input_boolean","script","button"]);e=Object.keys(i.states||{}).filter(e=>s.has(e.split(".")[0]));const n=this.config?.area;if(n){const t=e.filter(e=>{const t=i.states[e],s=t?.attributes?.area_id,o=t?.attributes?.area;return s===n||o===n});t.length&&(e=t)}}return ve&&console.info("[SubButtonPanel][Candidates]",{area:this.config?.area||null,count:e.length,sample:e.slice(0,8)}),e}}customElements.define("subbutton-panel",xe);class _e extends se{static properties={config:{type:Object},_expanded:{type:Boolean},_expandedColors:{type:Array}};constructor(){super(),this.config={},this._expanded=!1,this._expandedColors=[!1,!1]}static styles=o`
     /* glass-panel, mini-pill/header, input-group, color-row etc. */
   `;render(){return R`
       <ha-expansion-panel
@@ -869,7 +866,7 @@ ha-entity-picker::part(combobox) {
           </div>
         `:""}
       </div>
-    `}_toHex(e){if(!e)return"#000000";if(e.startsWith("#"))return 7===e.length?e.slice(0,7):e;const t=/rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i.exec(e);if(!t)return"#000000";const[i,s,n]=t.slice(1).map(e=>Math.max(0,Math.min(255,parseInt(e,10)||0)));return"#"+[i,s,n].map(e=>e.toString(16).padStart(2,"0")).join("")}_updateColor(e,t,i,s=!1){const n=this._toHex(i);this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${e}.${t}`,val:n},bubbles:!0,composed:!0}))}}customElements.define("color-panel",xe);class _e extends se{static properties={hass:{type:Object},config:{type:Object},openPanel:{type:String,state:!0}};static styles=o`
+    `}_toHex(e){if(!e)return"#000000";if(e.startsWith("#"))return 7===e.length?e.slice(0,7):e;const t=/rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i.exec(e);if(!t)return"#000000";const[i,s,n]=t.slice(1).map(e=>Math.max(0,Math.min(255,parseInt(e,10)||0)));return"#"+[i,s,n].map(e=>e.toString(16).padStart(2,"0")).join("")}_updateColor(e,t,i,s=!1){const n=this._toHex(i);this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${e}.${t}`,val:n},bubbles:!0,composed:!0}))}}customElements.define("color-panel",_e);class $e extends se{static properties={hass:{type:Object},config:{type:Object},openPanel:{type:String,state:!0}};static styles=o`
     :host {
       display: block;
       padding: 0;
@@ -921,7 +918,7 @@ ha-entity-picker::part(combobox) {
         @expanded-changed=${e=>this._togglePanel(e,"color")}
         @panel-changed=${this._onPanelChanged}
       ></color-panel>
-    `}_togglePanel(e,t){e.detail.expanded?this.openPanel=t:this.openPanel===t&&(this.openPanel="")}_onPanelChanged(e){const{prop:t,val:i}=e.detail;this.dispatchEvent(new CustomEvent("editor-changed",{detail:{prop:t,val:i},bubbles:!0,composed:!0}))}setConfig(e){(e={...e}).auto_discovery_sections={room:!!e.area,sensor:!!e.area,mushroom:!!e.area,subbutton:!!e.area,color:!0,...e.auto_discovery_sections||{}},this.config=e}}customElements.define("bubble-room-editor",_e);var $e=Object.freeze({__proto__:null,BubbleRoomEditor:_e});class ye extends se{static properties={icon:{type:String},active:{type:Boolean},colorActive:{type:String},colorInactive:{type:String}};constructor(){super(),this.icon="",this.active=!1,this.colorActive="#21df73",this.colorInactive="#173c16"}static styles=o`
+    `}_togglePanel(e,t){e.detail.expanded?this.openPanel=t:this.openPanel===t&&(this.openPanel="")}_onPanelChanged(e){const{prop:t,val:i}=e.detail;this.dispatchEvent(new CustomEvent("editor-changed",{detail:{prop:t,val:i},bubbles:!0,composed:!0}))}setConfig(e){(e={...e}).auto_discovery_sections={room:!!e.area,sensor:!!e.area,mushroom:!!e.area,subbutton:!!e.area,color:!0,...e.auto_discovery_sections||{}},this.config=e}}customElements.define("bubble-room-editor",$e);var ye=Object.freeze({__proto__:null,BubbleRoomEditor:$e});class we extends se{static properties={icon:{type:String},active:{type:Boolean},colorActive:{type:String},colorInactive:{type:String}};constructor(){super(),this.icon="",this.active=!1,this.colorActive="#21df73",this.colorInactive="#173c16"}static styles=o`
     :host {
       position: absolute;
       left: 0;
@@ -954,7 +951,7 @@ ha-entity-picker::part(combobox) {
         style="--icon-color: ${e}"
         @click="${()=>this.dispatchEvent(new CustomEvent("main-icon-click"))}"
       ></ha-icon>
-    `}}customElements.define("bubble-icon",ye);class we extends se{static properties={entities:{type:Array},containerSize:{type:Object}};constructor(){super(),this.entities=[],this.containerSize={width:200,height:200}}static styles=o`
+    `}}customElements.define("bubble-icon",we);class Ae extends se{static properties={entities:{type:Array},containerSize:{type:Object}};constructor(){super(),this.entities=[],this.containerSize={width:200,height:200}}static styles=o`
     .mushroom-container {
       position: absolute;
       left: 0;
@@ -998,7 +995,7 @@ ha-entity-picker::part(combobox) {
             ></ha-icon>
           `})}
       </div>
-    `}}customElements.define("bubble-mushroom",we);class Ae extends se{static properties={name:{type:String},area:{type:String}};constructor(){super(),this.name="",this.area=""}static styles=o`
+    `}}customElements.define("bubble-mushroom",Ae);class ke extends se{static properties={name:{type:String},area:{type:String}};constructor(){super(),this.name="",this.area=""}static styles=o`
     .bubble-name {
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       text-transform: uppercase;
@@ -1034,7 +1031,7 @@ ha-entity-picker::part(combobox) {
         ${this.name}
         ${this.area?R`<span class="bubble-area">(${this.area})</span>`:""}
       </div>
-    `}}customElements.define("bubble-name",Ae);class ke extends se{static properties={sensors:{type:Array}};static styles=o`
+    `}}customElements.define("bubble-name",ke);class Ee extends se{static properties={sensors:{type:Array}};static styles=o`
     .sensor-row {
       display: flex;
       gap: 18px;
@@ -1103,7 +1100,7 @@ ha-entity-picker::part(combobox) {
           `)}
         </div>
       `:""}
-    `}}customElements.define("bubble-sensors",ke);class Ee extends se{static properties={subbuttons:{type:Array}};constructor(){super(),this.subbuttons=[]}static styles=o`
+    `}}customElements.define("bubble-sensors",Ee);class Ce extends se{static properties={subbuttons:{type:Array}};constructor(){super(),this.subbuttons=[]}static styles=o`
     .subbutton-column {
       display: flex;
       flex-direction: column;
@@ -1179,7 +1176,7 @@ ha-entity-picker::part(combobox) {
             </div>
           `)}
       </div>
-    `}}customElements.define("bubble-subbutton",Ee);const Ce={temperature:{icon:"mdi:thermometer",unit:"°C"},humidity:{icon:"mdi:water-percent",unit:"%"},co2:{icon:"mdi:molecule-co2",unit:"ppm"},lux:{icon:"mdi:brightness-5",unit:"lx"},uv:{icon:"mdi:weather-sunny-alert",unit:"UV"},pressure:{icon:"mdi:gauge",unit:"hPa"},noise:{icon:"mdi:volume-high",unit:"dB"},pm25:{icon:"mdi:blur",unit:"µg/m³"},pm10:{icon:"mdi:blur-linear",unit:"µg/m³"}};class Se extends se{static properties={config:{type:Object},hass:{type:Object}};constructor(){super(),this.config={},this.hass={}}static getStubConfig(){return{type:"custom:bubble-room",name:"Salotto",area:"Zona Giorno",icon:"mdi:sofa",sensors:[{entity_id:"sensor.some_sensor1",type:"temperature",label:"Temperatura",color:"#e3f6ff"}],mushrooms:[{entity_id:"switch.lampada",icon:"mdi:lightbulb",color:"#ffeb3b"}],subbuttons:[{entity_id:"light.luce_tavolo",icon:"mdi:lamp",label:"Tavolo",colorOn:"#00d46d",colorOff:"#999"}],colors:{room:{background_active:"rgba(var(--color-green),1)",background_inactive:"rgba(var(--color-green),0.3)",icon_active:"orange",icon_inactive:"#80808055",mushroom_active:"rgba(var(--color-green),1)",mushroom_inactive:"#80808055"},subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return $e}),document.createElement("bubble-room-editor")}setConfig(e){this.config=e}static styles=o`
+    `}}customElements.define("bubble-subbutton",Ce);const Se={temperature:{icon:"mdi:thermometer",unit:"°C"},humidity:{icon:"mdi:water-percent",unit:"%"},co2:{icon:"mdi:molecule-co2",unit:"ppm"},lux:{icon:"mdi:brightness-5",unit:"lx"},uv:{icon:"mdi:weather-sunny-alert",unit:"UV"},pressure:{icon:"mdi:gauge",unit:"hPa"},noise:{icon:"mdi:volume-high",unit:"dB"},pm25:{icon:"mdi:blur",unit:"µg/m³"},pm10:{icon:"mdi:blur-linear",unit:"µg/m³"}};class Pe extends se{static properties={config:{type:Object},hass:{type:Object}};constructor(){super(),this.config={},this.hass={}}static getStubConfig(){return{type:"custom:bubble-room",name:"Salotto",area:"Zona Giorno",icon:"mdi:sofa",sensors:[{entity_id:"sensor.some_sensor1",type:"temperature",label:"Temperatura",color:"#e3f6ff"}],mushrooms:[{entity_id:"switch.lampada",icon:"mdi:lightbulb",color:"#ffeb3b"}],subbuttons:[{entity_id:"light.luce_tavolo",icon:"mdi:lamp",label:"Tavolo",colorOn:"#00d46d",colorOff:"#999"}],colors:{room:{background_active:"rgba(var(--color-green),1)",background_inactive:"rgba(var(--color-green),0.3)",icon_active:"orange",icon_inactive:"#80808055",mushroom_active:"rgba(var(--color-green),1)",mushroom_inactive:"#80808055"},subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return ye}),document.createElement("bubble-room-editor")}setConfig(e){this.config=e}static styles=o`
     .bubble-room-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
@@ -1255,5 +1252,5 @@ ha-entity-picker::part(combobox) {
           ></bubble-subbutton>
         </div>
       </div>
-    `}_getSensors(){return(this.config.sensors||[]).map(e=>{return{icon:Ce[e.type]?.icon||"mdi:help-circle",label:e.label||(t=e.type||"",t?t.charAt(0).toUpperCase()+t.slice(1):""),value:this.hass.states?.[e.entity_id]?.state??"--",unit:Ce[e.type]?.unit||"",color:e.color||"#e3f6ff"};var t})}_getMushroomEntities(){const e=this.config.colors?.room?.mushroom_inactive??"#999";return(this.config.mushrooms||[]).map(t=>({icon:t.icon||"mdi:flash",state:this.hass.states?.[t.entity_id]?.state,color:t.color??e}))}_getSubButtons(){const e=this.config.colors?.subbutton?.background_on??"#00d46d",t=this.config.colors?.subbutton?.background_off??"#999";return(this.config.subbuttons||[]).map(i=>({icon:i.icon||"mdi:light-switch",active:"on"===this.hass.states?.[i.entity_id]?.state,colorOn:i.colorOn??e,colorOff:i.colorOff??t,label:i.label||""}))}_isMainIconActive(){return!!this.config.active}_onMainIconClick(){}_onMushroomEntityClick(e){}_onSubButtonClick(e){}}customElements.define("bubble-room",Se);export{Se as BubbleRoom};
+    `}_getSensors(){return(this.config.sensors||[]).map(e=>{return{icon:Se[e.type]?.icon||"mdi:help-circle",label:e.label||(t=e.type||"",t?t.charAt(0).toUpperCase()+t.slice(1):""),value:this.hass.states?.[e.entity_id]?.state??"--",unit:Se[e.type]?.unit||"",color:e.color||"#e3f6ff"};var t})}_getMushroomEntities(){const e=this.config.colors?.room?.mushroom_inactive??"#999";return(this.config.mushrooms||[]).map(t=>({icon:t.icon||"mdi:flash",state:this.hass.states?.[t.entity_id]?.state,color:t.color??e}))}_getSubButtons(){const e=this.config.colors?.subbutton?.background_on??"#00d46d",t=this.config.colors?.subbutton?.background_off??"#999";return(this.config.subbuttons||[]).map(i=>({icon:i.icon||"mdi:light-switch",active:"on"===this.hass.states?.[i.entity_id]?.state,colorOn:i.colorOn??e,colorOff:i.colorOff??t,label:i.label||""}))}_isMainIconActive(){return!!this.config.active}_onMainIconClick(){}_onMushroomEntityClick(e){}_onSubButtonClick(e){}}customElements.define("bubble-room",Pe);export{Pe as BubbleRoom};
 //# sourceMappingURL=lovelace-bubble-room.js.map
