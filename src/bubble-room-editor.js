@@ -1,7 +1,5 @@
 // src/bubble-room-editor.js
 import { LitElement, html, css } from 'lit';
-
-// Import dei singolari
 import './panels/RoomPanel.js';
 import './panels/SensorPanel.js';
 import './panels/MushroomPanel.js';
@@ -10,11 +8,11 @@ import './panels/ColorPanel.js';
 
 export class BubbleRoomEditor extends LitElement {
   static properties = {
-    hass: { type: Object },
-    config: { type: Object },
+    hass:      { type: Object },
+    config:    { type: Object },
     openPanel: { type: String, state: true },
   };
-  
+
   static styles = css`
     :host {
       display: block;
@@ -23,91 +21,96 @@ export class BubbleRoomEditor extends LitElement {
       background: transparent;
     }
   `;
-  
+
   constructor() {
     super();
-    this.hass = {};
-    this.config = {};
-    this.openPanel = ''; // nessun pannello aperto di default
+    this.hass      = {};
+    this.config    = {};
+    this.openPanel = '';
   }
-  
+
+  setConfig(config) {
+    config = { ...config };
+    config.auto_discovery_sections = {
+      room:      !!config.area,
+      sensor:    !!config.area,
+      mushroom:  !!config.area,
+      subbutton: !!config.area,
+      color:     true,
+      ...(config.auto_discovery_sections || {}),
+    };
+    if (!Array.isArray(config.sensor_filters)) config.sensor_filters = [];
+    if (!config.entities) config.entities = {};
+    this.config = config;
+  }
+
   render() {
     return html`
-      <!-- Room Settings -->
       <room-panel
         .hass=${this.hass}
         .config=${this.config}
         .expanded=${this.openPanel === 'room'}
         @expanded-changed=${e => this._togglePanel(e, 'room')}
-        @panel-changed=${this._onPanelChanged}
+        @panel-changed=${this._onConfigChanged}
       ></room-panel>
 
-      <!-- Sensor Settings -->
       <sensor-panel
         .hass=${this.hass}
         .config=${this.config}
         .expanded=${this.openPanel === 'sensor'}
         @expanded-changed=${e => this._togglePanel(e, 'sensor')}
-        @panel-changed=${this._onPanelChanged}
+        @panel-changed=${this._onConfigChanged}
       ></sensor-panel>
 
-      <!-- Mushroom Entities -->
       <mushroom-panel
         .hass=${this.hass}
         .config=${this.config}
         .expanded=${this.openPanel === 'mushroom'}
         @expanded-changed=${e => this._togglePanel(e, 'mushroom')}
-        @panel-changed=${this._onPanelChanged}
+        @panel-changed=${this._onConfigChanged}
       ></mushroom-panel>
 
-      <!-- Sub-Button Settings -->
       <sub-button-panel
         .hass=${this.hass}
         .config=${this.config}
         .expanded=${this.openPanel === 'subbutton'}
         @expanded-changed=${e => this._togglePanel(e, 'subbutton')}
-        @panel-changed=${this._onPanelChanged}
+        @panel-changed=${this._onConfigChanged}
       ></sub-button-panel>
 
-      <!-- Color Settings -->
       <color-panel
         .hass=${this.hass}
         .config=${this.config}
         .expanded=${this.openPanel === 'color'}
         @expanded-changed=${e => this._togglePanel(e, 'color')}
-        @panel-changed=${this._onPanelChanged}
+        @panel-changed=${this._onConfigChanged}
       ></color-panel>
     `;
   }
-  
+
   _togglePanel(e, key) {
-    if (e.detail.expanded) {
-      this.openPanel = key;
-    } else if (this.openPanel === key) {
-      this.openPanel = '';
-    }
+    this.openPanel = e.detail.expanded ? key : this.openPanel === key ? '' : this.openPanel;
   }
-  
-  _onPanelChanged(e) {
+
+  _onConfigChanged(e) {
     const { prop, val } = e.detail;
-    this.dispatchEvent(new CustomEvent('editor-changed', {
-      detail: { prop, val },
-      bubbles: true,
-      composed: true,
+    this._setConfigValue(prop, val);
+    this.dispatchEvent(new CustomEvent('config-changed', {
+      detail: { config: this.config },
+      bubbles: true, composed: true
     }));
   }
-  
-  setConfig(config) {
-    config = { ...config };
-    config.auto_discovery_sections = {
-      room: !!config.area,
-      sensor: !!config.area,
-      mushroom: !!config.area,
-      subbutton: !!config.area,
-      color: true,
-      ...(config.auto_discovery_sections || {}),
-    };
-    this.config = config;
+
+  _setConfigValue(path, value) {
+    const keys = path.split('.');
+    let obj = this.config;
+    for (let i = 0; i < keys.length - 1; i++) {
+      const k = keys[i];
+      if (obj[k] == null) obj[k] = {};
+      obj = obj[k];
+    }
+    obj[keys[keys.length - 1]] = value;
+    this.config = { ...this.config };
   }
 }
 
