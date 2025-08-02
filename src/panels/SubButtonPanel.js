@@ -23,21 +23,17 @@ export class SubButtonPanel extends LitElement {
     this.config    = {};
     this.expanded  = false;
     this._expanded = Array(4).fill(false);
-    // inizializza con TUTTE le categorie comuni
     this._filters  = Array(4).fill().map(() => [...COMMON_CATS]);
     this._entities = Array(4).fill('');
   }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // 1️⃣ auto-discover per subbutton
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.subbutton');
-      // 2️⃣ sync filtri da config.subbutton_filters
       const cfgFilters = this.config.subbutton_filters;
       if (Array.isArray(cfgFilters) && cfgFilters.length === 4) {
         this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...COMMON_CATS]);
       }
-      // 3️⃣ sync entità da config.entities.sub-buttonX.entity
       const ents = this.config.entities || {};
       for (let i = 0; i < 4; i++) {
         const key = `sub-button${i+1}`;
@@ -88,6 +84,7 @@ export class SubButtonPanel extends LitElement {
     .input-group.autodiscover label {
       margin: 0; font-weight: 700; color: #fff;
     }
+
     .mini-pill {
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.13);
@@ -117,6 +114,7 @@ export class SubButtonPanel extends LitElement {
       from { opacity: 0; transform: translateY(-8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
     .input-group {
       margin-bottom: 12px;
     }
@@ -124,12 +122,24 @@ export class SubButtonPanel extends LitElement {
       display: block; font-weight: 600;
       margin-bottom: 6px; color: #b28fff;
     }
-    ha-selector {
+    ha-selector, ha-icon-picker {
       width: 100%; box-sizing: border-box;
     }
     ha-selector::part(combobox) {
       min-height: 40px;
     }
+
+    .pill-group {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;
+    }
+    .pill-button {
+      padding: 6px 10px; border-radius: 999px; border: 1px solid #555;
+      cursor: pointer;
+    }
+    .pill-button.active {
+      border-color: #b28fff; color: #b28fff;
+    }
+
     .reset-button {
       border: 3.5px solid #ff4c6a;
       color: #ff4c6a;
@@ -169,7 +179,7 @@ export class SubButtonPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🎛️ Subbuttons</div>
 
-        <!-- Auto-discover -->
+        <!-- 1️⃣ Auto-discover -->
         <div class="input-group autodiscover">
           <input
             type="checkbox"
@@ -179,10 +189,10 @@ export class SubButtonPanel extends LitElement {
           <label>🪄 Auto-discover Subbuttons</label>
         </div>
 
-        <!-- Quattro mini-pill -->
+        <!-- 2️⃣ Quattro mini-pill -->
         ${this._expanded.map((open, i) => this._renderSubButton(i, open, options))}
 
-        <!-- Reset -->
+        <!-- 3️⃣ Reset -->
         <button class="reset-button" @click=${() => this._reset()}>
           🧹 Reset Sub-buttons
         </button>
@@ -195,8 +205,6 @@ export class SubButtonPanel extends LitElement {
     const types = this._filters[i];
     const ent   = this._entities[i];
     const cands = candidatesFor(this.hass, this.config, 'subbutton', types);
-
-    // Azioni tap/hold esistenti
     const cfg   = this.config.entities?.[key] || {};
     const actions = ['toggle','more-info','navigate','call-service','none'];
 
@@ -246,7 +254,7 @@ export class SubButtonPanel extends LitElement {
             ${['tap','hold'].map(type => html`
               <div class="input-group">
                 <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}:</label>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <div class="pill-group">
                   ${actions.map(a => html`
                     <button
                       class="pill-button ${cfg[`${type}_action`]?.action === a ? 'active' : ''}"
@@ -334,12 +342,10 @@ export class SubButtonPanel extends LitElement {
     this._filters   = Array(4).fill().map(() => [...COMMON_CATS]);
     this._entities  = Array(4).fill('');
 
-    // reset filter array
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: 'subbutton_filters', val: this._filters },
       bubbles: true, composed: true,
     }));
-    // reset each entity, icon and actions
     for (let i = 1; i <= 4; i++) {
       const base = `entities.sub-button${i}`;
       this.dispatchEvent(new CustomEvent('panel-changed', {
@@ -347,12 +353,15 @@ export class SubButtonPanel extends LitElement {
         bubbles: true, composed: true,
       }));
       this.dispatchEvent(new CustomEvent('panel-changed', {
-        detail: { prop: `${base}.icon`,   val: '' },
+        detail: { prop: `${base}.icon`, val: '' },
         bubbles: true, composed: true,
       }));
       ['tap_action','hold_action'].forEach(act => {
         this.dispatchEvent(new CustomEvent('panel-changed', {
-          detail: { prop: `${base}.${act}`, val: { action: act==='tap_action' ? 'toggle' : 'more-info' } },
+          detail: {
+            prop: `${base}.${act}`,
+            val: { action: act === 'tap_action' ? 'toggle' : 'more-info' }
+          },
           bubbles: true, composed: true,
         }));
       });
