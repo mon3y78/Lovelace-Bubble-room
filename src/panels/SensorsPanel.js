@@ -242,4 +242,4 @@ export class SensorPanel extends LitElement {
   }
 }
 
-customElements.define('sensor-panel', SensorPanel);
+customElements.define('sensors-panel', SensorsPanel);
