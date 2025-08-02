@@ -145,7 +145,10 @@ export class SensorPanel extends LitElement {
     const autoDisc = this.config.auto_discovery_sections?.sensor ?? false;
     // tutte le opzioni chip
     const options = Object.entries(SENSOR_TYPE_MAP).map(
-      ([type,info]) => ({ value: type, label: info.label })
+      ([type, info]) => ({
+        value: type,
+        label: `${info.emoji} ${info.label}`,
+      })
     );
 
     return html`
