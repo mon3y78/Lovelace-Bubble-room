@@ -8,11 +8,11 @@ import './panels/ColorPanel.js';
 
 export class BubbleRoomEditor extends LitElement {
   static properties = {
-    hass: { type: Object },
-    config: { type: Object },
+    hass:      { type: Object },
+    config:    { type: Object },
     openPanel: { type: String, state: true },
   };
-  
+
   static styles = css`
     :host {
       display: block;
@@ -21,37 +21,29 @@ export class BubbleRoomEditor extends LitElement {
       background: transparent;
     }
   `;
-  
+
   constructor() {
     super();
-    this.hass = {};
-    this.config = {};
-    this.openPanel = ''; // nessun pannello aperto inizialmente
+    this.hass      = {};
+    this.config    = {};
+    this.openPanel = '';
   }
-  
+
   setConfig(config) {
-    // inizializza config e auto_discovery_sections con chiavi al singolare
     config = { ...config };
     config.auto_discovery_sections = {
-      room: !!config.area,
-      sensor: !!config.area,
-      mushroom: !!config.area,
+      room:      !!config.area,
+      sensor:    !!config.area,
+      mushroom:  !!config.area,
       subbutton: !!config.area,
-      color: true,
+      color:     true,
       ...(config.auto_discovery_sections || {}),
     };
-    if (!Array.isArray(config.sensor_filters)) {
-      config.sensor_filters = [];
-    }
-    if (!config.entities) {
-      config.entities = {};
-    }
-    if (!config.colors) {
-      config.colors = {};
-    }
+    if (!Array.isArray(config.sensor_filters)) config.sensor_filters = [];
+    if (!config.entities) config.entities = {};
     this.config = config;
   }
-  
+
   render() {
     return html`
       <room-panel
@@ -59,7 +51,7 @@ export class BubbleRoomEditor extends LitElement {
         .config=${this.config}
         .expanded=${this.openPanel === 'room'}
         @expanded-changed=${e => this._togglePanel(e, 'room')}
-        @panel-changed=${this._onPanelChanged}
+        @panel-changed=${this._onConfigChanged}
       ></room-panel>
 
       <sensor-panel
@@ -67,7 +59,7 @@ export class BubbleRoomEditor extends LitElement {
         .config=${this.config}
         .expanded=${this.openPanel === 'sensor'}
         @expanded-changed=${e => this._togglePanel(e, 'sensor')}
-        @panel-changed=${this._onPanelChanged}
+        @panel-changed=${this._onConfigChanged}
       ></sensor-panel>
 
       <mushroom-panel
@@ -75,7 +67,7 @@ export class BubbleRoomEditor extends LitElement {
         .config=${this.config}
         .expanded=${this.openPanel === 'mushroom'}
         @expanded-changed=${e => this._togglePanel(e, 'mushroom')}
-        @panel-changed=${this._onPanelChanged}
+        @panel-changed=${this._onConfigChanged}
       ></mushroom-panel>
 
       <sub-button-panel
@@ -83,7 +75,7 @@ export class BubbleRoomEditor extends LitElement {
         .config=${this.config}
         .expanded=${this.openPanel === 'subbutton'}
         @expanded-changed=${e => this._togglePanel(e, 'subbutton')}
-        @panel-changed=${this._onPanelChanged}
+        @panel-changed=${this._onConfigChanged}
       ></sub-button-panel>
 
       <color-panel
@@ -91,43 +83,33 @@ export class BubbleRoomEditor extends LitElement {
         .config=${this.config}
         .expanded=${this.openPanel === 'color'}
         @expanded-changed=${e => this._togglePanel(e, 'color')}
-        @panel-changed=${this._onPanelChanged}
+        @panel-changed=${this._onConfigChanged}
       ></color-panel>
     `;
   }
-  
+
   _togglePanel(e, key) {
-    if (e.detail.expanded) {
-      this.openPanel = key;
-    } else if (this.openPanel === key) {
-      this.openPanel = '';
-    }
+    this.openPanel = e.detail.expanded ? key : this.openPanel === key ? '' : this.openPanel;
   }
-  
-  _onPanelChanged(e) {
+
+  _onConfigChanged(e) {
     const { prop, val } = e.detail;
-    this._updateConfig(prop, val);
-    // Notifica al frontend HA editor
+    this._setConfigValue(prop, val);
     this.dispatchEvent(new CustomEvent('config-changed', {
       detail: { config: this.config },
-      bubbles: true,
-      composed: true,
+      bubbles: true, composed: true
     }));
   }
-  
-  _updateConfig(path, value) {
-    // Supporta path puntati: 'entities.sensor.sensor1.entity', 'colors.room.background_active', ecc.
+
+  _setConfigValue(path, value) {
     const keys = path.split('.');
     let obj = this.config;
     for (let i = 0; i < keys.length - 1; i++) {
       const k = keys[i];
-      if (obj[k] === undefined || obj[k] === null) {
-        obj[k] = {};
-      }
+      if (obj[k] == null) obj[k] = {};
       obj = obj[k];
     }
     obj[keys[keys.length - 1]] = value;
-    // Forza LitElement a riconoscere il cambiamento
     this.config = { ...this.config };
   }
 }

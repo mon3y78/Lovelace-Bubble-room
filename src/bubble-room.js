@@ -1,6 +1,4 @@
-/* ==== src/bubble-room.js  (ver. 29-lug-22:13 patched) ==== */
-// src/bubble-room.js (all’inizio del file)
-
+// src/bubble-room.js
 import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
 import './components/BubbleIcon.js';
@@ -9,7 +7,6 @@ import './components/BubbleName.js';
 import './components/BubbleSensor.js';
 import './components/BubbleSubButton.js';
 import { DEVICE_CLASS_ICON_MAP, SENSOR_TYPE_ICON_MAP, DEFAULT_ICON } from './helpers/icon-mapping.js';
-import { SENSOR_TYPES } from './helpers/sensor-mapping.js';
 import { capitalize } from './helpers/utils.js';
 
 export class BubbleRoom extends LitElement {
@@ -23,7 +20,7 @@ export class BubbleRoom extends LitElement {
     this.config = {};
     this.hass = {};
   }
-
+  
   static getStubConfig() {
     return {
       type: 'custom:bubble-room',
@@ -31,7 +28,7 @@ export class BubbleRoom extends LitElement {
       area: 'Zona Giorno',
       icon: 'mdi:sofa',
       sensors: [
-        { entity_id: 'sensor.some_sensor1', type: 'temperature', label: 'Temperatura', color: '#e3f6ff' }
+        { entity_id: 'sensor.temperature_living', type: 'temperature', label: 'Temperatura', color: '#e3f6ff' }
       ],
       mushrooms: [
         { entity_id: 'switch.lampada', icon: 'mdi:lightbulb', color: '#ffeb3b' }
@@ -57,17 +54,16 @@ export class BubbleRoom extends LitElement {
       }
     };
   }
-
-  /* ------- HA editor hook ------- */
+  
   static async getConfigElement() {
     await import('./bubble-room-editor.js');
     return document.createElement('bubble-room-editor');
   }
+  
   setConfig(config) {
     this.config = config;
   }
-
-  /* ------- CSS ------- */
+  
   static styles = css`
     .bubble-room-grid {
       display: grid;
@@ -77,11 +73,9 @@ export class BubbleRoom extends LitElement {
       min-width: 360px;
       max-width: 740px;
       min-height: 312px;
-      position: relative;
       background: transparent;
       border-radius: 38px;
       overflow: visible;
-      border: 2px dashed yellow;
     }
     .main-area {
       position: relative;
@@ -90,15 +84,6 @@ export class BubbleRoom extends LitElement {
       flex-direction: column;
       justify-content: flex-start;
       min-height: 300px;
-      z-index: 1;
-    }
-    .icon-mushroom-area {
-      position: relative;
-      width: 240px;
-      height: 190px;
-      margin-top: 12px;
-      margin-left: -10px;
-      margin-bottom: 12px;
     }
     .sidebar {
       display: flex;
@@ -107,107 +92,68 @@ export class BubbleRoom extends LitElement {
       justify-content: flex-start;
       padding: 28px 8px 8px 0;
       min-width: 120px;
-      position: relative;
-      z-index: 3;
     }
     @media (max-width: 600px) {
       .bubble-room-grid {
-        min-width: 100vw;
         grid-template-columns: 1fr 90px;
         border-radius: 19px;
       }
     }
   `;
-
+  
   render() {
-    const mainIcon = this.config.icon || DEFAULT_ICON;
-
-    const iconActive =
-      this.config.colors?.room?.icon_active ??
-      this.config.icon_active ?? '#21df73';
-
-    const iconInactive =
-      this.config.colors?.room?.icon_inactive ??
-      this.config.icon_inactive ?? '#173c16';
-
-    const name  = this.config.name  || 'Room';
-    const area  = this.config.area  || '';
-    const sensors           = this._getSensors();
-    const mushroomEntities  = this._getMushroomEntities();
-    const subbuttons        = this._getSubButtons();
-    const mushroomSize      = { width: 240, height: 190 };
-
+    const name = this.config.name || 'Room';
+    const area = this.config.area || '';
+    const icon = this.config.icon || DEFAULT_ICON;
+    const sensors = (this.config.sensors || []).map(s => ({
+      icon: SENSOR_TYPE_ICON_MAP[s.type]?.icon || 'mdi:help-circle',
+      label: s.label || capitalize(s.type),
+      value: this.hass.states[s.entity_id]?.state ?? '--',
+      unit: SENSOR_TYPE_ICON_MAP[s.type]?.unit || '',
+      color: s.color || '#e3f6ff'
+    }));
+    const mushrooms = (this.config.mushrooms || []).map(m => ({
+      icon: m.icon || 'mdi:flash',
+      state: this.hass.states[m.entity_id]?.state,
+      color: m.color
+    }));
+    const subbuttons = (this.config.subbuttons || []).map(b => ({
+      icon: b.icon || 'mdi:toggle-switch',
+      active: this.hass.states[b.entity_id]?.state === 'on',
+      label: b.label || '',
+      colorOn: b.colorOn,
+      colorOff: b.colorOff
+    }));
+    
     return html`
       <div class="bubble-room-grid">
         <div class="main-area">
-          <bubble-sensors .sensors="${sensors}"></bubble-sensors>
-          <bubble-name .name="${name}" .area="${area}"></bubble-name>
-          <div class="icon-mushroom-area">
+          <bubble-sensor .sensors=${sensors}></bubble-sensor>
+          <bubble-name .name=${name} .area=${area}></bubble-name>
+          <div style="margin-top:20px;">
             <bubble-icon
-              .icon="${mainIcon}"
-              .active="${this._isMainIconActive()}"
-              .colorActive="${iconActive}"
-              .colorInactive="${iconInactive}"
-              @main-icon-click="${this._onMainIconClick}"
+              .icon=${icon}
+              @main-icon-click=${this._onMainIconClick}
             ></bubble-icon>
-            <bubble-mushroom
-              .entities="${mushroomEntities}"
-              .containerSize="${mushroomSize}"
-              @mushroom-entity-click="${this._onMushroomEntityClick}"
-            ></bubble-mushroom>
           </div>
+          <bubble-mushroom
+            .entities=${mushrooms}
+            @mushroom-entity-click=${this._onMushroomClick}
+          ></bubble-mushroom>
         </div>
         <div class="sidebar">
           <bubble-subbutton
-            .subbuttons="${subbuttons}"
-            @subbutton-click="${this._onSubButtonClick}"
+            .subbuttons=${subbuttons}
+            @subbutton-click=${this._onSubButtonClick}
           ></bubble-subbutton>
         </div>
       </div>
     `;
   }
-
-  /* ------- helpers ------- */
-  _getSensors() {
-    return (this.config.sensors || []).map(s => ({
-      icon: SENSOR_TYPE_ICON_MAP[s.type]?.icon || 'mdi:help-circle',
-      label: s.label || capitalize(s.type || ''),
-      value: this.hass.states?.[s.entity_id]?.state ?? '--',
-      unit:  SENSOR_TYPE_ICON_MAP[s.type]?.unit || '',
-      color: s.color || '#e3f6ff'
-    }));
-  }
-
-  _getMushroomEntities() {
-    const def = this.config.colors?.room?.mushroom_inactive ?? '#999';
-    return (this.config.mushrooms || []).map(e => ({
-      icon: e.icon || 'mdi:flash',
-      state: this.hass.states?.[e.entity_id]?.state,
-      color: e.color ?? def,
-    }));
-  }
-
-  _getSubButtons() {
-    const defOn  = this.config.colors?.subbutton?.background_on  ?? '#00d46d';
-    const defOff = this.config.colors?.subbutton?.background_off ?? '#999';
-    return (this.config.subbuttons || []).map(sub => ({
-      icon: sub.icon || 'mdi:light-switch',
-      active: this.hass.states?.[sub.entity_id]?.state === 'on',
-      colorOn: sub.colorOn ?? defOn,
-      colorOff: sub.colorOff ?? defOff,
-      label: sub.label || '',
-    }));
-  }
-
-  _isMainIconActive() {
-    return !!this.config.active;
-  }
-
-  /* ------- event stub (da completare) ------- */
-  _onMainIconClick() {/* ... */}
-  _onMushroomEntityClick(e) {/* ... */}
-  _onSubButtonClick(e)     {/* ... */}
+  
+  _onMainIconClick() { /*…*/ }
+  _onMushroomClick() { /*…*/ }
+  _onSubButtonClick() { /*…*/ }
 }
 
 customElements.define('bubble-room', BubbleRoom);
-/* ==== fine bubble-room.js ==== */

@@ -129,8 +129,7 @@ export class SensorPanel extends LitElement {
 
     const entConf = this.config.entities?.sensor || null;
     const fallback = Array.isArray(this.config.sensors)
-      ? this.config.sensors
-      : [];
+      ? this.config.sensors : [];
 
     if (entConf) {
       this._filterTypes = Array(6).fill('').map((_,i)=>
@@ -155,20 +154,21 @@ export class SensorPanel extends LitElement {
         @expanded-changed=${e=>{
           this.expanded = e.detail.expanded;
           this._expandedIdx = -1;
-          this._fire('panel-changed', {prop:'expanded', val:this.expanded});
+          this._fire('panel-changed',{ prop:'expanded', val:this.expanded });
         }}
       >
         <div slot="header" class="glass-header">🧭 Sensors</div>
 
         <div class="autodiscover-box" @click=${()=>this._toggleAuto(!autoDisc)}>
-          <input type="checkbox"
+          <input
+            type="checkbox"
             .checked=${autoDisc}
             @change=${e=>this._toggleAuto(e.target.checked)}
-            @click=${e=>e.stopPropagation()} />
-          🪄 Auto-discover Sensor
+            @click=${e=>e.stopPropagation()}
+          />🪄 Auto-discover Sensor
         </div>
 
-        ${[...Array(6)].map((_,i)=> this._renderMini(i))}
+        ${[...Array(6)].map((_,i)=>this._renderMini(i))}
 
         <button class="reset-button" @click=${()=>this._resetAll()}>
           🧹 Reset Sensors
@@ -187,7 +187,8 @@ export class SensorPanel extends LitElement {
     const icon     = stateObj?.attributes.icon
                    || SENSOR_TYPE_MAP[type]?.icon || 'mdi:thermometer';
     const opts     = SENSOR_CATS.map(cat=>({
-      value:cat, label:SENSOR_TYPE_MAP[cat]?.label||cat
+      value: cat,
+      label: SENSOR_TYPE_MAP[cat]?.label || cat
     }));
     const cands    = candidatesFor(this.hass, this.config, 'sensor', type?[type]:[]);
 
@@ -196,15 +197,15 @@ export class SensorPanel extends LitElement {
         <div class="mini-pill-header" @click=${()=>this._toggleMini(i)}>
           Sensor ${i+1}<span class="chevron">▶</span>
         </div>
-        ${this._expandedIdx===i? html`
+        ${this._expandedIdx===i ? html`
           <div class="mini-pill-content">
             <div class="input-group">
               <label>Filter category:</label>
               <ha-selector
                 .hass=${this.hass}
                 .value=${[type]}
-                .selector=${{select:{multiple:false,mode:'box',options:opts}}}
-                @value-changed=${e=>this._onFilterChanged(i,e.detail.value[0]||'')}
+                .selector=${{ select:{ multiple:false, mode:'box', options:opts } }}
+                @value-changed=${e=>this._onFilterChanged(i, e.detail.value[0]||'')}
               ></ha-selector>
             </div>
             <div class="input-group">
@@ -212,23 +213,25 @@ export class SensorPanel extends LitElement {
               <ha-selector
                 .hass=${this.hass}
                 .value=${entityId}
-                .selector=${{entity:{include_entities:cands,multiple:false}}}
+                .selector=${{ entity:{ include_entities:cands, multiple:false } }}
                 allow-custom-entity
-                @value-changed=${e=>this._onEntityChanged(i,e.detail.value)}
+                @value-changed=${e=>this._onEntityChanged(i, e.detail.value)}
               ></ha-selector>
             </div>
             <div class="preview">
               <ha-icon .icon=${icon}></ha-icon>
               <div class="state">${val}${unit?` ${unit}`:''}</div>
             </div>
-          </div>` : ''}
-      </div>`;
+          </div>
+        ` : ''}
+      </div>
+    `;
   }
 
   _toggleAuto(on) {
-    const ad = {...(this.config.auto_discovery_sections||{})};
+    const ad = { ...(this.config.auto_discovery_sections||{}) };
     ad.sensor = on;
-    this.config = {...this.config, auto_discovery_sections:ad};
+    this.config = { ...this.config, auto_discovery_sections: ad };
     this._fire('config-changed', this.config);
   }
 
@@ -243,7 +246,9 @@ export class SensorPanel extends LitElement {
       ...this.config,
       sensor_filters: [...this._filterTypes],
       ...(this.config.sensors
-        ? { sensors: this.config.sensors.map((s,j)=> j===i ? {...s, type:cat} : s) }
+        ? { sensors: this.config.sensors.map((s,j)=>
+            j===i ? { ...s, type: cat } : s
+          )}
         : {}
       )
     };
@@ -252,16 +257,18 @@ export class SensorPanel extends LitElement {
 
   _onEntityChanged(i, ent) {
     this._selectedEnts[i] = ent;
-    const baseEnt = {...(this.config.entities?.sensor||{})};
-    baseEnt[`sensor${i+1}`] = {...(baseEnt[`sensor${i+1}`]||{}), entity:ent};
+    const baseEnt = { ...(this.config.entities?.sensor||{}) };
+    baseEnt[`sensor${i+1}`] = { ...(baseEnt[`sensor${i+1}`]||{}), entity: ent };
     let newConf = {
       ...this.config,
-      entities: {...this.config.entities, sensor: baseEnt}
+      entities: { ...this.config.entities, sensor: baseEnt }
     };
     if (this.config.sensors) {
       newConf = {
         ...newConf,
-        sensors: this.config.sensors.map((s,j)=> j===i ? {...s, entity_id:ent} : s)
+        sensors: this.config.sensors.map((s,j)=>
+          j===i ? { ...s, entity_id: ent } : s
+        )
       };
     }
     this.config = newConf;
@@ -272,15 +279,15 @@ export class SensorPanel extends LitElement {
     this.config = {
       ...this.config,
       sensor_filters: [],
-      entities: {...this.config.entities, sensor:{}},
+      entities: { ...this.config.entities, sensor: {} },
       ...(this.config.sensors ? { sensors: [] } : {})
     };
     this._fire('config-changed', this.config);
   }
 
   _fire(evt, detail) {
-    this.dispatchEvent(new CustomEvent(evt,{
-      detail, bubbles:true, composed:true
+    this.dispatchEvent(new CustomEvent(evt, {
+      detail, bubbles: true, composed: true
     }));
   }
 }
