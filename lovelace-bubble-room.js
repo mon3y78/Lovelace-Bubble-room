@@ -363,7 +363,7 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       background: rgba(255,76,106,0.18); color: #fff;
       box-shadow: 0 6px 32px #ff4c6abf;
     }
-  `;render(){const e=this.config.auto_discovery_sections?.sensor??!1,t=Object.entries(be).map(([e,t])=>({value:e,label:t.label}));return H`
+  `;render(){const e=this.config.auto_discovery_sections?.sensor??!1,t=Object.entries(be).map(([e,t])=>({value:e,label:`${t.emoji} ${t.label}`}));return H`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
