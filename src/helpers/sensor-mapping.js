@@ -1,18 +1,58 @@
-/**
- * sensor-mapping.js
- * 
- * Mappa centralizzata dei tipi di sensori, unità e relative proprietà visuali.
- * File completo e chiuso.
- */
+// src/helpers/sensor-mapping.js
 
-export const SENSOR_TYPE_MAP = [
-  { type: 'temperature', label: 'Temperature', emoji: '🌡️', icon: 'mdi:thermometer', unit: '°C' },
-  { type: 'humidity',    label: 'Humidity',    emoji: '💧',  icon: 'mdi:water-percent', unit: '%' },
-  { type: 'co2',         label: 'CO2',         emoji: '🟩',  icon: 'mdi:molecule-co2',  unit: 'ppm' },
-  { type: 'lux',         label: 'Luminosity',  emoji: '🔆',  icon: 'mdi:brightness-5',  unit: 'lx' },
-  { type: 'uv',          label: 'UV Index',    emoji: '🌞',  icon: 'mdi:weather-sunny-alert', unit: 'UV' },
-  { type: 'pressure',    label: 'Pressure',    emoji: '⏲️',  icon: 'mdi:gauge', unit: 'hPa' },
-  { type: 'noise',       label: 'Noise',       emoji: '🔊',  icon: 'mdi:volume-high', unit: 'dB' },
-  { type: 'pm25',        label: 'PM2.5',       emoji: '🌫️',  icon: 'mdi:blur', unit: 'µg/m³' },
-  { type: 'pm10',        label: 'PM10',        emoji: '🌫️',  icon: 'mdi:blur-linear', unit: 'µg/m³' }
-];
+export const SENSOR_TYPE_MAP = {
+  temperature: {
+    label: 'Temperature',
+    emoji: '🌡️',
+    icon: 'mdi:thermometer',
+    units: ['°C', '°F'],
+  },
+  humidity: {
+    label: 'Humidity',
+    emoji: '💧',
+    icon: 'mdi:water-percent',
+    units: ['%'],
+  },
+  co2: {
+    label: 'CO₂',
+    emoji: '🟢',
+    icon: 'mdi:molecule-co2',
+    units: ['ppm'],
+  },
+  lux: {
+    label: 'Luminosity',
+    emoji: '🔆',
+    icon: 'mdi:brightness-5',
+    units: ['lx'],
+  },
+  uv: {
+    label: 'UV Index',
+    emoji: '🌞',
+    icon: 'mdi:weather-sunny-alert',
+    units: ['UV'],
+  },
+  pressure: {
+    label: 'Pressure',
+    emoji: '⏲️',
+    icon: 'mdi:gauge',
+    units: ['hPa'],
+  },
+  noise: {
+    label: 'Noise',
+    emoji: '🔊',
+    icon: 'mdi:volume-high',
+    units: ['dB'],
+  },
+  pm25: {
+    label: 'PM2.5',
+    emoji: '🌫️',
+    icon: 'mdi:blur',
+    units: ['µg/m³'],
+  },
+  pm10: {
+    label: 'PM10',
+    emoji: '🌫️',
+    icon: 'mdi:blur-linear',
+    units: ['µg/m³'],
+  },
+};

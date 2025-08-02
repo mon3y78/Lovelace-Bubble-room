@@ -2,7 +2,7 @@
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor } from '../helpers/entity-filters.js';
-// Import della mappa centralizzata
+// Import corretto della mappa come oggetto { [type]: { label, emoji, icon, units } }
 import { SENSOR_TYPE_MAP } from '../helpers/sensor-mapping.js';
 
 export class SensorPanel extends LitElement {
@@ -28,13 +28,6 @@ export class SensorPanel extends LitElement {
       font-weight: bold;
       color: var(--primary-text-color);
     }
-    .input-group { padding: 0 16px 12px; }
-    .input-group label {
-      display: block; font-weight: 600; margin-bottom: 4px;
-      color: var(--secondary-text-color);
-    }
-    ha-selector { width: 100%; box-sizing: border-box; }
-
     .autodiscover-box, .reset-button {
       border: 2.5px solid #FFD600 !important;
       box-shadow: 0 2px 24px 0 #FFD60033 !important;
@@ -47,6 +40,14 @@ export class SensorPanel extends LitElement {
     }
     .autodiscover-box input {
       margin-right: 8px;
+    }
+    .input-group { padding: 0 16px 12px; }
+    .input-group label {
+      display: block; font-weight: 600; margin-bottom: 4px;
+      color: var(--secondary-text-color);
+    }
+    ha-selector {
+      width: 100%; box-sizing: border-box;
     }
     .mini-pill {
       background: rgba(44,70,100,0.23);
@@ -73,7 +74,6 @@ export class SensorPanel extends LitElement {
       from { opacity: 0; transform: translateY(-8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
     .preview {
       display: flex; align-items: center; gap: 12px;
       padding: 0 16px 16px;
@@ -89,29 +89,34 @@ export class SensorPanel extends LitElement {
     this.expanded = false;
     this.filterType = '';
     this.selectedEntity = '';
+    this._expandedPill = false;
   }
   
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
-      // Inizializza da config, se presente
-      const f = this.config.sensor_filter;
-      if (f && f !== this.filterType) this.filterType = f;
+      // Attiva autodiscovery per "sensors"
+      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensors');
+      // Inizializza filterType da config.sensor_filters (array)
+      const cfgFilters = this.config.sensor_filters;
+      if (Array.isArray(cfgFilters) && cfgFilters[0] !== this.filterType) {
+        this.filterType = cfgFilters[0] || '';
+      }
+      // Inizializza selectedEntity
       const e = this.config.entities?.sensor?.entity;
       if (e && e !== this.selectedEntity) this.selectedEntity = e;
     }
   }
   
   render() {
-    const autoDisc = this.config.auto_discovery_sections?.sensor ?? false;
-    // Opzioni chip: tutte le device_class da SENSOR_TYPE_MAP
-    const options = Object.entries(SENSOR_TYPE_MAP).map(([type, { label }]) => ({
+    const autoDisc = this.config.auto_discovery_sections?.sensors ?? false;
+    // 1) Opzioni chip da SENSOR_TYPE_MAP keys
+    const options = Object.entries(SENSOR_TYPE_MAP).map(([type, info]) => ({
       value: type,
-      label,
+      label: info.label,
     }));
-    // Candidate entities: dominio sensor + area + filtro type
+    // 2) Candidate entities: dominio "sensor", filtro type, area se autoDisc
     const cats = this.filterType ? [this.filterType] : [];
-    const candidates = candidatesFor(this.hass, this.config, 'sensor', cats);
+    const candidates = candidatesFor(this.hass, this.config, 'sensors', cats);
     
     return html`
       <ha-expansion-panel
@@ -121,19 +126,19 @@ export class SensorPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🔢 Sensor</div>
 
-        <!-- Autodiscover -->
+        <!-- Auto-discovery -->
         <div class="autodiscover-box" @click=${() => this._toggleAuto(!autoDisc)}>
           <input
             type="checkbox"
             .checked=${autoDisc}
             @change=${e => this._toggleAuto(e.target.checked)}
             @click=${e => e.stopPropagation()}
-          />🪄 Auto-discover Sensor
+          />🪄 Auto-discover Sensors
         </div>
 
         <!-- Filter Type as chips -->
         <div class="input-group">
-          <label>Filter categories:</label>
+          <label>Filter category:</label>
           <ha-selector
             .hass=${this.hass}
             .value=${this.filterType ? [this.filterType] : []}
@@ -179,14 +184,14 @@ export class SensorPanel extends LitElement {
   
   _toggleAuto(enabled) {
     const auto = { ...(this.config.auto_discovery_sections || {}) };
-    auto.sensor = enabled;
+    auto.sensors = enabled;
     this.config = { ...this.config, auto_discovery_sections: auto };
-    this._fire('auto_discovery_sections.sensor', enabled);
+    this._fire('auto_discovery_sections.sensors', enabled);
   }
   
   _onFilterChanged(type) {
     this.filterType = type;
-    this._fire('sensor_filter', type);
+    this._fire('sensor_filters', [type]);
   }
   
   _onEntityChanged(entity) {
@@ -199,18 +204,23 @@ export class SensorPanel extends LitElement {
   }
   
   _unitFor(entityId) {
-    return this.hass.states[entityId]?.attributes?.unit_of_measurement ||
-      SENSOR_TYPE_MAP[this.filterType]?.units[0] || '';
+    return (
+      this.hass.states[entityId]?.attributes?.unit_of_measurement ||
+      SENSOR_TYPE_MAP[this.filterType]?.units[0] ||
+      ''
+    );
   }
   
   _iconFor(entityId) {
-    return this.hass.states[entityId]?.attributes?.icon || 'mdi:thermometer';
+    return this.hass.states[entityId]?.attributes?.icon ||
+      SENSOR_TYPE_MAP[this.filterType]?.icon ||
+      'mdi:thermometer';
   }
   
   _reset() {
     this.filterType = '';
     this.selectedEntity = '';
-    this._fire('sensor_filter', '');
+    this._fire('sensor_filters', []);
     this._fire('entities.sensor.entity', '');
   }
   
