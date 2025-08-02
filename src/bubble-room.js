@@ -71,12 +71,12 @@ export class BubbleRoom extends LitElement {
   static styles = css`
     .bubble - room - grid {
       display: grid;
-      grid - template - columns: 2 fr 1 fr;
-      width: 100 % ;
-      max - width: 100 % ;
-      min - width: 0;
-      box - sizing: border - box;
-      border: 2 px dashed yellow; /* solo per debug */
+      grid-template-columns: 2fr 1fr;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      border: 2px dashed yellow;
     }
     .main-area {
       position: relative;
