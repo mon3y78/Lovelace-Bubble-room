@@ -327,4 +327,4 @@ ha-entity-picker::part(combobox) {
   }
 }
 
-customElements.define('mushrooms-panel', MushroomsPanel);
+customElements.define('mushroom-panel', MushroomPanel);

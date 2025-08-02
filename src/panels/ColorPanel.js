@@ -85,4 +85,4 @@ export class ColorsPanel extends LitElement {
   }
 }
 
-customElements.define('colors-panel', ColorsPanel);
+customElements.define('color-panel', ColorPanel);

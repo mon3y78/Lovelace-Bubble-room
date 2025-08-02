@@ -287,4 +287,4 @@ _fire(prop, value) {
   }
 }
 
-customElements.define('subbuttons-panel', SubButtonsPanel);
+customElements.define('subbutton-panel', SubButtonPanel);
