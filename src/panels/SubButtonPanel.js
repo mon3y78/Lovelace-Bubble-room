@@ -3,7 +3,7 @@ import { LitElement, html, css } from 'lit';
 const DEBUG = !!window.__BUBBLE_DEBUG__;
 import { FILTERS, candidatesFor } from '../helpers/entity-filters.js';
 
-export class SubButtonsPanel extends LitElement {
+export class SubButtonPanel extends LitElement {
   static properties = {
     hass: { type: Object },
     config: { type: Object },
@@ -277,7 +277,7 @@ _fire(prop, value) {
     }
     
     if (DEBUG) {
-      console.info('[SubButtonsPanel][Candidates]', {
+      console.info('[SubButtonPanel][Candidates]', {
         area: this.config?.area || null,
         count: list.length,
         sample: list.slice(0, 8),

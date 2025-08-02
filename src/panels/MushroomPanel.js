@@ -3,7 +3,7 @@ import { LitElement, html, css } from 'lit';
 const DEBUG = !!window.__BUBBLE_DEBUG__;
 import { FILTERS, candidatesFor } from '../helpers/entity-filters.js';
 
-export class MushroomsPanel extends LitElement {
+export class MushroomPanel extends LitElement {
   static properties = {
     hass: { type: Object },
     config: { type: Object },
@@ -317,7 +317,7 @@ ha-entity-picker::part(combobox) {
     // Usa la logica centralizzata, ma aggiunge log locale (Opzione A)
     const list = candidatesFor(this.hass, this.config, 'mushroom');
     if (DEBUG) {
-      console.info('[MushroomsPanel][Candidates]', {
+      console.info('[MushroomPanel][Candidates]', {
         area: this.config?.area || null,
         count: list.length,
         sample: list.slice(0, 8),

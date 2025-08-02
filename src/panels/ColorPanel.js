@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 
-export class ColorsPanel extends LitElement {
+export class ColorPanel extends LitElement {
   static properties = {
     config: { type: Object },
     _expanded: { type: Boolean },
