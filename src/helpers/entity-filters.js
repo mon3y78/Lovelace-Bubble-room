@@ -1,33 +1,52 @@
 // src/helpers/entity-filters.js
 
-/* ───────────── label da mostrare sui chip ───────────── */
+/* ───────────── etichette da mostrare sui chip ───────────── */
 export const FILTER_LABELS = {
-  presence: 'Presenza',
-  motion: 'Movimento',
+  // domini
+  alarm_control_panel: 'Allarmi',
+  binary_sensor:       'Sensori Binari',
+  camera:              'Telecamere',
+  climate:             'Clima',
+  cover:               'Tapparelle',
+  fan:                 'Ventola',
+  light:               'Luce',
+  lock:                'Serratura',
+  media_player:        'Media Player',
+  scene:               'Scene',
+  script:              'Script',
+  siren:               'Sirena',
+  vacuum:              'Aspirapolvere',
+  // device_class di binary_sensor
+  motion:    'Movimento',
   occupancy: 'Occupazione',
-  light: 'Luce',
-  switch: 'Switch',
-  fan: 'Ventola',
-  // sensori
-  temperature: 'Temperature',
-  humidity: 'Humidity',
-  illuminance: 'Illuminance',
-  pressure: 'Pressure',
-  co2: 'CO₂',
-  pm25: 'PM2.5',
-  pm10: 'PM10',
-  uv: 'UV Index',
-  noise: 'Noise',
+  presence:  'Presenza',
 };
+
+/* ───────────── domini comuni (senza “sensor”) ───────────── */
+export const COMMON_CATS = [
+  'alarm_control_panel',
+  'binary_sensor',
+  'camera',
+  'climate',
+  'cover',
+  'fan',
+  'light',
+  'lock',
+  'media_player',
+  'scene',
+  'script',
+  'siren',
+  'vacuum',
+];
 
 /* ───────────── filtri di sezione ───────────── */
 export const FILTERS = {
   /**
-   * Presence – filtra per device_class (binary_sensor) o dominio
+   * Presence – filtra per dominio o device_class (binary_sensor)
    * @param {string[]} cats
    */
   presence: (cats = []) => ({
-    includeDomains: ['binary_sensor', 'light', 'switch', 'fan'],
+    includeDomains: COMMON_CATS,
     entityFilter: (id, hass) => {
       if (!cats.length) return false;
       const [domain] = id.split('.');
@@ -53,16 +72,42 @@ export const FILTERS = {
   }),
 
   /**
-   * Mushroom – filtra i binary_sensor.* in base al loro device_class
+   * Mushroom – filtra per dominio o device_class, come per “presence”
    * @param {string[]} cats
    */
   mushroom: (cats = []) => ({
-    includeDomains: ['binary_sensor'],
+    includeDomains: COMMON_CATS,
     entityFilter: (id, hass) => {
-      // se non ci sono categorie selezionate, includi tutti i binary_sensor
-      if (!cats.length) return id.startsWith('binary_sensor.');
-      const dc = hass.states[id]?.attributes?.device_class ?? '';
-      return cats.includes(dc);
+      if (!cats.length) {
+        // default: mostra solo i binary_sensor
+        return id.split('.')[0] === 'binary_sensor';
+      }
+      const [domain] = id.split('.');
+      if (domain === 'binary_sensor') {
+        const dc = hass.states[id]?.attributes?.device_class ?? '';
+        return cats.includes(dc);
+      }
+      return cats.includes(domain);
+    },
+  }),
+
+  /**
+   * Sub-button – filtra per dominio o device_class, come per “presence”
+   * @param {string[]} cats
+   */
+  subbutton: (cats = []) => ({
+    includeDomains: COMMON_CATS,
+    entityFilter: (id, hass) => {
+      if (!cats.length) {
+        // default: mostra tutti i domini validi
+        return COMMON_CATS.includes(id.split('.')[0]);
+      }
+      const [domain] = id.split('.');
+      if (domain === 'binary_sensor') {
+        const dc = hass.states[id]?.attributes?.device_class ?? '';
+        return cats.includes(dc);
+      }
+      return cats.includes(domain);
     },
   }),
 };
@@ -91,15 +136,15 @@ export function entitiesInArea(hass, areaId) {
  *   • filtro per area (se auto-discovery attivo)
  *   • filtro per categorie (cats)
  *
- * @param {HassEntities} hass
- * @param {object} config
- * @param {'presence'|'sensor'|'mushroom'} section
- * @param {string[]} cats
+ * @param {object} hass        – lo stato di Home Assistant
+ * @param {object} config      – la config del tuo editor
+ * @param {string} section     – 'presence' | 'sensor' | 'mushroom' | 'subbutton'
+ * @param {string[]} cats      – array di categorie (domini o device_class)
+ * @returns {string[]} lista di entity_id candidate
  */
 export function candidatesFor(hass, config, section, cats = []) {
   if (!hass?.states) return [];
 
-  // 1) scegli il filtro giusto
   let desc;
   if (section === 'presence') {
     desc = FILTERS.presence(cats);
@@ -107,21 +152,23 @@ export function candidatesFor(hass, config, section, cats = []) {
     desc = FILTERS.sensor(cats);
   } else if (section === 'mushroom') {
     desc = FILTERS.mushroom(cats);
+  } else if (section === 'subbutton') {
+    desc = FILTERS.subbutton(cats);
   }
 
   if (!desc) return [];
 
-  // 2) filtro per dominio
+  // 1) filtro per dominio
   const byDomain = Object.keys(hass.states).filter(id =>
     desc.includeDomains.includes(id.split('.')[0])
   );
 
-  // 3) filtro device_class/domino
+  // 2) filtro device_class/domino
   const byDesc = byDomain.filter(id =>
     desc.entityFilter(id, hass)
   );
 
-  // 4) filtro area se auto-discover attivo
+  // 3) filtro area se auto-discovery attivo
   const autoDisc = config?.auto_discovery_sections?.[section] ?? false;
   if (autoDisc && config?.area) {
     const inArea = entitiesInArea(hass, config.area);
