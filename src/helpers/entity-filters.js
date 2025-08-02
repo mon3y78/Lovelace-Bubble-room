@@ -8,6 +8,16 @@ export const FILTER_LABELS = {
   light: 'Luce',
   switch: 'Switch',
   fan: 'Ventola',
+  // aggiungi qui le etichette per i sensori, se ti servono in qualche UI centralizzata
+  temperature: 'Temperature',
+  humidity: 'Humidity',
+  illuminance: 'Illuminance',
+  pressure: 'Pressure',
+  co2: 'CO₂',
+  pm25: 'PM2.5',
+  pm10: 'PM10',
+  uv: 'UV Index',
+  noise: 'Noise',
 };
 
 /* ───────────── filtri di sezione ───────────── */
@@ -29,7 +39,19 @@ export const FILTERS = {
     },
   }),
 
-  /* …eventuali altri filtri (sensor, alert, ecc.)… */
+  /**
+   * Sensor – filtra i sensor.<…> in base al loro device_class
+   * @param {string[]} cats  es. ['temperature','humidity',…]
+   */
+  sensor: (cats = []) => ({
+    includeDomains: ['sensor'],
+    entityFilter: (id, hass) => {
+      // se non ci sono categorie selezionate, includi tutti i sensor.*
+      if (!cats.length) return true;
+      const dc = hass.states[id]?.attributes?.device_class ?? '';
+      return cats.includes(dc);
+    },
+  }),
 };
 
 /* ───────────── funzione che trova entità in una certa area ───────────── */
@@ -58,33 +80,37 @@ export function entitiesInArea(hass, areaId) {
  * Restituisce la lista di entity_id “candidati” per una sezione,
  * applicando:
  *   • filtro per dominio + device_class (da FILTERS)
- *   • filtro per area (se auto-discovery_sections.presence === true)
- *   • filtro per categorie (solo per 'presence', via cats)
+ *   • filtro per area (se auto-discovery attivo per quella sezione)
+ *   • filtro per categorie (cats)
  *
- * Usage: candidatesFor(hass, config, 'presence', ['light','motion'])
+ * Usage: candidatesFor(hass, config, 'sensor', ['temperature','humidity'])
  */
 export function candidatesFor(hass, config, section, cats = []) {
   if (!hass?.states) return [];
 
-  // scegli il descrittore giusto
-  let desc = null;
+  // 1) scegli il descrittore giusto
+  let desc;
   if (section === 'presence') {
     desc = FILTERS.presence(cats);
+  } else if (section === 'sensor') {
+    desc = FILTERS.sensor(cats);
   }
-  // else if (section==='sensor') … se hai altri filtri
+  // aggiungi qui eventuali altri section …
 
   if (!desc) return [];
 
-  // 1) filtro per dominio
+  // 2) filtro per dominio
   const byDomain = Object.keys(hass.states).filter((id) =>
-    desc.includeDomains.includes(id.split('.')[0]),
+    desc.includeDomains.includes(id.split('.')[0])
   );
 
-  // 2) filtro custom (device_class o dominio)
-  const byDesc = byDomain.filter((id) => desc.entityFilter(id, hass));
+  // 3) filtro custom (device_class o dominio)
+  const byDesc = byDomain.filter((id) =>
+    desc.entityFilter(id, hass)
+  );
 
-  // 3) filtro per area (solo se auto-discover è attivo)
-  const autoDisc = config?.auto_discovery_sections?.presence ?? false;
+  // 4) filtro per area (solo se auto-discovery è attivo per questa section)
+  const autoDisc = config?.auto_discovery_sections?.[section] ?? false;
   if (autoDisc && config?.area) {
     const inArea = entitiesInArea(hass, config.area);
     return byDesc.filter((id) => inArea.includes(id));
