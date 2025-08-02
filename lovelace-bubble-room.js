@@ -267,6 +267,7 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       </div>
     `}_onExpandedChanged(e){this.expanded=e.detail.expanded,this.dispatchEvent(new CustomEvent("expanded-changed",{detail:{expanded:e.detail.expanded},bubbles:!0,composed:!0}))}}customElements.define("room-panel",ue);const be={temperature:{label:"Temperature",emoji:"🌡️",icon:"mdi:thermometer",units:["°C","°F"]},humidity:{label:"Humidity",emoji:"💧",icon:"mdi:water-percent",units:["%"]},co2:{label:"CO₂",emoji:"🟢",icon:"mdi:molecule-co2",units:["ppm"]},lux:{label:"Luminosity",emoji:"🔆",icon:"mdi:brightness-5",units:["lx"]},uv:{label:"UV Index",emoji:"🌞",icon:"mdi:weather-sunny-alert",units:["UV"]},pressure:{label:"Pressure",emoji:"⏲️",icon:"mdi:gauge",units:["hPa"]},noise:{label:"Noise",emoji:"🔊",icon:"mdi:volume-high",units:["dB"]},pm25:{label:"PM2.5",emoji:"🌫️",icon:"mdi:blur",units:["µg/m³"]},pm10:{label:"PM10",emoji:"🌫️",icon:"mdi:blur-linear",units:["µg/m³"]}};class ge extends se{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(6).fill(!1);const e=Object.keys(be);this._filters=Array(6).fill().map(()=>[...e]),this._entities=Array(6).fill("")}updated(e){if(e.has("config")||e.has("hass")){pe(this.hass,this.config,"auto_discovery_sections.sensor");for(let e=0;e<6;e++){const t=`sensor${e+1}`,i=this.config.sensor_filters?.[e],s=this.config.entities?.[t]?.entity;Array.isArray(i)&&(this._filters[e]=[...i]),s&&(this._entities[e]=s)}}}static styles=o`
     :host { display: block; }
+
     .glass-panel {
       margin: 0 !important;
       width: 100%;
@@ -278,38 +279,48 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       overflow: hidden;
     }
     .glass-panel::after {
-      content: ''; position: absolute; inset: 0; border-radius: inherit;
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
       background: var(--glass-sheen,
-        linear-gradient(120deg, rgba(255,255,255,0.11),
-        rgba(255,255,255,0.07) 70%, transparent 100%));
+        linear-gradient(120deg,rgba(255,255,255,0.11),
+        rgba(255,255,255,0.07) 70%,transparent 100%));
       pointer-events: none;
     }
     .glass-header {
-      padding: 22px 0; text-align: center;
-      font-size: 1.12rem; font-weight: 700; color: #fff;
+      padding: 22px 0;
+      text-align: center;
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: #fff;
     }
 
-    /* auto-discover pill identica a RoomPanel */
     .input-group.autodiscover {
-      margin: 0 16px 13px; padding: 14px 18px 10px;
+      margin: 0 16px 13px;
+      padding: 14px 18px 10px;
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.13);
       box-shadow: 0 2px 14px rgba(70,120,220,0.10);
-      border-radius: 18px; display: flex; align-items: center; gap: 8px;
+      border-radius: 18px;
+      display: flex; align-items: center; gap: 8px;
     }
     .input-group.autodiscover input { margin-right: 8px; }
-    .input-group.autodiscover label { margin: 0; font-weight: 700; color: #fff; }
+    .input-group.autodiscover label {
+      margin: 0; font-weight: 700; color: #fff;
+    }
 
-    /* mini-pill identica a RoomPanel */
     .mini-pill {
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.13);
       box-shadow: 0 2px 14px rgba(70,120,220,0.10);
       backdrop-filter: blur(7px) saturate(1.2);
-      border-radius: 24px; margin: 8px 16px; overflow: hidden;
+      border-radius: 24px;
+      margin: 8px 16px;
+      overflow: hidden;
     }
     .mini-pill-header {
-      display: flex; align-items: center; padding: 12px 16px;
+      display: flex; align-items: center;
+      padding: 12px 16px;
       cursor: pointer; user-select: none;
       font-weight: 700; color: #8cff8a;
     }
@@ -328,13 +339,12 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* input-group standard (sia filter che entity) */
     .input-group {
       margin-bottom: 12px;
     }
     .input-group label {
-      display: block; font-weight: 600; margin-bottom: 6px;
-      color: #8cff8a;
+      display: block; font-weight: 600;
+      margin-bottom: 6px; color: #8cff8a;
     }
     ha-selector {
       width: 100%; box-sizing: border-box;
@@ -343,29 +353,37 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       min-height: 40px;
     }
 
-    /* anteprima */
     .preview {
-      display: flex; align-items: center; gap: 12px; padding: 0 16px 16px;
-    }
-    .preview ha-icon { --mdc-icon-size: 32px; color: #fff; }
-    .preview .state { font-size: 1.2rem; color: #fff; }
-
-    /* reset identico a RoomPanel */
-    .reset-button {
-      border: 3.5px solid #ff4c6a; color: #ff4c6a;
-      border-radius: 24px; padding: 12px 38px; background: transparent;
-      cursor: pointer; display: block; margin: 20px auto;
-      font-size: 1.15rem; font-weight: 700;
-      box-shadow: 0 2px 24px #ff4c6a44;
-      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
-    }
-    .reset-button:hover {
-      background: rgba(255,76,106,0.18); color: #fff;
-      box-shadow: 0 6px 32px #ff4c6abf;
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 16px 16px;
     }
     .preview .emoji {
       font-size: 1.8rem;
       line-height: 1;
+    }
+    .preview .state {
+      font-size: 1.2rem;
+      color: #fff;
+    }
+
+    .reset-button {
+      border: 3.5px solid #ff4c6a;
+      color: #ff4c6a;
+      border-radius: 24px;
+      padding: 12px 38px;
+      background: transparent;
+      cursor: pointer;
+      display: block;
+      margin: 20px auto;
+      font-size: 1.15rem;
+      font-weight: 700;
+      box-shadow: 0 2px 24px #ff4c6a44;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    }
+    .reset-button:hover {
+      background: rgba(255,76,106,0.18);
+      color: #fff;
+      box-shadow: 0 6px 32px #ff4c6abf;
     }
   `;render(){const e=this.config.auto_discovery_sections?.sensor??!1,t=Object.entries(be).map(([e,t])=>({value:e,label:`${t.emoji} ${t.label}`}));return H`
       <ha-expansion-panel
@@ -375,7 +393,7 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       >
         <div slot="header" class="glass-header">🧭 Sensors</div>
 
-        <!-- 1️⃣ Auto-discover -->
+        <!-- Auto-discover -->
         <div class="input-group autodiscover">
           <input
             type="checkbox"
@@ -385,10 +403,10 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
           <label>🪄 Auto-discover Sensors</label>
         </div>
 
-        <!-- 2️⃣ Sei mini-pill -->
+        <!-- Sei mini-pill -->
         ${this._expanded.map((e,i)=>this._renderSensor(i,e,t))}
 
-        <!-- 3️⃣ Reset -->
+        <!-- Reset -->
         <button class="reset-button" @click=${()=>this._reset()}>
           🧹 Reset Sensors
         </button>
@@ -399,11 +417,9 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
           Sensor ${e+1}
           <span class="chevron">${t?"▼":"▶"}</span>
         </div>
-
         ${t?H`
           <div class="mini-pill-content">
-
-            <!-- Filter category MULTI-SELECT con pill + x -->
+            <!-- Filter category (multi‐select pill) -->
             <div class="input-group">
               <label>Filter category:</label>
               <ha-selector
@@ -426,14 +442,13 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
               ></ha-selector>
             </div>
 
-            <!-- Preview -->
-            <div class="preview">
-              <span class="emoji">${be[s[0]]?.emoji||"❓"}</span>
-              <div class="state">
-                ${this.hass.states?.[n]?.state||"-"}
-                ${this.hass.states?.[n]?.attributes?.unit_of_measurement||""}
-              </div>
-            </div>
+            <!-- Preview basata su device_class -->
+            ${n?(()=>{const e=this.hass.states[n],t=e?.attributes?.device_class,i=be[t]||{},s=i.emoji||"❓",o=e?.attributes?.unit_of_measurement||(i.units?.[0]??"");return H`
+                <div class="preview">
+                  <span class="emoji">${s}</span>
+                  <div class="state">${e?.state??"-"} ${o}</div>
+                </div>
+              `})():""}
           </div>
         `:""}
       </div>
