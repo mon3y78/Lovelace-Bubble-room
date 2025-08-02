@@ -1,23 +1,23 @@
 // src/panels/SensorsPanel.js
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
-import { candidatesFor } from '../helpers/entity-filters.js';
+import { candidatesFor }     from '../helpers/entity-filters.js';
 
 // Mappa completa delle classi di sensore e relative emoji/unità
 const SENSOR_TYPE_MAP = {
-  temperature: { emoji: '🌡️', units: ['°C', '°F'], label: 'Temperature' },
-  humidity: { emoji: '💦', units: ['%'], label: 'Humidity' },
-  co2: { emoji: '🟢', units: ['ppm'], label: 'CO₂' },
-  illuminance: { emoji: '☀️', units: ['lx'], label: 'Illuminance' },
-  pm1: { emoji: '🟤', units: ['µg/m³'], label: 'PM1' },
-  pm25: { emoji: '⚫️', units: ['µg/m³'], label: 'PM2.5' },
-  pm10: { emoji: '⚪️', units: ['µg/m³'], label: 'PM10' },
-  uv: { emoji: '🌞', units: ['UV'], label: 'UV Index' },
-  noise: { emoji: '🔊', units: ['dB'], label: 'Noise' },
-  pressure: { emoji: '📈', units: ['hPa'], label: 'Pressure' },
-  voc: { emoji: '🧪', units: ['ppb'], label: 'VOC' },
-  consumption: { emoji: '⚡️', units: ['W', 'kWh', 'Wh'], label: 'Consumption' },
-  production: { emoji: '🔆', units: ['W', 'kWh', 'Wh'], label: 'Production' },
+  temperature: { emoji: '🌡️', units: ['°C','°F'],      label: 'Temperature' },
+  humidity:    { emoji: '💦', units: ['%'],           label: 'Humidity'    },
+  co2:         { emoji: '🟢', units: ['ppm'],         label: 'CO₂'         },
+  illuminance: { emoji: '☀️', units: ['lx'],          label: 'Illuminance' },
+  pm1:         { emoji: '🟤', units: ['µg/m³'],       label: 'PM1'         },
+  pm25:        { emoji: '⚫️', units: ['µg/m³'],       label: 'PM2.5'       },
+  pm10:        { emoji: '⚪️', units: ['µg/m³'],       label: 'PM10'        },
+  uv:          { emoji: '🌞', units: ['UV'],          label: 'UV Index'    },
+  noise:       { emoji: '🔊', units: ['dB'],          label: 'Noise'       },
+  pressure:    { emoji: '📈', units: ['hPa'],         label: 'Pressure'    },
+  voc:         { emoji: '🧪', units: ['ppb'],         label: 'VOC'         },
+  consumption: { emoji: '⚡️', units: ['W','kWh','Wh'],label: 'Consumption' },
+  production:  { emoji: '🔆', units: ['W','kWh','Wh'],label: 'Production'  },
 };
 
 // Configurazione dei sei slot sensore
@@ -32,13 +32,14 @@ const SIX_SENSORS = [
 
 export class SensorsPanel extends LitElement {
   static properties = {
-    hass: { type: Object },
-    config: { type: Object },
+    hass:     { type: Object },
+    config:   { type: Object },
     expanded: { type: Boolean },
   };
-  
+
   static styles = css`
     :host { display: block; }
+
     .glass-panel {
       margin: 0 !important;
       width: 100%;
@@ -63,7 +64,6 @@ export class SensorsPanel extends LitElement {
       pointer-events: none;
     }
     .glass-header {
-      position: relative;
       padding: 22px 0 18px;
       text-align: center;
       font-size: 1.11rem;
@@ -73,11 +73,18 @@ export class SensorsPanel extends LitElement {
     .input-group {
       margin: 12px 16px;
     }
-    label {
-      display: block;
+    .autodiscover-group {
+      display: flex;
+      align-items: center;
+      margin: 0 16px 12px;
+    }
+    .autodiscover-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-weight: 600;
-      margin-bottom: 4px;
       color: var(--primary-text-color);
+      cursor: pointer;
     }
     ha-selector, select, input[type="text"] {
       width: 100%;
@@ -128,23 +135,26 @@ export class SensorsPanel extends LitElement {
       display: block;
     }
   `;
-  
+
   constructor() {
     super();
-    this.hass = {};
-    this.config = {};
+    this.hass     = {};
+    this.config   = {};
     this.expanded = false;
+    // Stato di apertura dei sei mini-pill
     this._expandedSensors = Array(6).fill(false);
   }
-  
+
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
       // Applica l’autodiscovery quando cambia l’area
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensors');
     }
   }
-  
+
   render() {
+    const autoDisc = this.config.auto_discovery_sections?.sensors ?? false;
+
     return html`
       <ha-expansion-panel
         class="glass-panel"
@@ -152,25 +162,41 @@ export class SensorsPanel extends LitElement {
         @expanded-changed=${e => this._onExpandedChanged(e)}
       >
         <div slot="header" class="glass-header">🧭 Sensors</div>
+
+        <!-- 1️⃣ Auto-discovery -->
+        <div class="autodiscover-group">
+          <label>
+            <input
+              type="checkbox"
+              .checked=${autoDisc}
+              @change=${e => this._toggleAutoDiscover(e.target.checked)}
+            />
+            Auto-discover Sensors
+          </label>
+        </div>
+
+        <!-- 2️⃣ Sei sotto-pannelli sensore -->
         ${SIX_SENSORS.map((sp, idx) => this._renderSensorPill(sp, idx))}
+
+        <!-- 3️⃣ Reset -->
         <button class="reset-button"
           @click=${() => this._resetSensorConfig()}
         >🧹 Reset Sensors</button>
       </ha-expansion-panel>
     `;
   }
-  
+
   _renderSensorPill({ key, label }, idx) {
-    const entConf = this.config.entities?.[key] || {};
-    const type = entConf.type || '';
-    const unit = entConf.unit || '';
-    const options = Object.entries(SENSOR_TYPE_MAP).map(([t, o]) => ({
+    const entConf   = this.config.entities?.[key] || {};
+    const type      = entConf.type || '';
+    const unit      = entConf.unit || '';
+    const options   = Object.entries(SENSOR_TYPE_MAP).map(([t, o]) => ({
       value: t,
       label: `${o.emoji} ${o.label}`
     }));
-    // Le entità candidate tengono conto di tipo e area (grazie ad autodiscovery impostato in updated())
+    // Filtra le entità in base al type e area
     const candidates = candidatesFor(this.hass, this.config, 'sensors', type ? [type] : []);
-    
+
     return html`
       <div class="mini-pill ${this._expandedSensors[idx] ? 'expanded' : ''}">
         <div class="mini-pill-header" @click=${() => this._toggleSensorExpand(idx)}>
@@ -178,39 +204,32 @@ export class SensorsPanel extends LitElement {
         </div>
         ${this._expandedSensors[idx] ? html`
           <div class="mini-pill-content">
-            <!-- 1) Type as chips -->
+            <!-- Type as chips -->
             <div class="input-group">
               <label>Type</label>
               <ha-selector
                 .hass=${this.hass}
                 .value=${type ? [type] : []}
                 .selector=${{
-                  select: {
-                    multiple: false,
-                    mode: 'box',
-                    options,
-                  }
+                  select: { multiple: false, mode: 'box', options }
                 }}
                 @value-changed=${e => this._updateSensor(idx, 'type', e.detail.value[0] || '')}
               ></ha-selector>
             </div>
-            <!-- 2) Entity picker -->
+            <!-- Entity selector -->
             <div class="input-group">
               <label>Entity</label>
               <ha-selector
                 .hass=${this.hass}
                 .value=${entConf.entity || ''}
                 .selector=${{
-                  entity: {
-                    include_entities: candidates,
-                    multiple: false,
-                  }
+                  entity: { include_entities: candidates, multiple: false }
                 }}
                 allow-custom-entity
                 @value-changed=${e => this._updateSensor(idx, 'entity', e.detail.value)}
               ></ha-selector>
             </div>
-            <!-- 3) Unit selector -->
+            <!-- Unit as chips -->
             <div class="input-group">
               <label>Unit</label>
               <ha-selector
@@ -231,27 +250,43 @@ export class SensorsPanel extends LitElement {
       </div>
     `;
   }
-  
+
+  _toggleAutoDiscover(enabled) {
+    const auto = { ...(this.config.auto_discovery_sections || {}) };
+    auto.sensors = enabled;
+    this.config = { ...this.config, auto_discovery_sections: auto };
+    this.dispatchEvent(new CustomEvent('config-changed', {
+      detail: { config: this.config },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   _toggleSensorExpand(idx) {
+    // Chiude gli altri e apre idx
     this._expandedSensors = this._expandedSensors.map((_, i) => i === idx);
     this.requestUpdate();
   }
-  
+
   _onExpandedChanged(e) {
     this.expanded = e.detail.expanded;
+    if (this.expanded) {
+      // Quando riapro il pannello, chiudi tutti i sub-pannelli
+      this._expandedSensors = this._expandedSensors.map(() => false);
+    }
     this.dispatchEvent(new CustomEvent('expanded-changed', {
       detail: { expanded: this.expanded },
       bubbles: true,
       composed: true,
     }));
   }
-  
+
   _updateSensor(idx, field, value) {
     const key = `sensor${idx+1}`;
     const current = this.config.entities?.[key] || {};
     const updated = { ...current, [field]: value };
-    // Se cambio il type, imposto unità di default
     if (field === 'type') {
+      // Imposta unità di default
       updated.unit = SENSOR_TYPE_MAP[value]?.units[0] || '';
     }
     const entities = { ...(this.config.entities || {}), [key]: updated };
@@ -262,7 +297,7 @@ export class SensorsPanel extends LitElement {
       composed: true,
     }));
   }
-  
+
   _resetSensorConfig() {
     const entities = { ...(this.config.entities || {}) };
     SIX_SENSORS.forEach(({ key }) => delete entities[key]);
