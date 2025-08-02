@@ -1,23 +1,59 @@
 // src/panels/SensorsPanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor }     from '../helpers/entity-filters.js';
 
-const SENSOR_CATS = [
-  'temperature',   // sensor.device_class = temperature
-  'humidity',      // sensor.device_class = humidity
-  'illuminance',   // sensor.device_class = illuminance
-  'pressure',      // sensor.device_class = pressure
-  'battery',       // sensor.device_class = battery
-  'voltage',       // sensor.device_class = voltage
+const SUBPANELS = [
+  {
+    key: 'temperature',
+    title: '🌡️ Temperatura',
+    deviceClass: 'temperature',
+    defaultUnit: '°C',
+    unitPlaceholder: '°C, °F…',
+  },
+  {
+    key: 'humidity',
+    title: '💧 Umidità',
+    deviceClass: 'humidity',
+    defaultUnit: '%',
+    unitPlaceholder: '%RH…',
+  },
+  {
+    key: 'illuminance',
+    title: '💡 Illuminazione',
+    deviceClass: 'illuminance',
+    defaultUnit: 'lux',
+    unitPlaceholder: 'lux…',
+  },
+  {
+    key: 'pressure',
+    title: '🔵 Pressione',
+    deviceClass: 'pressure',
+    defaultUnit: 'hPa',
+    unitPlaceholder: 'hPa, bar…',
+  },
+  {
+    key: 'battery',
+    title: '🔋 Batteria',
+    deviceClass: 'battery',
+    defaultUnit: '%',
+    unitPlaceholder: '%…',
+  },
+  {
+    key: 'voltage',
+    title: '⚡ Voltaggio',
+    deviceClass: 'voltage',
+    defaultUnit: 'V',
+    unitPlaceholder: 'V…',
+  },
 ];
 
 export class SensorsPanel extends LitElement {
   static properties = {
-    hass:          { type: Object },
-    config:        { type: Object },
-    expanded:      { type: Boolean },
-    activeFilters: { type: Array, state: true },
+    hass:       { type: Object },
+    config:     { type: Object },
+    expanded:   { type: Boolean },
+    activeFilters: { type: Object, state: true },
+    openSub:    { type: String, state: true },
   };
 
   static styles = css`
@@ -55,116 +91,134 @@ export class SensorsPanel extends LitElement {
       color: #fff;
     }
 
-    .chip-container {
-      margin: 16px;
+    .subpanel {
+      margin: 12px 0;
     }
-
-    /* Input group for selector */
     .input-group {
-      margin-bottom: 12px;
-      padding: 0 16px;
+      margin: 8px 16px;
     }
     label {
       display: block;
-      font-size: 1rem;
       font-weight: 600;
-      color: var(--primary-text-color);
       margin-bottom: 4px;
+      color: var(--primary-text-color);
     }
     ha-selector {
       width: 100%;
+      box-sizing: border-box;
+    }
+    .reset-button {
+      border: 2px solid #ff4c6a;
+      color: #ff4c6a;
+      border-radius: 12px;
+      padding: 8px 16px;
+      background: transparent;
+      cursor: pointer;
+      margin: 16px auto;
+      display: block;
     }
   `;
 
   constructor() {
     super();
-    this.hass          = {};
-    this.config        = {};
-    this.expanded      = false;
-    this.activeFilters = [];
-  }
-
-  updated(changed) {
-    // auto-discover sensori quando cambia la config
-    if (changed.has('config') || changed.has('hass')) {
-      maybeAutoDiscover(this.hass, this.config, 'entities.sensors');
-      // inizializza i filtri se presenti in config
-      if (changed.has('config') && Array.isArray(this.config.sensor_filters)) {
-        this.activeFilters = [...this.config.sensor_filters];
-      }
-    }
+    this.hass = {};
+    this.config = {};
+    this.expanded = false;
+    // inizializza activeFilters per ciascun subpanel con la propria chiave
+    this.activeFilters = SUBPANELS.reduce((acc, sp) => {
+      acc[sp.key] = [sp.deviceClass];
+      return acc;
+    }, {});
+    this.openSub = '';  // nessun sotto-pannello aperto
   }
 
   render() {
-    const cfg     = this.config;
-    const sensors = cfg.entities?.sensors ?? [];
-    // se ho filtri interni uso quelli, altrimenti quelli da config o default
-    const filters = this.activeFilters.length
-      ? this.activeFilters
-      : (cfg.sensor_filters ?? [...SENSOR_CATS]);
-
-    // opzioni per i chip selector
-    const options = SENSOR_CATS.map(cat => ({
-      value: cat,
-      label: cat.charAt(0).toUpperCase() + cat.slice(1),
-    }));
-
-    // calcolo le entità candidate per il selector finale
-    const candidates = candidatesFor(
-      this.hass, this.config, 'sensors', filters
-    );
+    const autoDisc = this.config.auto_discovery_sections?.sensors ?? false;
 
     return html`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
-        @expanded-changed=${this._onExpandedChanged}
+        @expanded-changed=${e => this._onExpandedChanged(e)}
       >
-        <div slot="header" class="glass-header">🌡️ Sensors</div>
+        <div slot="header" class="glass-header">🌡️ Sensori</div>
 
-        <div class="chip-container">
-          <div class="input-group">
-            <label>Filter sensor types:</label>
-            <ha-selector
-              .hass=${this.hass}
-              .value=${filters}
-              .selector=${{
-                select: {
-                  multiple: true,
-                  mode: 'box',
-                  options,
-                }
-              }}
-              @value-changed=${e => this._onFilterChanged(e.detail.value)}
-            ></ha-selector>
-          </div>
+        ${SUBPANELS.map(sp => this._renderSubPanel(sp, autoDisc))}
 
-          <div class="input-group">
-            <label>Choose sensor entity:</label>
-            <ha-selector
-              .hass=${this.hass}
-              .value=${cfg.entities?.sensors?.entity || ''}
-              .selector=${{
-                entity: {
-                  multiple: false,
-                  include_entities: candidates,
-                }
-              }}
-              allow-custom-entity
-              @value-changed=${e => this._fire('entities.sensors.entity', e.detail.value)}
-            ></ha-selector>
-          </div>
-        </div>
-
-        <!-- Qui potresti aggiungere altri controlli specifici del sensore -->
-
+        <button class="reset-button"
+          @click=${() => this._fire('__panel_cmd__', { cmd: 'reset', section: 'sensors' })}
+        >🧹 Reset Sensori</button>
       </ha-expansion-panel>
     `;
   }
 
-  _onFilterChanged(selected) {
-    this.activeFilters = selected;
-    this._fire('sensor_filters', selected);
+  _renderSubPanel(sp, autoDisc) {
+    // filtri e candidates per questo sotto-pannello
+    const filters = this.activeFilters[sp.key];
+    const options = [{ value: sp.deviceClass, label: sp.title }];
+    const candidates = autoDisc
+      ? candidatesFor(this.hass, this.config, 'sensors', filters)
+      : candidatesFor(this.hass, this.config, 'sensors', [sp.deviceClass]);
+
+    const selectedEntity = this.config.entities?.[sp.key]?.entity || '';
+    const selectedUnit   = this.config.entities?.[sp.key]?.unit   || sp.defaultUnit;
+
+    return html`
+      <div class="subpanel">
+        <ha-expansion-panel
+          .expanded=${this.openSub === sp.key}
+          @expanded-changed=${e => this._onToggleSub(e, sp.key)}
+        >
+          <div slot="header">${sp.title}</div>
+
+          <!-- Chips filtro (un solo chip = quella categoria) -->
+          <div class="input-group">
+            <label>Filtro ${sp.title.toLowerCase()}:</label>
+            <ha-selector
+              .hass=${this.hass}
+              .value=${filters}
+              .selector=${{
+                select: { multiple: true, mode: 'box', options }
+              }}
+              @value-changed=${e => this._onFilterChanged(sp.key, e.detail.value)}
+            ></ha-selector>
+          </div>
+
+          <!-- Entity selector -->
+          <div class="input-group">
+            <label>Entità:</label>
+            <ha-selector
+              .hass=${this.hass}
+              .value=${selectedEntity}
+              .selector=${{
+                entity: {
+                  multiple: false,
+                  include_entities: candidates
+                }
+              }}
+              allow-custom-entity
+              @value-changed=${e => this._fire(`entities.${sp.key}.entity`, e.detail.value)}
+            ></ha-selector>
+          </div>
+
+          <!-- Unit selector -->
+          <div class="input-group">
+            <label>Unità di misura:</label>
+            <input
+              type="text"
+              .value=${selectedUnit}
+              placeholder=${sp.unitPlaceholder}
+              @input=${e => this._fire(`entities.${sp.key}.unit`, e.target.value)}
+            />
+          </div>
+        </ha-expansion-panel>
+      </div>
+    `;
+  }
+
+  _onFilterChanged(key, value) {
+    this.activeFilters = { ...this.activeFilters, [key]: value };
+    this._fire(`sensor_filters.${key}`, value);
   }
 
   _onExpandedChanged(e) {
@@ -174,6 +228,14 @@ export class SensorsPanel extends LitElement {
       bubbles: true,
       composed: true,
     }));
+  }
+
+  _onToggleSub(e, key) {
+    if (e.detail.expanded) {
+      this.openSub = key;
+    } else if (this.openSub === key) {
+      this.openSub = '';
+    }
   }
 
   _fire(prop, val) {
