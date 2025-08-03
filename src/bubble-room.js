@@ -1,4 +1,5 @@
-/* ==== src/bubble-room.js (grid-fixed version) ==== */
+
+/* ==== src/bubble-room.js (adaptive version) ==== */
 
 import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
@@ -16,13 +17,13 @@ export class BubbleRoom extends LitElement {
     config: { type: Object },
     hass: { type: Object }
   };
-  
+
   constructor() {
     super();
     this.config = {};
     this.hass = {};
   }
-  
+
   static getStubConfig() {
     return {
       type: 'custom:bubble-room',
@@ -56,39 +57,38 @@ export class BubbleRoom extends LitElement {
       }
     };
   }
-  
+
   static async getConfigElement() {
     await import('./bubble-room-editor.js');
     return document.createElement('bubble-room-editor');
   }
-  
+
   setConfig(config) {
     this.config = config;
   }
-  
+
   static styles = css`
     .bubble-room-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
       width: 100%;
       max-width: 100%;
-      min-width: 0;
       box-sizing: border-box;
       border: 2px dashed yellow;
     }
 
     .main-area {
-      padding: 2vw 0 2vw 2vw;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      min-height: 200px;
+      padding: 2vw;
       box-sizing: border-box;
     }
 
     .main-area > * {
-      max-width: 100%;
+      flex: 1 1 auto;
       width: 100%;
+      max-width: 100%;
       box-sizing: border-box;
     }
 
@@ -105,14 +105,16 @@ export class BubbleRoom extends LitElement {
     .sidebar {
       display: flex;
       flex-direction: column;
-      align-items: stretch;
       justify-content: flex-start;
+      align-items: stretch;
       padding: 2vw 1vw;
       box-sizing: border-box;
     }
 
     .sidebar > * {
+      flex: 1 1 auto;
       width: 100%;
+      max-width: 100%;
       box-sizing: border-box;
     }
 
@@ -130,7 +132,7 @@ export class BubbleRoom extends LitElement {
       }
     }
   `;
-  
+
   render() {
     const mainIcon = this.config.icon || DEFAULT_ICON;
     const iconActive = this.config.colors?.room?.icon_active ?? this.config.icon_active ?? '#21df73';
@@ -141,7 +143,7 @@ export class BubbleRoom extends LitElement {
     const mushroomEntities = this._getMushroomEntities();
     const subbuttons = this._getSubButtons();
     const mushroomSize = { width: 240, height: 190 };
-    
+
     return html`
       <div class="bubble-room-grid">
         <div class="main-area">
@@ -171,7 +173,7 @@ export class BubbleRoom extends LitElement {
       </div>
     `;
   }
-  
+
   _getSensors() {
     return (this.config.sensors || []).map(s => ({
       icon: SENSOR_TYPE_ICON_MAP[s.type]?.icon || 'mdi:help-circle',
@@ -181,7 +183,7 @@ export class BubbleRoom extends LitElement {
       color: s.color || '#e3f6ff'
     }));
   }
-  
+
   _getMushroomEntities() {
     const def = this.config.colors?.room?.mushroom_inactive ?? '#999';
     return (this.config.mushrooms || []).map(e => ({
@@ -190,7 +192,7 @@ export class BubbleRoom extends LitElement {
       color: e.color ?? def,
     }));
   }
-  
+
   _getSubButtons() {
     const defOn = this.config.colors?.subbutton?.background_on ?? '#00d46d';
     const defOff = this.config.colors?.subbutton?.background_off ?? '#999';
@@ -202,11 +204,11 @@ export class BubbleRoom extends LitElement {
       label: sub.label || '',
     }));
   }
-  
+
   _isMainIconActive() {
     return !!this.config.active;
   }
-  
+
   _onMainIconClick() { /* stub */ }
   _onMushroomEntityClick(e) { /* stub */ }
   _onSubButtonClick(e) { /* stub */ }
