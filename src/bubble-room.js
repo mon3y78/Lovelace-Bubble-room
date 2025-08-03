@@ -1,5 +1,5 @@
 
-/* ==== src/bubble-room.js (adaptive version) ==== */
+/* ==== src/bubble-room.js (final adaptive layout) ==== */
 
 import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
@@ -80,25 +80,23 @@ export class BubbleRoom extends LitElement {
     .main-area {
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      padding: 2vw;
+      padding: 1vw;
       box-sizing: border-box;
     }
 
     .main-area > * {
-      flex: 1 1 auto;
       width: 100%;
       max-width: 100%;
+      flex: 0 1 auto;
       box-sizing: border-box;
     }
 
     .icon-mushroom-area {
       width: 100%;
-      max-width: 100%;
-      margin: 1vw 0;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      margin: 1vw 0;
       box-sizing: border-box;
     }
 
@@ -106,16 +104,15 @@ export class BubbleRoom extends LitElement {
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      align-items: stretch;
-      padding: 2vw 1vw;
+      padding: 1vw;
       box-sizing: border-box;
     }
 
     .sidebar > * {
-      flex: 1 1 auto;
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
+      flex: 0 1 auto;
     }
 
     @media (max-width: 600px) {
@@ -129,6 +126,11 @@ export class BubbleRoom extends LitElement {
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
+      }
+
+      .sidebar > * {
+        width: auto;
+        max-width: 100%;
       }
     }
   `;
@@ -209,9 +211,9 @@ export class BubbleRoom extends LitElement {
     return !!this.config.active;
   }
 
-  _onMainIconClick() { /* stub */ }
-  _onMushroomEntityClick(e) { /* stub */ }
-  _onSubButtonClick(e) { /* stub */ }
+  _onMainIconClick() {}
+  _onMushroomEntityClick(e) {}
+  _onSubButtonClick(e) {}
 }
 
 customElements.define('bubble-room', BubbleRoom);
