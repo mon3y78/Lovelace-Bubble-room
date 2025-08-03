@@ -38,7 +38,6 @@ export class BubbleSubButton extends LitElement {
       border-radius: 12px;
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
-      user-select: none;
       min-height: 0;  
     }
     .sub-button:last-child {
@@ -52,7 +51,6 @@ export class BubbleSubButton extends LitElement {
     }
     .sub-button ha-icon {
       --mdc-icon-size: 2em;
-      margin-bottom: 6px;
     }
     .sub-button .label {
       font-size: 0.95rem;
@@ -60,7 +58,6 @@ export class BubbleSubButton extends LitElement {
       text-align: center;
       color: var(--primary-text-color);
       word-break: break-word;
-      padding: 0 4px;
     }
   `;
 
@@ -80,7 +77,6 @@ export class BubbleSubButton extends LitElement {
               @click=${() => this._onClick(idx)}
             >
               <ha-icon icon="${btn.icon}"></ha-icon>
-              ${btn.label ? html`<div class="label">${btn.label}</div>` : ''}
             </div>
           `;
         })}
