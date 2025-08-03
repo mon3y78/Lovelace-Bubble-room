@@ -1389,9 +1389,9 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       max-width: 100%;
       min-width: 0;
       box-sizing: border-box;
-      border: 2px dashed yellow; /* per debug */
+      border: 2px dashed yellow;
     }
-  
+
     .main-area {
       position: relative;
       padding: 2vw 0 2vw 2vw;
@@ -1401,7 +1401,7 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       min-height: 200px;
       z-index: 1;
     }
-  
+
     .icon-mushroom-area {
       position: relative;
       width: 100%;
@@ -1412,7 +1412,7 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       flex-direction: column;
       align-items: flex-start;
     }
-  
+
     .sidebar {
       display: flex;
       flex-direction: column;
@@ -1424,13 +1424,13 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       box-sizing: border-box;
       z-index: 3;
     }
-  
+
     @media (max-width: 600px) {
       .bubble-room-grid {
         grid-template-columns: 1fr;
         border-radius: 12px;
       }
-  
+
       .sidebar {
         flex-direction: row;
         flex-wrap: wrap;
