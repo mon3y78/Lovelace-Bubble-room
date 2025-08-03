@@ -65,20 +65,18 @@ export class BubbleRoom extends LitElement {
       entity_id : sb.entity_id,
     }));
   }
-
-  _onSubButtonClick = e => this._runAction(e.detail, 'tap');
-
-  _onSubButtonHold  = e => this._runAction(e.detail, 'hold');
-
-  _runAction(detail, type) {
-    const idx = detail.index;
-    if (typeof idx !== 'number') return;
+  _onSubButtonClick(e) {
+    this._runAction(e.detail.index, 'tap');
+  }
   
+  _onSubButtonHold(e) {
+    this._runAction(e.detail.index, 'hold');
+  }
+  _runAction(idx, type) {
     const btnCfg = this.config.subbuttons?.[idx];
     if (!btnCfg || !btnCfg.entity_id) return;
     const entId  = btnCfg.entity_id;
   
-    const key    = `sub-button${idx + 1}`;
     const actObj = btnCfg[`${type}_action`] ?? { action: 'toggle' };
     const act    = actObj.action ?? 'toggle';
   
@@ -136,8 +134,8 @@ export class BubbleRoom extends LitElement {
         <div class="sidebar">
           <bubble-subbutton
             .subbuttons="${subbuttons}"
-            @subbutton-click="${e => this._onSubButtonClick(e.detail)}"
-            @subbutton-hold="${e => this._onSubButtonHold(e.detail)}"
+            @subbutton - click = "${this._onSubButtonClick}"
+            @subbutton - hold = "${this._onSubButtonHold}"
           ></bubble-subbutton>
         </div>
       </div>
