@@ -1,53 +1,33 @@
 // src/bubble-room.js
 import { LitElement, html, css } from 'lit';
-// Import “static” del file editor, ma verrà caricato in getConfigElement() via import()
 import './bubble-room-editor.js';
 
 export class BubbleRoom extends LitElement {
-  // 1) Proprietà per la config e per hass (se ti serve)
   static properties = {
     config: { type: Object },
     hass: { type: Object },
   };
   
-  constructor() {
-    super();
-    this.config = {};
-    this.hass = {};
-  }
-  
-  // 2) Home Assistant chiama questo per validare e conservare la config
   setConfig(config) {
     this.config = config;
   }
   
-  // 3) Stub config usata per popolare il form del Visual Editor
   static getStubConfig() {
-    return {
-      type: 'custom:bubble-room',
-      name: 'Stanza di prova',
-      area: 'Zona Giorno',
-      sensors: [],
-      mushrooms: [],
-      subbuttons: [],
-    };
+    return { type: 'custom:bubble-room' };
   }
   
-  // 4) Hook del Visual Editor: importa ed istanzia il tuo editor
   static async getConfigElement() {
-    // carica lazy l’editor
     await import('./bubble-room-editor.js');
-    // crea <bubble-room-editor>
     return document.createElement('bubble-room-editor');
   }
   
-  // --- STILI E RENDER INVARIATI (solo box vuoti con debug) ---
   static styles = css`
     :host {
       display: block;
       height: 100%;
       box-sizing: border-box;
     }
+    /* GRID PRINCIPALE: 2fr + 1fr in col, 1fr in row */
     .bubble-room-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
@@ -55,38 +35,74 @@ export class BubbleRoom extends LitElement {
       width: 100%;
       height: 100%;
       box-sizing: border-box;
-      border: 2px dashed yellow;
+      border: 2px dashed yellow;       /* 🟨 grid wrapper */
     }
+    /* MAIN AREA: due righe */
     .main-area {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-rows: auto 1fr;
       height: 100%;
       min-height: 0;
       box-sizing: border-box;
-      border: 2px dashed green;
+      border: 2px dashed green;        /* 🟩 main-area */
     }
+    /* RIGA 1: bubble-name + sensors */
+    .row1 {
+      display: flex;
+      gap: 8px;
+      box-sizing: border-box;
+      border: 2px dashed blue;         /* 🟦 row1 */
+    }
+    /* RIGA 2: due colonne */
+    .row2 {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+      box-sizing: border-box;
+      border: 2px dashed purple;       /* 🟪 row2 */
+    }
+    /* Colonna 1 di row2 */
     .icon-mushroom-area {
+      box-sizing: border-box;
+      border: 2px dashed violet;       /* 🟣 icon-mushroom-area */
       width: 100%;
       height: 100%;
-      box-sizing: border-box;
-      border: 2px dashed violet;
     }
+    /* Colonna 2 di row2 */
+    .k-space {
+      box-sizing: border-box;
+      border: 2px dashed black;        /* ⚫ k-space placeholder */
+      width: 100%;
+      height: 100%;
+    }
+    /* SIDEBAR */
     .sidebar {
-      display: flex;
-      flex-direction: column;
       height: 100%;
       min-height: 0;
       box-sizing: border-box;
-      border: 2px dashed red;
+      border: 2px dashed red;          /* 🟥 sidebar */
     }
   `;
   
   render() {
     return html`
       <div class="bubble-room-grid">
+        <!-- colonna sinistra -->
         <div class="main-area">
-          <div class="icon-mushroom-area"></div>
+          <!-- row 1 -->
+          <div class="row1">
+            <div class="bubble-name-placeholder">[bubble-name]</div>
+            <div class="sensors-placeholder">[bubble-sensors]</div>
+          </div>
+          <!-- row 2 -->
+          <div class="row2">
+            <div class="icon-mushroom-area"></div>
+            <div class="k-space"></div>
+          </div>
         </div>
+        <!-- colonna destra -->
         <div class="sidebar"></div>
       </div>
     `;
