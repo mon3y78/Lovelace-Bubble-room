@@ -1300,7 +1300,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
   `;render(){const t=this.sensors?.slice(0,3)||[],e=this.sensors?.slice(3,6)||[];return N`
       <div class="sensor-row">
         ${t.map(t=>N`
-          <div class="sensor-pill" style="color: ${t.color||"#e3f6ff"}">
+          <div class="sensor-pill" style="margin: 0; padding: 0; width: 100%; box-sizing: border-box; color: ${t.color||"#e3f6ff"}">
             <ha-icon class="sensor-icon" .icon="${t.icon}"></ha-icon>
             <span class="sensor-label">${t.label||""}</span>
             <span class="sensor-value">${t.value??"--"}</span>
@@ -1311,7 +1311,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       ${e.length?N`
         <div class="sensor-row">
           ${e.map(t=>N`
-            <div class="sensor-pill" style="color: ${t.color||"#e3f6ff"}">
+            <div class="sensor-pill" style="margin: 0; padding: 0; width: 100%; box-sizing: border-box; color: ${t.color||"#e3f6ff"}">
               <ha-icon class="sensor-icon" .icon="${t.icon}"></ha-icon>
               <span class="sensor-label">${t.label||""}</span>
               <span class="sensor-value">${t.value??"--"}</span>
@@ -1375,7 +1375,6 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
     }
     .main-area {
       position: relative;
-      padding: 30px 0 18px 34px;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
