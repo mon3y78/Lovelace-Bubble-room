@@ -1,7 +1,11 @@
-// src/bubble-room.js
 import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
 import './components/BubbleSubButton.js';
+import {
+  DEVICE_CLASS_ICON_MAP,
+  DOMAIN_ICON_MAP,
+  DEFAULT_ICON
+} from './components/icon-mapping.js';
 
 export class BubbleRoom extends LitElement {
   static properties = {
@@ -55,12 +59,32 @@ export class BubbleRoom extends LitElement {
     
     return (this.config.subbuttons || []).map(sb => {
       const stateObj = this.hass.states?.[sb.entity_id];
-      const iconFromState = stateObj?.attributes?.icon;
-      const fallbackIcon = 'mdi:help-circle';
+      const attrs = stateObj?.attributes || {};
+      const devClass = attrs.device_class;
+      const domain = sb.entity_id?.split('.')?.[0] ?? '';
+      const entityState = stateObj?.state;
+      
+      let resolvedIcon = sb.icon;
+      
+      if (!resolvedIcon && attrs.icon) {
+        resolvedIcon = attrs.icon;
+      }
+      
+      if (!resolvedIcon && devClass && DEVICE_CLASS_ICON_MAP[devClass]) {
+        resolvedIcon = DEVICE_CLASS_ICON_MAP[devClass][entityState === 'on' ? 'on' : 'off'];
+      }
+      
+      if (!resolvedIcon) {
+        resolvedIcon = DOMAIN_ICON_MAP[domain];
+      }
+      
+      if (!resolvedIcon) {
+        resolvedIcon = DEFAULT_ICON;
+      }
       
       return {
-        icon: sb.icon || iconFromState || fallbackIcon,
-        active: stateObj?.state === 'on',
+        icon: resolvedIcon,
+        active: entityState === 'on',
         colorOn: bgOn,
         colorOff: bgOff,
         iconOn,

@@ -37,4 +37,22 @@ export const SENSOR_TYPE_ICON_MAP = {
   pm10:        { icon: 'mdi:blur-linear', unit: 'µg/m³' }
 };
 
-export const DEFAULT_ICON = 'mdi:sofa';
+export const DOMAIN_ICON_MAP = {
+  light: 'mdi:lightbulb',
+  switch: 'mdi:toggle-switch',
+  fan: 'mdi:fan',
+  climate: 'mdi:thermostat',
+  cover: 'mdi:window-shutter',
+  media_player: 'mdi:play-circle',
+  script: 'mdi:script-text',
+  scene: 'mdi:palette',
+  lock: 'mdi:lock',
+  camera: 'mdi:video',
+  binary_sensor: 'mdi:checkbox-marked-circle-outline',
+  sensor: 'mdi:eye',
+  alarm_control_panel: 'mdi:shield-home',
+  vacuum: 'mdi:robot-vacuum',
+  siren: 'mdi:bullhorn'
+};
+
+export const DEFAULT_ICON = 'mdi:bookmark';
