@@ -9,18 +9,18 @@ export class BubbleSensors extends LitElement {
   
   static styles = css`
     .sensor-row {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
       display: flex;
-      flex-wrap: wrap;
       gap: 18px;
       justify-content: flex-start;
       margin-bottom: 2px;
       margin-left: 2px;
       border: 2px solid #00e676 !important;
-      width: 100%;
-      max-width: 100%;
-      box-sizing: border-box;
     }
-
     .sensor-pill {
       background: rgba(32,38,55,0.12);
       border-radius: 18px;
