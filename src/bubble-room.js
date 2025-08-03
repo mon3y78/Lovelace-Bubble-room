@@ -70,63 +70,49 @@ export class BubbleRoom extends LitElement {
 
   _onSubButtonHold  = e => this._runAction(e.detail, 'hold');
 
-  _runAction(idx, type) {
-    /* ------------- entità a cui è legato il bottone ------------- */
+  _runAction(detail, type) {
+    const idx = detail.index;
+    if (typeof idx !== 'number') return;
+  
     const btnCfg = this.config.subbuttons?.[idx];
-    if (!btnCfg || !btnCfg.entity_id) return;           // niente da fare
+    if (!btnCfg || !btnCfg.entity_id) return;
     const entId  = btnCfg.entity_id;
   
-    /* ------------- oggetto “azione” dal pannello ------------- */
-    const key    = `sub-button${idx + 1}`;              // sub-button1, 2, 3 …
-    const actObj =
-      this.config.entities?.[key]?.[`${type}_action`]   // se configurato
-      ?? { action: 'toggle' };                          // fall-back
+    const key    = `sub-button${idx + 1}`;
+    const actObj = btnCfg[`${type}_action`] ?? { action: 'toggle' };
+    const act    = actObj.action ?? 'toggle';
   
-    const act = actObj.action ?? 'toggle';
     console.log('[BubbleRoom] runAction', { idx, type, entId, actObj });
   
-    /* ------------- shortcut per callService ------------- */
     const callSvc = (svc, data = {}) => {
       const [dom, srv] = svc.split('.');
       this.hass.callService(dom, srv, data);
     };
   
-    /* ------------- switch azione ------------- */
     switch (act) {
-      /* ---- toggle (smart-dominio) ---- */
       case 'toggle': {
-        const domain = entId.split('.')[0];            // light, switch, ecc.
+        const domain = entId.split('.')[0];
         this.hass.callService(domain, 'toggle', { entity_id: entId });
         break;
       }
-  
-      /* ---- dialogo more-info ---- */
       case 'more-info': {
-        this.dispatchEvent(
-          new CustomEvent('hass-more-info', {
-            bubbles: true, composed: true,
-            detail: { entityId: entId },
-          })
-        );
+        this.dispatchEvent(new CustomEvent('hass-more-info', {
+          bubbles: true, composed: true,
+          detail: { entityId: entId },
+        }));
         break;
       }
-  
-      /* ---- navigazione ---- */
       case 'navigate': {
         if (actObj.navigation_path) location.assign(actObj.navigation_path);
         break;
       }
-  
-      /* ---- qualunque service ---- */
       case 'call-service': {
         if (actObj.service) callSvc(actObj.service, actObj.service_data || {});
         break;
       }
-  
-      /* ---- nessuna azione ---- */
       case 'none':
       default:
-        // intentionally do nothing
+        // do nothing
     }
   }
 
