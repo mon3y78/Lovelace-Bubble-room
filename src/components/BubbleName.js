@@ -23,11 +23,13 @@ export class BubbleName extends LitElement {
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       text-transform: uppercase;
       letter-spacing: -0.03em;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
       font-size: 3.9em;
       font-weight: 900;
       color: #173c16;
       line-height: 0.92em;
-      width: 100%;
       text-align: left;
       overflow: hidden;
       text-overflow: ellipsis;
