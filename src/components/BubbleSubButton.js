@@ -20,7 +20,6 @@ export class BubbleSubButton extends LitElement {
     .subbutton-column {
       display: flex;
       flex-direction: column;
-      gap: 20px;
       align-items: flex-end;
       margin-top: 12px;
       margin-bottom: 8px;
