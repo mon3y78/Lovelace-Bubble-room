@@ -1285,7 +1285,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       grid-template-rows: 1fr 2fr;
     }
     .bubble-room-grid.tall .row1 {
-      grid-template-rows: 1fr 2fr;
+      grid-template-rows: minmax(0, 1fr) minmax(0, 2fr);
     }
     .bubble-room-grid.tall .row2 {
       grid-template-columns: 1fr 0fr;
