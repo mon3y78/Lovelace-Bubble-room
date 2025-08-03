@@ -44,11 +44,6 @@ export class BubbleIcon extends LitElement {
       opacity: 0.26;
       filter: drop-shadow(2px 4px 6px rgba(33,223,115,0.07));
     }
-    @media (max-width: 600px) {
-      .main-icon {
-        font-size: 5.7em;
-      }
-    }
   `;
   
   render() {

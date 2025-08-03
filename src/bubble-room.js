@@ -79,7 +79,6 @@ export class BubbleRoom extends LitElement {
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      min-height: 300px;
       z-index: 1;
     }
     .icon-mushroom-area {

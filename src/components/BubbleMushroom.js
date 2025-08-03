@@ -31,8 +31,8 @@ export class BubbleMushroom extends LitElement {
     }
     .mushroom-entity {
       position: absolute;
-      width: 52px;
-      height: 52px;
+      width: auto;
+      height: auto;
       border-radius: 50%;
       background: rgba(23,60,22,0.13);
       box-shadow: 0 0 6px 0 rgba(40,80,46,0.08);

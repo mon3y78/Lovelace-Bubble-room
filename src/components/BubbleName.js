@@ -20,11 +20,6 @@ export class BubbleName extends LitElement {
   
   static styles = css`
     .bubble-name {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       text-transform: uppercase;
       letter-spacing: -0.03em;
@@ -49,20 +44,22 @@ export class BubbleName extends LitElement {
       margin-left: 0.45em;
       font-weight: 400;
     }
-    @media (max-width: 480px) {
-      .bubble-name {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-        font-size: 2.2em;
-      }
-    }
   `;
   
   render() {
     return html`
+      <style>
+        .bubble-name-wrapper {
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+      </style>
+      <div class="bubble-name-wrapper">
+    
       <div class="bubble-name">
         ${this.name}
         ${this.area
