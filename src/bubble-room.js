@@ -203,3 +203,11 @@ export class BubbleRoom extends LitElement {
 }
 
 customElements.define('bubble-room', BubbleRoom);
+window.customCards = window.customCards || [];
+window.customCards.push({
+  type: 'bubble-room',
+  name: 'Bubble Room',
+  description: 'A stylish room control card with environmental sensors',
+  preview: true,
+  documentationURL: 'https://github.com/mon3y78/Lovelace-Bubble-room'
+});
