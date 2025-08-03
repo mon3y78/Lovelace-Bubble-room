@@ -10,6 +10,9 @@ export class BubbleSubButton extends LitElement {
   constructor() {
     super();
     this.subbuttons = [];
+    this._holdThreshold = 500;   // ms per considerare “hold”
+    this._holdTimer     = null;
+    this._holdFired     = false;
   }
 
   static styles = css`
@@ -61,17 +64,19 @@ export class BubbleSubButton extends LitElement {
   `;
 
   render() {
-    const btns = this.subbuttons || [];
     return html`
       <div class="container">
-        ${btns.map((btn, idx) => {
+        ${this.subbuttons.map((btn, idx) => {
           const bg    = btn.active ? btn.colorOn  : btn.colorOff;
           const color = btn.active ? btn.iconOn   : btn.iconOff;
           return html`
             <div
               class="sub-button"
               style="background: ${bg}; color: ${color};"
-              @click=${() => this._onClick(idx)}
+              @pointerdown=${() => this._onPointerDown(idx)}
+              @pointerup=${() => this._onPointerUp(idx)}
+              @pointerleave=${() => this._clearHoldTimer()}
+              @pointercancel=${() => this._clearHoldTimer()}
             >
               <ha-icon icon="${btn.icon}"></ha-icon>
             </div>
@@ -81,13 +86,36 @@ export class BubbleSubButton extends LitElement {
     `;
   }
 
-  _onClick(index) {
-    const btn = this.subbuttons[index];
-    this.dispatchEvent(new CustomEvent('subbutton-click', {
-      detail: { ...btn, index },
-      bubbles: true,
-      composed: true,
-    }));
+  _onPointerDown(idx) {
+    this._holdFired = false;
+    this._holdTimer = window.setTimeout(() => {
+      this._holdFired = true;
+      const btn = this.subbuttons[idx];
+      this.dispatchEvent(new CustomEvent('subbutton-hold', {
+        detail: { ...btn, index: idx },
+        bubbles: true,
+        composed: true,
+      }));
+    }, this._holdThreshold);
+  }
+
+  _onPointerUp(idx) {
+    this._clearHoldTimer();
+    if (!this._holdFired) {
+      const btn = this.subbuttons[idx];
+      this.dispatchEvent(new CustomEvent('subbutton-click', {
+        detail: { ...btn, index: idx },
+        bubbles: true,
+        composed: true,
+      }));
+    }
+  }
+
+  _clearHoldTimer() {
+    if (this._holdTimer) {
+      clearTimeout(this._holdTimer);
+      this._holdTimer = null;
+    }
   }
 }
 

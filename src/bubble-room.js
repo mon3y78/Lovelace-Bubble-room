@@ -67,11 +67,25 @@ export class BubbleRoom extends LitElement {
     }));
   }
 
-  // Event stub per il click
-  _onSubButtonClick(e) {
-    console.log('Subbutton clicked:', e.detail.button);
-    // qui potresti chiamare un service di HA…
+  _onSubButtonClick(detail) {
+    console.log('Tap action on sub-button:', detail);
+    // Esempio di callService:
+    // const idx = detail.index;
+    // const key = `sub-button${idx+1}`;
+    // const action = this.config.entities?.[key]?.tap_action;
+    // this.hass.callService(action.service_domain, action.service, action.service_data);
   }
+
+  _onSubButtonHold(detail) {
+    console.log('Hold action on sub-button:', detail);
+    // Simile al tap, ma usando hold_action:
+    // const idx = detail.index;
+    // const key = `sub-button${idx+1}`;
+    // const action = this.config.entities?.[key]?.hold_action;
+    // this.hass.callService(action.service_domain, action.service, action.service_data);
+  }
+
+
 
   render() {
     // layout sarà 'wide' o 'tall' in base a RoomPanel.js :contentReference[oaicite:6]{index=6}
