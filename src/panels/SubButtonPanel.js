@@ -6,7 +6,7 @@ import {
   COMMON_CATS,
   FILTER_LABELS,
 } from '../helpers/entity-filters.js';
-import { resolveEntityIcon } from './helpers/icon-mapping.js';
+import { resolveEntityIcon } from '../helpers/icon-mapping.js';
 
 export class SubButtonPanel extends LitElement {
   static properties = {
