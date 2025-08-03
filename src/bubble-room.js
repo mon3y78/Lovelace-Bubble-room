@@ -1,5 +1,5 @@
-/* ==== src/bubble-room.js  (ver. 29-lug-22:13 patched) ==== */
-// src/bubble-room.js (all’inizio del file)
+
+/* ==== src/bubble-room.js  (responsive version) ==== */
 
 import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
@@ -17,13 +17,13 @@ export class BubbleRoom extends LitElement {
     config: { type: Object },
     hass: { type: Object }
   };
-  
+
   constructor() {
     super();
     this.config = {};
     this.hass = {};
   }
-  
+
   static getStubConfig() {
     return {
       type: 'custom:bubble-room',
@@ -57,17 +57,16 @@ export class BubbleRoom extends LitElement {
       }
     };
   }
-  
-  /* ------- HA editor hook ------- */
+
   static async getConfigElement() {
     await import('./bubble-room-editor.js');
     return document.createElement('bubble-room-editor');
   }
+
   setConfig(config) {
     this.config = config;
   }
-  
-  /* ------- CSS ------- */
+
   static styles = css`
     .bubble-room-grid {
       display: grid;
@@ -76,9 +75,9 @@ export class BubbleRoom extends LitElement {
       max-width: 100%;
       min-width: 0;
       box-sizing: border-box;
-      border: 2px dashed yellow; /* per debug */
+      border: 2px dashed yellow;
     }
-  
+
     .main-area {
       position: relative;
       padding: 2vw 0 2vw 2vw;
@@ -88,7 +87,7 @@ export class BubbleRoom extends LitElement {
       min-height: 200px;
       z-index: 1;
     }
-  
+
     .icon-mushroom-area {
       position: relative;
       width: 100%;
@@ -99,7 +98,7 @@ export class BubbleRoom extends LitElement {
       flex-direction: column;
       align-items: flex-start;
     }
-  
+
     .sidebar {
       display: flex;
       flex-direction: column;
@@ -111,13 +110,13 @@ export class BubbleRoom extends LitElement {
       box-sizing: border-box;
       z-index: 3;
     }
-  
+
     @media (max-width: 600px) {
       .bubble-room-grid {
         grid-template-columns: 1fr;
         border-radius: 12px;
       }
-  
+
       .sidebar {
         flex-direction: row;
         flex-wrap: wrap;
@@ -126,25 +125,18 @@ export class BubbleRoom extends LitElement {
       }
     }
   `;
-    
+
   render() {
     const mainIcon = this.config.icon || DEFAULT_ICON;
-    
-    const iconActive =
-      this.config.colors?.room?.icon_active ??
-      this.config.icon_active ?? '#21df73';
-    
-    const iconInactive =
-      this.config.colors?.room?.icon_inactive ??
-      this.config.icon_inactive ?? '#173c16';
-    
+    const iconActive = this.config.colors?.room?.icon_active ?? this.config.icon_active ?? '#21df73';
+    const iconInactive = this.config.colors?.room?.icon_inactive ?? this.config.icon_inactive ?? '#173c16';
     const name = this.config.name || 'Room';
     const area = this.config.area || '';
     const sensors = this._getSensors();
     const mushroomEntities = this._getMushroomEntities();
     const subbuttons = this._getSubButtons();
     const mushroomSize = { width: 240, height: 190 };
-    
+
     return html`
       <div class="bubble-room-grid">
         <div class="main-area">
@@ -174,8 +166,7 @@ export class BubbleRoom extends LitElement {
       </div>
     `;
   }
-  
-  /* ------- helpers ------- */
+
   _getSensors() {
     return (this.config.sensors || []).map(s => ({
       icon: SENSOR_TYPE_ICON_MAP[s.type]?.icon || 'mdi:help-circle',
@@ -185,7 +176,7 @@ export class BubbleRoom extends LitElement {
       color: s.color || '#e3f6ff'
     }));
   }
-  
+
   _getMushroomEntities() {
     const def = this.config.colors?.room?.mushroom_inactive ?? '#999';
     return (this.config.mushrooms || []).map(e => ({
@@ -194,7 +185,7 @@ export class BubbleRoom extends LitElement {
       color: e.color ?? def,
     }));
   }
-  
+
   _getSubButtons() {
     const defOn = this.config.colors?.subbutton?.background_on ?? '#00d46d';
     const defOff = this.config.colors?.subbutton?.background_off ?? '#999';
@@ -206,15 +197,14 @@ export class BubbleRoom extends LitElement {
       label: sub.label || '',
     }));
   }
-  
+
   _isMainIconActive() {
     return !!this.config.active;
   }
-  
-  /* ------- event stub (da completare) ------- */
-  _onMainIconClick() { /* ... */ }
-  _onMushroomEntityClick(e) { /* ... */ }
-  _onSubButtonClick(e) { /* ... */ }
+
+  _onMainIconClick() { /* stub */ }
+  _onMushroomEntityClick(e) { /* stub */ }
+  _onSubButtonClick(e) { /* stub */ }
 }
 
 customElements.define('bubble-room', BubbleRoom);
