@@ -1,6 +1,3 @@
-
-/* ==== src/bubble-room.js (final adaptive layout) ==== */
-
 import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
 import './components/BubbleIcon.js';
@@ -73,64 +70,42 @@ export class BubbleRoom extends LitElement {
       grid-template-columns: 2fr 1fr;
       width: 100%;
       max-width: 100%;
+      min-width: 0;
       box-sizing: border-box;
       border: 2px dashed yellow;
     }
-
     .main-area {
+      position: relative;
+      padding: 30px 0 18px 34px;
       display: flex;
       flex-direction: column;
-      padding: 1vw;
-      box-sizing: border-box;
+      justify-content: flex-start;
+      min-height: 300px;
+      z-index: 1;
     }
-
-    .main-area > * {
-      width: 100%;
-      max-width: 100%;
-      flex: 0 1 auto;
-      box-sizing: border-box;
-    }
-
     .icon-mushroom-area {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      margin: 1vw 0;
-      box-sizing: border-box;
+      position: relative;
+      width: 240px;
+      height: auto;
+      margin-top: 12px;
+      margin-left: -10px;
+      margin-bottom: 12px;
     }
-
     .sidebar {
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      padding: 1vw;
-      box-sizing: border-box;
-    }
-
-    .sidebar > * {
+      align-items: stretch;
       width: 100%;
-      max-width: 100%;
+      height: 100%;
       box-sizing: border-box;
-      flex: 0 1 auto;
+      border: 2px solid red;
     }
-
     @media (max-width: 600px) {
       .bubble-room-grid {
-        grid-template-columns: 1fr;
-        border-radius: 12px;
-      }
-
-      .sidebar {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .sidebar > * {
-        width: auto;
-        max-width: 100%;
+        min-width: 100vw;
+        grid-template-columns: 1fr 90px;
+        border-radius: 19px;
       }
     }
   `;
@@ -168,6 +143,7 @@ export class BubbleRoom extends LitElement {
         </div>
         <div class="sidebar">
           <bubble-subbutton
+            style="width: 100%; display: block;"
             .subbuttons="${subbuttons}"
             @subbutton-click="${this._onSubButtonClick}"
           ></bubble-subbutton>
@@ -217,4 +193,3 @@ export class BubbleRoom extends LitElement {
 }
 
 customElements.define('bubble-room', BubbleRoom);
-/* ==== fine bubble-room.js ==== */
