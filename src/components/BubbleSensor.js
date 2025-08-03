@@ -9,30 +9,25 @@ export class BubbleSensors extends LitElement {
   
   static styles = css`
     .sensor-row {
+      display: flex;
+      flex-wrap: wrap;         /* importante per ridimensionare */
+      gap: 18px;               /* mantiene lo spazio fra pillole */
       width: 100%;
       max-width: 100%;
       min-width: 0;
-      margin: 0;
+      box-sizing: border-box;
+      margin: 0 0 2px;         /* solo margin-bottom 2px */
       padding: 0;
-      box-sizing: border-box;
-      flex-wrap: wrap;
-      border: 2px solid limegreen;
-      width: 100%;
-      max-width: 100%;
-      box-sizing: border-box;
-      margin-left: 0 !important;
-      margin-right: 0 !important;
-      display: flex;
-      gap: 18px;
-      justify-content: flex-start;
-      margin-bottom: 2px;
-      margin-left: 2px;
       border: 2px solid #00e676 !important;
     }
     .sensor-pill {
+      flex: 1 1 30%;           /* occupano circa 30% l’una, riducendosi */
+      min-width: 0;            /* lasciale “schiacciare” se serve */
+      box-sizing: border-box;
+      margin: 0;               /* togli eventuali margin-left duplicati */
+      padding: 0.27em 1em; 
       background: rgba(32,38,55,0.12);
       border-radius: 18px;
-      padding: 0.27em 1.01em 0.27em 0.73em;
       display: flex;
       align-items: center;
       gap: 0.5em;
@@ -40,7 +35,6 @@ export class BubbleSensors extends LitElement {
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       font-weight: 700;
       color: #e3f6ff;
-      min-width: 52px;
       max-width: 132px;
       letter-spacing: 0.01em;
     }

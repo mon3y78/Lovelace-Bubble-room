@@ -14,26 +14,30 @@ export class BubbleSubButton extends LitElement {
     :host {
       display: block;
       width: 100%;
+      max-width: 100%;
+      min-width: 0;
       box-sizing: border-box;
     }
 
     .container {
       display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      justify-content: flex-start;
+      flex-wrap: wrap;         /* per più colonne automatiche */
       gap: 8px;
       width: 100%;
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     .sub-button {
-      width: 100%;
-      max-width: 100%;
+      flex: 1 1 45%;           /* due colonne circa */
+      min-width: 0;
       box-sizing: border-box;
       padding: 8px;
-      border-radius: 12px;
       text-align: center;
+      width: 100%;
+      max-width: 100%;
+      border-radius: 12px;
     }
 
     ha-icon {

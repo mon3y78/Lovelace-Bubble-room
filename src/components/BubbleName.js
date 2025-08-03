@@ -19,15 +19,28 @@ export class BubbleName extends LitElement {
   }
   
   static styles = css`
+    .bubble-name-wrapper {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;        /* abilita il ridimensionamento */
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
     .bubble-name {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      margin: 0 0 0.13em;  /* margine-bottom originale */
+      padding: 0;
+      font-size: clamp(1.2rem, 4vw, 3.9em);  /* scala con lo schermo */
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       text-transform: uppercase;
       letter-spacing: -0.03em;
-      font-size: 3.9em;
       font-weight: 900;
       color: #173c16;
       line-height: 0.92em;
-      width: 100%;
       text-align: left;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -59,12 +72,12 @@ export class BubbleName extends LitElement {
         }
       </style>
       <div class="bubble-name-wrapper">
-    
-      <div class="bubble-name">
-        ${this.name}
-        ${this.area
-          ? html`<span class="bubble-area">(${this.area})</span>`
-          : ''}
+        <div class="bubble-name">
+          ${this.name}
+          ${this.area
+            ? html`<span class="bubble-area">(${this.area})</span>`
+            : ''}
+        </div>
       </div>
     `;
   }

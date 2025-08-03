@@ -25,20 +25,22 @@ export class BubbleIcon extends LitElement {
   
   static styles = css`
     :host {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
       position: absolute;
       left: 0;
       bottom: 0;
-      z-index: 1;
-      pointer-events: auto;
     }
     .main-icon {
-      font-size: 8.7em;       /* icona gigante! */
+      font-size: clamp(3rem, 6vw, 8.7em);      /* icona gigante! */
       opacity: 0.18;          /* molto trasparente */
       color: var(--icon-color, #173c16);
       transition: color 0.2s, opacity 0.2s;
       filter: drop-shadow(1px 1.5px 0px rgba(34,54,15,0.07));
       user-select: none;
-      border: 2px solid #00bcd4 !important;
     }
     .main-icon.active {
       opacity: 0.26;

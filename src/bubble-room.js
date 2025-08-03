@@ -83,8 +83,10 @@ export class BubbleRoom extends LitElement {
     }
     .icon-mushroom-area {
       position: relative;
-      width: 240px;
-      height: auto;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
       margin-top: 12px;
       margin-left: -10px;
       margin-bottom: 12px;

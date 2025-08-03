@@ -20,6 +20,14 @@ export class BubbleMushroom extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
     .mushroom-container {
       position: absolute;
       left: 0;
@@ -27,7 +35,6 @@ export class BubbleMushroom extends LitElement {
       width: 100%;
       height: 100%;
       pointer-events: none;
-      border: 2px solid #d500f9 !important;
     }
     .mushroom-entity {
       position: absolute;
