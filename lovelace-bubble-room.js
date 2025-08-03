@@ -1400,13 +1400,6 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       box-sizing: border-box;
       border: 2px solid red;
     }
-    @media (max-width: 600px) {
-      .bubble-room-grid {
-        min-width: 100vw;
-        grid-template-columns: 1fr 90px;
-        border-radius: 19px;
-      }
-    }
   `;render(){const t=this.config.icon||"mdi:sofa",e=this.config.colors?.room?.icon_active??this.config.icon_active??"#21df73",i=this.config.colors?.room?.icon_inactive??this.config.icon_inactive??"#173c16",s=this.config.name||"Room",o=this.config.area||"",n=this._getSensors(),r=this._getMushroomEntities(),a=this._getSubButtons();return N`
       <div class="bubble-room-grid">
         <div class="main-area">
