@@ -84,56 +84,58 @@ export class BubbleRoom extends LitElement {
     .bubble-room-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
+      /* rimosso grid-template-rows: 1fr; */
       width: 100%; height: 100%;
       box-sizing: border-box;
-      border: 2px solid yellow;    /* 🟨 debug */
+      border: 2px dashed yellow;  /* 🟨 debug */
     }
 
     /* ── MAIN AREA ── */
     .main-area {
       display: grid;
-      /* rows SOLO in .stretto/.largo */
+      /* rows impostate solo nei due layout */
       height: 100%;
-      min-width: 0;  min-height: 0;
+      min-height: 0;              /* permette di scendere sotto l’altezza minima del contenuto */
       box-sizing: border-box;
-      border: 2px dashed green;     /* 🟩 debug */
+      border: 2px dashed green;   /* 🟩 debug */
     }
 
+    /* ROW1 (sensori + nome) */
     .row1 {
       display: grid;
       gap: 4px;
-      /* rows SOLO in .stretto/.largo */
-      min-width: 0;  min-height: 0;
+      min-height: 0;              /* <-- qui */
       box-sizing: border-box;
-      border: 2px dashed blue;      /* 🟦 debug */
+      border: 2px dashed blue;    /* 🟦 debug */
     }
+    .sensors-placeholder {
+      border: 2px dashed lime;    /* 🟢 debug */
+      /* rimosso width/height fissi */
+      box-sizing: border-box;
+    }
+    .name-placeholder {
+      border: 2px dashed orange;  /* 🟠 debug */
+      /* rimosso width/height fissi */
+      box-sizing: border-box;
+    }
+
+    /* ROW2 (icon-mushroom + k-space) */
     .row2 {
       display: grid;
       gap: 4px;
       height: 100%;
-      min-width: 0;  min-height: 0;
+      min-height: 0;              /* <-- già presente */
       box-sizing: border-box;
-      border: 2px dashed purple;    /* 🟪 debug */
-    }
-
-    .sensors-placeholder {
-      border: 2px dashed lime;      /* 🟢 debug */
-      min-width: 0;  min-height: 0;
-    }
-    .name-placeholder {
-      border: 2px dashed orange;    /* 🟠 debug */
-      min-width: 0;  min-height: 0;
+      border: 2px dashed purple;  /* 🟪 debug */
     }
     .icon-mushroom-area {
-      border: 2px dashed violet;    /* 🟣 debug */
-      /* rimosse width/height fisse */
-      min-width: 0;  min-height: 0;
+      border: 2px dashed violet;  /* 🟣 debug */
+      /* rimosso width/height fissi */
       box-sizing: border-box;
     }
     .k-space {
-      border: 2px dashed black;     /* ⚫ debug */
-      /* rimosse width/height fisse */
-      min-width: 0;  min-height: 0;
+      border: 2px dashed black;   /* ⚫ debug */
+      /* rimosso width/height fissi */
       box-sizing: border-box;
     }
 
@@ -142,33 +144,33 @@ export class BubbleRoom extends LitElement {
       display: flex;
       flex-direction: column;
       height: 100%;
-      min-width: 0;  min-height: 0;
+      min-height: 0;
       box-sizing: border-box;
-      border: 2px dashed red;       /* 🟥 debug */
+      border: 2px dashed red;     /* 🟥 debug */
     }
 
-    /* ── LAYOUT “STRETTO” ── */
-    .bubble-room-grid.stretto .main-area {
-      grid-template-rows: minmax(0, 1fr) minmax(0, 2fr);
+    /* ── LAYOUT “TALL” (stretto) ── */
+    .bubble-room-grid.tall .main-area {
+      grid-template-rows: 1fr 2fr;
     }
-    .bubble-room-grid.stretto .row1 {
-      grid-template-rows: minmax(0, 1fr) minmax(0, 2fr);
+    .bubble-room-grid.tall .row1 {
+      grid-template-rows: 1fr 2fr;
     }
-    .bubble-room-grid.stretto .row2 {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 0fr);
+    .bubble-room-grid.tall .row2 {
+      grid-template-columns: 1fr 0fr;
     }
 
+    /* ── LAYOUT “WIDE” (largo) ── */
+    .bubble-room-grid.wide .main-area {
+      grid-template-rows: 2fr 1fr;
+    }
+    .bubble-room-grid.wide .row1 {
+      grid-template-rows: 2fr 1fr;
+    }
+    .bubble-room-grid.wide .row2 {
+      grid-template-columns: 1fr 1fr;
+    }
 
-    /* ── LAYOUT “LARGO” ── */
-    .bubble-room-grid.largo .main-area {
-      grid-template-rows: minmax(0, 2fr) minmax(0, 1fr);
-    }
-    .bubble-room-grid.largo .row1 {
-      grid-template-rows: minmax(0, 2fr) minmax(0, 1fr);
-    }
-    .bubble-room-grid.largo .row2 {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    }
   `;
 }
 
