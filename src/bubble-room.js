@@ -1,7 +1,6 @@
 // src/bubble-room.js
 import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
-// importa il tuo sub‐button custom element
 import './components/BubbleSubButton.js';
 
 export class BubbleRoom extends LitElement {
@@ -17,27 +16,11 @@ export class BubbleRoom extends LitElement {
   }
 
   setConfig(rawConfig) {
-    // clona rawConfig ed imposta default layout “wide”
+    // Clono la config e imposto default layout “wide”
     this.config = {
       layout: 'wide',
       ...rawConfig,
     };
-  }
-  _getSubButtons() {
-    const bgOn    = this.config.colors?.subbutton?.background_on  ?? '#00d46d';
-    const bgOff   = this.config.colors?.subbutton?.background_off ?? '#999';
-    const iconOn  = this.config.colors?.subbutton?.icon_on        ?? '#ff0';
-    const iconOff = this.config.colors?.subbutton?.icon_off       ?? '#666';
-
-    return (this.config.subbuttons || []).map(sb => ({
-      icon:     sb.icon,
-      active:   this.hass.states[sb.entity_id]?.state === 'on',
-      colorOn:  bgOn,
-      colorOff: bgOff,
-      iconOn:   iconOn,
-      iconOff:  iconOff,
-      // label: sb.label  → se lo hai tolto, non metterlo
-    }));
   }
 
   static getStubConfig() {
@@ -49,9 +32,16 @@ export class BubbleRoom extends LitElement {
       sensors: [],
       mushrooms: [],
       subbuttons: [
-        // esempio di subbutton stub
-        { icon: 'mdi:lamp', label: 'Luce', colorOn: '#0f0', colorOff: '#444', active: false }
-      ]
+        { entity_id: 'light.luce', icon: 'mdi:lightbulb', active: false }
+      ],
+      colors: {
+        subbutton: {
+          background_on: 'rgba(var(--color-blue),1)',
+          background_off: 'rgba(var(--color-blue),0.3)',
+          icon_on: 'yellow',
+          icon_off: '#666'
+        }
+      }
     };
   }
 
@@ -60,29 +50,50 @@ export class BubbleRoom extends LitElement {
     return document.createElement('bubble-room-editor');
   }
 
+  // Trasforma config.subbuttons + hass.states → {icon, active, colorOn, colorOff, iconOn, iconOff}
+  _getSubButtons() {
+    const bgOn    = this.config.colors?.subbutton?.background_on  ?? '#00d46d';
+    const bgOff   = this.config.colors?.subbutton?.background_off ?? '#999';
+    const iconOn  = this.config.colors?.subbutton?.icon_on        ?? 'yellow';
+    const iconOff = this.config.colors?.subbutton?.icon_off       ?? '#666';
+
+    return (this.config.subbuttons || []).map(sb => ({
+      icon:     sb.icon,
+      active:   this.hass.states?.[sb.entity_id]?.state === 'on',
+      colorOn:  bgOn,
+      colorOff: bgOff,
+      iconOn:   iconOn,
+      iconOff:  iconOff,
+    }));
+  }
+
+  // Event stub per il click
+  _onSubButtonClick(e) {
+    console.log('Subbutton clicked:', e.detail.button);
+    // qui potresti chiamare un service di HA…
+  }
 
   render() {
-    const layout = this.config.layout || 'stretto';
+    // layout sarà 'wide' o 'tall' in base a RoomPanel.js :contentReference[oaicite:6]{index=6}
+    const layout    = this.config.layout || 'wide';
+    const subbuttons= this._getSubButtons();
+
     return html`
       <div class="bubble-room-grid ${layout}">
-        <!-- COLONNA SINISTRA -->
         <div class="main-area">
-          <!-- ROW 1: sensori sopra, nome sotto -->
           <div class="row1">
             <div class="sensors-placeholder">[bubble-sensors]</div>
             <div class="name-placeholder">[bubble-name]</div>
           </div>
-          <!-- ROW 2: icon-mushroom | k-space -->
           <div class="row2">
-            <div class="icon-mushroom-area"></div>
+            <div class="icon-mushroom-area">[bubble-mushroom]</div>
             <div class="k-space"></div>
           </div>
         </div>
-        <!-- COLONNA DESTRA -->
         <div class="sidebar">
           <bubble-subbutton
-            .subbuttons="${this.config.subbuttons || []}"
-            @subbutton-click="${e => console.log('click', e.detail.button)}"
+            .subbuttons="${subbuttons}"
+            @subbutton-click="${this._onSubButtonClick}"
           ></bubble-subbutton>
         </div>
       </div>
@@ -91,102 +102,45 @@ export class BubbleRoom extends LitElement {
 
   static styles = css`
     :host {
-      display: block;
-      height: 100%;
-      box-sizing: border-box;
+      display: block; height: 100%; box-sizing: border-box;
     }
-
-    /* ── GRID PRINCIPALE ── */
     .bubble-room-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
-      /* rimosso grid-template-rows: 1fr; */
-      width: 100%; height: 100%;
-      box-sizing: border-box;
-      border: 2px dashed yellow;  /* 🟨 debug */
+      width: 100%; height: 100%; box-sizing: border-box;
+      border: 2px dashed yellow;
     }
-
-    /* ── MAIN AREA ── */
     .main-area {
-      display: grid;
-      /* rows impostate solo nei due layout */
-      height: 100%;
-      min-height: 0;              /* permette di scendere sotto l’altezza minima del contenuto */
-      box-sizing: border-box;
-      border: 2px dashed green;   /* 🟩 debug */
+      display: grid; height: 100%; min-height: 0; box-sizing: border-box;
+      border: 2px dashed green;
     }
-
-    /* ROW1 (sensori + nome) */
     .row1 {
-      display: grid;
-      gap: 4px;
-      min-height: 0;              /* <-- qui */
-      box-sizing: border-box;
-      border: 2px dashed blue;    /* 🟦 debug */
+      display: grid; gap: 4px; min-height: 0; box-sizing: border-box;
+      border: 2px dashed blue;
     }
-    .sensors-placeholder {
-      border: 2px dashed lime;    /* 🟢 debug */
-      /* rimosso width/height fissi */
-      box-sizing: border-box;
-    }
-    .name-placeholder {
-      border: 2px dashed orange;  /* 🟠 debug */
-      /* rimosso width/height fissi */
-      box-sizing: border-box;
-    }
-
-    /* ROW2 (icon-mushroom + k-space) */
     .row2 {
-      display: grid;
-      gap: 4px;
-      height: 100%;
-      min-height: 0;              /* <-- già presente */
-      box-sizing: border-box;
-      border: 2px dashed purple;  /* 🟪 debug */
+      display: grid; gap: 4px; height: 100%; min-height: 0; box-sizing: border-box;
+      border: 2px dashed purple;
     }
-    .icon-mushroom-area {
-      border: 2px dashed violet;  /* 🟣 debug */
-      /* rimosso width/height fissi */
-      box-sizing: border-box;
-    }
-    .k-space {
-      border: 2px dashed black;   /* ⚫ debug */
-      /* rimosso width/height fissi */
-      box-sizing: border-box;
-    }
-
-    /* ── SIDEBAR ── */
+    .sensors-placeholder { border: 2px dashed lime; box-sizing: border-box; }
+    .name-placeholder    { border: 2px dashed orange; box-sizing: border-box; }
+    .icon-mushroom-area  { border: 2px dashed violet; box-sizing: border-box; }
+    .k-space             { border: 2px dashed black; box-sizing: border-box; }
     .sidebar {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      min-height: 0;
-      box-sizing: border-box;
-      border: 2px dashed red;     /* 🟥 debug */
+      display: flex; flex-direction: column;
+      height: 100%; min-height: 0; box-sizing: border-box;
+      border: 2px dashed red;
     }
 
-    /* ── LAYOUT “TALL” (stretto) ── */
-    .bubble-room-grid.tall .main-area {
-      grid-template-rows: 1fr 2fr;
-    }
-    .bubble-room-grid.tall .row1 {
-      grid-template-rows: minmax(0, 1fr) minmax(0, 2fr);
-    }
-    .bubble-room-grid.tall .row2 {
-      grid-template-columns: 1fr 0fr;
-    }
+    /* ── LAYOUT “TALL” ── */
+    .bubble-room-grid.tall .main-area    { grid-template-rows: 1fr 2fr; }
+    .bubble-room-grid.tall .row1         { grid-template-rows: 1fr 2fr; }
+    .bubble-room-grid.tall .row2         { grid-template-columns: 1fr 0fr; }
 
-    /* ── LAYOUT “WIDE” (largo) ── */
-    .bubble-room-grid.wide .main-area {
-      grid-template-rows: 2fr 1fr;
-    }
-    .bubble-room-grid.wide .row1 {
-      grid-template-rows: 2fr 1fr;
-    }
-    .bubble-room-grid.wide .row2 {
-      grid-template-columns: 1fr 1fr;
-    }
-
+    /* ── LAYOUT “WIDE” ── */
+    .bubble-room-grid.wide .main-area    { grid-template-rows: 2fr 1fr; }
+    .bubble-room-grid.wide .row1         { grid-template-rows: 2fr 1fr; }
+    .bubble-room-grid.wide .row2         { grid-template-columns: 1fr 1fr; }
   `;
 }
 

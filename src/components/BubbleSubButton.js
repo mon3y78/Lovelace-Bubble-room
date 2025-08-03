@@ -3,8 +3,7 @@ import { LitElement, html, css } from 'lit';
 
 export class BubbleSubButton extends LitElement {
   static properties = {
-    // Array of subbutton configs:
-    // [{ entity, icon, active, colorOn, colorOff, label }, …]
+    // riceve array di oggetti { icon, active, colorOn, colorOff, iconOn, iconOff }
     subbuttons: { type: Array },
   };
 
@@ -62,18 +61,16 @@ export class BubbleSubButton extends LitElement {
   `;
 
   render() {
-    const count = this.subbuttons.length;
-    if (!count) {
-      return html`<div class="container"></div>`;
-    }
+    const btns = this.subbuttons || [];
     return html`
       <div class="container">
-        ${this.subbuttons.map((btn, idx) => {
-          const bg = btn.active ? btn.colorOn : btn.colorOff;
+        ${btns.map((btn, idx) => {
+          const bg    = btn.active ? btn.colorOn  : btn.colorOff;
+          const color = btn.active ? btn.iconOn   : btn.iconOff;
           return html`
             <div
               class="sub-button"
-              style="background: ${bg};"
+              style="background: ${bg}; color: ${color};"
               @click=${() => this._onClick(idx)}
             >
               <ha-icon icon="${btn.icon}"></ha-icon>
@@ -87,7 +84,7 @@ export class BubbleSubButton extends LitElement {
   _onClick(index) {
     const btn = this.subbuttons[index];
     this.dispatchEvent(new CustomEvent('subbutton-click', {
-      detail: { entity: btn.entity, index },
+      detail: { ...btn, index },
       bubbles: true,
       composed: true,
     }));
