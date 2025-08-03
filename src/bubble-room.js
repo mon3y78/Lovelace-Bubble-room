@@ -1,5 +1,6 @@
 // src/bubble-room.js
 import { LitElement, html, css } from 'lit';
+import './bubble-room-editor.js';
 
 export class BubbleRoom extends LitElement {
   // 1) Dichiariamo la proprietà config
