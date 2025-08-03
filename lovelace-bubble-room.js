@@ -1309,7 +1309,6 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
     .subbutton-column {
       display: flex;
       flex-direction: column;
-      gap: 20px;
       align-items: flex-end;
       margin-top: 12px;
       margin-bottom: 8px;
