@@ -108,7 +108,8 @@ export class BubbleRoom extends LitElement {
         <div class="sidebar">
           <bubble-subbutton
             .subbuttons="${subbuttons}"
-            @subbutton-click="${this._onSubButtonClick}"
+            @subbutton-click="${e => this._onSubButtonClick(e.detail)}"
+            @subbutton-hold="${e => this._onSubButtonHold(e.detail)}"
           ></bubble-subbutton>
         </div>
       </div>
