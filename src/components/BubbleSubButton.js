@@ -24,9 +24,12 @@ export class BubbleSubButton extends LitElement {
       flex-direction: column;
       height: 100%;
       width: 100%;
+      min-height: 0; 
+      min-width: 0; 
+      box-sizing: border-box;
     }
     .sub-button {
-      flex: 1;
+      flex: 1 1 0%;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -36,6 +39,7 @@ export class BubbleSubButton extends LitElement {
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
       user-select: none;
+      min-height: 0;  
     }
     .sub-button:last-child {
       margin-bottom: 0;
@@ -47,7 +51,7 @@ export class BubbleSubButton extends LitElement {
       transform: scale(0.97);
     }
     .sub-button ha-icon {
-      --mdc-icon-size: 32px;
+      --mdc-icon-size: 2em;
       margin-bottom: 6px;
     }
     .sub-button .label {
