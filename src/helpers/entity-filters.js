@@ -20,6 +20,7 @@ export const FILTER_LABELS = {
   motion:    'Movimento',
   occupancy: 'Occupazione',
   presence:  'Presenza',
+  switch: 'Pulsante',
 };
 
 /* ───────────── domini comuni (senza “sensor”) ───────────── */
@@ -36,6 +37,7 @@ export const COMMON_CATS = [
   'scene',
   'script',
   'siren',
+  'switch',
   'vacuum',
 ];
 

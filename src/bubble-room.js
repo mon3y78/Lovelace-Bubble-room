@@ -54,7 +54,7 @@ export class BubbleRoom extends LitElement {
     const iconOff = this.config.colors?.subbutton?.icon_off ?? '#666';
     
     return (this.config.subbuttons || []).map(sb => ({
-      icon: sb.icon,
+      icon      : sb.icon || state?.attributes.icon || 'mdi:help-circle',
       active: this.hass.states?.[sb.entity_id]?.state === 'on',
       colorOn: bgOn,
       colorOff: bgOff,
