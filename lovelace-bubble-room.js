@@ -1414,15 +1414,14 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
     }
 
     .sidebar {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      justify-content: flex-start;
-      padding: 2vw 1vw;
-      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 1vw;
+      align-items: center;
+      justify-content: center;
+      padding: 1vw;
       width: 100%;
       box-sizing: border-box;
-      z-index: 3;
     }
 
     @media (max-width: 600px) {
