@@ -5,7 +5,7 @@ import {
   DEVICE_CLASS_ICON_MAP,
   DOMAIN_ICON_MAP,
   DEFAULT_ICON
-} from './components/icon-mapping.js';
+} from './helpers/icon-mapping.js';
 
 export class BubbleRoom extends LitElement {
   static properties = {

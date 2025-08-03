@@ -6,6 +6,7 @@ import {
   COMMON_CATS,
   FILTER_LABELS,
 } from '../helpers/entity-filters.js';
+import { resolveEntityIcon } from './helpers/icon-mapping.js'; 
 
 export class SubButtonPanel extends LitElement {
   static properties = {
@@ -305,8 +306,15 @@ export class SubButtonPanel extends LitElement {
     
     _onEntity(i, ent) {
       this._entities[i] = ent;
+      
       if (!this.config.subbuttons[i]) this.config.subbuttons[i] = {};
       this.config.subbuttons[i].entity_id = ent;
+      
+      // Se non c'è già un'icona, assegnala in automatico
+      if (!this.config.subbuttons[i].icon && this.hass) {
+        this.config.subbuttons[i].icon = resolveEntityIcon(ent, this.hass);
+      }
+      
       this._emit('subbuttons', this.config.subbuttons);
     }
     
