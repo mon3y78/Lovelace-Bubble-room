@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
 import './components/BubbleSubButton.js';
+import './components/BubbleName.js';
 import { resolveEntityIcon } from './helpers/icon-mapping.js';
 
 export class BubbleRoom extends LitElement {
@@ -85,7 +86,9 @@ export class BubbleRoom extends LitElement {
         <div class="main-area">
           <div class="row1">
             <div class="sensors-placeholder">[bubble-sensors]</div>
-            <div class="name-placeholder">[bubble-name]</div>
+            <div class="name-placeholder">
+              <bubble-name .name="${this.config.name}" .area="${this.config.area}"></bubble-name>
+            </div>
           </div>
           <div class="row2">
             <div class="icon-mushroom-area">[bubble-mushroom]</div>
