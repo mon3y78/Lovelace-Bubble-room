@@ -101,13 +101,6 @@ export class BubbleRoom extends LitElement {
       box-sizing: border-box;
       border: 2px solid red;
     }
-    @media (max-width: 600px) {
-      .bubble-room-grid {
-        min-width: 100vw;
-        grid-template-columns: 1fr 90px;
-        border-radius: 19px;
-      }
-    }
   `;
 
   render() {
