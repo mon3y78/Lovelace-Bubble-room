@@ -651,7 +651,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
           </div>
         `:""}
       </div>
-    `}_toggleAuto(t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.mushroom",val:t},bubbles:!0,composed:!0}))}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e),this.requestUpdate()}_onFilter(t,e){this._filters[t]=[...e],this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"mushroom_filters",val:this._filters},bubbles:!0,composed:!0}))}_onEntity(t,e){this._entities[t]=e,this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t+1}.entity`,val:e},bubbles:!0,composed:!0}))}_reset(){this._expanded=Array(5).fill(!1),this._filters=Array(5).fill().map(()=>[...rt]),this._entities=Array(5).fill(""),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"mushroom_filters",val:this._filters},bubbles:!0,composed:!0}));for(let t=1;t<=5;t++)this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t}.entity`,val:""},bubbles:!0,composed:!0}))}}customElements.define("mushroom-panel",xt);class yt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(4).fill(!1),this._filters=Array(4).fill().map(()=>[...rt]),this._entities=Array(4).fill("")}updated(t){if(t.has("config")||t.has("hass")){gt(this.hass,this.config,"auto_discovery_sections.subbutton"),Array.isArray(this.config.subbuttons)||(this.config.subbuttons=Array(4).fill().map(()=>({})));const t=this.config.subbutton_filters;Array.isArray(t)&&4===t.length&&(this._filters=t.map(t=>Array.isArray(t)?[...t]:[...rt]));for(let t=0;t<4;t++){const e=this.config.subbuttons[t]?.entity_id||this.config.entities?.[`sub-button${t+1}`]?.entity||"";this._entities[t]=e}}}static styles=n`
+    `}_toggleAuto(t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.mushroom",val:t},bubbles:!0,composed:!0}))}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e),this.requestUpdate()}_onFilter(t,e){this._filters[t]=[...e],this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"mushroom_filters",val:this._filters},bubbles:!0,composed:!0}))}_onEntity(t,e){this._entities[t]=e,this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t+1}.entity`,val:e},bubbles:!0,composed:!0}))}_reset(){this._expanded=Array(5).fill(!1),this._filters=Array(5).fill().map(()=>[...rt]),this._entities=Array(5).fill(""),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"mushroom_filters",val:this._filters},bubbles:!0,composed:!0}));for(let t=1;t<=5;t++)this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t}.entity`,val:""},bubbles:!0,composed:!0}))}}customElements.define("mushroom-panel",xt);class yt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(4).fill(!1),this._filters=Array(4).fill().map(()=>[...rt]),this._entities=Array(4).fill("")}updated(t){if(t.has("config")||t.has("hass")){gt(this.hass,this.config,"auto_discovery_sections.subbutton"),Array.isArray(this.config.subbuttons)||(this.config.subbuttons=Array(4).fill().map(()=>({})));const t=this.config.subbutton_filters;Array.isArray(t)&&4===t.length&&(this._filters=t.map(t=>Array.isArray(t)?[...t]:[...rt]));for(let t=0;t<4;t++){const e=this.config.subbuttons[t]?.entity_id||"";this._entities[t]=e}}}static styles=n`
     :host { display: block; }
     .glass-panel {
       margin: 0 !important;
@@ -781,93 +781,87 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       box-shadow: 0 6px 32px #ff4c6abf;
     }
   `;render(){const t=this.config.auto_discovery_sections?.subbutton??!1,e=rt.map(t=>({value:t,label:nt[t]||t.charAt(0).toUpperCase()+t.slice(1)}));return H`
-      <ha-expansion-panel
-        class="glass-panel"
-        .expanded=${this.expanded}
-        @expanded-changed=${t=>this.expanded=t.detail.expanded}
-      >
-        <div slot="header" class="glass-header">🎛️ Sub-buttons</div>
-
-        <!-- Auto-discover -->
-        <div class="input-group autodiscover">
-          <input type="checkbox" .checked=${t}
-                 @change=${t=>this._toggleAuto(t.target.checked)} />
-          <label>🪄 Auto-discover Subbuttons</label>
-        </div>
-
-        <!-- 4 mini-pill -->
-        ${this._expanded.map((t,i)=>this._renderSubButton(i,t,e))}
-
-        <button class="reset-button" @click=${()=>this._reset()}>🧹 Reset Sub-buttons</button>
-      </ha-expansion-panel>
-    `}_renderSubButton(t,e,i){const s=`sub-button${t+1}`,o=this._filters[t],n=this._entities[t],r=pt(this.hass,this.config,"subbutton",o),a=this.config.entities?.[s]||{},l=["toggle","more-info","navigate","call-service","none"];return H`
-      <div class="mini-pill ${e?"expanded":""}">
-        <div class="mini-pill-header" @click=${()=>this._togglePill(t)}>
-          Sub-button ${t+1}  <span class="chevron">${e?"▼":"▶"}</span>
-        </div>
-        ${e?H`
-          <div class="mini-pill-content">
-            <!-- filtri -->
-            <div class="input-group">
-              <label>Filter categories:</label>
-              <ha-selector .hass=${this.hass} .value=${o}
-                .selector=${{select:{multiple:!0,mode:"box",options:i}}}
-                @value-changed=${e=>this._onFilter(t,e.detail.value)}
-              ></ha-selector>
-            </div>
-
-            <!-- entità -->
-            <div class="input-group">
-              <label>Entity:</label>
-              <ha-selector .hass=${this.hass} .value=${n}
-                .selector=${{entity:{include_entities:r,multiple:!1}}}
-                allow-custom-entity
-                @value-changed=${e=>this._onEntity(t,e.detail.value)}
-              ></ha-selector>
-            </div>
-
-            <!-- icona -->
-            <div class="input-group">
-              <label>Icon:</label>
-              <ha-icon-picker .hass=${this.hass} .value=${a.icon||""}
-                allow-custom-icon
-                @value-changed=${e=>this._onIcon(t,e.detail.value)}
-              ></ha-icon-picker>
-            </div>
-
-            <!-- tap / hold -->
-            ${["tap","hold"].map(e=>H`
-              <div class="input-group">
-                <label>${"tap"===e?"Tap Action":"Hold Action"}:</label>
-                <div class="pill-group">
-                  ${l.map(i=>H`
-                    <button
-                      class="pill-button ${a[`${e}_action`]?.action===i?"active":""}"
-                      @click=${()=>this._onAction(t,e,"action",i)}
-                    >${i}</button>
-                  `)}
-                </div>
-                ${this._extraFields(t,e,a)}
-              </div>
-            `)}
+        <ha-expansion-panel
+          class="glass-panel"
+          .expanded=${this.expanded}
+          @expanded-changed=${t=>this.expanded=t.detail.expanded}
+        >
+          <div slot="header" class="glass-header">🎛️ Sub-buttons</div>
+  
+          <div class="input-group autodiscover">
+            <input type="checkbox" .checked=${t}
+                   @change=${t=>this._toggleAuto(t.target.checked)} />
+            <label>🪄 Auto-discover Subbuttons</label>
           </div>
-        `:""}
-      </div>
-    `}_extraFields(t,e,i){const s=i[`${e}_action`]?.action;return"navigate"===s?H`
-        <input type="text" placeholder="Path"
-          .value=${i[`${e}_action`]?.navigation_path||""}
-          @input=${i=>this._onAction(t,e,"navigation_path",i.target.value)}
-        />
-      `:"call-service"===s?H`
-        <input type="text" placeholder="Service"
-          .value=${i[`${e}_action`]?.service||""}
-          @input=${i=>this._onAction(t,e,"service",i.target.value)}
-        />
-        <input type="text" placeholder='Service Data (JSON)'
-          .value=${i[`${e}_action`]?.service_data?JSON.stringify(i[`${e}_action`].service_data):""}
-          @input=${i=>this._onAction(t,e,"service_data",this._safeJson(i.target.value))}
-        />
-      `:""}_safeJson(t){try{return JSON.parse(t)}catch{return{}}}_toggleAuto(t){this._emit("auto_discovery_sections.subbutton",t)}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e)}_onFilter(t,e){this._filters[t]=[...e],this._emit("subbutton_filters",this._filters)}_onEntity(t,e){this._entities[t]=e,this._emit(`entities.sub-button${t+1}.entity`,e),this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t].entity_id=e,this._emit("subbuttons",this.config.subbuttons)}_onIcon(t,e){this._emit(`entities.sub-button${t+1}.icon`,e),this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t].icon=e,this._emit("subbuttons",this.config.subbuttons)}_onAction(t,e,i,s){this._emit(`entities.sub-button${t+1}.${e}_action.${i}`,s),this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t][`${e}_action`]={action:s},this._emit("subbuttons",this.config.subbuttons)}_reset(){this._expanded=Array(4).fill(!1),this._filters=Array(4).fill().map(()=>[...rt]),this._entities=Array(4).fill(""),this.config.subbuttons=Array(4).fill().map(()=>({})),this._emit("subbutton_filters",this._filters),this._emit("subbuttons",this.config.subbuttons);for(let t=1;t<=4;t++){const e=`entities.sub-button${t}`;this._emit(`${e}.entity`,""),this._emit(`${e}.icon`,""),["tap","hold"].forEach(t=>this._emit(`${e}.${t}_action`,{action:"tap"===t?"toggle":"more-info"}))}}_emit(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("sub-button-panel",yt);class $t extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expandedColors:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expandedColors=[!1,!1]}updated(t){(t.has("config")||t.has("hass"))&&gt(this.hass,this.config,"auto_discovery_sections.colors")}static styles=n`
+  
+          ${this._expanded.map((t,i)=>this._renderSubButton(i,t,e))}
+  
+          <button class="reset-button" @click=${()=>this._reset()}>🧹 Reset Sub-buttons</button>
+        </ha-expansion-panel>
+      `}_renderSubButton(t,e,i){const s=this._filters[t],o=this._entities[t],n=pt(this.hass,this.config,"subbutton",s),r=this.config.subbuttons?.[t]||{},a=["toggle","more-info","navigate","call-service","none"];return H`
+        <div class="mini-pill ${e?"expanded":""}">
+          <div class="mini-pill-header" @click=${()=>this._togglePill(t)}>
+            Sub-button ${t+1}  <span class="chevron">${e?"▼":"▶"}</span>
+          </div>
+          ${e?H`
+            <div class="mini-pill-content">
+              <div class="input-group">
+                <label>Filter categories:</label>
+                <ha-selector .hass=${this.hass} .value=${s}
+                  .selector=${{select:{multiple:!0,mode:"box",options:i}}}
+                  @value-changed=${e=>this._onFilter(t,e.detail.value)}
+                ></ha-selector>
+              </div>
+  
+              <div class="input-group">
+                <label>Entity:</label>
+                <ha-selector .hass=${this.hass} .value=${o}
+                  .selector=${{entity:{include_entities:n,multiple:!1}}}
+                  allow-custom-entity
+                  @value-changed=${e=>this._onEntity(t,e.detail.value)}
+                ></ha-selector>
+              </div>
+  
+              <div class="input-group">
+                <label>Icon:</label>
+                <ha-icon-picker .hass=${this.hass} .value=${r.icon||""}
+                  allow-custom-icon
+                  @value-changed=${e=>this._onIcon(t,e.detail.value)}
+                ></ha-icon-picker>
+              </div>
+  
+              ${["tap","hold"].map(e=>H`
+                <div class="input-group">
+                  <label>${"tap"===e?"Tap Action":"Hold Action"}:</label>
+                  <div class="pill-group">
+                    ${a.map(i=>H`
+                      <button
+                        class="pill-button ${r[`${e}_action`]?.action===i?"active":""}"
+                        @click=${()=>this._onAction(t,e,"action",i)}
+                      >${i}</button>
+                    `)}
+                  </div>
+                  ${this._extraFields(t,e,r)}
+                </div>
+              `)}
+            </div>
+          `:""}
+        </div>
+      `}_extraFields(t,e,i){const s=i[`${e}_action`]?.action;return"navigate"===s?H`
+          <input type="text" placeholder="Path"
+            .value=${i[`${e}_action`]?.navigation_path||""}
+            @input=${i=>this._onAction(t,e,"navigation_path",i.target.value)}
+          />
+        `:"call-service"===s?H`
+          <input type="text" placeholder="Service"
+            .value=${i[`${e}_action`]?.service||""}
+            @input=${i=>this._onAction(t,e,"service",i.target.value)}
+          />
+          <input type="text" placeholder='Service Data (JSON)'
+            .value=${i[`${e}_action`]?.service_data?JSON.stringify(i[`${e}_action`].service_data):""}
+            @input=${i=>this._onAction(t,e,"service_data",this._safeJson(i.target.value))}
+          />
+        `:""}_safeJson(t){try{return JSON.parse(t)}catch{return{}}}_toggleAuto(t){this._emit("auto_discovery_sections.subbutton",t)}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e)}_onFilter(t,e){this._filters[t]=[...e],this._emit("subbutton_filters",this._filters)}_onEntity(t,e){this._entities[t]=e,this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t].entity_id=e,this._emit("subbuttons",this.config.subbuttons)}_onIcon(t,e){this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t].icon=e,this._emit("subbuttons",this.config.subbuttons)}_onAction(t,e,i,s){this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t][`${e}_action`]={...this.config.subbuttons[t][`${e}_action`],[i]:s},this._emit("subbuttons",this.config.subbuttons)}_reset(){this._expanded=Array(4).fill(!1),this._filters=Array(4).fill().map(()=>[...rt]),this._entities=Array(4).fill(""),this.config.subbuttons=Array(4).fill().map(()=>({})),this._emit("subbutton_filters",this._filters),this._emit("subbuttons",this.config.subbuttons)}_emit(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("sub-button-panel",yt);class $t extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expandedColors:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expandedColors=[!1,!1]}updated(t){(t.has("config")||t.has("hass"))&&gt(this.hass,this.config,"auto_discovery_sections.colors")}static styles=n`
     :host { display: block; }
     .glass-panel {
       margin: 0 !important;
@@ -1164,7 +1158,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
             </div>
           `})}
       </div>
-    `}_onDown(t){this._holdFired=!1,this._currentIndex=t,this._holdTimer=window.setTimeout(()=>{this._holdFired=!0;const t=this.subbuttons[this._currentIndex];this.dispatchEvent(new CustomEvent("subbutton-hold",{detail:{...t,index:this._currentIndex},bubbles:!0,composed:!0}))},this._holdThreshold)}_onUp(t){if(this._clearHoldTimer(),!this._holdFired&&this._currentIndex===t){const e=this.subbuttons[t];this.dispatchEvent(new CustomEvent("subbutton-click",{detail:{...e,index:t},bubbles:!0,composed:!0}))}}_clearHoldTimer(){this._holdTimer&&(clearTimeout(this._holdTimer),this._holdTimer=null)}}customElements.define("bubble-subbutton",kt);class Et extends st{static properties={config:{type:Object},hass:{type:Object}};constructor(){super(),this.config={},this.hass={}}setConfig(t){this.config={layout:"wide",...t}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:"Stanza di prova",area:"Zona Giorno",sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return wt}),document.createElement("bubble-room-editor")}_getSubButtons(){const t=this.config.colors?.subbutton?.background_on??"#00d46d",e=this.config.colors?.subbutton?.background_off??"#999",i=this.config.colors?.subbutton?.icon_on??"yellow",s=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(o=>({icon:o.icon,active:"on"===this.hass.states?.[o.entity_id]?.state,colorOn:t,colorOff:e,iconOn:i,iconOff:s,entity_id:o.entity_id}))}_onSubButtonClick=t=>this._runAction(t.detail,"tap");_onSubButtonHold=t=>this._runAction(t.detail,"hold");_runAction(t,e){const i=this.config.subbuttons?.[t];if(!i||!i.entity_id)return;const s=i.entity_id,o=`sub-button${t+1}`,n=this.config.entities?.[o]?.[`${e}_action`]??{action:"toggle"},r=n.action??"toggle";console.log("[BubbleRoom] runAction",{idx:t,type:e,entId:s,actObj:n});const a=(t,e={})=>{const[i,s]=t.split(".");this.hass.callService(i,s,e)};switch(r){case"toggle":{const t=s.split(".")[0];this.hass.callService(t,"toggle",{entity_id:s});break}case"more-info":this.dispatchEvent(new CustomEvent("hass-more-info",{bubbles:!0,composed:!0,detail:{entityId:s}}));break;case"navigate":n.navigation_path&&location.assign(n.navigation_path);break;case"call-service":n.service&&a(n.service,n.service_data||{})}}render(){const t=this.config.layout||"wide",e=this._getSubButtons();return H`
+    `}_onDown(t){this._holdFired=!1,this._currentIndex=t,this._holdTimer=window.setTimeout(()=>{this._holdFired=!0;const t=this.subbuttons[this._currentIndex];this.dispatchEvent(new CustomEvent("subbutton-hold",{detail:{...t,index:this._currentIndex},bubbles:!0,composed:!0}))},this._holdThreshold)}_onUp(t){if(this._clearHoldTimer(),!this._holdFired&&this._currentIndex===t){const e=this.subbuttons[t];this.dispatchEvent(new CustomEvent("subbutton-click",{detail:{...e,index:t},bubbles:!0,composed:!0}))}}_clearHoldTimer(){this._holdTimer&&(clearTimeout(this._holdTimer),this._holdTimer=null)}}customElements.define("bubble-subbutton",kt);class Et extends st{static properties={config:{type:Object},hass:{type:Object}};constructor(){super(),this.config={},this.hass={}}setConfig(t){this.config={layout:"wide",...t}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:"Stanza di prova",area:"Zona Giorno",sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return wt}),document.createElement("bubble-room-editor")}_getSubButtons(){const t=this.config.colors?.subbutton?.background_on??"#00d46d",e=this.config.colors?.subbutton?.background_off??"#999",i=this.config.colors?.subbutton?.icon_on??"yellow",s=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(o=>({icon:o.icon,active:"on"===this.hass.states?.[o.entity_id]?.state,colorOn:t,colorOff:e,iconOn:i,iconOff:s,entity_id:o.entity_id}))}_onSubButtonClick=t=>this._runAction(t.detail,"tap");_onSubButtonHold=t=>this._runAction(t.detail,"hold");_runAction(t,e){const i=t.index;if("number"!=typeof i)return;const s=this.config.subbuttons?.[i];if(!s||!s.entity_id)return;const o=s.entity_id,n=s[`${e}_action`]??{action:"toggle"},r=n.action??"toggle";console.log("[BubbleRoom] runAction",{idx:i,type:e,entId:o,actObj:n});const a=(t,e={})=>{const[i,s]=t.split(".");this.hass.callService(i,s,e)};switch(r){case"toggle":{const t=o.split(".")[0];this.hass.callService(t,"toggle",{entity_id:o});break}case"more-info":this.dispatchEvent(new CustomEvent("hass-more-info",{bubbles:!0,composed:!0,detail:{entityId:o}}));break;case"navigate":n.navigation_path&&location.assign(n.navigation_path);break;case"call-service":n.service&&a(n.service,n.service_data||{})}}render(){const t=this.config.layout||"wide",e=this._getSubButtons();return H`
       <div class="bubble-room-grid ${t}">
         <div class="main-area">
           <div class="row1">
