@@ -52,7 +52,9 @@ export class BubbleRoom extends LitElement {
 
   static styles = css`
     :host {
-      display: block; height: 100%; box-sizing: border-box;
+      display: block; 
+      height: 100%; 
+      box-sizing: border-box;
     }
     .bubble-room-grid {
       display: grid;
@@ -82,11 +84,23 @@ export class BubbleRoom extends LitElement {
       box-sizing: border-box;
       border: 2px dashed purple;
     }
-
-    .sensors-placeholder { border:2px dashed lime; width:100%; height:100%; box-sizing:border-box; }
-    .name-placeholder    { border:2px dashed orange; width:100%; height:100%; box-sizing:border-box; }
-    .icon-mushroom-area { border: 2px dashed violet; }
-    .k-space            { border: 2px dashed black; }
+    .sensors-placeholder {
+      border:2px dashed lime; 
+      width:100%; height:100%; 
+      box-sizing:border-box; 
+    }
+    .name-placeholder {
+      border:2px dashed orange;
+      width:100%; height:100%; 
+      box-sizing:border-box; 
+    }
+    .icon-mushroom-area {
+      box-sizing: border-box;
+      border: 2px dashed violet; 
+    }
+    .k-space {
+      box-sizing: border-box;
+      border: 2px dashed black; }
     .sidebar {
       display:flex; 
       flex-direction:column;
