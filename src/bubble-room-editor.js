@@ -1,4 +1,3 @@
-// src/bubble-room-editor.js
 import { LitElement, html, css } from 'lit';
 import './panels/RoomPanel.js';
 import './panels/SensorPanel.js';
@@ -29,8 +28,14 @@ export class BubbleRoomEditor extends LitElement {
     this.openPanel = '';
   }
 
-  setConfig(config) {
-    config = { ...config };
+  setConfig(rawConfig) {
+    // Clona rawConfig e imposta default layout “wide”
+    const config = {
+      layout: 'wide',
+      ...rawConfig,
+    };
+
+    // Mantieni le sezioni di auto-discovery
     config.auto_discovery_sections = {
       room:      !!config.area,
       sensor:    !!config.area,
@@ -39,8 +44,10 @@ export class BubbleRoomEditor extends LitElement {
       color:     true,
       ...(config.auto_discovery_sections || {}),
     };
+
     if (!Array.isArray(config.sensor_filters)) config.sensor_filters = [];
     if (!config.entities) config.entities = {};
+
     this.config = config;
   }
 
@@ -89,7 +96,7 @@ export class BubbleRoomEditor extends LitElement {
   }
 
   _togglePanel(e, key) {
-    this.openPanel = e.detail.expanded ? key : this.openPanel === key ? '' : this.openPanel;
+    this.openPanel = e.detail.expanded ? key : (this.openPanel === key ? '' : this.openPanel);
   }
 
   _onConfigChanged(e) {
@@ -97,7 +104,8 @@ export class BubbleRoomEditor extends LitElement {
     this._setConfigValue(prop, val);
     this.dispatchEvent(new CustomEvent('config-changed', {
       detail: { config: this.config },
-      bubbles: true, composed: true
+      bubbles: true,
+      composed: true,
     }));
   }
 

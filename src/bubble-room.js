@@ -1,31 +1,30 @@
-// src/bubble-room.js
 import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
 
 export class BubbleRoom extends LitElement {
   static properties = {
     config: { type: Object },
-    hass: { type: Object }
+    hass:   { type: Object },
   };
-  
+
   constructor() {
     super();
     this.config = {};
-    this.hass = {};
+    this.hass   = {};
   }
-  
-  setConfig(config) {
-    this.config = config;
-    // fallback se non valido
-    if (!['stretto', 'largo'].includes(this.config.layout)) {
-      this.config.layout = 'stretto';
-    }
+
+  setConfig(rawConfig) {
+    // Clona rawConfig e imposta default layout “wide”
+    this.config = {
+      layout: 'wide',
+      ...rawConfig,
+    };
   }
-  
+
   static getStubConfig() {
     return {
       type: 'custom:bubble-room',
-      layout: 'stretto',
+      layout: 'wide',
       name: 'Stanza di prova',
       area: 'Zona Giorno',
       sensors: [],
@@ -33,12 +32,12 @@ export class BubbleRoom extends LitElement {
       subbuttons: []
     };
   }
-  
+
   static async getConfigElement() {
     await import('./bubble-room-editor.js');
     return document.createElement('bubble-room-editor');
   }
-  
+
   static styles = css`
     :host {
       display: block;
@@ -46,27 +45,25 @@ export class BubbleRoom extends LitElement {
       box-sizing: border-box;
     }
 
-    /* Griglia principale: 2fr / 1fr in larghezza, unica riga 100% altezza */
+    /* ── GRID PRINCIPALE ── */
     .bubble-room-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
       grid-template-rows: 1fr;
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       box-sizing: border-box;
       border: 2px dashed yellow;  /* 🟨 debug */
     }
 
-    /* MAIN AREA: verrà ridefinita per stretto/largo */
+    /* ── MAIN AREA ── */
     .main-area {
       display: grid;
-      height: 100%;
-      min-height: 0;
+      height: 100%; min-height: 0;
       box-sizing: border-box;
       border: 2px dashed green;   /* 🟩 debug */
     }
 
-    /* ROW1: due righe interne (sensori sopra, nome sotto) */
+    /* ROW1 (sensori + nome) */
     .row1 {
       display: grid;
       gap: 4px;
@@ -74,22 +71,21 @@ export class BubbleRoom extends LitElement {
       border: 2px dashed blue;    /* 🟦 debug */
     }
     .sensors-placeholder {
-      border: 2px dashed lime;    /* 🟢 debug sensori */
+      border: 2px dashed lime;    /* 🟢 debug */
       width: 100%; height: 100%;
       box-sizing: border-box;
     }
     .name-placeholder {
-      border: 2px dashed orange;  /* 🟠 debug nome */
+      border: 2px dashed orange;  /* 🟠 debug */
       width: 100%; height: 100%;
       box-sizing: border-box;
     }
 
-    /* ROW2: due colonne (icon-mushroom + k-space) */
+    /* ROW2 (icon-mushroom + k-space) */
     .row2 {
       display: grid;
       gap: 4px;
-      height: 100%;
-      min-height: 0;
+      height: 100%; min-height: 0;
       box-sizing: border-box;
       border: 2px dashed purple;  /* 🟪 debug */
     }
@@ -104,57 +100,55 @@ export class BubbleRoom extends LitElement {
       box-sizing: border-box;
     }
 
-    /* SIDEBAR */
+    /* ── SIDEBAR ── */
     .sidebar {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      min-height: 0;
+      display: flex; flex-direction: column;
+      height: 100%; min-height: 0;
       box-sizing: border-box;
       border: 2px dashed red;     /* 🟥 debug */
     }
 
-    /* ─── LAYOUT “STRETTO” ─── */
-    .bubble-room-grid.stretto .main-area {
+    /* ── LAYOUT “TALL” (stretto) ── */
+    .bubble-room-grid.tall .main-area {
       grid-template-rows: 1fr 2fr;
     }
-    .bubble-room-grid.stretto .row1 {
+    .bubble-room-grid.tall .row1 {
       grid-template-rows: 1fr 2fr;
     }
-    .bubble-room-grid.stretto .row2 {
+    .bubble-room-grid.tall .row2 {
       grid-template-columns: 1fr 0fr;
     }
 
-    /* ─── LAYOUT “LARGO” ─── */
-    .bubble-room-grid.largo .main-area {
+    /* ── LAYOUT “WIDE” (largo) ── */
+    .bubble-room-grid.wide .main-area {
       grid-template-rows: 2fr 1fr;
     }
-    .bubble-room-grid.largo .row1 {
+    .bubble-room-grid.wide .row1 {
       grid-template-rows: 2fr 1fr;
     }
-    .bubble-room-grid.largo .row2 {
+    .bubble-room-grid.wide .row2 {
       grid-template-columns: 1fr 1fr;
     }
   `;
-  
+
   render() {
-    const layout = this.config.layout || 'stretto';
+    const layout = this.config.layout || 'wide';
     return html`
       <div class="bubble-room-grid ${layout}">
-        <!-- Colonna sinistra -->
+        <!-- Column 1: Main Area -->
         <div class="main-area">
-          <!-- Row1: sensori + nome -->
+          <!-- Row 1 -->
           <div class="row1">
             <div class="sensors-placeholder"></div>
             <div class="name-placeholder"></div>
           </div>
-          <!-- Row2: icon-mushroom + k-space -->
+          <!-- Row 2 -->
           <div class="row2">
             <div class="icon-mushroom-area"></div>
             <div class="k-space"></div>
           </div>
         </div>
-        <!-- Colonna destra -->
+        <!-- Column 2: Sidebar -->
         <div class="sidebar"></div>
       </div>
     `;
