@@ -86,7 +86,7 @@ export class BubbleRoom extends LitElement {
       grid-template-columns: 2fr 1fr;
       width: 100%; height: 100%;
       box-sizing: border-box;
-      border: 2px dashed yellow;    /* 🟨 debug */
+      border: 2px solid yellow;    /* 🟨 debug */
     }
 
     /* ── MAIN AREA ── */
