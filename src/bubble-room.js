@@ -148,14 +148,27 @@ export class BubbleRoom extends LitElement {
     }
 
     /* ── LAYOUT “STRETTO” ── */
-    .bubble-room-grid.stretto .main-area    { grid-template-rows: 1fr 2fr; }
-    .bubble-room-grid.stretto .row1         { grid-template-rows: 1fr 2fr; }
-    .bubble-room-grid.stretto .row2         { grid-template-columns: 1fr 0fr; }
+    .bubble-room-grid.stretto .main-area {
+      grid-template-rows: minmax(0, 1fr) minmax(0, 2fr);
+    }
+    .bubble-room-grid.stretto .row1 {
+      grid-template-rows: minmax(0, 1fr) minmax(0, 2fr);
+    }
+    .bubble-room-grid.stretto .row2 {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0fr);
+    }
+
 
     /* ── LAYOUT “LARGO” ── */
-    .bubble-room-grid.largo .main-area      { grid-template-rows: 2fr 1fr; }
-    .bubble-room-grid.largo .row1           { grid-template-rows: 2fr 1fr; }
-    .bubble-room-grid.largo .row2           { grid-template-columns: 1fr 1fr; }
+    .bubble-room-grid.largo .main-area {
+      grid-template-rows: minmax(0, 2fr) minmax(0, 1fr);
+    }
+    .bubble-room-grid.largo .row1 {
+      grid-template-rows: minmax(0, 2fr) minmax(0, 1fr);
+    }
+    .bubble-room-grid.largo .row2 {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
   `;
 }
 
