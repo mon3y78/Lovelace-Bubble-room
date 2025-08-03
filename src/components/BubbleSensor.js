@@ -67,7 +67,7 @@ export class BubbleSensors extends LitElement {
     return html`
       <div class="sensor-row">
         ${row1.map(sensor => html`
-          <div class="sensor-pill" style="color: ${sensor.color || '#e3f6ff'}">
+          <div class="sensor-pill" style="margin: 0; padding: 0; width: 100%; box-sizing: border-box; color: ${sensor.color || '#e3f6ff'}">
             <ha-icon class="sensor-icon" .icon="${sensor.icon}"></ha-icon>
             <span class="sensor-label">${sensor.label || ''}</span>
             <span class="sensor-value">${sensor.value ?? '--'}</span>
@@ -78,7 +78,7 @@ export class BubbleSensors extends LitElement {
       ${row2.length ? html`
         <div class="sensor-row">
           ${row2.map(sensor => html`
-            <div class="sensor-pill" style="color: ${sensor.color || '#e3f6ff'}">
+            <div class="sensor-pill" style="margin: 0; padding: 0; width: 100%; box-sizing: border-box; color: ${sensor.color || '#e3f6ff'}">
               <ha-icon class="sensor-icon" .icon="${sensor.icon}"></ha-icon>
               <span class="sensor-label">${sensor.label || ''}</span>
               <span class="sensor-value">${sensor.value ?? '--'}</span>

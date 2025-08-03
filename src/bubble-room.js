@@ -76,7 +76,6 @@ export class BubbleRoom extends LitElement {
     }
     .main-area {
       position: relative;
-      padding: 30px 0 18px 34px;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
