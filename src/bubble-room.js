@@ -23,6 +23,22 @@ export class BubbleRoom extends LitElement {
       ...rawConfig,
     };
   }
+  _getSubButtons() {
+    const bgOn    = this.config.colors?.subbutton?.background_on  ?? '#00d46d';
+    const bgOff   = this.config.colors?.subbutton?.background_off ?? '#999';
+    const iconOn  = this.config.colors?.subbutton?.icon_on        ?? '#ff0';
+    const iconOff = this.config.colors?.subbutton?.icon_off       ?? '#666';
+
+    return (this.config.subbuttons || []).map(sb => ({
+      icon:     sb.icon,
+      active:   this.hass.states[sb.entity_id]?.state === 'on',
+      colorOn:  bgOn,
+      colorOff: bgOff,
+      iconOn:   iconOn,
+      iconOff:  iconOff,
+      // label: sb.label  → se lo hai tolto, non metterlo
+    }));
+  }
 
   static getStubConfig() {
     return {
