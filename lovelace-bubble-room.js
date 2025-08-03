@@ -1183,7 +1183,9 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       </div>
     `:N`<div class="container"></div>`}_onClick(e){const t=this.subbuttons[e];this.dispatchEvent(new CustomEvent("subbutton-click",{detail:{entity:t.entity,index:e},bubbles:!0,composed:!0}))}}customElements.define("bubble-subbutton",Ee);class ke extends se{static properties={config:{type:Object},hass:{type:Object}};constructor(){super(),this.config={},this.hass={}}setConfig(e){this.config={layout:"wide",...e}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:"Stanza di prova",area:"Zona Giorno",sensors:[],mushrooms:[],subbuttons:[{icon:"mdi:lamp",label:"Luce",colorOn:"#0f0",colorOff:"#444",active:!1}]}}static async getConfigElement(){return await Promise.resolve().then(function(){return we}),document.createElement("bubble-room-editor")}_onSubButtonClick(e){console.log("Subbutton clicked:",e.detail.button)}static styles=n`
     :host {
-      display: block; height: 100%; box-sizing: border-box;
+      display: block; 
+      height: 100%; 
+      box-sizing: border-box;
     }
     .bubble-room-grid {
       display: grid;
@@ -1213,11 +1215,23 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       box-sizing: border-box;
       border: 2px dashed purple;
     }
-
-    .sensors-placeholder { border:2px dashed lime; width:100%; height:100%; box-sizing:border-box; }
-    .name-placeholder    { border:2px dashed orange; width:100%; height:100%; box-sizing:border-box; }
-    .icon-mushroom-area { border: 2px dashed violet; }
-    .k-space            { border: 2px dashed black; }
+    .sensors-placeholder {
+      border:2px dashed lime; 
+      width:100%; height:100%; 
+      box-sizing:border-box; 
+    }
+    .name-placeholder {
+      border:2px dashed orange;
+      width:100%; height:100%; 
+      box-sizing:border-box; 
+    }
+    .icon-mushroom-area {
+      box-sizing: border-box;
+      border: 2px dashed violet; 
+    }
+    .k-space {
+      box-sizing: border-box;
+      border: 2px dashed black; }
     .sidebar {
       display:flex; 
       flex-direction:column;
