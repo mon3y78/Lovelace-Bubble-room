@@ -15,6 +15,7 @@ export class BubbleSubButton extends LitElement {
       display: block;
       width: 100%;
       box-sizing: border-box;
+      border: 2px solid red; /* debug border for host */
     }
 
     .container {
@@ -25,6 +26,7 @@ export class BubbleSubButton extends LitElement {
       gap: 8px;
       width: 100%;
       box-sizing: border-box;
+      border: 2px solid orange; /* debug border for container */
     }
 
     .sub-button {
@@ -34,6 +36,7 @@ export class BubbleSubButton extends LitElement {
       padding: 8px;
       border-radius: 12px;
       text-align: center;
+      border: 2px dashed green; /* debug border for individual buttons */
     }
 
     ha-icon {
