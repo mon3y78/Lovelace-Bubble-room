@@ -1401,6 +1401,12 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       box-sizing: border-box;
     }
 
+    .main-area > * {
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
     .icon-mushroom-area {
       width: 100%;
       max-width: 100%;
@@ -1414,9 +1420,14 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
     .sidebar {
       display: flex;
       flex-direction: column;
-      align-items: flex-end;
+      align-items: stretch;
       justify-content: flex-start;
       padding: 2vw 1vw;
+      box-sizing: border-box;
+    }
+
+    .sidebar > * {
+      width: 100%;
       box-sizing: border-box;
     }
 
