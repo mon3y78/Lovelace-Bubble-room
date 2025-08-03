@@ -1394,25 +1394,23 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
     .main-area {
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      padding: 2vw;
+      padding: 1vw;
       box-sizing: border-box;
     }
 
     .main-area > * {
-      flex: 1 1 auto;
       width: 100%;
       max-width: 100%;
+      flex: 0 1 auto;
       box-sizing: border-box;
     }
 
     .icon-mushroom-area {
       width: 100%;
-      max-width: 100%;
-      margin: 1vw 0;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      margin: 1vw 0;
       box-sizing: border-box;
     }
 
@@ -1420,16 +1418,15 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      align-items: stretch;
-      padding: 2vw 1vw;
+      padding: 1vw;
       box-sizing: border-box;
     }
 
     .sidebar > * {
-      flex: 1 1 auto;
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
+      flex: 0 1 auto;
     }
 
     @media (max-width: 600px) {
@@ -1443,6 +1440,11 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
+      }
+
+      .sidebar > * {
+        width: auto;
+        max-width: 100%;
       }
     }
   `;render(){const e=this.config.icon||"mdi:sofa",t=this.config.colors?.room?.icon_active??this.config.icon_active??"#21df73",i=this.config.colors?.room?.icon_inactive??this.config.icon_inactive??"#173c16",s=this.config.name||"Room",o=this.config.area||"",n=this._getSensors(),a=this._getMushroomEntities(),r=this._getSubButtons();return N`
