@@ -73,16 +73,11 @@ export class BubbleSubButton extends LitElement {
           return html`
             <div
               class="sub-button"
-              style="background: ${bg}; color: ${color};"
+              style="background:${bg};color:${color};"
               @pointerdown=${() => this._onDown(idx)}
-              @mousedown=${() => this._onDown(idx)}
-              @touchstart=${() => this._onDown(idx)}
               @pointerup=${() => this._onUp(idx)}
-              @mouseup=${() => this._onUp(idx)}
-              @touchend=${() => this._onUp(idx)}
               @pointerleave=${() => this._clearHoldTimer()}
-              @mouseout=${() => this._clearHoldTimer()}
-              @touchcancel=${() => this._clearHoldTimer()}
+              @pointercancel=${() => this._clearHoldTimer()}
             >
               <ha-icon icon="${btn.icon}"></ha-icon>
             </div>

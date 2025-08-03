@@ -69,23 +69,63 @@ export class BubbleRoom extends LitElement {
   }
 
   _onSubButtonClick(detail) {
-    console.log('Tap action on sub-button:', detail);
-    // Esempio di callService:
-    // const idx = detail.index;
-    // const key = `sub-button${idx+1}`;
-    // const action = this.config.entities?.[key]?.tap_action;
-    // this.hass.callService(action.service_domain, action.service, action.service_data);
+    this._runAction(detail.index, 'tap');
   }
 
   _onSubButtonHold(detail) {
-    console.log('Hold action on sub-button:', detail);
-    // Simile al tap, ma usando hold_action:
-    // const idx = detail.index;
-    // const key = `sub-button${idx+1}`;
-    // const action = this.config.entities?.[key]?.hold_action;
-    // this.hass.callService(action.service_domain, action.service, action.service_data);
+    this._runAction(detail.index, 'hold');
   }
+  /**
+  * Esegue l’azione configurata (toggle / more-info / navigate / call-service / none)
+  * fall-back: 'toggle'
+  */
+  _runAction(idx, type /* 'tap' | 'hold' */) {
+    const key   = `sub-button${idx + 1}`;
+    const entId = this.config.subbuttons?.[idx]?.entity_id;
+    if (!entId) return;
 
+    // oggetto d'azione: es. {action:'toggle'} o {action:'call-service',service:'light.toggle',service_data:{…}}
+    const actObj =
+      this.config.entities?.[key]?.[`${type}_action`] ?? { action: 'toggle' };
+
+    const act = actObj.action ?? 'toggle';
+    console.log(`[C] eseguo ${type} →`, actObj);
+
+    const callSvc = (svc, data = {}) => {
+      const [dom, srv] = svc.split('.');
+      this.hass.callService(dom, srv, data);
+    };
+
+    switch (act) {
+      case 'toggle': {
+        // se l’entità ha il proprio dominio (light.switch ecc.), uso quello
+        const [dom] = entId.split('.');
+        this.hass.callService(dom, 'toggle', { entity_id: entId });
+        break;
+      }
+      case 'more-info': {
+        this.dispatchEvent(
+          new CustomEvent('hass-more-info', {
+            bubbles: true,
+            composed: true,
+            detail: { entityId: entId },
+          })
+        );
+        break;
+      }
+      case 'navigate': {
+        if (actObj.navigation_path) location.assign(actObj.navigation_path);
+        break;
+      }
+      case 'call-service': {
+        if (actObj.service) callSvc(actObj.service, actObj.service_data || {});
+        break;
+      }
+      case 'none':
+      default:
+        /* nessuna azione */
+    }
+  }
 
 
   render() {
