@@ -9,10 +9,11 @@ export class BubbleSubButton extends LitElement {
 
   constructor() {
     super();
-    this.subbuttons = [];
-    this._holdThreshold = 500;   // ms per considerare “hold”
+    this.subbuttons     = [];
+    this._holdThreshold = 500;  // ms per considerare “hold”
     this._holdTimer     = null;
     this._holdFired     = false;
+    this._currentIndex  = -1;
   }
 
   static styles = css`
@@ -73,10 +74,15 @@ export class BubbleSubButton extends LitElement {
             <div
               class="sub-button"
               style="background: ${bg}; color: ${color};"
-              @pointerdown=${() => this._onPointerDown(idx)}
-              @pointerup=${() => this._onPointerUp(idx)}
+              @pointerdown=${() => this._onDown(idx)}
+              @mousedown=${() => this._onDown(idx)}
+              @touchstart=${() => this._onDown(idx)}
+              @pointerup=${() => this._onUp(idx)}
+              @mouseup=${() => this._onUp(idx)}
+              @touchend=${() => this._onUp(idx)}
               @pointerleave=${() => this._clearHoldTimer()}
-              @pointercancel=${() => this._clearHoldTimer()}
+              @mouseout=${() => this._clearHoldTimer()}
+              @touchcancel=${() => this._clearHoldTimer()}
             >
               <ha-icon icon="${btn.icon}"></ha-icon>
             </div>
@@ -86,22 +92,25 @@ export class BubbleSubButton extends LitElement {
     `;
   }
 
-  _onPointerDown(idx) {
-    this._holdFired = false;
-    this._holdTimer = window.setTimeout(() => {
+  _onDown(idx) {
+    // Inizio a contare per il hold
+    this._holdFired    = false;
+    this._currentIndex = idx;
+    this._holdTimer    = window.setTimeout(() => {
       this._holdFired = true;
-      const btn = this.subbuttons[idx];
+      const btn = this.subbuttons[this._currentIndex];
       this.dispatchEvent(new CustomEvent('subbutton-hold', {
-        detail: { ...btn, index: idx },
+        detail: { ...btn, index: this._currentIndex },
         bubbles: true,
         composed: true,
       }));
     }, this._holdThreshold);
   }
 
-  _onPointerUp(idx) {
+  _onUp(idx) {
+    // Rilascio: se il hold non è ancora scattato, è un tap
     this._clearHoldTimer();
-    if (!this._holdFired) {
+    if (!this._holdFired && this._currentIndex === idx) {
       const btn = this.subbuttons[idx];
       this.dispatchEvent(new CustomEvent('subbutton-click', {
         detail: { ...btn, index: idx },

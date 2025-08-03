@@ -64,6 +64,7 @@ export class BubbleRoom extends LitElement {
       colorOff: bgOff,
       iconOn:   iconOn,
       iconOff:  iconOff,
+      entity_id: sb.entity_id,
     }));
   }
 
