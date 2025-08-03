@@ -1387,23 +1387,22 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
       grid-template-columns: 2fr 1fr;
       width: 100%;
       max-width: 100%;
-      min-width: 0;
       box-sizing: border-box;
       border: 2px dashed yellow;
     }
 
     .main-area {
-      padding: 2vw 0 2vw 2vw;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      min-height: 200px;
+      padding: 2vw;
       box-sizing: border-box;
     }
 
     .main-area > * {
-      max-width: 100%;
+      flex: 1 1 auto;
       width: 100%;
+      max-width: 100%;
       box-sizing: border-box;
     }
 
@@ -1420,14 +1419,16 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
     .sidebar {
       display: flex;
       flex-direction: column;
-      align-items: stretch;
       justify-content: flex-start;
+      align-items: stretch;
       padding: 2vw 1vw;
       box-sizing: border-box;
     }
 
     .sidebar > * {
+      flex: 1 1 auto;
       width: 100%;
+      max-width: 100%;
       box-sizing: border-box;
     }
 
