@@ -1,104 +1,74 @@
-/**
- * BubbleSubButton.js
- * 
- * Visualizza i subbutton verticali a destra, quadrati e con label sotto (come nell’originale Bubble Room).
- */
-
-import { html, css, LitElement } from 'lit';
+import { LitElement, html, css } from 'lit';
 
 export class BubbleSubButton extends LitElement {
   static properties = {
     subbuttons: { type: Array }
   };
-  
+
   constructor() {
     super();
     this.subbuttons = [];
   }
-  
+
   static styles = css`
-    .subbutton-column {
+    :host {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .container {
       display: flex;
       flex-direction: column;
-      align-items: flex-end;
-      margin-top: 12px;
-      margin-bottom: 8px;
-      height: 100%;
-      min-width: 96px;
-      position: relative;
-      border: 2px solid #e65100 !important;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: 8px;
+      width: 100%;
+      box-sizing: border-box;
     }
-    .subbutton {
-      background: #455a64;
-      border-radius: 16px;
-      width: 92px;
-      height: 92px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 10px 0 rgba(0,0,0,0.10);
-      transition: background 0.15s, box-shadow 0.15s;
-      border: none;
-      outline: none;
-      position: relative;
-      user-select: none;
-    }
-    .subbutton.active {
-      background: #21df73;
-      box-shadow: 0 2px 18px 0 rgba(33,223,115,0.18);
-    }
-    .subbutton-icon {
-      font-size: 2.9em;
-      opacity: 0.95;
-      margin-bottom: 0.16em;
-      color: #fff;
-      transition: color 0.16s;
-    }
-    .subbutton.active .subbutton-icon {
-      color: #fff700;
-    }
-    .subbutton-label {
-      font-family: "Bebas Neue", "Arial Narrow", sans-serif;
-      font-size: 1.21em;
-      color: #fff;
-      opacity: 0.75;
-      margin-top: 0.21em;
-      letter-spacing: 0.02em;
+
+    .sub-button {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      padding: 8px;
+      border-radius: 12px;
       text-align: center;
-      width: 92px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      pointer-events: none;
     }
-    .subbutton.active .subbutton-label {
-      color: #fff700;
-      opacity: 1;
+
+    ha-icon {
+      display: block;
+      margin: 0 auto 4px auto;
     }
   `;
-  
+
   render() {
     return html`
-      <div class="subbutton-column">
+      <div class="container">
         ${this.subbuttons.map(
-          (sub, idx) => html`
+          btn => html`
             <div
-              class="subbutton ${sub.active ? 'active' : ''}"
-              @click="${() => this.dispatchEvent(new CustomEvent('subbutton-click', { detail: idx }))}"
-              title="${sub.label || ''}"
-              style="background:${sub.active ? (sub.colorOn || '#21df73') : (sub.colorOff || '#455a64')};"
+              class="sub-button"
+              style="background: ${btn.active ? btn.colorOn : btn.colorOff}"
+              @click=${() => this._handleClick(btn)}
             >
-              <ha-icon class="subbutton-icon" .icon="${sub.icon}"></ha-icon>
-              ${sub.label
-                ? html`<span class="subbutton-label">${sub.label}</span>`
-                : ''}
+              <ha-icon icon="${btn.icon}"></ha-icon>
+              <div>${btn.label}</div>
             </div>
           `
         )}
       </div>
     `;
+  }
+
+  _handleClick(btn) {
+    this.dispatchEvent(
+      new CustomEvent('subbutton-click', {
+        detail: { button: btn },
+        bubbles: true,
+        composed: true
+      })
+    );
   }
 }
 
