@@ -31,9 +31,7 @@ export class BubbleRoom extends LitElement {
       area: 'Zona Giorno',
       sensors: [],
       mushrooms: [],
-      subbuttons: [
-        { entity_id: 'light.luce', icon: 'mdi:lightbulb', active: false }
-      ],
+      subbuttons: [],
       colors: {
         subbutton: {
           background_on: 'rgba(var(--color-blue),1)',
