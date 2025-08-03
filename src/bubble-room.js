@@ -57,40 +57,70 @@ export class BubbleRoom extends LitElement {
     .bubble-room-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
-      grid-template-rows: 1fr;
-      width:100%; height:100%; box-sizing: border-box;
+      width:100%; 
+      height:100%; 
+      box-sizing: border-box;
       border: 2px dashed yellow;
     }
     .main-area {
-      display: grid; height:100%; min-height:0; box-sizing:border-box;
-      border:2px dashed green;
+      display: grid;
+      height: 100%;
+      min-height: 0;
+      box-sizing: border-box;
+      border: 2px dashed green;
     }
     .row1 {
-      display:grid; gap:4px; box-sizing:border-box; border:2px dashed blue;
+      display:grid; 
+      box-sizing:border-box; 
+      border:2px dashed blue;
     }
+    .row2 {
+      display: grid;
+      gap: 4px;
+      height: 100%;
+      min-height: 0;
+      box-sizing: border-box;
+      border: 2px dashed purple;
+    }
+
     .sensors-placeholder { border:2px dashed lime; width:100%; height:100%; box-sizing:border-box; }
     .name-placeholder    { border:2px dashed orange; width:100%; height:100%; box-sizing:border-box; }
-    .row2 {
-      display:grid; gap:4px; height:100%; min-height:0; box-sizing:border-box;
-      border:2px dashed purple;
-    }
-    .icon-mushroom-area { border:2px dashed violet; width:100%; height:100%; box-sizing:border-box; }
-    .k-space            { border:2px dashed black;  width:100%; height:100%; box-sizing:border-box; }
+    .icon-mushroom-area { border: 2px dashed violet; }
+    .k-space            { border: 2px dashed black; }
     .sidebar {
-      display:flex; flex-direction:column;
-      height:100%; min-height:0; box-sizing:border-box;
+      display:flex; 
+      flex-direction:column;
+      height:100%; 
+      min-height:0; 
+      box-sizing:border-box;
       border:2px dashed red;
     }
+    /* ── LAYOUT “STRETTO” (tall) ── */
+    .bubble-room-grid.stretto .main-area {
+      /* Split main-area into two rows: 1fr + 2fr */
+      grid-template-rows: 1fr 2fr;
+    }
+    .bubble-room-grid.stretto .row1 {
+      /* sensors (top) = 1fr, name (bottom) = 2fr */
+      grid-template-rows: 1fr 2fr;
+    }
+    .bubble-room-grid.stretto .row2 {
+      /* icon-mushroom = full width (1fr), k-space = zero width (0fr) */
+      grid-template-columns: 1fr 0fr;
+    }
 
-    /* ── LAYOUT “TALL” (stretto) ── */
-    .bubble-room-grid.tall .main-area    { grid-template-rows: 1fr 2fr; }
-    .bubble-room-grid.tall .row1         { grid-template-rows: 1fr 2fr; }
-    .bubble-room-grid.tall .row2         { grid-template-columns: 1fr 0fr; }
-
-    /* ── LAYOUT “WIDE” (largo) ── */
-    .bubble-room-grid.wide .main-area    { grid-template-rows: 2fr 1fr; }
-    .bubble-room-grid.wide .row1         { grid-template-rows: 2fr 1fr; }
-    .bubble-room-grid.wide .row2         { grid-template-columns: 1fr 1fr; }
+    /* ── LAYOUT “LARGO” (wide) ── */
+    .bubble-room-grid.largo .main-area {
+      /* Inverse: sensors+name get twice the height of icon area */
+      grid-template-rows: 2fr 1fr;
+    }
+    .bubble-room-grid.largo .row1 {
+      grid-template-rows: 2fr 1fr;
+    }
+    .bubble-room-grid.largo .row2 {
+      /* Icon and k-space share full width equally */
+      grid-template-columns: 1fr 1fr;
+    }
   `;
 
   render() {
