@@ -1,5 +1,5 @@
 
-/* ==== src/bubble-room.js  (responsive version) ==== */
+/* ==== src/bubble-room.js (no-overflow version) ==== */
 
 import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
@@ -79,34 +79,30 @@ export class BubbleRoom extends LitElement {
     }
 
     .main-area {
-      position: relative;
       padding: 2vw 0 2vw 2vw;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       min-height: 200px;
-      z-index: 1;
+      box-sizing: border-box;
     }
 
     .icon-mushroom-area {
-      position: relative;
       width: 100%;
       max-width: 100%;
-      height: auto;
       margin: 1vw 0;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      box-sizing: border-box;
     }
 
     .sidebar {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-      gap: 1vw;
-      align-items: center;
-      justify-content: center;
-      padding: 1vw;
-      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-start;
+      padding: 2vw 1vw;
       box-sizing: border-box;
     }
 
