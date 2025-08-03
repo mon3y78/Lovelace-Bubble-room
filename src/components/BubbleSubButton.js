@@ -1,21 +1,19 @@
-// src/components/BubbleSubButton.js
 import { LitElement, html, css } from 'lit';
 
 export class BubbleSubButton extends LitElement {
   static properties = {
-    // riceve array di oggetti { icon, active, colorOn, colorOff, iconOn, iconOff }
     subbuttons: { type: Array },
   };
-
+  
   constructor() {
     super();
-    this.subbuttons     = [];
-    this._holdThreshold = 500;  // ms per considerare “hold”
-    this._holdTimer     = null;
-    this._holdFired     = false;
-    this._currentIndex  = -1;
+    this.subbuttons = [];
+    this._holdThreshold = 500;
+    this._holdTimer = null;
+    this._holdFired = false;
+    this._currentIndex = -1;
   }
-
+  
   static styles = css`
     :host {
       display: block;
@@ -63,7 +61,7 @@ export class BubbleSubButton extends LitElement {
       word-break: break-word;
     }
   `;
-
+  
   render() {
     return html`
       <div class="container">
@@ -86,40 +84,46 @@ export class BubbleSubButton extends LitElement {
       </div>
     `;
   }
-
+  
   _onDown(idx) {
-    // Inizio a contare per il hold
-    this._holdFired    = false;
+    this._holdFired = false;
     this._currentIndex = idx;
-    this._holdTimer    = window.setTimeout(() => {
+    this._holdTimer = window.setTimeout(() => {
       this._holdFired = true;
-      const btn = this.subbuttons[this._currentIndex];
-      this.dispatchEvent(new CustomEvent('subbutton-hold', {
-        detail: { ...btn, index: this._currentIndex },
-        bubbles: true,
-        composed: true,
-      }));
+      this._fireHassAction(idx, 'hold');
     }, this._holdThreshold);
   }
-
+  
   _onUp(idx) {
-    // Rilascio: se il hold non è ancora scattato, è un tap
     this._clearHoldTimer();
     if (!this._holdFired && this._currentIndex === idx) {
-      const btn = this.subbuttons[idx];
-      this.dispatchEvent(new CustomEvent('subbutton-click', {
-        detail: { ...btn, index: idx },
-        bubbles: true,
-        composed: true,
-      }));
+      this._fireHassAction(idx, 'tap');
     }
   }
-
+  
   _clearHoldTimer() {
     if (this._holdTimer) {
       clearTimeout(this._holdTimer);
       this._holdTimer = null;
     }
+  }
+  
+  _fireHassAction(idx, actionType) {
+    const cfg = this.subbuttons?.[idx];
+    if (!cfg || !cfg.entity_id) return;
+    
+    const actionConfig = {
+      entity: cfg.entity_id,
+      tap_action: cfg.tap_action || { action: 'toggle' },
+      hold_action: cfg.hold_action || { action: 'more-info' },
+    };
+    
+    const evt = new Event('hass-action', { bubbles: true, composed: true });
+    evt.detail = {
+      config: actionConfig,
+      action: actionType,
+    };
+    this.dispatchEvent(evt);
   }
 }
 

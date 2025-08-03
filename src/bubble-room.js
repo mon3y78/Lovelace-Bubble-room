@@ -6,23 +6,22 @@ import './components/BubbleSubButton.js';
 export class BubbleRoom extends LitElement {
   static properties = {
     config: { type: Object },
-    hass:   { type: Object },
+    hass: { type: Object },
   };
-
+  
   constructor() {
     super();
     this.config = {};
-    this.hass   = {};
+    this.hass = {};
   }
-
+  
   setConfig(rawConfig) {
-    // Clono la config e imposto default layout “wide”
     this.config = {
       layout: 'wide',
       ...rawConfig,
     };
   }
-
+  
   static getStubConfig() {
     return {
       type: 'custom:bubble-room',
@@ -42,83 +41,35 @@ export class BubbleRoom extends LitElement {
       }
     };
   }
-
+  
   static async getConfigElement() {
     await import('./bubble-room-editor.js');
     return document.createElement('bubble-room-editor');
   }
-
-  // Trasforma config.subbuttons + hass.states → {icon, active, colorOn, colorOff, iconOn, iconOff}
+  
   _getSubButtons() {
-    const bgOn    = this.config.colors?.subbutton?.background_on  ?? '#00d46d';
-    const bgOff   = this.config.colors?.subbutton?.background_off ?? '#999';
-    const iconOn  = this.config.colors?.subbutton?.icon_on        ?? 'yellow';
-    const iconOff = this.config.colors?.subbutton?.icon_off       ?? '#666';
-
+    const bgOn = this.config.colors?.subbutton?.background_on ?? '#00d46d';
+    const bgOff = this.config.colors?.subbutton?.background_off ?? '#999';
+    const iconOn = this.config.colors?.subbutton?.icon_on ?? 'yellow';
+    const iconOff = this.config.colors?.subbutton?.icon_off ?? '#666';
+    
     return (this.config.subbuttons || []).map(sb => ({
-      icon      : sb.icon,
-      active    : this.hass.states?.[sb.entity_id]?.state === 'on',
-      colorOn   : bgOn,
-      colorOff  : bgOff,
+      icon: sb.icon,
+      active: this.hass.states?.[sb.entity_id]?.state === 'on',
+      colorOn: bgOn,
+      colorOff: bgOff,
       iconOn,
       iconOff,
-      entity_id : sb.entity_id,
+      entity_id: sb.entity_id,
+      tap_action: sb.tap_action,
+      hold_action: sb.hold_action,
     }));
   }
-  _onSubButtonClick(e) {
-    this._runAction(e.detail.index, 'tap');
-  }
   
-  _onSubButtonHold(e) {
-    this._runAction(e.detail.index, 'hold');
-  }
-  _runAction(idx, type) {
-    const btnCfg = this.config.subbuttons?.[idx];
-    if (!btnCfg || !btnCfg.entity_id) return;
-    const entId  = btnCfg.entity_id;
-  
-    const actObj = btnCfg[`${type}_action`] ?? { action: 'toggle' };
-    const act    = actObj.action ?? 'toggle';
-  
-    console.log('[BubbleRoom] runAction', { idx, type, entId, actObj });
-  
-    const callSvc = (svc, data = {}) => {
-      const [dom, srv] = svc.split('.');
-      this.hass.callService(dom, srv, data);
-    };
-  
-    switch (act) {
-      case 'toggle': {
-        const domain = entId.split('.')[0];
-        this.hass.callService(domain, 'toggle', { entity_id: entId });
-        break;
-      }
-      case 'more-info': {
-        this.dispatchEvent(new CustomEvent('hass-more-info', {
-          bubbles: true, composed: true,
-          detail: { entityId: entId },
-        }));
-        break;
-      }
-      case 'navigate': {
-        if (actObj.navigation_path) location.assign(actObj.navigation_path);
-        break;
-      }
-      case 'call-service': {
-        if (actObj.service) callSvc(actObj.service, actObj.service_data || {});
-        break;
-      }
-      case 'none':
-      default:
-        // do nothing
-    }
-  }
-
   render() {
-    // layout sarà 'wide' o 'tall' in base a RoomPanel.js :contentReference[oaicite:6]{index=6}
-    const layout    = this.config.layout || 'wide';
-    const subbuttons= this._getSubButtons();
-
+    const layout = this.config.layout || 'wide';
+    const subbuttons = this._getSubButtons();
+    
     return html`
       <div class="bubble-room-grid ${layout}">
         <div class="main-area">
@@ -132,16 +83,12 @@ export class BubbleRoom extends LitElement {
           </div>
         </div>
         <div class="sidebar">
-          <bubble-subbutton
-            .subbuttons="${subbuttons}"
-            @subbutton - click = "${this._onSubButtonClick}"
-            @subbutton - hold = "${this._onSubButtonHold}"
-          ></bubble-subbutton>
+          <bubble-subbutton .subbuttons="${subbuttons}"></bubble-subbutton>
         </div>
       </div>
     `;
   }
-
+  
   static styles = css`
     :host {
       display: block; height: 100%; box-sizing: border-box;
@@ -174,12 +121,10 @@ export class BubbleRoom extends LitElement {
       border: 2px dashed red;
     }
 
-    /* ── LAYOUT “TALL” ── */
     .bubble-room-grid.tall .main-area    { grid-template-rows: 1fr 2fr; }
     .bubble-room-grid.tall .row1         { grid-template-rows: 1fr 2fr; }
     .bubble-room-grid.tall .row2         { grid-template-columns: 1fr 0fr; }
 
-    /* ── LAYOUT “WIDE” ── */
     .bubble-room-grid.wide .main-area    { grid-template-rows: 2fr 1fr; }
     .bubble-room-grid.wide .row1         { grid-template-rows: 2fr 1fr; }
     .bubble-room-grid.wide .row2         { grid-template-columns: 1fr 1fr; }
