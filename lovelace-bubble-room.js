@@ -1144,7 +1144,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin: 4px 0;
+      margin: 2px 0;
       border-radius: 12px;
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
@@ -1160,7 +1160,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       transform: scale(0.97);
     }
     .sub-button ha-icon {
-      --mdc-icon-size: 2em;
+      --mdc-icon-size: 3em;
     }
     .sub-button .label {
       font-size: 0.95rem;
