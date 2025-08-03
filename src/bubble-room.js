@@ -53,17 +53,23 @@ export class BubbleRoom extends LitElement {
     const iconOn = this.config.colors?.subbutton?.icon_on ?? 'yellow';
     const iconOff = this.config.colors?.subbutton?.icon_off ?? '#666';
     
-    return (this.config.subbuttons || []).map(sb => ({
-      icon      : sb.icon || state?.attributes.icon || 'mdi:help-circle',
-      active: this.hass.states?.[sb.entity_id]?.state === 'on',
-      colorOn: bgOn,
-      colorOff: bgOff,
-      iconOn,
-      iconOff,
-      entity_id: sb.entity_id,
-      tap_action: sb.tap_action,
-      hold_action: sb.hold_action,
-    }));
+    return (this.config.subbuttons || []).map(sb => {
+      const stateObj = this.hass.states?.[sb.entity_id];
+      const iconFromState = stateObj?.attributes?.icon;
+      const fallbackIcon = 'mdi:help-circle';
+      
+      return {
+        icon: sb.icon || iconFromState || fallbackIcon,
+        active: stateObj?.state === 'on',
+        colorOn: bgOn,
+        colorOff: bgOff,
+        iconOn,
+        iconOff,
+        entity_id: sb.entity_id,
+        tap_action: sb.tap_action,
+        hold_action: sb.hold_action,
+      };
+    });
   }
   
   render() {
