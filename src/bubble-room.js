@@ -56,75 +56,79 @@ export class BubbleRoom extends LitElement {
     const iconOff = this.config.colors?.subbutton?.icon_off       ?? '#666';
 
     return (this.config.subbuttons || []).map(sb => ({
-      icon:     sb.icon,
-      active:   this.hass.states?.[sb.entity_id]?.state === 'on',
-      colorOn:  bgOn,
-      colorOff: bgOff,
-      iconOn:   iconOn,
-      iconOff:  iconOff,
-      entity_id: sb.entity_id,
+      icon      : sb.icon,
+      active    : this.hass.states?.[sb.entity_id]?.state === 'on',
+      colorOn   : bgOn,
+      colorOff  : bgOff,
+      iconOn,
+      iconOff,
+      entity_id : sb.entity_id,
     }));
   }
 
-  _onSubButtonClick(detail) {
-    this._runAction(detail.index, 'tap');
-  }
+  _onSubButtonClick = e => this._runAction(e.detail, 'tap');
 
-  _onSubButtonHold(detail) {
-    this._runAction(detail.index, 'hold');
-  }
-  /**
-  * Esegue l’azione configurata (toggle / more-info / navigate / call-service / none)
-  * fall-back: 'toggle'
-  */
-  _runAction(idx, type /* 'tap' | 'hold' */) {
-    const key   = `sub-button${idx + 1}`;
-    const entId = this.config.subbuttons?.[idx]?.entity_id;
-    if (!entId) return;
+  _onSubButtonHold  = e => this._runAction(e.detail, 'hold');
 
-    // oggetto d'azione: es. {action:'toggle'} o {action:'call-service',service:'light.toggle',service_data:{…}}
+  _runAction(idx, type) {
+    /* ------------- entità a cui è legato il bottone ------------- */
+    const btnCfg = this.config.subbuttons?.[idx];
+    if (!btnCfg || !btnCfg.entity_id) return;           // niente da fare
+    const entId  = btnCfg.entity_id;
+  
+    /* ------------- oggetto “azione” dal pannello ------------- */
+    const key    = `sub-button${idx + 1}`;              // sub-button1, 2, 3 …
     const actObj =
-      this.config.entities?.[key]?.[`${type}_action`] ?? { action: 'toggle' };
-
+      this.config.entities?.[key]?.[`${type}_action`]   // se configurato
+      ?? { action: 'toggle' };                          // fall-back
+  
     const act = actObj.action ?? 'toggle';
-    console.log(`[C] eseguo ${type} →`, actObj);
-
+    console.log('[BubbleRoom] runAction', { idx, type, entId, actObj });
+  
+    /* ------------- shortcut per callService ------------- */
     const callSvc = (svc, data = {}) => {
       const [dom, srv] = svc.split('.');
       this.hass.callService(dom, srv, data);
     };
-
+  
+    /* ------------- switch azione ------------- */
     switch (act) {
+      /* ---- toggle (smart-dominio) ---- */
       case 'toggle': {
-        // se l’entità ha il proprio dominio (light.switch ecc.), uso quello
-        const [dom] = entId.split('.');
-        this.hass.callService(dom, 'toggle', { entity_id: entId });
+        const domain = entId.split('.')[0];            // light, switch, ecc.
+        this.hass.callService(domain, 'toggle', { entity_id: entId });
         break;
       }
+  
+      /* ---- dialogo more-info ---- */
       case 'more-info': {
         this.dispatchEvent(
           new CustomEvent('hass-more-info', {
-            bubbles: true,
-            composed: true,
+            bubbles: true, composed: true,
             detail: { entityId: entId },
           })
         );
         break;
       }
+  
+      /* ---- navigazione ---- */
       case 'navigate': {
         if (actObj.navigation_path) location.assign(actObj.navigation_path);
         break;
       }
+  
+      /* ---- qualunque service ---- */
       case 'call-service': {
         if (actObj.service) callSvc(actObj.service, actObj.service_data || {});
         break;
       }
+  
+      /* ---- nessuna azione ---- */
       case 'none':
       default:
-        /* nessuna azione */
+        // intentionally do nothing
     }
   }
-
 
   render() {
     // layout sarà 'wide' o 'tall' in base a RoomPanel.js :contentReference[oaicite:6]{index=6}

@@ -29,16 +29,24 @@ export class SubButtonPanel extends LitElement {
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
+      /* auto-discover */
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.subbutton');
+
+      /* assicuro che subbuttons esista sempre */
+      if (!Array.isArray(this.config.subbuttons))
+        this.config.subbuttons = Array(4).fill().map(() => ({}));
+
+      /* filtri salvati */
       const cfgFilters = this.config.subbutton_filters;
-      if (Array.isArray(cfgFilters) && cfgFilters.length === 4) {
+      if (Array.isArray(cfgFilters) && cfgFilters.length === 4)
         this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...COMMON_CATS]);
-      }
-      const ents = this.config.entities || {};
+
+      /* entità correnti */
       for (let i = 0; i < 4; i++) {
-        const key = `sub-button${i+1}`;
-        const e   = ents[key]?.entity;
-        if (e) this._entities[i] = e;
+        const ent =
+          this.config.subbuttons[i]?.entity_id ||
+          this.config.entities?.[`sub-button${i + 1}`]?.entity || '';
+        this._entities[i] = ent;
       }
     }
   }
@@ -185,30 +193,21 @@ export class SubButtonPanel extends LitElement {
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
-        @expanded-changed=${e => {
-          this.expanded = e.detail.expanded;
-          if (this.expanded) this._expanded = Array(4).fill(false);
-        }}
+        @expanded-changed=${e => (this.expanded = e.detail.expanded)}
       >
-        <div slot="header" class="glass-header">🎛️ Subbuttons</div>
+        <div slot="header" class="glass-header">🎛️ Sub-buttons</div>
 
-        <!-- 1️⃣ Auto-discover -->
+        <!-- Auto-discover -->
         <div class="input-group autodiscover">
-          <input
-            type="checkbox"
-            .checked=${autoDisc}
-            @change=${e => this._toggleAuto(e.target.checked)}
-          />
+          <input type="checkbox" .checked=${autoDisc}
+                 @change=${e => this._toggleAuto(e.target.checked)} />
           <label>🪄 Auto-discover Subbuttons</label>
         </div>
 
-        <!-- 2️⃣ Quattro mini-pill -->
+        <!-- 4 mini-pill -->
         ${this._expanded.map((open, i) => this._renderSubButton(i, open, options))}
 
-        <!-- 3️⃣ Reset -->
-        <button class="reset-button" @click=${() => this._reset()}>
-          🧹 Reset Sub-buttons
-        </button>
+        <button class="reset-button" @click=${() => this._reset()}>🧹 Reset Sub-buttons</button>
       </ha-expansion-panel>
     `;
   }
@@ -224,46 +223,39 @@ export class SubButtonPanel extends LitElement {
     return html`
       <div class="mini-pill ${open ? 'expanded' : ''}">
         <div class="mini-pill-header" @click=${() => this._togglePill(i)}>
-          Sub-button ${i+1}
-          <span class="chevron">${open ? '▼' : '▶'}</span>
+          Sub-button ${i + 1}  <span class="chevron">${open ? '▼' : '▶'}</span>
         </div>
         ${open ? html`
           <div class="mini-pill-content">
-            <!-- Filter categories -->
+            <!-- filtri -->
             <div class="input-group">
               <label>Filter categories:</label>
-              <ha-selector
-                .hass=${this.hass}
-                .value=${types}
-                .selector=${{ select: { multiple: true, mode: 'box', options } }}
+              <ha-selector .hass=${this.hass} .value=${types}
+                .selector=${{select:{multiple:true,mode:'box',options}}}
                 @value-changed=${e => this._onFilter(i, e.detail.value)}
               ></ha-selector>
             </div>
 
-            <!-- Entity -->
+            <!-- entità -->
             <div class="input-group">
               <label>Entity:</label>
-              <ha-selector
-                .hass=${this.hass}
-                .value=${ent}
-                .selector=${{ entity: { include_entities: cands, multiple: false } }}
+              <ha-selector .hass=${this.hass} .value=${ent}
+                .selector=${{entity:{include_entities:cands,multiple:false}}}
                 allow-custom-entity
                 @value-changed=${e => this._onEntity(i, e.detail.value)}
               ></ha-selector>
             </div>
 
-            <!-- Icon picker -->
+            <!-- icona -->
             <div class="input-group">
               <label>Icon:</label>
-              <ha-icon-picker
-                .hass=${this.hass}
-                .value=${cfg.icon || ''}
+              <ha-icon-picker .hass=${this.hass} .value=${cfg.icon || ''}
                 allow-custom-icon
                 @value-changed=${e => this._onIcon(i, e.detail.value)}
               ></ha-icon-picker>
             </div>
 
-            <!-- Tap/Hold actions -->
+            <!-- tap / hold -->
             ${['tap','hold'].map(type => html`
               <div class="input-group">
                 <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}:</label>
@@ -275,28 +267,7 @@ export class SubButtonPanel extends LitElement {
                     >${a}</button>
                   `)}
                 </div>
-                ${cfg[`${type}_action`]?.action === 'navigate' ? html`
-                  <input
-                    type="text"
-                    placeholder="Path"
-                    .value=${cfg[`${type}_action`].navigation_path || ''}
-                    @input=${e => this._onAction(i, type, 'navigation_path', e.target.value)}
-                  />
-                ` : ''}
-                ${cfg[`${type}_action`]?.action === 'call-service' ? html`
-                  <input
-                    type="text"
-                    placeholder="Service"
-                    .value=${cfg[`${type}_action`].service || ''}
-                    @input=${e => this._onAction(i, type, 'service', e.target.value)}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Service Data (JSON)"
-                    .value=${cfg[`${type}_action`].service_data ? JSON.stringify(cfg[`${type}_action`].service_data) : ''}
-                    @input=${e => this._onAction(i, type, 'service_data', JSON.parse(e.target.value) || {})}
-                  />
-                ` : ''}
+                ${this._extraFields(i, type, cfg)}
               </div>
             `)}
           </div>
@@ -305,67 +276,102 @@ export class SubButtonPanel extends LitElement {
     `;
   }
 
-  _toggleAuto(on) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'auto_discovery_sections.subbutton', val: on },
-      bubbles: true, composed: true,
-    }));
+  _extraFields(i, type, cfg) {
+    const act = cfg[`${type}_action`]?.action;
+    if (act === 'navigate') {
+      return html`
+        <input type="text" placeholder="Path"
+          .value=${cfg[`${type}_action`]?.navigation_path || ''}
+          @input=${e => this._onAction(i, type, 'navigation_path', e.target.value)}
+        />
+      `;
+    }
+    if (act === 'call-service') {
+      return html`
+        <input type="text" placeholder="Service"
+          .value=${cfg[`${type}_action`]?.service || ''}
+          @input=${e => this._onAction(i, type, 'service', e.target.value)}
+        />
+        <input type="text" placeholder='Service Data (JSON)'
+          .value=${cfg[`${type}_action`]?.service_data ? JSON.stringify(cfg[`${type}_action`].service_data) : ''}
+          @input=${e => this._onAction(i, type, 'service_data', this._safeJson(e.target.value))}
+        />
+      `;
+    }
+    return '';
   }
 
-  _togglePill(i) {
-    this._expanded = this._expanded.map((v, idx) => idx === i ? !v : false);
-    this.requestUpdate();
+  _safeJson(txt) { try { return JSON.parse(txt); } catch { return {}; } }
+
+  /* ─────────────── handlers ─────────────── */
+  _toggleAuto(on) {
+    this._emit('auto_discovery_sections.subbutton', on);
   }
+  _togglePill(i) { this._expanded = this._expanded.map((v, k) => k === i ? !v : false); }
 
   _onFilter(i, vals) {
     this._filters[i] = [...vals];
-    this.dispatchEvent(new CustomEvent('panel-changed', { detail: { prop: 'subbutton_filters', val: this._filters }, bubbles: true, composed: true }));
+    this._emit('subbutton_filters', this._filters);
   }
 
   _onEntity(i, ent) {
+    /* aggiorno array locale */
     this._entities[i] = ent;
-    this.dispatchEvent(new CustomEvent('panel-changed', { detail: { prop: `entities.sub-button${i+1}.entity`, val: ent }, bubbles: true, composed: true }));
+
+    /* 1️⃣ – branch retro-compatibilità */
+    this._emit(`entities.sub-button${i + 1}.entity`, ent);
+
+    /* 2️⃣ – nuovo ramo “pulito” */
+    if (!this.config.subbuttons[i]) this.config.subbuttons[i] = {};
+    this.config.subbuttons[i].entity_id = ent;
+    this._emit('subbuttons', this.config.subbuttons);
   }
 
   _onIcon(i, icon) {
-    this.dispatchEvent(new CustomEvent('panel-changed', { detail: { prop: `entities.sub-button${i+1}.icon`, val: icon }, bubbles: true, composed: true }));
+    /* vecchio ramo */
+    this._emit(`entities.sub-button${i + 1}.icon`, icon);
+
+    /* nuovo */
+    if (!this.config.subbuttons[i]) this.config.subbuttons[i] = {};
+    this.config.subbuttons[i].icon = icon;
+    this._emit('subbuttons', this.config.subbuttons);
   }
 
   _onAction(i, type, field, val) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: {
-        prop: `entities.sub-button${i+1}.${type}_action.${field}`,
-        val,
-      },
-      bubbles: true,
-      composed: true,
-    }));
+    /* vecchio */
+    this._emit(`entities.sub-button${i + 1}.${type}_action.${field}`, val);
+
+    /* nuovo – salviamo solo action nello shortcut */
+    if (!this.config.subbuttons[i]) this.config.subbuttons[i] = {};
+    this.config.subbuttons[i][`${type}_action`] = { action: val };
+    this._emit('subbuttons', this.config.subbuttons);
   }
 
   _reset() {
-    this._expanded  = Array(4).fill(false);
-    this._filters   = Array(4).fill().map(() => [...COMMON_CATS]);
-    this._entities  = Array(4).fill('');
+    this._expanded = Array(4).fill(false);
+    this._filters  = Array(4).fill().map(() => [...COMMON_CATS]);
+    this._entities = Array(4).fill('');
+    this.config.subbuttons = Array(4).fill().map(() => ({}));
 
-    this.dispatchEvent(new CustomEvent('panel-changed', { detail: { prop: 'subbutton_filters', val: this._filters }, bubbles: true, composed: true }));
+    this._emit('subbutton_filters', this._filters);
+    this._emit('subbuttons', this.config.subbuttons);
+
     for (let i = 1; i <= 4; i++) {
-      const base = `entities.sub-button${i}`;
-      ['entity','icon'].forEach(f => {
-        this.dispatchEvent(new CustomEvent('panel-changed', {
-          detail: { prop: `${base}.${f}`, val: '' },
-          bubbles: true, composed: true,
-        }));
-      });
-      ['tap_action','hold_action'].forEach(act => {
-        this.dispatchEvent(new CustomEvent('panel-changed', {
-          detail: {
-            prop: `${base}.${act}`,
-            val: { action: act === 'tap_action' ? 'toggle' : 'more-info' }
-          },
-          bubbles: true, composed: true,
-        }));
-      });
+      const b = `entities.sub-button${i}`;
+      this._emit(`${b}.entity` , '');
+      this._emit(`${b}.icon`   , '');
+      ['tap','hold'].forEach(a =>
+        this._emit(`${b}.${a}_action`, { action: a === 'tap' ? 'toggle' : 'more-info' })
+      );
     }
+  }
+
+  /* ─────────────── helper comune ─────────────── */
+  _emit(prop, val) {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop, val },
+      bubbles: true, composed: true,
+    }));
   }
 }
 
