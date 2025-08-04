@@ -77,6 +77,11 @@ export class BubbleRoom extends LitElement {
     });
   }
   
+  _isRoomActive() {
+    const entity = this.config?.room_presence?.entity;
+    return entity && this.hass?.states?.[entity]?.state === 'on';
+  }
+  
   render() {
     const layout = this.config.layout || 'wide';
     const subbuttons = this._getSubButtons();
