@@ -52,7 +52,7 @@ export class BubbleSensor extends LitElement {
     if (maxSize <= 0) return;
     
     element.style.fontSize = '';
-    let fontSize = parseInt(getComputedStyle(element).fontSize, 10) || 14;
+    let fontSize = parseInt(getComputedStyle(element).fontSize, 30) || 14;
     
     while (fontSize > 8) {
       element.style.fontSize = `${fontSize}px`;
