@@ -1,9 +1,9 @@
-// src/components/BubbleSensors.js
+// src/components/BubbleSensor.js
 
 import { LitElement, html, css } from 'lit';
 import { SENSOR_TYPE_MAP } from '../helpers/sensor-mapping.js';
 
-export class BubbleSensors extends LitElement {
+export class BubbleSensor extends LitElement {
   static properties = {
     sensors: { type: Array }, // [{icon, label, value, unit, color, device_class}]
   };
@@ -88,4 +88,4 @@ export class BubbleSensors extends LitElement {
   }
 }
 
-customElements.define('bubble-sensors', BubbleSensors);
+customElements.define('bubble-sensor', BubbleSensor);

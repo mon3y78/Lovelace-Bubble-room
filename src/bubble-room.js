@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
 import './components/BubbleSubButton.js';
 import './components/BubbleName.js';
-import './components/BubbleSensors.js'; // nuovo
+import './components/BubbleSensor.js'; // nuovo
 import { resolveEntityIcon } from './helpers/icon-mapping.js';
 
 export class BubbleRoom extends LitElement {
