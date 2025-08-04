@@ -88,10 +88,10 @@ export class BubbleName extends LitElement {
       text-align: center;
       white-space: nowrap;
       text-transform: uppercase;
-      font-family: 'Saira Extra Condensed', sans-serif;
+      font-family: "Arial Narrow", sans-serif;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.01em;
+      letter-spacing: 0.02em;
       font-stretch: condensed;
     }
   `;
