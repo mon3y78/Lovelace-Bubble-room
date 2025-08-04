@@ -60,7 +60,7 @@ export class BubbleName extends LitElement {
     const box = this.container || this.parentElement;
     if (!el || !box) return;
     
-    let fontSize = 40;
+    let fontSize = 70;
     el.style.fontSize = `${fontSize}px`;
     
     requestAnimationFrame(() => {
@@ -88,6 +88,11 @@ export class BubbleName extends LitElement {
       text-align: center;
       white-space: nowrap;
       text-transform: uppercase;
+      font-family: 'Saira Extra Condensed', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.01em;
+      font-stretch: condensed;
     }
   `;
 }
