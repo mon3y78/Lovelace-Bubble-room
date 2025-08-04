@@ -134,16 +134,23 @@ export class BubbleRoom extends LitElement {
     .row1 {
       display: grid; gap: 4px; min-height: 0; box-sizing: border-box;
       border: 2px dashed blue;
+      grid-template-columns: 1fr;
     }
     .row2 {
       display: grid; gap: 4px; height: 100%; min-height: 0; box-sizing: border-box;
       border: 2px dashed purple;
     }
     .sensors-placeholder { border: 2px dashed lime; box-sizing: border-box; }
-    .name - placeholder {
+    .name-placeholder {
       display: flex;
-      align - items: center;
-      justify - content: center;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      contain: strict; /* vincola espansione */
+      flex-shrink: 1;
     }
     .icon-mushroom-area  { border: 2px dashed violet; box-sizing: border-box; }
     .k-space             { border: 2px dashed black; box-sizing: border-box; }
