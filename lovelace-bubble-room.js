@@ -179,7 +179,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
             .hass=${this.hass}
             .value=${i}
             .selector=${{area:{}}}
-            @value-changed=${t=>{const e=t.detail.value;this._fire("area",e),e&&!this.config.name&&this._fire("name",e.toUpperCase()),this._fire("auto_discovery_sections.presence",!0)}}
+            @value-changed=${t=>{const e=t.detail.value;this._fire("area",e),e&&(this._fire("name",e.toUpperCase()),this._fire("auto_discovery_sections.presence",!0))}}
           ></ha-selector>
         </div>
       
