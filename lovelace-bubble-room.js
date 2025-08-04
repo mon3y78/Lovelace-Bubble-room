@@ -161,40 +161,85 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
         @expanded-changed=${t=>this._expanded=t.detail.expanded}
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
-
-        <!-- Auto-discover -->
+      
+        <!-- 🔍 Auto-discover -->
         <div class="input-group">
-          <label><input
+          <label>🔍 Auto-discover Presence:</label>
+          <input
             type="checkbox"
             .checked=${e}
             @change=${t=>this._fire("auto_discovery_sections.presence",t.target.checked)}
-          /> 🔍 Auto-discover Presence</label>
+          />
         </div>
-
-        <!-- Room name -->
+      
+        <!-- 🏷️ Area -->
         <div class="input-group">
-          <label>Room name:</label>
+          <label>🏷️ Area:</label>
+          <ha-selector
+            .hass=${this.hass}
+            .value=${i}
+            .selector=${{area:{}}}
+            @value-changed=${t=>{const e=t.detail.value;this._fire("area",e),e&&!this.config.name&&this._fire("name",e.toUpperCase()),this._fire("auto_discovery_sections.presence",!0)}}
+          ></ha-selector>
+        </div>
+      
+        <!-- 🏠 Room name -->
+        <div class="input-group">
+          <label>🏠 Room name:</label>
           <input
             type="text"
             .value=${s}
             @input=${t=>this._fire("name",t.target.value)}
           />
         </div>
-
-        <!-- Area -->
-        <div class="input-group">
-          <label>Area:</label>
-          <ha-selector
-            .hass=${this.hass}
-            .value=${i}
-            .selector=${{area:{}}}
-            @value-changed=${t=>{const e=t.detail.value;this._fire("area",e),e&&this._fire("auto_discovery_sections.presence",!0)}}
-          ></ha-selector>
+      
+        <!-- 🎭 Icon & Presence -->
+        <div class="mini-pill">
+          <div class="mini-pill-header">🎭 Icon & Presence</div>
+          <div class="mini-pill-content">
+            <!-- Room Icon -->
+            <div class="input-group">
+              <label>Icon:</label>
+              <ha-icon-picker
+                .hass=${this.hass}
+                .value=${o}
+                allow-custom-icon
+                @value-changed=${t=>this._fire("icon",t.detail.value)}
+              ></ha-icon-picker>
+            </div>
+      
+            <!-- Filter categories -->
+            <div class="input-group">
+              <label>Filter categories:</label>
+              <ha-selector
+                .hass=${this.hass}
+                .value=${r}
+                .selector=${{select:{multiple:!0,mode:"box",options:a}}}
+                @value-changed=${t=>this._fire("presence_filters",t.detail.value)}
+              ></ha-selector>
+            </div>
+      
+            <!-- Presence entity -->
+            <div class="input-group">
+              <label>Presence (ID):</label>
+              <ha-selector
+                .hass=${this.hass}
+                .value=${n}
+                .selector=${{entity:{include_entities:l,multiple:!1}}}
+                allow-custom-entity
+                @value-changed=${t=>this._fire("entities.presence.entity",t.detail.value)}
+              ></ha-selector>
+            </div>
+      
+            <!-- Actions -->
+            ${this._renderActions("tap")}
+            ${this._renderActions("hold")}
+          </div>
         </div>
-
-        <!-- Layout -->
+      
+        <!-- 📐 Layout -->
         <div class="input-group">
-          <label>Layout:</label>
+          <label>📐 Layout:</label>
           <div class="toggle-group">
             <button
               class="toggle-btn ${"wide"===this.layout?"active":""}"
@@ -212,54 +257,8 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
             </button>
           </div>
         </div>
-
-        <!-- Icon & Presence -->
-        <div class="mini-pill">
-          <div class="mini-pill-header">Icon & Presence</div>
-          <div class="mini-pill-content">
-
-            <!-- Room Icon -->
-            <div class="input-group">
-              <label>Room Icon:</label>
-              <ha-icon-picker
-                .hass=${this.hass}
-                .value=${o}
-                allow-custom-icon
-                @value-changed=${t=>this._fire("icon",t.detail.value)}
-              ></ha-icon-picker>
-            </div>
-
-            <!-- Filter categories -->
-            <div class="input-group">
-              <label>Filter categories:</label>
-              <ha-selector
-                .hass=${this.hass}
-                .value=${r}
-                .selector=${{select:{multiple:!0,mode:"box",options:a}}}
-                @value-changed=${t=>this._fire("presence_filters",t.detail.value)}
-              ></ha-selector>
-            </div>
-
-            <!-- Presence entity -->
-            <div class="input-group">
-              <label>Presence (ID):</label>
-              <ha-selector
-                .hass=${this.hass}
-                .value=${n}
-                .selector=${{entity:{include_entities:l,multiple:!1}}}
-                allow-custom-entity
-                @value-changed=${t=>this._fire("entities.presence.entity",t.detail.value)}
-              ></ha-selector>
-            </div>
-
-            <!-- Actions -->
-            ${this._renderActions("tap")}
-            ${this._renderActions("hold")}
-
-          </div>
-        </div>
-
-        <!-- Reset -->
+      
+        <!-- 🧹 Reset -->
         <button class="reset-button"
           @click=${()=>this._fire("__panel_cmd__",{cmd:"reset",section:"room"})}>
           🧹 Reset Room
@@ -1173,6 +1172,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       font-weight: bold;
       text-align: center;
       white-space: nowrap;
+      text-transform: uppercase;
     }
   `}customElements.define("bubble-name",Ot);class Pt extends st{static properties={config:{type:Object},hass:{type:Object}};constructor(){super(),this.config={},this.hass={}}setConfig(t){this.config={layout:"wide",...t}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:"Stanza di prova",area:"Zona Giorno",sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return Ct}),document.createElement("bubble-room-editor")}_getSubButtons(){const t=this.config.colors?.subbutton?.background_on??"#00d46d",e=this.config.colors?.subbutton?.background_off??"#999",i=this.config.colors?.subbutton?.icon_on??"yellow",s=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(o=>{const n=this.hass.states?.[o.entity_id];(n?.attributes||{}).device_class,o.entity_id?.split(".");const r=n?.state;return{icon:wt(o.entity_id,this.hass),active:"on"===r,colorOn:t,colorOff:e,iconOn:i,iconOff:s,entity_id:o.entity_id,tap_action:o.tap_action,hold_action:o.hold_action}})}_isRoomActive(){const t=this.config?.room_presence?.entity;return t&&"on"===this.hass?.states?.[t]?.state}render(){const t=this.config.layout||"wide",e=this._getSubButtons(),i=this._isRoomActive();return this.style.setProperty("--bubble-room-name-color",i?this.config.colors?.room?.text_active||"white":this.config.colors?.room?.text_inactive||"rgba(255,255,255,0.5)"),B`
       <div class="bubble-room-grid ${t}">
