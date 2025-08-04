@@ -1179,7 +1179,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       letter-spacing: 0.02em;
       font-stretch: condensed;
     }
-  `}customElements.define("bubble-name",Oe);class ze extends se{static properties={sensors:{type:Array}};constructor(){super(),this.sensors=[],this.rows=1,this._resizeObserver=null,this._resizeScheduled=!1}connectedCallback(){super.connectedCallback(),this._updateRows(),this._resizeObserver=new ResizeObserver(()=>{this._resizeScheduled||(this._resizeScheduled=!0,requestAnimationFrame(()=>{this._autoScaleValues(),this._resizeScheduled=!1}))}),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver?.disconnect()}updated(e){e.has("sensors")&&(this._updateRows(),this._autoScaleValues())}_updateRows(){const e=this.sensors?.length||0;this.rows=e>4?2:1}_autoScaleValues(){const e=this.renderRoot?.querySelectorAll(".sensor-value");e&&e.forEach(e=>this._autoScaleValueFont(e))}_autoScaleValueFont(e){const t=e?.parentElement;if(!t)return;const i=.48*t.clientWidth,s=.75*t.clientHeight;if(Math.min(i,s)<=0)return;e.style.fontSize="";let o=parseInt(getComputedStyle(e).fontSize,30)||14;for(;o>8;){e.style.fontSize=`${o}px`;const{width:t,height:n}=e.getBoundingClientRect();if(t<=i&&n<=s)break;o--}e.style.fontSize=`${o}px`}static styles=n`
+  `}customElements.define("bubble-name",Oe);class ze extends se{static properties={sensors:{type:Array}};constructor(){super(),this.sensors=[],this.rows=1,this._resizeObserver=null,this._resizeScheduled=!1}connectedCallback(){super.connectedCallback(),this._updateRows(),this._resizeObserver=new ResizeObserver(()=>{this._resizeScheduled||(this._resizeScheduled=!0,requestAnimationFrame(()=>{this._autoScaleValues(),this._resizeScheduled=!1}))}),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver?.disconnect()}updated(e){e.has("sensors")&&(this._updateRows(),this._autoScaleValues())}_updateRows(){const e=this.sensors?.length||0;this.rows=e>4?2:1}_autoScaleValues(){const e=this.renderRoot?.querySelectorAll(".sensor-value");e&&e.forEach(e=>this._autoScaleValueFont(e))}_autoScaleValueFont(e){const t=e?.parentElement;if(!t)return;const i=.48*t.clientWidth,s=.75*t.clientHeight;if(Math.min(i,s)<=0)return;e.style.fontSize="";let o=parseInt(getComputedStyle(e).fontSize,10)||14;for(;o>8;){e.style.fontSize=`${o}px`;const{width:t,height:n}=e.getBoundingClientRect();if(t<=i&&n<=s)break;o--}e.style.fontSize=`${o}px`}static styles=n`
     :host {
       display: block;
       height: 100%;
@@ -1191,7 +1191,6 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .sensor-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(2, 1fr);
       width: 100%;
       height: 100%;
       box-sizing: border-box;
@@ -1218,25 +1217,36 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       font-size: 1.14em;
       opacity: 0.81;
     }
+
     .sensor-label {
       opacity: 0.78;
       font-weight: 600;
-      font-size: clamp(1px, 1vw, 16px);
+      font-size: clamp(9px, 0.85vw, 13px);
+      transform: scale(0.85);
+      display: inline-block;
       line-height: 1;
     }
+
     .sensor-value {
       font-weight: 700;
       font-variant-numeric: tabular-nums;
       letter-spacing: 0.01em;
       line-height: 1;
     }
+
     .sensor-unit {
       opacity: 0.75;
       font-weight: 600;
-      font-size: clamp(1px, 1vw, 14px);
+      font-size: clamp(9px, 1vw, 14px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   `;render(){const e=(this.sensors||[]).map(e=>{const t=e.device_class,i=ve[t]||{},s=i.emoji||"❓",o=e.unit||i.units?.[0]||"";return{...e,label:s,unit:o}});return F`
-      <div class="sensor-grid">
+      <div
+        class="sensor-grid"
+        style="grid-template-rows: repeat(${this.rows}, 1fr);"
+      >
         ${e.map(e=>F`
           <div class="sensor-pill" style="color: ${e.color||"#e3f6ff"}">
             <ha-icon class="sensor-icon" .icon="${e.icon||""}"></ha-icon>
