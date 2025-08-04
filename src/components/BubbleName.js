@@ -16,10 +16,9 @@ export class BubbleName extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.updateComplete.then(() => {
-      const el = this.renderRoot.querySelector('.bubble-name');
-      if (el) {
+      if (this.parentElement) {
         this._resizeObserver = new ResizeObserver(() => this._autoScaleFont());
-        this._resizeObserver.observe(el);
+        this._resizeObserver.observe(this.parentElement);
       }
     });
   }
@@ -43,10 +42,7 @@ export class BubbleName extends LitElement {
       this.config?.colors?.room?.text_inactive || 'rgba(255,255,255,0.5)';
     
     return html`
-      <div
-        class="bubble-name"
-        style="color: ${color}"
-      >
+      <div class="bubble-name" style="color: ${color}">
         ${this.name}
       </div>
     `;
@@ -59,17 +55,17 @@ export class BubbleName extends LitElement {
   
   _autoScaleFont() {
     const el = this.renderRoot.querySelector('.bubble-name');
-    if (!el) return;
+    if (!el || !this.parentElement) return;
     
     let fontSize = 40;
     el.style.fontSize = `${fontSize}px`;
     
     requestAnimationFrame(() => {
-      const availableWidth = el.clientWidth;
-      const availableHeight = el.clientHeight;
+      const maxWidth = this.parentElement.clientWidth;
+      const maxHeight = this.parentElement.clientHeight;
       
       while (
-        (el.scrollWidth > availableWidth || el.scrollHeight > availableHeight) &&
+        (el.scrollWidth > maxWidth || el.scrollHeight > maxHeight) &&
         fontSize > 10
       ) {
         fontSize -= 1;
