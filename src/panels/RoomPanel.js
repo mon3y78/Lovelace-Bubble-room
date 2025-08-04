@@ -239,10 +239,10 @@ export class RoomPanel extends LitElement {
             @value-changed=${e => {
               const v = e.detail.value;
               this._fire('area', v);
-              if (v && !this.config.name) {
-                this._fire('name', v.toUpperCase());
+              if (v) {
+                this._fire('name', v.toUpperCase()); // sempre aggiorna
+                this._fire('auto_discovery_sections.presence', true);
               }
-              this._fire('auto_discovery_sections.presence', true);
             }}
           ></ha-selector>
         </div>
