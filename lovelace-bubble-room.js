@@ -1179,7 +1179,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       letter-spacing: 0.02em;
       font-stretch: condensed;
     }
-  `}customElements.define("bubble-name",Oe);class ze extends se{static properties={sensors:{type:Array}};constructor(){super(),this.sensors=[],this.rows=1,this._resizeObserver=new ResizeObserver(()=>{requestAnimationFrame(()=>this._autoScaleAll())})}connectedCallback(){super.connectedCallback(),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver.disconnect()}updated(e){if(e.has("sensors")){const e=this.sensors?.length||0;this.rows=e>4?2:1,requestAnimationFrame(()=>this._autoScaleAll())}}_autoScaleAll(){const e=this.renderRoot?.querySelectorAll(".sensor-value, .sensor-label, .sensor-unit");e&&e.forEach(e=>this._autoScaleValueFont(e))}_autoScaleValueFont(e){const t=e?.parentElement;if(!t)return;const i=.48*t.clientWidth,s=.75*t.clientHeight;if(Math.min(i,s)<=0)return;e.style.fontSize="";let o=parseInt(getComputedStyle(e).fontSize,30)||14;for(;o>8;){e.style.fontSize=`${o}px`;const{width:t,height:n}=e.getBoundingClientRect();if(t<=i&&n<=s)break;o--}e.style.fontSize=`${o}px`}static styles=n`
+  `}customElements.define("bubble-name",Oe);class ze extends se{static properties={sensors:{type:Array}};constructor(){super(),this.sensors=[],this.rows=1,this._resizeObserver=null,this._resizeScheduled=!1}connectedCallback(){super.connectedCallback(),this._updateRows(),this._resizeObserver=new ResizeObserver(()=>{this._resizeScheduled||(this._resizeScheduled=!0,requestAnimationFrame(()=>{this._autoScaleAll(),this._resizeScheduled=!1}))}),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver?.disconnect()}updated(e){e.has("sensors")&&(this._updateRows(),this._autoScaleAll())}_updateRows(){const e=this.sensors?.length||0;this.rows=e>4?2:1}_autoScaleAll(){const e=this.renderRoot?.querySelectorAll(".sensor-value");e&&e.forEach(e=>this._autoScaleValueFont(e))}_autoScaleValueFont(e){const t=e?.parentElement;if(!t)return;const i=.48*t.clientWidth,s=.75*t.clientHeight;if(Math.min(i,s)<=0)return;e.style.fontSize="";let o=parseInt(getComputedStyle(e).fontSize,10)||14;for(;o>8;){e.style.fontSize=`${o}px`;const{width:t,height:n}=e.getBoundingClientRect();if(t<=i&&n<=s)break;o--}e.style.fontSize=`${o}px`}static styles=n`
     :host {
       display: block;
       height: 100%;
@@ -1191,7 +1191,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .sensor-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(var(--sensor-rows), 1fr);
+      grid-auto-rows: 1fr;
       width: 100%;
       height: 100%;
       box-sizing: border-box;
@@ -1232,8 +1232,8 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       opacity: 0.75;
       font-weight: 600;
     }
-  `;render(){const e=(this.sensors||[]).map(e=>{const t=e.device_class,i=ve[t]||{},s=i.emoji||"❓",o=e.unit||i.units?.[0]||"";return{...e,label:s,unit:o}});return F`
-      <div class="sensor-grid" style="--sensor-rows: ${this.rows}">
+  `;render(){const e=(this.sensors||[]).map(e=>{const t=e.device_class,i=ve[t]||{},s=i.emoji||"❓",o=e.unit||i.units?.[0]||"";return{...e,label:s,unit:o}}),t=`grid-template-rows: repeat(${this.rows}, 1fr);`;return F`
+      <div class="sensor-grid" style="${t}">
         ${e.map(e=>F`
           <div class="sensor-pill" style="color: ${e.color||"#e3f6ff"}">
             <ha-icon class="sensor-icon" .icon="${e.icon||""}"></ha-icon>
