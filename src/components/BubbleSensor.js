@@ -50,10 +50,11 @@ export class BubbleSensor extends LitElement {
   }
 
   _autoScaleAll() {
-    const values = this.renderRoot?.querySelectorAll('.sensor-value');
+    const values = this.renderRoot?.querySelectorAll('.sensor-value, .sensor-label, .sensor-unit');
     if (!values) return;
     values.forEach(el => this._autoScaleValueFont(el));
   }
+
 
   _autoScaleValueFont(element) {
     const parent = element?.parentElement;
