@@ -12,13 +12,14 @@ export class BubbleSensor extends LitElement {
     super();
     this.sensors = [];
     this.rows = 1;
+    this.columns = 1;
     this._resizeObserver = null;
     this._resizeScheduled = false;
   }
   
   connectedCallback() {
     super.connectedCallback();
-    this._updateRows();
+    this._updateLayout();
     this._resizeObserver = new ResizeObserver(() => {
       if (!this._resizeScheduled) {
         this._resizeScheduled = true;
@@ -38,14 +39,15 @@ export class BubbleSensor extends LitElement {
   
   updated(changedProperties) {
     if (changedProperties.has('sensors')) {
-      this._updateRows();
+      this._updateLayout();
       this._autoScaleValues();
     }
   }
   
-  _updateRows() {
+  _updateLayout() {
     const count = this.sensors?.length || 0;
     this.rows = count > 4 ? 2 : 1;
+    this.columns = count > 4 ? 4 : count || 1;
   }
   
   _autoScaleValues() {
@@ -87,7 +89,6 @@ export class BubbleSensor extends LitElement {
 
     .sensor-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
       width: 100%;
       height: 100%;
       box-sizing: border-box;
@@ -157,7 +158,10 @@ export class BubbleSensor extends LitElement {
     return html`
       <div
         class="sensor-grid"
-        style="grid-template-rows: repeat(${this.rows}, 1fr);"
+        style="
+          grid-template-columns: repeat(${this.columns}, 1fr);
+          grid-template-rows: repeat(${this.rows}, 1fr);
+        "
       >
         ${sensors.map(sensor => html`
           <div class="sensor-pill" style="color: ${sensor.color || '#e3f6ff'}">
