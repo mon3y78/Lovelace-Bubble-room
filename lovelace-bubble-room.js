@@ -1167,7 +1167,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       >
         ${this.name}
       </div>
-    `}_isRoomActive(){const t=this.config?.room_presence?.entity;return t&&"on"===this.hass?.states?.[t]?.state}_autoScaleFont(){const t=this.renderRoot.querySelector(".bubble-name");if(!t)return;let e=40;t.style.fontSize=`${e}px`;const i=t.parentElement.clientWidth,s=t.parentElement.clientHeight;for(;(t.scrollWidth>i||t.scrollHeight>s)&&e>8;)e-=1,t.style.fontSize=`${e}px`}static styles=n`
+    `}_isRoomActive(){const t=this.config?.room_presence?.entity;return t&&"on"===this.hass?.states?.[t]?.state}_autoScaleFont(){const t=this.renderRoot.querySelector(".bubble-name");if(!t)return;let e=40;t.style.fontSize=`${e}px`,requestAnimationFrame(()=>{const i=t.clientWidth,s=t.clientHeight;for(;(t.scrollWidth>i||t.scrollHeight>s)&&e>10;)e-=1,t.style.fontSize=`${e}px`})}static styles=n`
     .bubble-name {
       display: block;
       width: 100%;
