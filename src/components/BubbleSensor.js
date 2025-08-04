@@ -5,20 +5,81 @@ import { SENSOR_TYPE_MAP } from '../helpers/sensor-mapping.js';
 
 export class BubbleSensor extends LitElement {
   static properties = {
-    sensors: { type: Array }, // [{icon, label, value, unit, color, device_class}]
+    sensors: { type: Array },
   };
   
+  constructor() {
+    super();
+    this.sensors = [];
+    this._resizeObserver = new ResizeObserver(() => {
+      requestAnimationFrame(() => this._autoScaleAll());
+    });
+  }
+  
+  connectedCallback() {
+    super.connectedCallback();
+    this._resizeObserver.observe(this);
+  }
+  
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._resizeObserver.disconnect();
+  }
+  
+  updated(changedProperties) {
+    if (changedProperties.has('sensors')) {
+      requestAnimationFrame(() => this._autoScaleAll());
+    }
+  }
+  
+  _autoScaleAll() {
+    const values = this.renderRoot?.querySelectorAll('.sensor-value');
+    if (!values) return;
+    values.forEach(el => this._autoScaleValueFont(el));
+  }
+  
+  _autoScaleValueFont(element) {
+    const parent = element?.parentElement;
+    if (!parent) return;
+    
+    const maxWidth = parent.clientWidth * 0.48;
+    const maxHeight = parent.clientHeight * 0.75;
+    const maxSize = Math.min(maxWidth, maxHeight);
+    
+    if (maxSize <= 0) return;
+    
+    element.style.fontSize = '';
+    let fontSize = parseInt(getComputedStyle(element).fontSize, 10) || 14;
+    
+    while (fontSize > 8) {
+      element.style.fontSize = `${fontSize}px`;
+      const { width, height } = element.getBoundingClientRect();
+      if (width <= maxWidth && height <= maxHeight) break;
+      fontSize--;
+    }
+    
+    element.style.fontSize = `${fontSize}px`;
+  }
+  
   static styles = css`
+    :host {
+      display: block;
+      height: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      contain: strict;
+    }
+
     .sensor-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      grid-auto-rows: auto;
+      grid-auto-rows: 1fr;
       gap: 12px;
       width: 100%;
+      height: 100%;
       box-sizing: border-box;
       padding: 0;
       margin: 0;
-      border: 2px solid #00e676 !important;
     }
 
     .sensor-pill {
@@ -34,6 +95,8 @@ export class BubbleSensor extends LitElement {
       color: #e3f6ff;
       box-sizing: border-box;
       width: 100%;
+      height: 100%;
+      contain: strict;
     }
 
     .sensor-icon {
@@ -51,6 +114,7 @@ export class BubbleSensor extends LitElement {
       font-size: 1.07em;
       font-variant-numeric: tabular-nums;
       letter-spacing: 0.01em;
+      line-height: 1;
     }
     .sensor-unit {
       opacity: 0.75;
