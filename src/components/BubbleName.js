@@ -79,14 +79,14 @@ export class BubbleName extends LitElement {
   }
   
   static styles = css`
-    .bubble - name {
+    .bubble-name {
       display: block;
-      width: 100 % ;
-      height: 100 % ;
-      line - height: 1.1;
-      font - weight: bold;
-      text - align: center;
-      white - space: nowrap;
+      width: 100%;
+      height: 100%;
+      line-height: 1.1;
+      font-weight: bold;
+      text-align: center;
+      white-space: nowrap;
     }
   `;
 }
