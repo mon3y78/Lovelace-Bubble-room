@@ -1051,7 +1051,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
           @input=${i=>this._updateColorRaw(e,t,i.target.value)}
         />
       </div>
-    `}_parseRGBA(e){if(!e)return[0,0,0,1];const t=/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(e);return t?[+t[1],+t[2],+t[3],+(t[4]??1)]:[0,0,0,1]}_updateColor(e,t,i,s){const o=`rgba(${parseInt(i.slice(1,3),16)},${parseInt(i.slice(3,5),16)},${parseInt(i.slice(5,7),16)},${s})`;this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${e}.${t}`,val:o},bubbles:!0,composed:!0}))}_updateColorRaw(e,t,i){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${e}.${t}`,val:i},bubbles:!0,composed:!0}))}_resetColors(){this._expandedColors=[!1,!1];const e={room:["background_active","background_inactive","icon_active","icon_inactive"],subbutton:["background_on","background_off","icon_on","icon_off"]};["room","subbutton"].forEach(t=>{e[t].forEach(e=>{this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${t}.${e}`,val:""},bubbles:!0,composed:!0}))})})}}customElements.define("color-panel",ke);class Ce extends se{static properties={hass:{type:Object},config:{type:Object},openPanel:{type:String,state:!0}};static styles=n`
+    `}_parseRGBA(e){if(!e)return[0,0,0,1];const t=/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(e);return t?[+t[1],+t[2],+t[3],+(t[4]??1)]:[0,0,0,1]}_updateColor(e,t,i,s){const o=`rgba(${parseInt(i.slice(1,3),16)},${parseInt(i.slice(3,5),16)},${parseInt(i.slice(5,7),16)},${s})`;this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${e}.${t}`,val:o},bubbles:!0,composed:!0}))}_updateColorRaw(e,t,i){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${e}.${t}`,val:i},bubbles:!0,composed:!0}))}_resetColors(){this._expandedColors=[!1,!1];const e={room:["background_active","background_inactive","icon_active","icon_inactive","text_active","text_inactive"],subbutton:["background_on","background_off","icon_on","icon_off"]};["room","subbutton"].forEach(t=>{e[t].forEach(e=>{this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${t}.${e}`,val:""},bubbles:!0,composed:!0}))})})}}customElements.define("color-panel",ke);class Ce extends se{static properties={hass:{type:Object},config:{type:Object},openPanel:{type:String,state:!0}};static styles=n`
     :host {
       display: block;
       padding: 0;
@@ -1179,7 +1179,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       letter-spacing: 0.02em;
       font-stretch: condensed;
     }
-  `}customElements.define("bubble-name",Oe);class ze extends se{static properties={sensors:{type:Array}};constructor(){super(),this.sensors=[],this.rows=1,this._resizeObserver=null,this._resizeScheduled=!1}connectedCallback(){super.connectedCallback(),this._updateRows(),this._resizeObserver=new ResizeObserver(()=>{this._resizeScheduled||(this._resizeScheduled=!0,requestAnimationFrame(()=>{this._autoScaleValues(),this._resizeScheduled=!1}))}),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver?.disconnect()}updated(e){e.has("sensors")&&(this._updateRows(),this._autoScaleValues())}_updateRows(){const e=this.sensors?.length||0;this.rows=e>4?2:1}_autoScaleValues(){const e=this.renderRoot?.querySelectorAll(".sensor-value");e&&e.forEach(e=>this._autoScaleValueFont(e))}_autoScaleValueFont(e){const t=e?.parentElement;if(!t)return;const i=.48*t.clientWidth,s=.75*t.clientHeight;if(Math.min(i,s)<=0)return;e.style.fontSize="";let o=parseInt(getComputedStyle(e).fontSize,10)||14;for(;o>8;){e.style.fontSize=`${o}px`;const{width:t,height:n}=e.getBoundingClientRect();if(t<=i&&n<=s)break;o--}e.style.fontSize=`${o}px`}static styles=n`
+  `}customElements.define("bubble-name",Oe);class ze extends se{static properties={sensors:{type:Array}};constructor(){super(),this.sensors=[],this.rows=1,this.columns=1,this._resizeObserver=null,this._resizeScheduled=!1}connectedCallback(){super.connectedCallback(),this._updateLayout(),this._resizeObserver=new ResizeObserver(()=>{this._resizeScheduled||(this._resizeScheduled=!0,requestAnimationFrame(()=>{this._autoScaleValues(),this._resizeScheduled=!1}))}),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver?.disconnect()}updated(e){e.has("sensors")&&(this._updateLayout(),this._autoScaleValues())}_updateLayout(){const e=this.sensors?.length||0;this.rows=e>4?2:1,this.columns=e>4?4:e||1}_autoScaleValues(){const e=this.renderRoot?.querySelectorAll(".sensor-value");e&&e.forEach(e=>this._autoScaleValueFont(e))}_autoScaleValueFont(e){const t=e?.parentElement;if(!t)return;const i=.48*t.clientWidth,s=.75*t.clientHeight;if(Math.min(i,s)<=0)return;e.style.fontSize="";let o=parseInt(getComputedStyle(e).fontSize,10)||14;for(;o>8;){e.style.fontSize=`${o}px`;const{width:t,height:n}=e.getBoundingClientRect();if(t<=i&&n<=s)break;o--}e.style.fontSize=`${o}px`}static styles=n`
     :host {
       display: block;
       height: 100%;
@@ -1190,7 +1190,6 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
 
     .sensor-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
       width: 100%;
       height: 100%;
       box-sizing: border-box;
@@ -1245,7 +1244,10 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
   `;render(){const e=(this.sensors||[]).map(e=>{const t=e.device_class,i=ve[t]||{},s=i.emoji||"❓",o=e.unit||i.units?.[0]||"";return{...e,label:s,unit:o}});return F`
       <div
         class="sensor-grid"
-        style="grid-template-rows: repeat(${this.rows}, 1fr);"
+        style="
+          grid-template-columns: repeat(${this.columns}, 1fr);
+          grid-template-rows: repeat(${this.rows}, 1fr);
+        "
       >
         ${e.map(e=>F`
           <div class="sensor-pill" style="color: ${e.color||"#e3f6ff"}">
