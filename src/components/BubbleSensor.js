@@ -19,12 +19,11 @@ export class BubbleSensor extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this._updateRows();
-    // Osserva solo resize del componente stesso (non dei contenuti interni)
     this._resizeObserver = new ResizeObserver(() => {
       if (!this._resizeScheduled) {
         this._resizeScheduled = true;
         requestAnimationFrame(() => {
-          this._autoScaleAll();
+          this._autoScaleValues();
           this._resizeScheduled = false;
         });
       }
@@ -40,7 +39,7 @@ export class BubbleSensor extends LitElement {
   updated(changedProperties) {
     if (changedProperties.has('sensors')) {
       this._updateRows();
-      this._autoScaleAll(); // Eseguito solo se cambia sensors
+      this._autoScaleValues();
     }
   }
 
@@ -49,12 +48,11 @@ export class BubbleSensor extends LitElement {
     this.rows = count > 4 ? 2 : 1;
   }
 
-  _autoScaleAll() {
-    const values = this.renderRoot?.querySelectorAll('.sensor-value, .sensor-label, .sensor-unit');
+  _autoScaleValues() {
+    const values = this.renderRoot?.querySelectorAll('.sensor-value');
     if (!values) return;
     values.forEach(el => this._autoScaleValueFont(el));
   }
-
 
   _autoScaleValueFont(element) {
     const parent = element?.parentElement;
@@ -66,7 +64,7 @@ export class BubbleSensor extends LitElement {
     if (maxSize <= 0) return;
 
     element.style.fontSize = '';
-    let fontSize = parseInt(getComputedStyle(element).fontSize, 30) || 14;
+    let fontSize = parseInt(getComputedStyle(element).fontSize, 10) || 14;
 
     while (fontSize > 8) {
       element.style.fontSize = `${fontSize}px`;
@@ -90,7 +88,7 @@ export class BubbleSensor extends LitElement {
     .sensor-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      grid-auto-rows: 1fr;
+      grid-template-rows: repeat(2, 1fr);
       width: 100%;
       height: 100%;
       box-sizing: border-box;
@@ -120,6 +118,7 @@ export class BubbleSensor extends LitElement {
     .sensor-label {
       opacity: 0.78;
       font-weight: 600;
+      font-size: clamp(5px, 1.2vw, 16px);
     }
     .sensor-value {
       font-weight: 700;
@@ -130,6 +129,7 @@ export class BubbleSensor extends LitElement {
     .sensor-unit {
       opacity: 0.75;
       font-weight: 600;
+      font-size: clamp(4px, 1vw, 14px);
     }
   `;
 
@@ -146,10 +146,8 @@ export class BubbleSensor extends LitElement {
       };
     });
 
-    const gridStyle = `grid-template-rows: repeat(${this.rows}, 1fr);`;
-
     return html`
-      <div class="sensor-grid" style="${gridStyle}">
+      <div class="sensor-grid">
         ${sensors.map(sensor => html`
           <div class="sensor-pill" style="color: ${sensor.color || '#e3f6ff'}">
             <ha-icon class="sensor-icon" .icon="${sensor.icon || ''}"></ha-icon>
