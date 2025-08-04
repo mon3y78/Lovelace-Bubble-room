@@ -139,7 +139,11 @@ export class BubbleRoom extends LitElement {
       border: 2px dashed purple;
     }
     .sensors-placeholder { border: 2px dashed lime; box-sizing: border-box; }
-    .name-placeholder    { border: 2px dashed orange; box-sizing: border-box; }
+    .name - placeholder {
+      display: flex;
+      align - items: center;
+      justify - content: center;
+    }
     .icon-mushroom-area  { border: 2px dashed violet; box-sizing: border-box; }
     .k-space             { border: 2px dashed black; box-sizing: border-box; }
     .sidebar {
