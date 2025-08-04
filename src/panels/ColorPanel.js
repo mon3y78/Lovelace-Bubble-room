@@ -174,6 +174,8 @@ export class ColorPanel extends LitElement {
               ${this._renderColorField('room', 'background_inactive', 'Background Inactive')}
               ${this._renderColorField('room', 'icon_active', 'Icon Active')}
               ${this._renderColorField('room', 'icon_inactive', 'Icon Inactive')}
+              ${this._renderColorField('room', 'text_active', 'Text Active')}       <!-- ✅ AGGIUNTO -->
+              ${this._renderColorField('room', 'text_inactive', 'Text Inactive')}   <!-- ✅ AGGIUNTO -->
             </div>
           ` : ''}
         </div>
