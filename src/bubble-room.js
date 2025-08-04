@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import './bubble-room-editor.js';
 import './components/BubbleSubButton.js';
 import './components/BubbleName.js';
+import './components/BubbleSensors.js'; // nuovo
 import { resolveEntityIcon } from './helpers/icon-mapping.js';
 
 export class BubbleRoom extends LitElement {
@@ -56,9 +57,6 @@ export class BubbleRoom extends LitElement {
     
     return (this.config.subbuttons || []).map(sb => {
       const stateObj = this.hass.states?.[sb.entity_id];
-      const attrs = stateObj?.attributes || {};
-      const devClass = attrs.device_class;
-      const domain = sb.entity_id?.split('.')?.[0] ?? '';
       const entityState = stateObj?.state;
       
       const resolvedIcon = resolveEntityIcon(sb.entity_id, this.hass);
@@ -82,6 +80,29 @@ export class BubbleRoom extends LitElement {
     return entity && this.hass?.states?.[entity]?.state === 'on';
   }
   
+  _getSensors() {
+    const entities = this.config.entities || {};
+    const isActive = this._isRoomActive();
+    const color = isActive ?
+      (this.config.colors?.room?.text_active || 'white') :
+      (this.config.colors?.room?.text_inactive || 'rgba(255,255,255,0.5)');
+    
+    const result = [];
+    for (let i = 1; i <= 6; i++) {
+      const key = `sensor${i}`;
+      const entId = entities[key]?.entity;
+      const stateObj = this.hass?.states?.[entId];
+      if (!entId || !stateObj) continue;
+      
+      const devClass = stateObj.attributes.device_class;
+      const value = stateObj.state;
+      const unit = stateObj.attributes.unit_of_measurement;
+      const icon = stateObj.attributes.icon || '';
+      result.push({ icon, value, unit, color, device_class: devClass });
+    }
+    return result;
+  }
+  
   render() {
     const layout = this.config.layout || 'wide';
     const subbuttons = this._getSubButtons();
@@ -94,7 +115,7 @@ export class BubbleRoom extends LitElement {
       <div class="bubble-room-grid ${layout}">
         <div class="main-area">
           <div class="row1">
-            <div class="sensors-placeholder">[bubble-sensors]</div>
+            <bubble-sensors .sensors="${this._getSensors()}"></bubble-sensors>
             <div class="name-placeholder" id="nameContainer">
               <bubble-name
                 .name="${this.config.name}"
@@ -140,7 +161,6 @@ export class BubbleRoom extends LitElement {
       display: grid; gap: 4px; height: 100%; min-height: 0; box-sizing: border-box;
       border: 2px dashed purple;
     }
-    .sensors-placeholder { border: 2px dashed lime; box-sizing: border-box; }
     .name-placeholder {
       display: flex;
       align-items: center;
@@ -149,7 +169,7 @@ export class BubbleRoom extends LitElement {
       max-width: 100%;
       height: 100%;
       box-sizing: border-box;
-      contain: strict; /* vincola espansione */
+      contain: strict;
       flex-shrink: 1;
     }
     .icon-mushroom-area  { border: 2px dashed violet; box-sizing: border-box; }
