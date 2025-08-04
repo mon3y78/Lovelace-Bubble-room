@@ -1215,7 +1215,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     }
     .sensor-label {
       opacity: 0.78;
-      font-size: 0.89em;
+      font-size: 0.50em;
       font-weight: 600;
     }
     .sensor-value {
@@ -1227,7 +1227,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     }
     .sensor-unit {
       opacity: 0.75;
-      font-size: 0.89em;
+      font-size: 0.50em;
       font-weight: 600;
     }
   `;render(){const e=(this.sensors||[]).map(e=>{const t=e.device_class,i=ve[t]||{},s=i.emoji||"❓",o=e.unit||i.units?.[0]||"";return{...e,label:s,unit:o}});return F`
