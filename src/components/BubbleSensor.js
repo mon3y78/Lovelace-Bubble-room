@@ -11,6 +11,7 @@ export class BubbleSensor extends LitElement {
   constructor() {
     super();
     this.sensors = [];
+    this.rows = 1;
     this._resizeObserver = new ResizeObserver(() => {
       requestAnimationFrame(() => this._autoScaleAll());
     });
@@ -28,6 +29,8 @@ export class BubbleSensor extends LitElement {
   
   updated(changedProperties) {
     if (changedProperties.has('sensors')) {
+      const count = this.sensors?.length || 0;
+      this.rows = count > 4 ? 2 : 1;
       requestAnimationFrame(() => this._autoScaleAll());
     }
   }
@@ -73,7 +76,7 @@ export class BubbleSensor extends LitElement {
     .sensor-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      grid-auto-rows: 1fr;
+      grid-template-rows: repeat(var(--sensor-rows), 1fr);
       width: 100%;
       height: 100%;
       box-sizing: border-box;
@@ -130,7 +133,7 @@ export class BubbleSensor extends LitElement {
     });
     
     return html`
-      <div class="sensor-grid">
+      <div class="sensor-grid" style="--sensor-rows: ${this.rows}">
         ${sensors.map(sensor => html`
           <div class="sensor-pill" style="color: ${sensor.color || '#e3f6ff'}">
             <ha-icon class="sensor-icon" .icon="${sensor.icon || ''}"></ha-icon>
