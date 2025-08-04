@@ -19,11 +19,11 @@ export class SensorPanel extends LitElement {
     this.hass      = {};
     this.config    = {};
     this.expanded  = false;
-    this._expanded = Array(6).fill(false);
+    this._expanded = Array(8).fill(false);
     // inizializza con TUTTI i tipi disponibili
     const allTypes = Object.keys(SENSOR_TYPE_MAP);
-    this._filters  = Array(6).fill().map(() => [...allTypes]);
-    this._entities = Array(6).fill('');
+    this._filters  = Array(8).fill().map(() => [...allTypes]);
+    this._entities = Array(8).fill('');
   }
 
   updated(changed) {
@@ -31,7 +31,7 @@ export class SensorPanel extends LitElement {
       // 1️⃣ auto‐discover
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
       // 2️⃣ sync da config
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 8; i++) {
         const key = `sensor${i+1}`;
         const cfgFilter = this.config.sensor_filters?.[i];
         const cfgEnt    = this.config.entities?.[key]?.entity;
@@ -175,7 +175,7 @@ export class SensorPanel extends LitElement {
         .expanded=${this.expanded}
         @expanded-changed=${e => {
           this.expanded = e.detail.expanded;
-          if (this.expanded) this._expanded = Array(6).fill(false);
+          if (this.expanded) this._expanded = Array(8).fill(false);
         }}
       >
         <div slot="header" class="glass-header">🧭 Sensors</div>
@@ -290,17 +290,17 @@ export class SensorPanel extends LitElement {
   }
 
   _reset() {
-    this._expanded = Array(6).fill(false);
+    this._expanded = Array(8).fill(false);
     const allTypes = Object.keys(SENSOR_TYPE_MAP);
-    this._filters  = Array(6).fill().map(() => [...allTypes]);
-    this._entities = Array(6).fill('');
+    this._filters  = Array(8).fill().map(() => [...allTypes]);
+    this._entities = Array(8).fill('');
     // reset filters array
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: 'sensor_filters', val: this._filters },
       bubbles: true, composed: true,
     }));
     // reset entità una per una
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 1; i <= 8; i++) {
       this.dispatchEvent(new CustomEvent('panel-changed', {
         detail: { prop: `entities.sensor${i}.entity`, val: '' },
         bubbles: true, composed: true,
