@@ -1,83 +1,48 @@
-/**
- * BubbleName.js
- * 
- * Visualizza il nome della stanza, uppercased, grande e bold, allineato a sinistra.
- */
+import { LitElement, html, css } from 'lit';
 
-import { html, css, LitElement } from 'lit';
-
-export class BubbleName extends LitElement {
+class BubbleName extends LitElement {
   static properties = {
     name: { type: String },
-    area: { type: String }
+    area: { type: String },
   };
-  
-  constructor() {
-    super();
-    this.name = '';
-    this.area = '';
-  }
   
   static styles = css`
     .bubble-name-wrapper {
+      display: flex;
+      align-items: center;
+      height: 100%;
       width: 100%;
-      max-width: 100%;
-      min-width: 0;        /* abilita il ridimensionamento */
+      overflow: hidden;
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+      padding-inline: 6px;
     }
-    .bubble-name {
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
-      box-sizing: border-box;
-      margin: 0 0 0.13em;  /* margine-bottom originale */
-      padding: 0;
-      font-size: clamp(1.2rem, 4vw, 3.9em);  /* scala con lo schermo */
-      font-family: "Bebas Neue", "Arial Narrow", sans-serif;
+
+    .room-name {
+      font-size: clamp(1.2rem, 2vw, 1.8rem);
       text-transform: uppercase;
-      letter-spacing: -0.03em;
-      font-weight: 900;
-      color: #173c16;
-      line-height: 0.92em;
-      text-align: left;
+      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;
-      margin-bottom: 0.13em;
-      text-shadow: 1px 1.2px 0 rgba(34,54,15,0.08);
-      /* Responsive: riduce su schermi piccoli */
-      border: 2px solid #ffd600 !important;
+      font-weight: bold;
+      color: var(--primary-text-color, white);
+      max-width: 100%;
     }
-    .bubble-area {
-      font-size: 0.47em;
-      color: #66bbff;
-      opacity: 0.6;
-      margin-left: 0.45em;
-      font-weight: 400;
+
+    .area-name {
+      font-size: clamp(1rem, 1.5vw, 1.2rem);
+      margin-left: 0.5em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--secondary-text-color, #ccc);
     }
   `;
   
   render() {
     return html`
-      <style>
-        .bubble-name-wrapper {
-          width: 100%;
-          max-width: 100%;
-          min-width: 0;
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-      </style>
       <div class="bubble-name-wrapper">
-        <div class="bubble-name">
-          ${this.name}
-          ${this.area
-            ? html`<span class="bubble-area">(${this.area})</span>`
-            : ''}
-        </div>
+        <div class="room-name">${this.name?.toUpperCase()}</div>
+        <div class="area-name">(${this.area})</div>
       </div>
     `;
   }
