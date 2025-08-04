@@ -8,6 +8,30 @@ export class BubbleName extends LitElement {
     config: { type: Object },
   };
   
+  constructor() {
+    super();
+    this._resizeObserver = null;
+  }
+  
+  connectedCallback() {
+    super.connectedCallback();
+    this.updateComplete.then(() => {
+      const el = this.renderRoot.querySelector('.bubble-name');
+      if (el) {
+        this._resizeObserver = new ResizeObserver(() => this._autoScaleFont());
+        this._resizeObserver.observe(el);
+      }
+    });
+  }
+  
+  disconnectedCallback() {
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+      this._resizeObserver = null;
+    }
+    super.disconnectedCallback();
+  }
+  
   updated() {
     this._autoScaleFont();
   }
@@ -37,16 +61,17 @@ export class BubbleName extends LitElement {
     const el = this.renderRoot.querySelector('.bubble-name');
     if (!el) return;
     
-    // Reset font-size to max
     let fontSize = 40;
     el.style.fontSize = `${fontSize}px`;
     
-    // Defer execution to next frame so layout is stable
     requestAnimationFrame(() => {
       const availableWidth = el.clientWidth;
       const availableHeight = el.clientHeight;
       
-      while ((el.scrollWidth > availableWidth || el.scrollHeight > availableHeight) && fontSize > 10) {
+      while (
+        (el.scrollWidth > availableWidth || el.scrollHeight > availableHeight) &&
+        fontSize > 10
+      ) {
         fontSize -= 1;
         el.style.fontSize = `${fontSize}px`;
       }
