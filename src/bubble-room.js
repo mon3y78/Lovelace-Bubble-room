@@ -115,7 +115,7 @@ export class BubbleRoom extends LitElement {
       <div class="bubble-room-grid ${layout}">
         <div class="main-area">
           <div class="row1">
-            <bubble-sensors .sensors="${this._getSensors()}"></bubble-sensors>
+            <bubble-sensor .sensors="${this._getSensors()}"></bubble-sensor>
             <div class="name-placeholder" id="nameContainer">
               <bubble-name
                 .name="${this.config.name}"
@@ -171,6 +171,10 @@ export class BubbleRoom extends LitElement {
       box-sizing: border-box;
       contain: strict;
       flex-shrink: 1;
+    }
+    .sensor-placeholder {
+      border: 2px dashed lime;
+      box-sizing: border-box;
     }
     .icon-mushroom-area  { border: 2px dashed violet; box-sizing: border-box; }
     .k-space             { border: 2px dashed black; box-sizing: border-box; }
