@@ -37,20 +37,20 @@ export class BubbleName extends LitElement {
     const el = this.renderRoot.querySelector('.bubble-name');
     if (!el) return;
     
-    let fontSize = 40; // valore iniziale massimo
+    // Reset font-size to max
+    let fontSize = 40;
     el.style.fontSize = `${fontSize}px`;
     
-    const maxWidth = el.parentElement.clientWidth;
-    const maxHeight = el.parentElement.clientHeight;
-    
-    // Riduci finché non entra sia in larghezza che in altezza
-    while (
-      (el.scrollWidth > maxWidth || el.scrollHeight > maxHeight) &&
-      fontSize > 8
-    ) {
-      fontSize -= 1;
-      el.style.fontSize = `${fontSize}px`;
-    }
+    // Defer execution to next frame so layout is stable
+    requestAnimationFrame(() => {
+      const availableWidth = el.clientWidth;
+      const availableHeight = el.clientHeight;
+      
+      while ((el.scrollWidth > availableWidth || el.scrollHeight > availableHeight) && fontSize > 10) {
+        fontSize -= 1;
+        el.style.fontSize = `${fontSize}px`;
+      }
+    });
   }
   
   static styles = css`
