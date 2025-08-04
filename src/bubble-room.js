@@ -27,8 +27,8 @@ export class BubbleRoom extends LitElement {
     return {
       type: 'custom:bubble-room',
       layout: 'wide',
-      name: 'Stanza di prova',
-      area: 'Zona Giorno',
+      name: [],
+      area: [],
       sensors: [],
       mushrooms: [],
       subbuttons: [],
