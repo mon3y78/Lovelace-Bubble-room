@@ -1173,7 +1173,6 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       font-weight: bold;
       text-align: center;
       white-space: nowrap;
-      overflow: hidden;
     }
   `}customElements.define("bubble-name",Ot);class Pt extends st{static properties={config:{type:Object},hass:{type:Object}};constructor(){super(),this.config={},this.hass={}}setConfig(t){this.config={layout:"wide",...t}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:"Stanza di prova",area:"Zona Giorno",sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return Ct}),document.createElement("bubble-room-editor")}_getSubButtons(){const t=this.config.colors?.subbutton?.background_on??"#00d46d",e=this.config.colors?.subbutton?.background_off??"#999",i=this.config.colors?.subbutton?.icon_on??"yellow",s=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(o=>{const n=this.hass.states?.[o.entity_id];(n?.attributes||{}).device_class,o.entity_id?.split(".");const r=n?.state;return{icon:wt(o.entity_id,this.hass),active:"on"===r,colorOn:t,colorOff:e,iconOn:i,iconOff:s,entity_id:o.entity_id,tap_action:o.tap_action,hold_action:o.hold_action}})}_isRoomActive(){const t=this.config?.room_presence?.entity;return t&&"on"===this.hass?.states?.[t]?.state}render(){const t=this.config.layout||"wide",e=this._getSubButtons(),i=this._isRoomActive();return this.style.setProperty("--bubble-room-name-color",i?this.config.colors?.room?.text_active||"white":this.config.colors?.room?.text_inactive||"rgba(255,255,255,0.5)"),B`
       <div class="bubble-room-grid ${t}">
@@ -1216,16 +1215,23 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
     .row1 {
       display: grid; gap: 4px; min-height: 0; box-sizing: border-box;
       border: 2px dashed blue;
+      grid-template-columns: 1fr;
     }
     .row2 {
       display: grid; gap: 4px; height: 100%; min-height: 0; box-sizing: border-box;
       border: 2px dashed purple;
     }
     .sensors-placeholder { border: 2px dashed lime; box-sizing: border-box; }
-    .name - placeholder {
+    .name-placeholder {
       display: flex;
-      align - items: center;
-      justify - content: center;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      contain: strict; /* vincola espansione */
+      flex-shrink: 1;
     }
     .icon-mushroom-area  { border: 2px dashed violet; box-sizing: border-box; }
     .k-space             { border: 2px dashed black; box-sizing: border-box; }
