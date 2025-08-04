@@ -95,8 +95,14 @@ export class BubbleRoom extends LitElement {
         <div class="main-area">
           <div class="row1">
             <div class="sensors-placeholder">[bubble-sensors]</div>
-            <div class="bubble-name" style="color: ${color}">
-              ${this.name}
+            <div class="row1">
+            <div class="name-placeholder">
+              <bubble-name
+                .name="${this.config.name}"
+                .area="${this.config.area}"
+                .hass=${this.hass}
+                .config=${this.config}
+              ></bubble-name>
             </div>
           </div>
           <div class="row2">
