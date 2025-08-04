@@ -1187,7 +1187,6 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-auto-rows: 1fr;
-      gap: 12px;
       width: 100%;
       height: 100%;
       box-sizing: border-box;
@@ -1198,10 +1197,8 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .sensor-pill {
       display: flex;
       align-items: center;
-      gap: 0.5em;
       background: rgba(32,38,55,0.12);
       border-radius: 18px;
-      padding: 0.6em 1em;
       font-size: 1em;
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       font-weight: 700;
@@ -1219,7 +1216,6 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .sensor-label {
       opacity: 0.78;
       font-size: 0.98em;
-      margin-right: 0.28em;
       font-weight: 600;
     }
     .sensor-value {
@@ -1232,7 +1228,6 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .sensor-unit {
       opacity: 0.75;
       font-size: 0.89em;
-      margin-left: 0.12em;
       font-weight: 600;
     }
   `;render(){const e=(this.sensors||[]).map(e=>{const t=e.device_class,i=ve[t]||{},s=i.emoji||"❓",o=e.unit||i.units?.[0]||"";return{...e,label:s,unit:o}});return F`
