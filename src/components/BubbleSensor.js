@@ -33,7 +33,7 @@ export class BubbleSensor extends LitElement {
   }
   
   _autoScaleAll() {
-    const values = this.renderRoot?.querySelectorAll('.sensor-value');
+    const values = this.renderRoot?.querySelectorAll('.sensor-value, .sensor-label, .sensor-unit');
     if (!values) return;
     values.forEach(el => this._autoScaleValueFont(el));
   }
@@ -102,19 +102,16 @@ export class BubbleSensor extends LitElement {
     }
     .sensor-label {
       opacity: 0.78;
-      font-size: 0.50em;
       font-weight: 600;
     }
     .sensor-value {
       font-weight: 700;
-      font-size: 1.07em;
       font-variant-numeric: tabular-nums;
       letter-spacing: 0.01em;
       line-height: 1;
     }
     .sensor-unit {
       opacity: 0.75;
-      font-size: 0.50em;
       font-weight: 600;
     }
   `;
