@@ -1174,11 +1174,72 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       white-space: nowrap;
       text-transform: uppercase;
     }
-  `}customElements.define("bubble-name",Ot);class Pt extends st{static properties={config:{type:Object},hass:{type:Object}};constructor(){super(),this.config={},this.hass={}}setConfig(t){this.config={layout:"wide",...t}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:[],area:[],sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return Ct}),document.createElement("bubble-room-editor")}_getSubButtons(){const t=this.config.colors?.subbutton?.background_on??"#00d46d",e=this.config.colors?.subbutton?.background_off??"#999",i=this.config.colors?.subbutton?.icon_on??"yellow",s=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(o=>{const n=this.hass.states?.[o.entity_id];(n?.attributes||{}).device_class,o.entity_id?.split(".");const r=n?.state;return{icon:wt(o.entity_id,this.hass),active:"on"===r,colorOn:t,colorOff:e,iconOn:i,iconOff:s,entity_id:o.entity_id,tap_action:o.tap_action,hold_action:o.hold_action}})}_isRoomActive(){const t=this.config?.room_presence?.entity;return t&&"on"===this.hass?.states?.[t]?.state}render(){const t=this.config.layout||"wide",e=this._getSubButtons(),i=this._isRoomActive();return this.style.setProperty("--bubble-room-name-color",i?this.config.colors?.room?.text_active||"white":this.config.colors?.room?.text_inactive||"rgba(255,255,255,0.5)"),B`
+  `}customElements.define("bubble-name",Ot);class Pt extends st{static properties={sensors:{type:Array}};static styles=n`
+    .sensor-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: auto;
+      gap: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+      border: 2px solid #00e676 !important;
+    }
+
+    .sensor-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      background: rgba(32,38,55,0.12);
+      border-radius: 18px;
+      padding: 0.6em 1em;
+      font-size: 1em;
+      font-family: "Bebas Neue", "Arial Narrow", sans-serif;
+      font-weight: 700;
+      color: #e3f6ff;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    .sensor-icon {
+      font-size: 1.14em;
+      opacity: 0.81;
+    }
+    .sensor-label {
+      opacity: 0.78;
+      font-size: 0.98em;
+      margin-right: 0.28em;
+      font-weight: 600;
+    }
+    .sensor-value {
+      font-weight: 700;
+      font-size: 1.07em;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.01em;
+    }
+    .sensor-unit {
+      opacity: 0.75;
+      font-size: 0.89em;
+      margin-left: 0.12em;
+      font-weight: 600;
+    }
+  `;render(){const t=(this.sensors||[]).map(t=>{const e=t.device_class,i=vt[e]||{},s=i.emoji||"❓",o=t.unit||i.units?.[0]||"";return{...t,label:s,unit:o}});return B`
+      <div class="sensor-grid">
+        ${t.map(t=>B`
+          <div class="sensor-pill" style="color: ${t.color||"#e3f6ff"}">
+            <ha-icon class="sensor-icon" .icon="${t.icon||""}"></ha-icon>
+            <span class="sensor-label">${t.label||""}</span>
+            <span class="sensor-value">${t.value??"--"}</span>
+            <span class="sensor-unit">${t.unit||""}</span>
+          </div>
+        `)}
+      </div>
+    `}}customElements.define("bubble-sensor",Pt);class zt extends st{static properties={config:{type:Object},hass:{type:Object}};constructor(){super(),this.config={},this.hass={}}setConfig(t){this.config={layout:"wide",...t}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:[],area:[],sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return Ct}),document.createElement("bubble-room-editor")}_getSubButtons(){const t=this.config.colors?.subbutton?.background_on??"#00d46d",e=this.config.colors?.subbutton?.background_off??"#999",i=this.config.colors?.subbutton?.icon_on??"yellow",s=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(o=>{const n=this.hass.states?.[o.entity_id],r=n?.state;return{icon:wt(o.entity_id,this.hass),active:"on"===r,colorOn:t,colorOff:e,iconOn:i,iconOff:s,entity_id:o.entity_id,tap_action:o.tap_action,hold_action:o.hold_action}})}_isRoomActive(){const t=this.config?.room_presence?.entity;return t&&"on"===this.hass?.states?.[t]?.state}_getSensors(){const t=this.config.entities||{},e=this._isRoomActive()?this.config.colors?.room?.text_active||"white":this.config.colors?.room?.text_inactive||"rgba(255,255,255,0.5)",i=[];for(let s=1;s<=6;s++){const o=`sensor${s}`,n=t[o]?.entity,r=this.hass?.states?.[n];if(!n||!r)continue;const a=r.attributes.device_class,l=r.state,c=r.attributes.unit_of_measurement,d=r.attributes.icon||"";i.push({icon:d,value:l,unit:c,color:e,device_class:a})}return i}render(){const t=this.config.layout||"wide",e=this._getSubButtons(),i=this._isRoomActive();return this.style.setProperty("--bubble-room-name-color",i?this.config.colors?.room?.text_active||"white":this.config.colors?.room?.text_inactive||"rgba(255,255,255,0.5)"),B`
       <div class="bubble-room-grid ${t}">
         <div class="main-area">
           <div class="row1">
-            <div class="sensors-placeholder">[bubble-sensors]</div>
+            <bubble-sensors .sensors="${this._getSensors()}"></bubble-sensors>
             <div class="name-placeholder" id="nameContainer">
               <bubble-name
                 .name="${this.config.name}"
@@ -1221,7 +1282,6 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       display: grid; gap: 4px; height: 100%; min-height: 0; box-sizing: border-box;
       border: 2px dashed purple;
     }
-    .sensors-placeholder { border: 2px dashed lime; box-sizing: border-box; }
     .name-placeholder {
       display: flex;
       align-items: center;
@@ -1230,7 +1290,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       max-width: 100%;
       height: 100%;
       box-sizing: border-box;
-      contain: strict; /* vincola espansione */
+      contain: strict;
       flex-shrink: 1;
     }
     .icon-mushroom-area  { border: 2px dashed violet; box-sizing: border-box; }
@@ -1248,5 +1308,5 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
     .bubble-room-grid.wide .main-area    { grid-template-rows: 2fr 1fr; }
     .bubble-room-grid.wide .row1         { grid-template-rows: 2fr 1fr; }
     .bubble-room-grid.wide .row2         { grid-template-columns: 1fr 1fr; }
-  `}customElements.define("bubble-room",Pt),window.customCards=window.customCards||[],window.customCards.push({type:"bubble-room",name:"Bubble Room",description:"A stylish room control card with environmental sensors",preview:!0,documentationURL:"https://github.com/mon3y78/Lovelace-Bubble-room"});export{Pt as BubbleRoom};
+  `}customElements.define("bubble-room",zt),window.customCards=window.customCards||[],window.customCards.push({type:"bubble-room",name:"Bubble Room",description:"A stylish room control card with environmental sensors",preview:!0,documentationURL:"https://github.com/mon3y78/Lovelace-Bubble-room"});export{zt as BubbleRoom};
 //# sourceMappingURL=lovelace-bubble-room.js.map
