@@ -1221,7 +1221,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .sensor-label {
       opacity: 0.78;
       font-weight: 600;
-      font-size: clamp(2px, 0.8vw, 16px);
+      font-size: clamp(1px, 1vw, 16px);
     }
     .sensor-value {
       font-weight: 700;
@@ -1232,7 +1232,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .sensor-unit {
       opacity: 0.75;
       font-weight: 600;
-      font-size: clamp(1px, 0.5vw, 14px);
+      font-size: clamp(1px, 1vw, 14px);
     }
   `;render(){const e=(this.sensors||[]).map(e=>{const t=e.device_class,i=ve[t]||{},s=i.emoji||"❓",o=e.unit||i.units?.[0]||"";return{...e,label:s,unit:o}});return F`
       <div class="sensor-grid">
