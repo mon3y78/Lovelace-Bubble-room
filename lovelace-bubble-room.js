@@ -1215,7 +1215,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     }
     .sensor-label {
       opacity: 0.78;
-      font-size: 0.98em;
+      font-size: 0.89em;
       font-weight: 600;
     }
     .sensor-value {
