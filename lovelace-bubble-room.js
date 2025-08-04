@@ -1174,7 +1174,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       white-space: nowrap;
       text-transform: uppercase;
     }
-  `}customElements.define("bubble-name",Oe);class ze extends se{static properties={sensors:{type:Array}};constructor(){super(),this.sensors=[],this._resizeObserver=new ResizeObserver(()=>{requestAnimationFrame(()=>this._autoScaleAll())})}connectedCallback(){super.connectedCallback(),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver.disconnect()}updated(e){e.has("sensors")&&requestAnimationFrame(()=>this._autoScaleAll())}_autoScaleAll(){const e=this.renderRoot?.querySelectorAll(".sensor-value");e&&e.forEach(e=>this._autoScaleValueFont(e))}_autoScaleValueFont(e){const t=e?.parentElement;if(!t)return;const i=.48*t.clientWidth,s=.75*t.clientHeight;if(Math.min(i,s)<=0)return;e.style.fontSize="";let o=parseInt(getComputedStyle(e).fontSize,10)||14;for(;o>8;){e.style.fontSize=`${o}px`;const{width:t,height:n}=e.getBoundingClientRect();if(t<=i&&n<=s)break;o--}e.style.fontSize=`${o}px`}static styles=n`
+  `}customElements.define("bubble-name",Oe);class ze extends se{static properties={sensors:{type:Array}};constructor(){super(),this.sensors=[],this._resizeObserver=new ResizeObserver(()=>{requestAnimationFrame(()=>this._autoScaleAll())})}connectedCallback(){super.connectedCallback(),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver.disconnect()}updated(e){e.has("sensors")&&requestAnimationFrame(()=>this._autoScaleAll())}_autoScaleAll(){const e=this.renderRoot?.querySelectorAll(".sensor-value, .sensor-label, .sensor-unit");e&&e.forEach(e=>this._autoScaleValueFont(e))}_autoScaleValueFont(e){const t=e?.parentElement;if(!t)return;const i=.48*t.clientWidth,s=.75*t.clientHeight;if(Math.min(i,s)<=0)return;e.style.fontSize="";let o=parseInt(getComputedStyle(e).fontSize,10)||14;for(;o>8;){e.style.fontSize=`${o}px`;const{width:t,height:n}=e.getBoundingClientRect();if(t<=i&&n<=s)break;o--}e.style.fontSize=`${o}px`}static styles=n`
     :host {
       display: block;
       height: 100%;
@@ -1215,19 +1215,16 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     }
     .sensor-label {
       opacity: 0.78;
-      font-size: 0.50em;
       font-weight: 600;
     }
     .sensor-value {
       font-weight: 700;
-      font-size: 1.07em;
       font-variant-numeric: tabular-nums;
       letter-spacing: 0.01em;
       line-height: 1;
     }
     .sensor-unit {
       opacity: 0.75;
-      font-size: 0.50em;
       font-weight: 600;
     }
   `;render(){const e=(this.sensors||[]).map(e=>{const t=e.device_class,i=ve[t]||{},s=i.emoji||"❓",o=e.unit||i.units?.[0]||"";return{...e,label:s,unit:o}});return F`
