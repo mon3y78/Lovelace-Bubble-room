@@ -60,7 +60,7 @@ export class BubbleName extends LitElement {
     const box = this.container || this.parentElement;
     if (!el || !box) return;
     
-    let fontSize = 70;
+    let fontSize = 100;
     el.style.fontSize = `${fontSize}px`;
     
     requestAnimationFrame(() => {
