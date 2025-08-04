@@ -218,29 +218,20 @@ export class RoomPanel extends LitElement {
         @expanded-changed=${e => this._expanded = e.detail.expanded}
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
-
-        <!-- Auto-discover -->
+      
+        <!-- 🔍 Auto-discover -->
         <div class="input-group">
-          <label><input
+          <label>🔍 Auto-discover Presence:</label>
+          <input
             type="checkbox"
             .checked=${autoDisc}
             @change=${e => this._fire('auto_discovery_sections.presence', e.target.checked)}
-          /> 🔍 Auto-discover Presence</label>
-        </div>
-
-        <!-- Room name -->
-        <div class="input-group">
-          <label>Room name:</label>
-          <input
-            type="text"
-            .value=${name}
-            @input=${e => this._fire('name', e.target.value)}
           />
         </div>
-
-        <!-- Area -->
+      
+        <!-- 🏷️ Area -->
         <div class="input-group">
-          <label>Area:</label>
+          <label>🏷️ Area:</label>
           <ha-selector
             .hass=${this.hass}
             .value=${area}
@@ -248,14 +239,71 @@ export class RoomPanel extends LitElement {
             @value-changed=${e => {
               const v = e.detail.value;
               this._fire('area', v);
-              if (v) this._fire('auto_discovery_sections.presence', true);
+              if (v && !this.config.name) {
+                this._fire('name', v.toUpperCase());
+              }
+              this._fire('auto_discovery_sections.presence', true);
             }}
           ></ha-selector>
         </div>
-
-        <!-- Layout -->
+      
+        <!-- 🏠 Room name -->
         <div class="input-group">
-          <label>Layout:</label>
+          <label>🏠 Room name:</label>
+          <input
+            type="text"
+            .value=${name}
+            @input=${e => this._fire('name', e.target.value)}
+          />
+        </div>
+      
+        <!-- 🎭 Icon & Presence -->
+        <div class="mini-pill">
+          <div class="mini-pill-header">🎭 Icon & Presence</div>
+          <div class="mini-pill-content">
+            <!-- Room Icon -->
+            <div class="input-group">
+              <label>Icon:</label>
+              <ha-icon-picker
+                .hass=${this.hass}
+                .value=${icon}
+                allow-custom-icon
+                @value-changed=${e => this._fire('icon', e.detail.value)}
+              ></ha-icon-picker>
+            </div>
+      
+            <!-- Filter categories -->
+            <div class="input-group">
+              <label>Filter categories:</label>
+              <ha-selector
+                .hass=${this.hass}
+                .value=${presFilters}
+                .selector=${{ select: { multiple: true, mode: 'box', options: filterOptions } }}
+                @value-changed=${e => this._fire('presence_filters', e.detail.value)}
+              ></ha-selector>
+            </div>
+      
+            <!-- Presence entity -->
+            <div class="input-group">
+              <label>Presence (ID):</label>
+              <ha-selector
+                .hass=${this.hass}
+                .value=${presEntity}
+                .selector=${{ entity: { include_entities: presCandidates, multiple: false } }}
+                allow-custom-entity
+                @value-changed=${e => this._fire('entities.presence.entity', e.detail.value)}
+              ></ha-selector>
+            </div>
+      
+            <!-- Actions -->
+            ${this._renderActions('tap')}
+            ${this._renderActions('hold')}
+          </div>
+        </div>
+      
+        <!-- 📐 Layout -->
+        <div class="input-group">
+          <label>📐 Layout:</label>
           <div class="toggle-group">
             <button
               class="toggle-btn ${this.layout === 'wide' ? 'active' : ''}"
@@ -273,54 +321,8 @@ export class RoomPanel extends LitElement {
             </button>
           </div>
         </div>
-
-        <!-- Icon & Presence -->
-        <div class="mini-pill">
-          <div class="mini-pill-header">Icon & Presence</div>
-          <div class="mini-pill-content">
-
-            <!-- Room Icon -->
-            <div class="input-group">
-              <label>Room Icon:</label>
-              <ha-icon-picker
-                .hass=${this.hass}
-                .value=${icon}
-                allow-custom-icon
-                @value-changed=${e => this._fire('icon', e.detail.value)}
-              ></ha-icon-picker>
-            </div>
-
-            <!-- Filter categories -->
-            <div class="input-group">
-              <label>Filter categories:</label>
-              <ha-selector
-                .hass=${this.hass}
-                .value=${presFilters}
-                .selector=${{ select: { multiple: true, mode: 'box', options: filterOptions } }}
-                @value-changed=${e => this._fire('presence_filters', e.detail.value)}
-              ></ha-selector>
-            </div>
-
-            <!-- Presence entity -->
-            <div class="input-group">
-              <label>Presence (ID):</label>
-              <ha-selector
-                .hass=${this.hass}
-                .value=${presEntity}
-                .selector=${{ entity: { include_entities: presCandidates, multiple: false } }}
-                allow-custom-entity
-                @value-changed=${e => this._fire('entities.presence.entity', e.detail.value)}
-              ></ha-selector>
-            </div>
-
-            <!-- Actions -->
-            ${this._renderActions('tap')}
-            ${this._renderActions('hold')}
-
-          </div>
-        </div>
-
-        <!-- Reset -->
+      
+        <!-- 🧹 Reset -->
         <button class="reset-button"
           @click=${() => this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' })}>
           🧹 Reset Room

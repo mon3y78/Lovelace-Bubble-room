@@ -87,6 +87,7 @@ export class BubbleName extends LitElement {
       font-weight: bold;
       text-align: center;
       white-space: nowrap;
+      text-transform: uppercase;
     }
   `;
 }
