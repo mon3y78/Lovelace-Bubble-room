@@ -12,58 +12,71 @@ export class BubbleSensor extends LitElement {
     super();
     this.sensors = [];
     this.rows = 1;
-    this._resizeObserver = new ResizeObserver(() => {
-      requestAnimationFrame(() => this._autoScaleAll());
-    });
+    this._resizeObserver = null;
+    this._resizeScheduled = false;
   }
-  
+
   connectedCallback() {
     super.connectedCallback();
+    this._updateRows();
+    // Osserva solo resize del componente stesso (non dei contenuti interni)
+    this._resizeObserver = new ResizeObserver(() => {
+      if (!this._resizeScheduled) {
+        this._resizeScheduled = true;
+        requestAnimationFrame(() => {
+          this._autoScaleAll();
+          this._resizeScheduled = false;
+        });
+      }
+    });
     this._resizeObserver.observe(this);
   }
-  
+
   disconnectedCallback() {
     super.disconnectedCallback();
-    this._resizeObserver.disconnect();
+    this._resizeObserver?.disconnect();
   }
-  
+
   updated(changedProperties) {
     if (changedProperties.has('sensors')) {
-      const count = this.sensors?.length || 0;
-      this.rows = count > 4 ? 2 : 1;
-      requestAnimationFrame(() => this._autoScaleAll());
+      this._updateRows();
+      this._autoScaleAll(); // Eseguito solo se cambia sensors
     }
   }
-  
+
+  _updateRows() {
+    const count = this.sensors?.length || 0;
+    this.rows = count > 4 ? 2 : 1;
+  }
+
   _autoScaleAll() {
-    const values = this.renderRoot?.querySelectorAll('.sensor-value, .sensor-label, .sensor-unit');
+    const values = this.renderRoot?.querySelectorAll('.sensor-value');
     if (!values) return;
     values.forEach(el => this._autoScaleValueFont(el));
   }
-  
+
   _autoScaleValueFont(element) {
     const parent = element?.parentElement;
     if (!parent) return;
-    
+
     const maxWidth = parent.clientWidth * 0.48;
     const maxHeight = parent.clientHeight * 0.75;
     const maxSize = Math.min(maxWidth, maxHeight);
-    
     if (maxSize <= 0) return;
-    
+
     element.style.fontSize = '';
-    let fontSize = parseInt(getComputedStyle(element).fontSize, 30) || 14;
-    
+    let fontSize = parseInt(getComputedStyle(element).fontSize, 10) || 14;
+
     while (fontSize > 8) {
       element.style.fontSize = `${fontSize}px`;
       const { width, height } = element.getBoundingClientRect();
       if (width <= maxWidth && height <= maxHeight) break;
       fontSize--;
     }
-    
+
     element.style.fontSize = `${fontSize}px`;
   }
-  
+
   static styles = css`
     :host {
       display: block;
@@ -76,7 +89,7 @@ export class BubbleSensor extends LitElement {
     .sensor-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(var(--sensor-rows), 1fr);
+      grid-auto-rows: 1fr;
       width: 100%;
       height: 100%;
       box-sizing: border-box;
@@ -118,7 +131,7 @@ export class BubbleSensor extends LitElement {
       font-weight: 600;
     }
   `;
-  
+
   render() {
     const sensors = (this.sensors || []).map(sensor => {
       const devClass = sensor.device_class;
@@ -131,9 +144,11 @@ export class BubbleSensor extends LitElement {
         unit,
       };
     });
-    
+
+    const gridStyle = `grid-template-rows: repeat(${this.rows}, 1fr);`;
+
     return html`
-      <div class="sensor-grid" style="--sensor-rows: ${this.rows}">
+      <div class="sensor-grid" style="${gridStyle}">
         ${sensors.map(sensor => html`
           <div class="sensor-pill" style="color: ${sensor.color || '#e3f6ff'}">
             <ha-icon class="sensor-icon" .icon="${sensor.icon || ''}"></ha-icon>
