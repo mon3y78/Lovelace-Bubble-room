@@ -80,14 +80,18 @@ export class BubbleRoom extends LitElement {
   render() {
     const layout = this.config.layout || 'wide';
     const subbuttons = this._getSubButtons();
+    const isActive = this._isRoomActive();
+    this.style.setProperty('--bubble-room-name-color', isActive ?
+      this.config.colors?.room?.text_active || 'white' :
+      this.config.colors?.room?.text_inactive || 'rgba(255,255,255,0.5)');
     
     return html`
       <div class="bubble-room-grid ${layout}">
         <div class="main-area">
           <div class="row1">
             <div class="sensors-placeholder">[bubble-sensors]</div>
-            <div class="name-placeholder">
-              <bubble-name .name="${this.config.name}" .area="${this.config.area}"></bubble-name>
+            <div class="bubble-name" style="color: ${color}">
+              ${this.name}
             </div>
           </div>
           <div class="row2">

@@ -27,7 +27,9 @@ class BubbleName extends LitElement {
       color: var(--primary-text-color, white);
       max-width: 100%;
     }
-
+    .bubble-name {
+      color: var(--bubble-room-name-color, white);
+    }
     .area-name {
       font-size: clamp(1rem, 1.5vw, 1.2rem);
       margin-left: 0.5em;
