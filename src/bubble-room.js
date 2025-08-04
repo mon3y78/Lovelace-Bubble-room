@@ -95,12 +95,13 @@ export class BubbleRoom extends LitElement {
         <div class="main-area">
           <div class="row1">
             <div class="sensors-placeholder">[bubble-sensors]</div>
-            <div class="name-placeholder">
+            <div class="name-placeholder" id="nameContainer">
               <bubble-name
                 .name="${this.config.name}"
                 .area="${this.config.area}"
                 .hass=${this.hass}
                 .config=${this.config}
+                .container=${this.shadowRoot?.getElementById('nameContainer')}
               ></bubble-name>
             </div>
           </div>

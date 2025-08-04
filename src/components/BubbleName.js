@@ -6,6 +6,7 @@ export class BubbleName extends LitElement {
     name: { type: String },
     area: { type: String },
     config: { type: Object },
+    container: { type: Object }, // container esterno passato da bubble-room
   };
   
   constructor() {
@@ -16,9 +17,10 @@ export class BubbleName extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.updateComplete.then(() => {
-      if (this.parentElement) {
+      const box = this.container || this.parentElement;
+      if (box) {
         this._resizeObserver = new ResizeObserver(() => this._autoScaleFont());
-        this._resizeObserver.observe(this.parentElement);
+        this._resizeObserver.observe(box);
       }
     });
   }
@@ -55,14 +57,15 @@ export class BubbleName extends LitElement {
   
   _autoScaleFont() {
     const el = this.renderRoot.querySelector('.bubble-name');
-    if (!el || !this.parentElement) return;
+    const box = this.container || this.parentElement;
+    if (!el || !box) return;
     
     let fontSize = 40;
     el.style.fontSize = `${fontSize}px`;
     
     requestAnimationFrame(() => {
-      const maxWidth = this.parentElement.clientWidth;
-      const maxHeight = this.parentElement.clientHeight;
+      const maxWidth = box.clientWidth;
+      const maxHeight = box.clientHeight;
       
       while (
         (el.scrollWidth > maxWidth || el.scrollHeight > maxHeight) &&
@@ -70,6 +73,7 @@ export class BubbleName extends LitElement {
       ) {
         fontSize -= 1;
         el.style.fontSize = `${fontSize}px`;
+        console.log("Resizing font to:", fontSize); // DEBUG
       }
     });
   }
