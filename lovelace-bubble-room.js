@@ -1191,7 +1191,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
   `;render(){return B`
       <div class="bubble-name-wrapper">
         <div class="room-name">${this.name?.toUpperCase()}</div>
-        <div class="area-name">(${this.area})</div>
+        <div class="area-name"></div>
       </div>
     `}}customElements.define("bubble-name",Pe);class Oe extends se{static properties={config:{type:Object},hass:{type:Object}};constructor(){super(),this.config={},this.hass={}}setConfig(e){this.config={layout:"wide",...e}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:"Stanza di prova",area:"Zona Giorno",sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return Ce}),document.createElement("bubble-room-editor")}_getSubButtons(){const e=this.config.colors?.subbutton?.background_on??"#00d46d",t=this.config.colors?.subbutton?.background_off??"#999",i=this.config.colors?.subbutton?.icon_on??"yellow",s=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(o=>{const n=this.hass.states?.[o.entity_id];(n?.attributes||{}).device_class,o.entity_id?.split(".");const r=n?.state;return{icon:we(o.entity_id,this.hass),active:"on"===r,colorOn:e,colorOff:t,iconOn:i,iconOff:s,entity_id:o.entity_id,tap_action:o.tap_action,hold_action:o.hold_action}})}render(){const e=this.config.layout||"wide",t=this._getSubButtons();return B`
       <div class="bubble-room-grid ${e}">
