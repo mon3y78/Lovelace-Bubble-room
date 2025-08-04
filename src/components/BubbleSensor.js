@@ -74,7 +74,6 @@ export class BubbleSensor extends LitElement {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-auto-rows: 1fr;
-      gap: 12px;
       width: 100%;
       height: 100%;
       box-sizing: border-box;
@@ -85,10 +84,8 @@ export class BubbleSensor extends LitElement {
     .sensor-pill {
       display: flex;
       align-items: center;
-      gap: 0.5em;
       background: rgba(32,38,55,0.12);
       border-radius: 18px;
-      padding: 0.6em 1em;
       font-size: 1em;
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       font-weight: 700;
@@ -106,7 +103,6 @@ export class BubbleSensor extends LitElement {
     .sensor-label {
       opacity: 0.78;
       font-size: 0.98em;
-      margin-right: 0.28em;
       font-weight: 600;
     }
     .sensor-value {
@@ -119,7 +115,6 @@ export class BubbleSensor extends LitElement {
     .sensor-unit {
       opacity: 0.75;
       font-size: 0.89em;
-      margin-left: 0.12em;
       font-weight: 600;
     }
   `;
