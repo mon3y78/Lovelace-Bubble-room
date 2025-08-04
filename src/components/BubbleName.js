@@ -42,7 +42,7 @@ class BubbleName extends LitElement {
     return html`
       <div class="bubble-name-wrapper">
         <div class="room-name">${this.name?.toUpperCase()}</div>
-        <div class="area-name">(${this.area})</div>
+        <div class="area-name"></div>
       </div>
     `;
   }
