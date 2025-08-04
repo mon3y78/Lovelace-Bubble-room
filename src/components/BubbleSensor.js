@@ -118,7 +118,7 @@ export class BubbleSensor extends LitElement {
     .sensor-label {
       opacity: 0.78;
       font-weight: 600;
-      font-size: clamp(2px, 1.2vw, 16px);
+      font-size: clamp(2px, 0.8vw, 16px);
     }
     .sensor-value {
       font-weight: 700;
@@ -129,7 +129,7 @@ export class BubbleSensor extends LitElement {
     .sensor-unit {
       opacity: 0.75;
       font-weight: 600;
-      font-size: clamp(1px, 1vw, 14px);
+      font-size: clamp(1px, 0.5vw, 14px);
     }
   `;
 
