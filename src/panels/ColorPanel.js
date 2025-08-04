@@ -269,7 +269,7 @@ export class ColorPanel extends LitElement {
     // reset each color field
     const sections = ['room','subbutton'];
     const keys = {
-      room: ['background_active','background_inactive','icon_active','icon_inactive'],
+      room: ['background_active','background_inactive','icon_active','icon_inactive','text_active','text_inactive'],
       subbutton: ['background_on','background_off','icon_on','icon_off']
     };
     sections.forEach(sec => {
