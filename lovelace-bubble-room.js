@@ -1333,8 +1333,13 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
             <div class="name-placeholder" id="nameContainer">
               <bubble-name
                 .name="${this.config.name}"
-                style="color:${i?n:r}"
-              ></bubble-name>
+                .area="${this.config.area}"
+                .hass=${this.hass}
+                .config=${this.config}
+                .container=${this.shadowRoot?.getElementById("nameContainer")}
+              
+                style="--bubble-room-name-color:${i?n:r}"
+              ></bubble-name>, 
             </div>
           </div>
           <div class="row2">
