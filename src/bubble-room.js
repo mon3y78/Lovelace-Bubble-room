@@ -92,7 +92,15 @@ export class BubbleRoom extends LitElement {
     ].includes(state);
   }
   /* ──────────────────────────────────────────────────────────────────────── */
-    
+  /** Restituisce la dimensione “lato” dell’icona principale.  
+    Prende il lato minore del riquadro violetto (.icon-mushroom-area)
+    e ne usa il 65 %.  */
+  _getMainIconSize() {
+    const area = this.shadowRoot?.querySelector('.icon-mushroom-area');
+    if (!area) return 64; // fallback fisso
+    const size = Math.min(area.clientWidth, area.clientHeight);
+    return Math.round(size * 0.65); // ≈ 65 %
+  }  
   _getSensors() {
     const entities = this.config.entities || {};
     // --------------------------------------------------------------------
@@ -153,6 +161,7 @@ export class BubbleRoom extends LitElement {
   
   render() {
     const layout = this.config.layout || 'wide';
+    const mainIconSize = this._getMainIconSize();   // es. 110
     const subbuttons = this._getSubButtons();
     const isActive = this._isRoomActive();
     /* --- COLORI --------------------------------------- */
@@ -188,6 +197,7 @@ export class BubbleRoom extends LitElement {
                 .active=${isActive}
                 .colorActive="${iconColorActive}"
                 .colorInactive="${iconColorInactive}"
+                style="--main-icon-size:${mainIconSize}px"
               ></bubble-icon>
               <bubble-mushroom
                 .entities="${this._getMushrooms()}"

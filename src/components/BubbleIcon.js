@@ -40,7 +40,12 @@ export class BubbleIcon extends LitElement {
       transition: color 0.2s, 
       opacity 0.2s;
       filter: drop-shadow(1px 1.5px 0px rgba(34,54,15,0.07));
-      user-select: none;                         
+      user-select: none;   
+      width: var(--main-icon-size, 64px);
+      height: var(--main-icon-size, 64px);
+      border-radius: 0 70 % 70 % 0;
+      transform-origin: center center;
+      transform: translateX(-20%);
     }
   `;
   
