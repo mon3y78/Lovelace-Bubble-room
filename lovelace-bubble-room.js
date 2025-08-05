@@ -3,24 +3,24 @@
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const e=window,t=e.ShadowRoot&&(void 0===e.ShadyCSS||e.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,i=Symbol(),s=new WeakMap;class o{constructor(e,t,s){if(this._$cssResult$=!0,s!==i)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=e,this.t=t}get styleSheet(){let e=this.o;const i=this.t;if(t&&void 0===e){const t=void 0!==i&&1===i.length;t&&(e=s.get(i)),void 0===e&&((this.o=e=new CSSStyleSheet).replaceSync(this.cssText),t&&s.set(i,e))}return e}toString(){return this.cssText}}const n=(e,...t)=>{const s=1===e.length?e[0]:t.reduce((t,i,s)=>t+(e=>{if(!0===e._$cssResult$)return e.cssText;if("number"==typeof e)return e;throw Error("Value passed to 'css' function must be a 'css' function result: "+e+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(i)+e[s+1],e[0]);return new o(s,e,i)},r=t?e=>e:e=>e instanceof CSSStyleSheet?(e=>{let t="";for(const i of e.cssRules)t+=i.cssText;return(e=>new o("string"==typeof e?e:e+"",void 0,i))(t)})(e):e;
+const t=window,e=t.ShadowRoot&&(void 0===t.ShadyCSS||t.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,i=Symbol(),s=new WeakMap;class o{constructor(t,e,s){if(this._$cssResult$=!0,s!==i)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=t,this.t=e}get styleSheet(){let t=this.o;const i=this.t;if(e&&void 0===t){const e=void 0!==i&&1===i.length;e&&(t=s.get(i)),void 0===t&&((this.o=t=new CSSStyleSheet).replaceSync(this.cssText),e&&s.set(i,t))}return t}toString(){return this.cssText}}const n=(t,...e)=>{const s=1===t.length?t[0]:e.reduce((e,i,s)=>e+(t=>{if(!0===t._$cssResult$)return t.cssText;if("number"==typeof t)return t;throw Error("Value passed to 'css' function must be a 'css' function result: "+t+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(i)+t[s+1],t[0]);return new o(s,t,i)},r=e?t=>t:t=>t instanceof CSSStyleSheet?(t=>{let e="";for(const i of t.cssRules)e+=i.cssText;return(t=>new o("string"==typeof t?t:t+"",void 0,i))(e)})(t):t;
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */var a;const l=window,c=l.trustedTypes,d=c?c.emptyScript:"",h=l.reactiveElementPolyfillSupport,p={toAttribute(e,t){switch(t){case Boolean:e=e?d:null;break;case Object:case Array:e=null==e?e:JSON.stringify(e)}return e},fromAttribute(e,t){let i=e;switch(t){case Boolean:i=null!==e;break;case Number:i=null===e?null:Number(e);break;case Object:case Array:try{i=JSON.parse(e)}catch(e){i=null}}return i}},u=(e,t)=>t!==e&&(t==t||e==e),b={attribute:!0,type:String,converter:p,reflect:!1,hasChanged:u},g="finalized";class f extends HTMLElement{constructor(){super(),this._$Ei=new Map,this.isUpdatePending=!1,this.hasUpdated=!1,this._$El=null,this._$Eu()}static addInitializer(e){var t;this.finalize(),(null!==(t=this.h)&&void 0!==t?t:this.h=[]).push(e)}static get observedAttributes(){this.finalize();const e=[];return this.elementProperties.forEach((t,i)=>{const s=this._$Ep(i,t);void 0!==s&&(this._$Ev.set(s,i),e.push(s))}),e}static createProperty(e,t=b){if(t.state&&(t.attribute=!1),this.finalize(),this.elementProperties.set(e,t),!t.noAccessor&&!this.prototype.hasOwnProperty(e)){const i="symbol"==typeof e?Symbol():"__"+e,s=this.getPropertyDescriptor(e,i,t);void 0!==s&&Object.defineProperty(this.prototype,e,s)}}static getPropertyDescriptor(e,t,i){return{get(){return this[t]},set(s){const o=this[e];this[t]=s,this.requestUpdate(e,o,i)},configurable:!0,enumerable:!0}}static getPropertyOptions(e){return this.elementProperties.get(e)||b}static finalize(){if(this.hasOwnProperty(g))return!1;this[g]=!0;const e=Object.getPrototypeOf(this);if(e.finalize(),void 0!==e.h&&(this.h=[...e.h]),this.elementProperties=new Map(e.elementProperties),this._$Ev=new Map,this.hasOwnProperty("properties")){const e=this.properties,t=[...Object.getOwnPropertyNames(e),...Object.getOwnPropertySymbols(e)];for(const i of t)this.createProperty(i,e[i])}return this.elementStyles=this.finalizeStyles(this.styles),!0}static finalizeStyles(e){const t=[];if(Array.isArray(e)){const i=new Set(e.flat(1/0).reverse());for(const e of i)t.unshift(r(e))}else void 0!==e&&t.push(r(e));return t}static _$Ep(e,t){const i=t.attribute;return!1===i?void 0:"string"==typeof i?i:"string"==typeof e?e.toLowerCase():void 0}_$Eu(){var e;this._$E_=new Promise(e=>this.enableUpdating=e),this._$AL=new Map,this._$Eg(),this.requestUpdate(),null===(e=this.constructor.h)||void 0===e||e.forEach(e=>e(this))}addController(e){var t,i;(null!==(t=this._$ES)&&void 0!==t?t:this._$ES=[]).push(e),void 0!==this.renderRoot&&this.isConnected&&(null===(i=e.hostConnected)||void 0===i||i.call(e))}removeController(e){var t;null===(t=this._$ES)||void 0===t||t.splice(this._$ES.indexOf(e)>>>0,1)}_$Eg(){this.constructor.elementProperties.forEach((e,t)=>{this.hasOwnProperty(t)&&(this._$Ei.set(t,this[t]),delete this[t])})}createRenderRoot(){var i;const s=null!==(i=this.shadowRoot)&&void 0!==i?i:this.attachShadow(this.constructor.shadowRootOptions);return((i,s)=>{t?i.adoptedStyleSheets=s.map(e=>e instanceof CSSStyleSheet?e:e.styleSheet):s.forEach(t=>{const s=document.createElement("style"),o=e.litNonce;void 0!==o&&s.setAttribute("nonce",o),s.textContent=t.cssText,i.appendChild(s)})})(s,this.constructor.elementStyles),s}connectedCallback(){var e;void 0===this.renderRoot&&(this.renderRoot=this.createRenderRoot()),this.enableUpdating(!0),null===(e=this._$ES)||void 0===e||e.forEach(e=>{var t;return null===(t=e.hostConnected)||void 0===t?void 0:t.call(e)})}enableUpdating(e){}disconnectedCallback(){var e;null===(e=this._$ES)||void 0===e||e.forEach(e=>{var t;return null===(t=e.hostDisconnected)||void 0===t?void 0:t.call(e)})}attributeChangedCallback(e,t,i){this._$AK(e,i)}_$EO(e,t,i=b){var s;const o=this.constructor._$Ep(e,i);if(void 0!==o&&!0===i.reflect){const n=(void 0!==(null===(s=i.converter)||void 0===s?void 0:s.toAttribute)?i.converter:p).toAttribute(t,i.type);this._$El=e,null==n?this.removeAttribute(o):this.setAttribute(o,n),this._$El=null}}_$AK(e,t){var i;const s=this.constructor,o=s._$Ev.get(e);if(void 0!==o&&this._$El!==o){const e=s.getPropertyOptions(o),n="function"==typeof e.converter?{fromAttribute:e.converter}:void 0!==(null===(i=e.converter)||void 0===i?void 0:i.fromAttribute)?e.converter:p;this._$El=o,this[o]=n.fromAttribute(t,e.type),this._$El=null}}requestUpdate(e,t,i){let s=!0;void 0!==e&&(((i=i||this.constructor.getPropertyOptions(e)).hasChanged||u)(this[e],t)?(this._$AL.has(e)||this._$AL.set(e,t),!0===i.reflect&&this._$El!==e&&(void 0===this._$EC&&(this._$EC=new Map),this._$EC.set(e,i))):s=!1),!this.isUpdatePending&&s&&(this._$E_=this._$Ej())}async _$Ej(){this.isUpdatePending=!0;try{await this._$E_}catch(e){Promise.reject(e)}const e=this.scheduleUpdate();return null!=e&&await e,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){var e;if(!this.isUpdatePending)return;this.hasUpdated,this._$Ei&&(this._$Ei.forEach((e,t)=>this[t]=e),this._$Ei=void 0);let t=!1;const i=this._$AL;try{t=this.shouldUpdate(i),t?(this.willUpdate(i),null===(e=this._$ES)||void 0===e||e.forEach(e=>{var t;return null===(t=e.hostUpdate)||void 0===t?void 0:t.call(e)}),this.update(i)):this._$Ek()}catch(e){throw t=!1,this._$Ek(),e}t&&this._$AE(i)}willUpdate(e){}_$AE(e){var t;null===(t=this._$ES)||void 0===t||t.forEach(e=>{var t;return null===(t=e.hostUpdated)||void 0===t?void 0:t.call(e)}),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(e)),this.updated(e)}_$Ek(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$E_}shouldUpdate(e){return!0}update(e){void 0!==this._$EC&&(this._$EC.forEach((e,t)=>this._$EO(t,this[t],e)),this._$EC=void 0),this._$Ek()}updated(e){}firstUpdated(e){}}
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-var m;f[g]=!0,f.elementProperties=new Map,f.elementStyles=[],f.shadowRootOptions={mode:"open"},null==h||h({ReactiveElement:f}),(null!==(a=l.reactiveElementVersions)&&void 0!==a?a:l.reactiveElementVersions=[]).push("1.6.3");const v=window,_=v.trustedTypes,x=_?_.createPolicy("lit-html",{createHTML:e=>e}):void 0,y="$lit$",$=`lit$${(Math.random()+"").slice(9)}$`,w="?"+$,A=`<${w}>`,k=document,C=()=>k.createComment(""),E=e=>null===e||"object"!=typeof e&&"function"!=typeof e,S=Array.isArray,z="[ \t\n\f\r]",O=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,P=/-->/g,R=/>/g,U=RegExp(`>|${z}(?:([^\\s"'>=/]+)(${z}*=${z}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),j=/'/g,T=/"/g,H=/^(?:script|style|textarea|title)$/i,B=(e=>(t,...i)=>({_$litType$:e,strings:t,values:i}))(1),F=Symbol.for("lit-noChange"),N=Symbol.for("lit-nothing"),I=new WeakMap,M=k.createTreeWalker(k,129,null,!1);function L(e,t){if(!Array.isArray(e)||!e.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==x?x.createHTML(t):t}const D=(e,t)=>{const i=e.length-1,s=[];let o,n=2===t?"<svg>":"",r=O;for(let t=0;t<i;t++){const i=e[t];let a,l,c=-1,d=0;for(;d<i.length&&(r.lastIndex=d,l=r.exec(i),null!==l);)d=r.lastIndex,r===O?"!--"===l[1]?r=P:void 0!==l[1]?r=R:void 0!==l[2]?(H.test(l[2])&&(o=RegExp("</"+l[2],"g")),r=U):void 0!==l[3]&&(r=U):r===U?">"===l[0]?(r=null!=o?o:O,c=-1):void 0===l[1]?c=-2:(c=r.lastIndex-l[2].length,a=l[1],r=void 0===l[3]?U:'"'===l[3]?T:j):r===T||r===j?r=U:r===P||r===R?r=O:(r=U,o=void 0);const h=r===U&&e[t+1].startsWith("/>")?" ":"";n+=r===O?i+A:c>=0?(s.push(a),i.slice(0,c)+y+i.slice(c)+$+h):i+$+(-2===c?(s.push(void 0),t):h)}return[L(e,n+(e[i]||"<?>")+(2===t?"</svg>":"")),s]};class V{constructor({strings:e,_$litType$:t},i){let s;this.parts=[];let o=0,n=0;const r=e.length-1,a=this.parts,[l,c]=D(e,t);if(this.el=V.createElement(l,i),M.currentNode=this.el.content,2===t){const e=this.el.content,t=e.firstChild;t.remove(),e.append(...t.childNodes)}for(;null!==(s=M.nextNode())&&a.length<r;){if(1===s.nodeType){if(s.hasAttributes()){const e=[];for(const t of s.getAttributeNames())if(t.endsWith(y)||t.startsWith($)){const i=c[n++];if(e.push(t),void 0!==i){const e=s.getAttribute(i.toLowerCase()+y).split($),t=/([.?@])?(.*)/.exec(i);a.push({type:1,index:o,name:t[2],strings:e,ctor:"."===t[1]?G:"?"===t[1]?Z:"@"===t[1]?Q:Y})}else a.push({type:6,index:o})}for(const t of e)s.removeAttribute(t)}if(H.test(s.tagName)){const e=s.textContent.split($),t=e.length-1;if(t>0){s.textContent=_?_.emptyScript:"";for(let i=0;i<t;i++)s.append(e[i],C()),M.nextNode(),a.push({type:2,index:++o});s.append(e[t],C())}}}else if(8===s.nodeType)if(s.data===w)a.push({type:2,index:o});else{let e=-1;for(;-1!==(e=s.data.indexOf($,e+1));)a.push({type:7,index:o}),e+=$.length-1}o++}}static createElement(e,t){const i=k.createElement("template");return i.innerHTML=e,i}}function W(e,t,i=e,s){var o,n,r,a;if(t===F)return t;let l=void 0!==s?null===(o=i._$Co)||void 0===o?void 0:o[s]:i._$Cl;const c=E(t)?void 0:t._$litDirective$;return(null==l?void 0:l.constructor)!==c&&(null===(n=null==l?void 0:l._$AO)||void 0===n||n.call(l,!1),void 0===c?l=void 0:(l=new c(e),l._$AT(e,i,s)),void 0!==s?(null!==(r=(a=i)._$Co)&&void 0!==r?r:a._$Co=[])[s]=l:i._$Cl=l),void 0!==l&&(t=W(e,l._$AS(e,t.values),l,s)),t}class q{constructor(e,t){this._$AV=[],this._$AN=void 0,this._$AD=e,this._$AM=t}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(e){var t;const{el:{content:i},parts:s}=this._$AD,o=(null!==(t=null==e?void 0:e.creationScope)&&void 0!==t?t:k).importNode(i,!0);M.currentNode=o;let n=M.nextNode(),r=0,a=0,l=s[0];for(;void 0!==l;){if(r===l.index){let t;2===l.type?t=new J(n,n.nextSibling,this,e):1===l.type?t=new l.ctor(n,l.name,l.strings,this,e):6===l.type&&(t=new X(n,this,e)),this._$AV.push(t),l=s[++a]}r!==(null==l?void 0:l.index)&&(n=M.nextNode(),r++)}return M.currentNode=k,o}v(e){let t=0;for(const i of this._$AV)void 0!==i&&(void 0!==i.strings?(i._$AI(e,i,t),t+=i.strings.length-2):i._$AI(e[t])),t++}}class J{constructor(e,t,i,s){var o;this.type=2,this._$AH=N,this._$AN=void 0,this._$AA=e,this._$AB=t,this._$AM=i,this.options=s,this._$Cp=null===(o=null==s?void 0:s.isConnected)||void 0===o||o}get _$AU(){var e,t;return null!==(t=null===(e=this._$AM)||void 0===e?void 0:e._$AU)&&void 0!==t?t:this._$Cp}get parentNode(){let e=this._$AA.parentNode;const t=this._$AM;return void 0!==t&&11===(null==e?void 0:e.nodeType)&&(e=t.parentNode),e}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(e,t=this){e=W(this,e,t),E(e)?e===N||null==e||""===e?(this._$AH!==N&&this._$AR(),this._$AH=N):e!==this._$AH&&e!==F&&this._(e):void 0!==e._$litType$?this.g(e):void 0!==e.nodeType?this.$(e):(e=>S(e)||"function"==typeof(null==e?void 0:e[Symbol.iterator]))(e)?this.T(e):this._(e)}k(e){return this._$AA.parentNode.insertBefore(e,this._$AB)}$(e){this._$AH!==e&&(this._$AR(),this._$AH=this.k(e))}_(e){this._$AH!==N&&E(this._$AH)?this._$AA.nextSibling.data=e:this.$(k.createTextNode(e)),this._$AH=e}g(e){var t;const{values:i,_$litType$:s}=e,o="number"==typeof s?this._$AC(e):(void 0===s.el&&(s.el=V.createElement(L(s.h,s.h[0]),this.options)),s);if((null===(t=this._$AH)||void 0===t?void 0:t._$AD)===o)this._$AH.v(i);else{const e=new q(o,this),t=e.u(this.options);e.v(i),this.$(t),this._$AH=e}}_$AC(e){let t=I.get(e.strings);return void 0===t&&I.set(e.strings,t=new V(e)),t}T(e){S(this._$AH)||(this._$AH=[],this._$AR());const t=this._$AH;let i,s=0;for(const o of e)s===t.length?t.push(i=new J(this.k(C()),this.k(C()),this,this.options)):i=t[s],i._$AI(o),s++;s<t.length&&(this._$AR(i&&i._$AB.nextSibling,s),t.length=s)}_$AR(e=this._$AA.nextSibling,t){var i;for(null===(i=this._$AP)||void 0===i||i.call(this,!1,!0,t);e&&e!==this._$AB;){const t=e.nextSibling;e.remove(),e=t}}setConnected(e){var t;void 0===this._$AM&&(this._$Cp=e,null===(t=this._$AP)||void 0===t||t.call(this,e))}}class Y{constructor(e,t,i,s,o){this.type=1,this._$AH=N,this._$AN=void 0,this.element=e,this.name=t,this._$AM=s,this.options=o,i.length>2||""!==i[0]||""!==i[1]?(this._$AH=Array(i.length-1).fill(new String),this.strings=i):this._$AH=N}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(e,t=this,i,s){const o=this.strings;let n=!1;if(void 0===o)e=W(this,e,t,0),n=!E(e)||e!==this._$AH&&e!==F,n&&(this._$AH=e);else{const s=e;let r,a;for(e=o[0],r=0;r<o.length-1;r++)a=W(this,s[i+r],t,r),a===F&&(a=this._$AH[r]),n||(n=!E(a)||a!==this._$AH[r]),a===N?e=N:e!==N&&(e+=(null!=a?a:"")+o[r+1]),this._$AH[r]=a}n&&!s&&this.j(e)}j(e){e===N?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=e?e:"")}}class G extends Y{constructor(){super(...arguments),this.type=3}j(e){this.element[this.name]=e===N?void 0:e}}const K=_?_.emptyScript:"";class Z extends Y{constructor(){super(...arguments),this.type=4}j(e){e&&e!==N?this.element.setAttribute(this.name,K):this.element.removeAttribute(this.name)}}class Q extends Y{constructor(e,t,i,s,o){super(e,t,i,s,o),this.type=5}_$AI(e,t=this){var i;if((e=null!==(i=W(this,e,t,0))&&void 0!==i?i:N)===F)return;const s=this._$AH,o=e===N&&s!==N||e.capture!==s.capture||e.once!==s.once||e.passive!==s.passive,n=e!==N&&(s===N||o);o&&this.element.removeEventListener(this.name,this,s),n&&this.element.addEventListener(this.name,this,e),this._$AH=e}handleEvent(e){var t,i;"function"==typeof this._$AH?this._$AH.call(null!==(i=null===(t=this.options)||void 0===t?void 0:t.host)&&void 0!==i?i:this.element,e):this._$AH.handleEvent(e)}}class X{constructor(e,t,i){this.element=e,this.type=6,this._$AN=void 0,this._$AM=t,this.options=i}get _$AU(){return this._$AM._$AU}_$AI(e){W(this,e)}}const ee=v.litHtmlPolyfillSupport;null==ee||ee(V,J),(null!==(m=v.litHtmlVersions)&&void 0!==m?m:v.litHtmlVersions=[]).push("2.8.0");
+ */var a;const l=window,c=l.trustedTypes,d=c?c.emptyScript:"",h=l.reactiveElementPolyfillSupport,p={toAttribute(t,e){switch(e){case Boolean:t=t?d:null;break;case Object:case Array:t=null==t?t:JSON.stringify(t)}return t},fromAttribute(t,e){let i=t;switch(e){case Boolean:i=null!==t;break;case Number:i=null===t?null:Number(t);break;case Object:case Array:try{i=JSON.parse(t)}catch(t){i=null}}return i}},u=(t,e)=>e!==t&&(e==e||t==t),b={attribute:!0,type:String,converter:p,reflect:!1,hasChanged:u},g="finalized";class f extends HTMLElement{constructor(){super(),this._$Ei=new Map,this.isUpdatePending=!1,this.hasUpdated=!1,this._$El=null,this._$Eu()}static addInitializer(t){var e;this.finalize(),(null!==(e=this.h)&&void 0!==e?e:this.h=[]).push(t)}static get observedAttributes(){this.finalize();const t=[];return this.elementProperties.forEach((e,i)=>{const s=this._$Ep(i,e);void 0!==s&&(this._$Ev.set(s,i),t.push(s))}),t}static createProperty(t,e=b){if(e.state&&(e.attribute=!1),this.finalize(),this.elementProperties.set(t,e),!e.noAccessor&&!this.prototype.hasOwnProperty(t)){const i="symbol"==typeof t?Symbol():"__"+t,s=this.getPropertyDescriptor(t,i,e);void 0!==s&&Object.defineProperty(this.prototype,t,s)}}static getPropertyDescriptor(t,e,i){return{get(){return this[e]},set(s){const o=this[t];this[e]=s,this.requestUpdate(t,o,i)},configurable:!0,enumerable:!0}}static getPropertyOptions(t){return this.elementProperties.get(t)||b}static finalize(){if(this.hasOwnProperty(g))return!1;this[g]=!0;const t=Object.getPrototypeOf(this);if(t.finalize(),void 0!==t.h&&(this.h=[...t.h]),this.elementProperties=new Map(t.elementProperties),this._$Ev=new Map,this.hasOwnProperty("properties")){const t=this.properties,e=[...Object.getOwnPropertyNames(t),...Object.getOwnPropertySymbols(t)];for(const i of e)this.createProperty(i,t[i])}return this.elementStyles=this.finalizeStyles(this.styles),!0}static finalizeStyles(t){const e=[];if(Array.isArray(t)){const i=new Set(t.flat(1/0).reverse());for(const t of i)e.unshift(r(t))}else void 0!==t&&e.push(r(t));return e}static _$Ep(t,e){const i=e.attribute;return!1===i?void 0:"string"==typeof i?i:"string"==typeof t?t.toLowerCase():void 0}_$Eu(){var t;this._$E_=new Promise(t=>this.enableUpdating=t),this._$AL=new Map,this._$Eg(),this.requestUpdate(),null===(t=this.constructor.h)||void 0===t||t.forEach(t=>t(this))}addController(t){var e,i;(null!==(e=this._$ES)&&void 0!==e?e:this._$ES=[]).push(t),void 0!==this.renderRoot&&this.isConnected&&(null===(i=t.hostConnected)||void 0===i||i.call(t))}removeController(t){var e;null===(e=this._$ES)||void 0===e||e.splice(this._$ES.indexOf(t)>>>0,1)}_$Eg(){this.constructor.elementProperties.forEach((t,e)=>{this.hasOwnProperty(e)&&(this._$Ei.set(e,this[e]),delete this[e])})}createRenderRoot(){var i;const s=null!==(i=this.shadowRoot)&&void 0!==i?i:this.attachShadow(this.constructor.shadowRootOptions);return((i,s)=>{e?i.adoptedStyleSheets=s.map(t=>t instanceof CSSStyleSheet?t:t.styleSheet):s.forEach(e=>{const s=document.createElement("style"),o=t.litNonce;void 0!==o&&s.setAttribute("nonce",o),s.textContent=e.cssText,i.appendChild(s)})})(s,this.constructor.elementStyles),s}connectedCallback(){var t;void 0===this.renderRoot&&(this.renderRoot=this.createRenderRoot()),this.enableUpdating(!0),null===(t=this._$ES)||void 0===t||t.forEach(t=>{var e;return null===(e=t.hostConnected)||void 0===e?void 0:e.call(t)})}enableUpdating(t){}disconnectedCallback(){var t;null===(t=this._$ES)||void 0===t||t.forEach(t=>{var e;return null===(e=t.hostDisconnected)||void 0===e?void 0:e.call(t)})}attributeChangedCallback(t,e,i){this._$AK(t,i)}_$EO(t,e,i=b){var s;const o=this.constructor._$Ep(t,i);if(void 0!==o&&!0===i.reflect){const n=(void 0!==(null===(s=i.converter)||void 0===s?void 0:s.toAttribute)?i.converter:p).toAttribute(e,i.type);this._$El=t,null==n?this.removeAttribute(o):this.setAttribute(o,n),this._$El=null}}_$AK(t,e){var i;const s=this.constructor,o=s._$Ev.get(t);if(void 0!==o&&this._$El!==o){const t=s.getPropertyOptions(o),n="function"==typeof t.converter?{fromAttribute:t.converter}:void 0!==(null===(i=t.converter)||void 0===i?void 0:i.fromAttribute)?t.converter:p;this._$El=o,this[o]=n.fromAttribute(e,t.type),this._$El=null}}requestUpdate(t,e,i){let s=!0;void 0!==t&&(((i=i||this.constructor.getPropertyOptions(t)).hasChanged||u)(this[t],e)?(this._$AL.has(t)||this._$AL.set(t,e),!0===i.reflect&&this._$El!==t&&(void 0===this._$EC&&(this._$EC=new Map),this._$EC.set(t,i))):s=!1),!this.isUpdatePending&&s&&(this._$E_=this._$Ej())}async _$Ej(){this.isUpdatePending=!0;try{await this._$E_}catch(t){Promise.reject(t)}const t=this.scheduleUpdate();return null!=t&&await t,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){var t;if(!this.isUpdatePending)return;this.hasUpdated,this._$Ei&&(this._$Ei.forEach((t,e)=>this[e]=t),this._$Ei=void 0);let e=!1;const i=this._$AL;try{e=this.shouldUpdate(i),e?(this.willUpdate(i),null===(t=this._$ES)||void 0===t||t.forEach(t=>{var e;return null===(e=t.hostUpdate)||void 0===e?void 0:e.call(t)}),this.update(i)):this._$Ek()}catch(t){throw e=!1,this._$Ek(),t}e&&this._$AE(i)}willUpdate(t){}_$AE(t){var e;null===(e=this._$ES)||void 0===e||e.forEach(t=>{var e;return null===(e=t.hostUpdated)||void 0===e?void 0:e.call(t)}),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(t)),this.updated(t)}_$Ek(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$E_}shouldUpdate(t){return!0}update(t){void 0!==this._$EC&&(this._$EC.forEach((t,e)=>this._$EO(e,this[e],t)),this._$EC=void 0),this._$Ek()}updated(t){}firstUpdated(t){}}
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-var te,ie;class se extends f{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){var e,t;const i=super.createRenderRoot();return null!==(e=(t=this.renderOptions).renderBefore)&&void 0!==e||(t.renderBefore=i.firstChild),i}update(e){const t=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(e),this._$Do=((e,t,i)=>{var s,o;const n=null!==(s=null==i?void 0:i.renderBefore)&&void 0!==s?s:t;let r=n._$litPart$;if(void 0===r){const e=null!==(o=null==i?void 0:i.renderBefore)&&void 0!==o?o:null;n._$litPart$=r=new J(t.insertBefore(C(),e),e,void 0,null!=i?i:{})}return r._$AI(e),r})(t,this.renderRoot,this.renderOptions)}connectedCallback(){var e;super.connectedCallback(),null===(e=this._$Do)||void 0===e||e.setConnected(!0)}disconnectedCallback(){var e;super.disconnectedCallback(),null===(e=this._$Do)||void 0===e||e.setConnected(!1)}render(){return F}}se.finalized=!0,se._$litElement$=!0,null===(te=globalThis.litElementHydrateSupport)||void 0===te||te.call(globalThis,{LitElement:se});const oe=globalThis.litElementPolyfillSupport;null==oe||oe({LitElement:se}),(null!==(ie=globalThis.litElementVersions)&&void 0!==ie?ie:globalThis.litElementVersions=[]).push("3.3.3");const ne={alarm_control_panel:"Allarmi",binary_sensor:"Sensori Binari",camera:"Telecamere",climate:"Clima",cover:"Tapparelle",fan:"Ventola",light:"Luce",lock:"Serratura",media_player:"Media Player",scene:"Scene",script:"Script",siren:"Sirena",vacuum:"Aspirapolvere",motion:"Movimento",occupancy:"Occupazione",presence:"Presenza",switch:"Pulsante"},re=["alarm_control_panel","binary_sensor","camera","climate","cover","fan","light","lock","media_player","scene","script","siren","switch","vacuum"],ae=(e=[])=>({includeDomains:re,entityFilter:(t,i)=>{if(!e.length)return!1;const[s]=t.split(".");if("binary_sensor"===s){const s=i.states[t]?.attributes?.device_class??"";return e.includes(s)}return e.includes(s)}}),le=(e=[])=>({includeDomains:["sensor"],entityFilter:(t,i)=>{if(!e.length)return!0;const s=i.states[t]?.attributes?.device_class??"";return e.includes(s)}}),ce=(e=[])=>({includeDomains:re,entityFilter:(t,i)=>{if(!e.length)return"binary_sensor"===t.split(".")[0];const[s]=t.split(".");if("binary_sensor"===s){const s=i.states[t]?.attributes?.device_class??"";return e.includes(s)}return e.includes(s)}}),de=(e=[])=>({includeDomains:re,entityFilter:(t,i)=>{if(!e.length)return re.includes(t.split(".")[0]);const[s]=t.split(".");if("binary_sensor"===s){const s=i.states[t]?.attributes?.device_class??"";return e.includes(s)}return e.includes(s)}});function he(e,t,i,s=[]){if(!e?.states)return[];let o;if("presence"===i?o=ae(s):"sensor"===i?o=le(s):"mushroom"===i?o=ce(s):"subbutton"===i&&(o=de(s)),!o)return[];const n=Object.keys(e.states).filter(e=>o.includeDomains.includes(e.split(".")[0])).filter(t=>o.entityFilter(t,e));if((t?.auto_discovery_sections?.[i]??!1)&&t?.area){const i=function(e,t){if(!e?.states||!t)return[];const i=e.entities??{},s=e.devices??{};return Object.keys(e.states).filter(o=>{const n=i[o];if(n?.area_id===t)return!0;const r=n?.device_id;if(r&&s[r]?.area_id===t)return!0;const a=e.states[o]?.attributes??{};return a.area_id===t||a.area===t})}(e,t.area);return n.filter(e=>i.includes(e))}return n}const pe=!!window.__BUBBLE_DEBUG__,ue=(e,t)=>e.find(e=>!t.has(e))||null;function be(e,t){const i={...t.entities||{}},s=i.presence||(i.presence={});if(!s.entity){const i=function(e,t){if(!e||!e.states)return[];const i=new Set(["person","device_tracker","binary_sensor","light","switch","media_player","fan","humidifier","lock","input_boolean","scene"]);let s=Object.keys(e.states).filter(e=>i.has(e.split(".")[0]));s=s.filter(t=>{if("binary_sensor"!==t.split(".")[0])return!0;const i=e.states[t]?.attributes?.device_class;return["motion","occupancy","presence"].includes(i||"")});const o=t?.area;if(o){const t=s.filter(t=>{const i=e.states[t],s=i?.attributes?.area_id,n=i?.attributes?.area;return s===o||n===o});t.length&&(s=t)}const n=t?.entities?.presence?.entity||t?.presence_entity;return n&&!s.includes(n)&&s.push(n),pe&&console.info("[AutoDiscovery][presence candidates]",{area:o,count:s.length,sample:s.slice(0,8)}),s}(e,t);i.length&&(s.entity=i[0])}return{...t,entities:i}}function ge(e,t,i,s=!1){const o=t.auto_discovery_sections||{},n="area"===i,r=i&&i.startsWith("auto_discovery_sections.");if(!n&&!r)return t;let a=t;return o.sensor&&(a=function(e,t){const i=["sensor1","sensor2","sensor3","sensor4","sensor5","sensor6"],s={...t.entities||{}},o=new Set(i.map(e=>s[e]?.entity_id).filter(Boolean));for(const n of i){const i=s[n]||(s[n]={});if(i.entity_id)continue;const r=he(e,t,{section:"sensor",type:i.type||""}),a=ue(r,o);a&&(i.entity_id=a,o.add(a))}return{...t,entities:s}}(e,a)),o.mushroom&&(a=function(e,t){const i={...t.entities||{}},s=new Set(["climate","camera","entities1","entities2","entities3","entities4","entities5"].map(e=>i[e]?.entity).filter(Boolean)),o=he(e,t,"mushroom"),n=i.climate||(i.climate={});if(!n.entity){const e=o.find(e=>e.startsWith("climate.")&&!s.has(e));e&&(n.entity=e,s.add(e))}const r=i.camera||(i.camera={});if(!r.entity){const e=o.find(e=>e.startsWith("camera.")&&!s.has(e));e&&(r.entity=e,s.add(e))}for(const e of["entities1","entities2","entities3","entities4","entities5"]){const t=i[e]||(i[e]={});if(t.entity)continue;const n=ue(o,s);n&&(t.entity=n,s.add(n))}return{...t,entities:i}}(e,a)),o.subbutton&&(a=function(e,t){const i=["sub-button1","sub-button2","sub-button3","sub-button4","sub-button5","sub-button6"],s={...t.entities||{}},o=new Set(i.map(e=>s[e]?.entity).filter(Boolean)),n=he(e,t,"subbutton");for(const e of i){const t=s[e]||(s[e]={});if(t.entity)continue;const i=ue(n,o);i&&(t.entity=i,o.add(i))}return{...t,entities:s}}(e,a)),o.presence&&(a=be(e,a)),s&&"undefined"!=typeof window&&window.__BUBBLE_DEBUG__&&console.info("[AutoDiscovery] applied after",i,{sections:o}),a}const fe=["presence","motion","occupancy","light","switch","fan"];class me extends se{static properties={hass:{type:Object},config:{type:Object},_expanded:{type:Boolean,state:!0},activeFilters:{type:Array,state:!0},layout:{type:String}};static styles=n`
+var m;f[g]=!0,f.elementProperties=new Map,f.elementStyles=[],f.shadowRootOptions={mode:"open"},null==h||h({ReactiveElement:f}),(null!==(a=l.reactiveElementVersions)&&void 0!==a?a:l.reactiveElementVersions=[]).push("1.6.3");const v=window,_=v.trustedTypes,x=_?_.createPolicy("lit-html",{createHTML:t=>t}):void 0,y="$lit$",$=`lit$${(Math.random()+"").slice(9)}$`,w="?"+$,A=`<${w}>`,k=document,C=()=>k.createComment(""),E=t=>null===t||"object"!=typeof t&&"function"!=typeof t,S=Array.isArray,z="[ \t\n\f\r]",O=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,P=/-->/g,R=/>/g,U=RegExp(`>|${z}(?:([^\\s"'>=/]+)(${z}*=${z}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),j=/'/g,T=/"/g,H=/^(?:script|style|textarea|title)$/i,B=(t=>(e,...i)=>({_$litType$:t,strings:e,values:i}))(1),F=Symbol.for("lit-noChange"),N=Symbol.for("lit-nothing"),M=new WeakMap,I=k.createTreeWalker(k,129,null,!1);function L(t,e){if(!Array.isArray(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==x?x.createHTML(e):e}const D=(t,e)=>{const i=t.length-1,s=[];let o,n=2===e?"<svg>":"",r=O;for(let e=0;e<i;e++){const i=t[e];let a,l,c=-1,d=0;for(;d<i.length&&(r.lastIndex=d,l=r.exec(i),null!==l);)d=r.lastIndex,r===O?"!--"===l[1]?r=P:void 0!==l[1]?r=R:void 0!==l[2]?(H.test(l[2])&&(o=RegExp("</"+l[2],"g")),r=U):void 0!==l[3]&&(r=U):r===U?">"===l[0]?(r=null!=o?o:O,c=-1):void 0===l[1]?c=-2:(c=r.lastIndex-l[2].length,a=l[1],r=void 0===l[3]?U:'"'===l[3]?T:j):r===T||r===j?r=U:r===P||r===R?r=O:(r=U,o=void 0);const h=r===U&&t[e+1].startsWith("/>")?" ":"";n+=r===O?i+A:c>=0?(s.push(a),i.slice(0,c)+y+i.slice(c)+$+h):i+$+(-2===c?(s.push(void 0),e):h)}return[L(t,n+(t[i]||"<?>")+(2===e?"</svg>":"")),s]};class V{constructor({strings:t,_$litType$:e},i){let s;this.parts=[];let o=0,n=0;const r=t.length-1,a=this.parts,[l,c]=D(t,e);if(this.el=V.createElement(l,i),I.currentNode=this.el.content,2===e){const t=this.el.content,e=t.firstChild;e.remove(),t.append(...e.childNodes)}for(;null!==(s=I.nextNode())&&a.length<r;){if(1===s.nodeType){if(s.hasAttributes()){const t=[];for(const e of s.getAttributeNames())if(e.endsWith(y)||e.startsWith($)){const i=c[n++];if(t.push(e),void 0!==i){const t=s.getAttribute(i.toLowerCase()+y).split($),e=/([.?@])?(.*)/.exec(i);a.push({type:1,index:o,name:e[2],strings:t,ctor:"."===e[1]?G:"?"===e[1]?Z:"@"===e[1]?Q:Y})}else a.push({type:6,index:o})}for(const e of t)s.removeAttribute(e)}if(H.test(s.tagName)){const t=s.textContent.split($),e=t.length-1;if(e>0){s.textContent=_?_.emptyScript:"";for(let i=0;i<e;i++)s.append(t[i],C()),I.nextNode(),a.push({type:2,index:++o});s.append(t[e],C())}}}else if(8===s.nodeType)if(s.data===w)a.push({type:2,index:o});else{let t=-1;for(;-1!==(t=s.data.indexOf($,t+1));)a.push({type:7,index:o}),t+=$.length-1}o++}}static createElement(t,e){const i=k.createElement("template");return i.innerHTML=t,i}}function W(t,e,i=t,s){var o,n,r,a;if(e===F)return e;let l=void 0!==s?null===(o=i._$Co)||void 0===o?void 0:o[s]:i._$Cl;const c=E(e)?void 0:e._$litDirective$;return(null==l?void 0:l.constructor)!==c&&(null===(n=null==l?void 0:l._$AO)||void 0===n||n.call(l,!1),void 0===c?l=void 0:(l=new c(t),l._$AT(t,i,s)),void 0!==s?(null!==(r=(a=i)._$Co)&&void 0!==r?r:a._$Co=[])[s]=l:i._$Cl=l),void 0!==l&&(e=W(t,l._$AS(t,e.values),l,s)),e}class q{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){var e;const{el:{content:i},parts:s}=this._$AD,o=(null!==(e=null==t?void 0:t.creationScope)&&void 0!==e?e:k).importNode(i,!0);I.currentNode=o;let n=I.nextNode(),r=0,a=0,l=s[0];for(;void 0!==l;){if(r===l.index){let e;2===l.type?e=new J(n,n.nextSibling,this,t):1===l.type?e=new l.ctor(n,l.name,l.strings,this,t):6===l.type&&(e=new X(n,this,t)),this._$AV.push(e),l=s[++a]}r!==(null==l?void 0:l.index)&&(n=I.nextNode(),r++)}return I.currentNode=k,o}v(t){let e=0;for(const i of this._$AV)void 0!==i&&(void 0!==i.strings?(i._$AI(t,i,e),e+=i.strings.length-2):i._$AI(t[e])),e++}}class J{constructor(t,e,i,s){var o;this.type=2,this._$AH=N,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=i,this.options=s,this._$Cp=null===(o=null==s?void 0:s.isConnected)||void 0===o||o}get _$AU(){var t,e;return null!==(e=null===(t=this._$AM)||void 0===t?void 0:t._$AU)&&void 0!==e?e:this._$Cp}get parentNode(){let t=this._$AA.parentNode;const e=this._$AM;return void 0!==e&&11===(null==t?void 0:t.nodeType)&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=W(this,t,e),E(t)?t===N||null==t||""===t?(this._$AH!==N&&this._$AR(),this._$AH=N):t!==this._$AH&&t!==F&&this._(t):void 0!==t._$litType$?this.g(t):void 0!==t.nodeType?this.$(t):(t=>S(t)||"function"==typeof(null==t?void 0:t[Symbol.iterator]))(t)?this.T(t):this._(t)}k(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}$(t){this._$AH!==t&&(this._$AR(),this._$AH=this.k(t))}_(t){this._$AH!==N&&E(this._$AH)?this._$AA.nextSibling.data=t:this.$(k.createTextNode(t)),this._$AH=t}g(t){var e;const{values:i,_$litType$:s}=t,o="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=V.createElement(L(s.h,s.h[0]),this.options)),s);if((null===(e=this._$AH)||void 0===e?void 0:e._$AD)===o)this._$AH.v(i);else{const t=new q(o,this),e=t.u(this.options);t.v(i),this.$(e),this._$AH=t}}_$AC(t){let e=M.get(t.strings);return void 0===e&&M.set(t.strings,e=new V(t)),e}T(t){S(this._$AH)||(this._$AH=[],this._$AR());const e=this._$AH;let i,s=0;for(const o of t)s===e.length?e.push(i=new J(this.k(C()),this.k(C()),this,this.options)):i=e[s],i._$AI(o),s++;s<e.length&&(this._$AR(i&&i._$AB.nextSibling,s),e.length=s)}_$AR(t=this._$AA.nextSibling,e){var i;for(null===(i=this._$AP)||void 0===i||i.call(this,!1,!0,e);t&&t!==this._$AB;){const e=t.nextSibling;t.remove(),t=e}}setConnected(t){var e;void 0===this._$AM&&(this._$Cp=t,null===(e=this._$AP)||void 0===e||e.call(this,t))}}class Y{constructor(t,e,i,s,o){this.type=1,this._$AH=N,this._$AN=void 0,this.element=t,this.name=e,this._$AM=s,this.options=o,i.length>2||""!==i[0]||""!==i[1]?(this._$AH=Array(i.length-1).fill(new String),this.strings=i):this._$AH=N}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(t,e=this,i,s){const o=this.strings;let n=!1;if(void 0===o)t=W(this,t,e,0),n=!E(t)||t!==this._$AH&&t!==F,n&&(this._$AH=t);else{const s=t;let r,a;for(t=o[0],r=0;r<o.length-1;r++)a=W(this,s[i+r],e,r),a===F&&(a=this._$AH[r]),n||(n=!E(a)||a!==this._$AH[r]),a===N?t=N:t!==N&&(t+=(null!=a?a:"")+o[r+1]),this._$AH[r]=a}n&&!s&&this.j(t)}j(t){t===N?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=t?t:"")}}class G extends Y{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===N?void 0:t}}const K=_?_.emptyScript:"";class Z extends Y{constructor(){super(...arguments),this.type=4}j(t){t&&t!==N?this.element.setAttribute(this.name,K):this.element.removeAttribute(this.name)}}class Q extends Y{constructor(t,e,i,s,o){super(t,e,i,s,o),this.type=5}_$AI(t,e=this){var i;if((t=null!==(i=W(this,t,e,0))&&void 0!==i?i:N)===F)return;const s=this._$AH,o=t===N&&s!==N||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,n=t!==N&&(s===N||o);o&&this.element.removeEventListener(this.name,this,s),n&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){var e,i;"function"==typeof this._$AH?this._$AH.call(null!==(i=null===(e=this.options)||void 0===e?void 0:e.host)&&void 0!==i?i:this.element,t):this._$AH.handleEvent(t)}}class X{constructor(t,e,i){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=i}get _$AU(){return this._$AM._$AU}_$AI(t){W(this,t)}}const tt=v.litHtmlPolyfillSupport;null==tt||tt(V,J),(null!==(m=v.litHtmlVersions)&&void 0!==m?m:v.litHtmlVersions=[]).push("2.8.0");
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+var et,it;class st extends f{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){var t,e;const i=super.createRenderRoot();return null!==(t=(e=this.renderOptions).renderBefore)&&void 0!==t||(e.renderBefore=i.firstChild),i}update(t){const e=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=((t,e,i)=>{var s,o;const n=null!==(s=null==i?void 0:i.renderBefore)&&void 0!==s?s:e;let r=n._$litPart$;if(void 0===r){const t=null!==(o=null==i?void 0:i.renderBefore)&&void 0!==o?o:null;n._$litPart$=r=new J(e.insertBefore(C(),t),t,void 0,null!=i?i:{})}return r._$AI(t),r})(e,this.renderRoot,this.renderOptions)}connectedCallback(){var t;super.connectedCallback(),null===(t=this._$Do)||void 0===t||t.setConnected(!0)}disconnectedCallback(){var t;super.disconnectedCallback(),null===(t=this._$Do)||void 0===t||t.setConnected(!1)}render(){return F}}st.finalized=!0,st._$litElement$=!0,null===(et=globalThis.litElementHydrateSupport)||void 0===et||et.call(globalThis,{LitElement:st});const ot=globalThis.litElementPolyfillSupport;null==ot||ot({LitElement:st}),(null!==(it=globalThis.litElementVersions)&&void 0!==it?it:globalThis.litElementVersions=[]).push("3.3.3");const nt={alarm_control_panel:"Allarmi",binary_sensor:"Sensori Binari",camera:"Telecamere",climate:"Clima",cover:"Tapparelle",fan:"Ventola",light:"Luce",lock:"Serratura",media_player:"Media Player",scene:"Scene",script:"Script",siren:"Sirena",vacuum:"Aspirapolvere",motion:"Movimento",occupancy:"Occupazione",presence:"Presenza",switch:"Pulsante"},rt=["alarm_control_panel","binary_sensor","camera","climate","cover","fan","light","lock","media_player","scene","script","siren","switch","vacuum"],at=(t=[])=>({includeDomains:rt,entityFilter:(e,i)=>{if(!t.length)return!1;const[s]=e.split(".");if("binary_sensor"===s){const s=i.states[e]?.attributes?.device_class??"";return t.includes(s)}return t.includes(s)}}),lt=(t=[])=>({includeDomains:["sensor"],entityFilter:(e,i)=>{if(!t.length)return!0;const s=i.states[e]?.attributes?.device_class??"";return t.includes(s)}}),ct=(t=[])=>({includeDomains:rt,entityFilter:(e,i)=>{if(!t.length)return"binary_sensor"===e.split(".")[0];const[s]=e.split(".");if("binary_sensor"===s){const s=i.states[e]?.attributes?.device_class??"";return t.includes(s)}return t.includes(s)}}),dt=(t=[])=>({includeDomains:rt,entityFilter:(e,i)=>{if(!t.length)return rt.includes(e.split(".")[0]);const[s]=e.split(".");if("binary_sensor"===s){const s=i.states[e]?.attributes?.device_class??"";return t.includes(s)}return t.includes(s)}});function ht(t,e,i,s=[]){if(!t?.states)return[];let o;if("presence"===i?o=at(s):"sensor"===i?o=lt(s):"mushroom"===i?o=ct(s):"subbutton"===i&&(o=dt(s)),!o)return[];const n=Object.keys(t.states).filter(t=>o.includeDomains.includes(t.split(".")[0])).filter(e=>o.entityFilter(e,t));if((e?.auto_discovery_sections?.[i]??!1)&&e?.area){const i=function(t,e){if(!t?.states||!e)return[];const i=t.entities??{},s=t.devices??{};return Object.keys(t.states).filter(o=>{const n=i[o];if(n?.area_id===e)return!0;const r=n?.device_id;if(r&&s[r]?.area_id===e)return!0;const a=t.states[o]?.attributes??{};return a.area_id===e||a.area===e})}(t,e.area);return n.filter(t=>i.includes(t))}return n}const pt=!!window.__BUBBLE_DEBUG__,ut=(t,e)=>t.find(t=>!e.has(t))||null;function bt(t,e){const i={...e.entities||{}},s=i.presence||(i.presence={});if(!s.entity){const i=function(t,e){if(!t||!t.states)return[];const i=new Set(["person","device_tracker","binary_sensor","light","switch","media_player","fan","humidifier","lock","input_boolean","scene"]);let s=Object.keys(t.states).filter(t=>i.has(t.split(".")[0]));s=s.filter(e=>{if("binary_sensor"!==e.split(".")[0])return!0;const i=t.states[e]?.attributes?.device_class;return["motion","occupancy","presence"].includes(i||"")});const o=e?.area;if(o){const e=s.filter(e=>{const i=t.states[e],s=i?.attributes?.area_id,n=i?.attributes?.area;return s===o||n===o});e.length&&(s=e)}const n=e?.entities?.presence?.entity||e?.presence_entity;return n&&!s.includes(n)&&s.push(n),pt&&console.info("[AutoDiscovery][presence candidates]",{area:o,count:s.length,sample:s.slice(0,8)}),s}(t,e);i.length&&(s.entity=i[0])}return{...e,entities:i}}function gt(t,e,i,s=!1){const o=e.auto_discovery_sections||{},n="area"===i,r=i&&i.startsWith("auto_discovery_sections.");if(!n&&!r)return e;let a=e;return o.sensor&&(a=function(t,e){const i=["sensor1","sensor2","sensor3","sensor4","sensor5","sensor6"],s={...e.entities||{}},o=new Set(i.map(t=>s[t]?.entity_id).filter(Boolean));for(const n of i){const i=s[n]||(s[n]={});if(i.entity_id)continue;const r=ht(t,e,{section:"sensor",type:i.type||""}),a=ut(r,o);a&&(i.entity_id=a,o.add(a))}return{...e,entities:s}}(t,a)),o.mushroom&&(a=function(t,e){const i={...e.entities||{}},s=new Set(["climate","camera","entities1","entities2","entities3","entities4","entities5"].map(t=>i[t]?.entity).filter(Boolean)),o=ht(t,e,"mushroom"),n=i.climate||(i.climate={});if(!n.entity){const t=o.find(t=>t.startsWith("climate.")&&!s.has(t));t&&(n.entity=t,s.add(t))}const r=i.camera||(i.camera={});if(!r.entity){const t=o.find(t=>t.startsWith("camera.")&&!s.has(t));t&&(r.entity=t,s.add(t))}for(const t of["entities1","entities2","entities3","entities4","entities5"]){const e=i[t]||(i[t]={});if(e.entity)continue;const n=ut(o,s);n&&(e.entity=n,s.add(n))}return{...e,entities:i}}(t,a)),o.subbutton&&(a=function(t,e){const i=["sub-button1","sub-button2","sub-button3","sub-button4","sub-button5","sub-button6"],s={...e.entities||{}},o=new Set(i.map(t=>s[t]?.entity).filter(Boolean)),n=ht(t,e,"subbutton");for(const t of i){const e=s[t]||(s[t]={});if(e.entity)continue;const i=ut(n,o);i&&(e.entity=i,o.add(i))}return{...e,entities:s}}(t,a)),o.presence&&(a=bt(t,a)),s&&"undefined"!=typeof window&&window.__BUBBLE_DEBUG__&&console.info("[AutoDiscovery] applied after",i,{sections:o}),a}const ft=["presence","motion","occupancy","light","switch","fan"];class mt extends st{static properties={hass:{type:Object},config:{type:Object},_expanded:{type:Boolean,state:!0},activeFilters:{type:Array,state:!0},layout:{type:String}};static styles=n`
     :host { display: block; }
 
     .glass-panel {
@@ -154,11 +154,11 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .toggle-btn:hover {
       background: rgba(255,255,255,0.18);
     }
-  `;constructor(){super(),this.hass={},this.config={},this._expanded=!1,this.activeFilters=[],this.layout="wide"}updated(e){if(e.has("config")||e.has("hass")){ge(this.hass,this.config,"area"),ge(this.hass,this.config,"auto_discovery_sections.presence"),e.has("config")&&Array.isArray(this.config.presence_filters)&&(this.activeFilters=[...this.config.presence_filters]);const t=this.config.layout;t&&t!==this.layout&&(this.layout=t)}}_onLayoutClick(e){this.layout=e,this._fire("layout",e)}_fire(e,t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:e,val:t},bubbles:!0,composed:!0}))}render(){const e=this.config,t=e.auto_discovery_sections?.presence??!1,i=e.area??"",s=e.name??"",o=e.icon??"",n=e.entities?.presence?.entity??"",r=this.activeFilters.length?this.activeFilters:e.presence_filters??[...fe],a=fe.map(e=>({value:e,label:e.charAt(0).toUpperCase()+e.slice(1)})),l=he(this.hass,this.config,"presence",r);return B`
+  `;constructor(){super(),this.hass={},this.config={},this._expanded=!1,this.activeFilters=[],this.layout="wide"}updated(t){if(t.has("config")||t.has("hass")){gt(this.hass,this.config,"area"),gt(this.hass,this.config,"auto_discovery_sections.presence"),t.has("config")&&Array.isArray(this.config.presence_filters)&&(this.activeFilters=[...this.config.presence_filters]);const e=this.config.layout;e&&e!==this.layout&&(this.layout=e)}}_onLayoutClick(t){this.layout=t,this._fire("layout",t)}_fire(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}render(){const t=this.config,e=t.auto_discovery_sections?.presence??!1,i=t.area??"",s=t.name??"",o=t.icon??"",n=t.entities?.presence?.entity??"",r=this.activeFilters.length?this.activeFilters:t.presence_filters??[...ft],a=ft.map(t=>({value:t,label:t.charAt(0).toUpperCase()+t.slice(1)})),l=ht(this.hass,this.config,"presence",r);return B`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
-        @expanded-changed=${e=>this._expanded=e.detail.expanded}
+        @expanded-changed=${t=>this._expanded=t.detail.expanded}
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
       
@@ -167,8 +167,8 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
           <label>🔍 Auto-discover Presence:</label>
           <input
             type="checkbox"
-            .checked=${t}
-            @change=${e=>this._fire("auto_discovery_sections.presence",e.target.checked)}
+            .checked=${e}
+            @change=${t=>this._fire("auto_discovery_sections.presence",t.target.checked)}
           />
         </div>
       
@@ -179,7 +179,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
             .hass=${this.hass}
             .value=${i}
             .selector=${{area:{}}}
-            @value-changed=${e=>{const t=e.detail.value;this._fire("area",t),t&&(this._fire("name",t.toUpperCase()),this._fire("auto_discovery_sections.presence",!0))}}
+            @value-changed=${t=>{const e=t.detail.value;this._fire("area",e),e&&(this._fire("name",e.toUpperCase()),this._fire("auto_discovery_sections.presence",!0))}}
           ></ha-selector>
         </div>
       
@@ -189,7 +189,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
           <input
             type="text"
             .value=${s}
-            @input=${e=>this._fire("name",e.target.value)}
+            @input=${t=>this._fire("name",t.target.value)}
           />
         </div>
       
@@ -204,7 +204,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
                 .hass=${this.hass}
                 .value=${o}
                 allow-custom-icon
-                @value-changed=${e=>this._fire("icon",e.detail.value)}
+                @value-changed=${t=>this._fire("icon",t.detail.value)}
               ></ha-icon-picker>
             </div>
       
@@ -215,7 +215,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
                 .hass=${this.hass}
                 .value=${r}
                 .selector=${{select:{multiple:!0,mode:"box",options:a}}}
-                @value-changed=${e=>this._fire("presence_filters",e.detail.value)}
+                @value-changed=${t=>this._fire("presence_filters",t.detail.value)}
               ></ha-selector>
             </div>
       
@@ -227,7 +227,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
                 .value=${n}
                 .selector=${{entity:{include_entities:l,multiple:!1}}}
                 allow-custom-entity
-                @value-changed=${e=>this._fire("entities.presence.entity",e.detail.value)}
+                @value-changed=${t=>this._fire("entities.presence.entity",t.detail.value)}
               ></ha-selector>
             </div>
       
@@ -264,41 +264,41 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
           🧹 Reset Room
         </button>
       </ha-expansion-panel>
-    `}_renderActions(e){const t=this.config?.[`${e}_action`]||{};return B`
+    `}_renderActions(t){const e=this.config?.[`${t}_action`]||{};return B`
       <div class="input-group">
-        <label>${"tap"===e?"Tap Action":"Hold Action"}</label>
+        <label>${"tap"===t?"Tap Action":"Hold Action"}</label>
         <div class="pill-group">
           ${["toggle","more-info","navigate","call-service","none"].map(i=>B`
             <paper-button
-              class="pill-button ${t.action===i?"active":""}"
-              @click=${()=>this._fire(`${e}_action.action`,i)}
+              class="pill-button ${e.action===i?"active":""}"
+              @click=${()=>this._fire(`${t}_action.action`,i)}
             >${i}</paper-button>
           `)}
         </div>
-        ${"navigate"===t.action?B`
+        ${"navigate"===e.action?B`
           <input
             type="text"
             placeholder="Path"
-            .value=${t.navigation_path||""}
-            @input=${t=>this._fire(`${e}_action.navigation_path`,t.target.value)}
+            .value=${e.navigation_path||""}
+            @input=${e=>this._fire(`${t}_action.navigation_path`,e.target.value)}
           />
         `:""}
-        ${"call-service"===t.action?B`
+        ${"call-service"===e.action?B`
           <input
             type="text"
             placeholder="service: domain.service_name"
-            .value=${t.service||""}
-            @input=${t=>this._fire(`${e}_action.service`,t.target.value)}
+            .value=${e.service||""}
+            @input=${e=>this._fire(`${t}_action.service`,e.target.value)}
           />
           <input
             type="text"
             placeholder="service_data (JSON)"
-            .value=${t.service_data?JSON.stringify(t.service_data):""}
-            @input=${t=>{let i=t.target.value;try{i=i?JSON.parse(i):void 0}catch{i=void 0}this._fire(`${e}_action.service_data`,i)}}
+            .value=${e.service_data?JSON.stringify(e.service_data):""}
+            @input=${e=>{let i=e.target.value;try{i=i?JSON.parse(i):void 0}catch{i=void 0}this._fire(`${t}_action.service_data`,i)}}
           />
         `:""}
       </div>
-    `}}customElements.define("room-panel",me);const ve={temperature:{label:"Temperature",emoji:"🌡️",icon:"mdi:thermometer",units:["°C","°F"]},humidity:{label:"Humidity",emoji:"💧",icon:"mdi:water-percent",units:["%"]},co2:{label:"CO₂",emoji:"🟢",icon:"mdi:molecule-co2",units:["ppm"]},lux:{label:"Luminosity",emoji:"🔆",icon:"mdi:brightness-5",units:["lx"]},uv:{label:"UV Index",emoji:"🌞",icon:"mdi:weather-sunny-alert",units:["UV"]},pressure:{label:"Pressure",emoji:"⏲️",icon:"mdi:gauge",units:["hPa"]},noise:{label:"Noise",emoji:"🔊",icon:"mdi:volume-high",units:["dB"]},pm25:{label:"PM2.5",emoji:"🌫️",icon:"mdi:blur",units:["µg/m³"]},pm10:{label:"PM10",emoji:"🌫️",icon:"mdi:blur-linear",units:["µg/m³"]}};class _e extends se{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(8).fill(!1);const e=Object.keys(ve);this._filters=Array(8).fill().map(()=>[...e]),this._entities=Array(8).fill("")}updated(e){if(e.has("config")||e.has("hass")){ge(this.hass,this.config,"auto_discovery_sections.sensor");for(let e=0;e<8;e++){const t=`sensor${e+1}`,i=this.config.sensor_filters?.[e],s=this.config.entities?.[t]?.entity;Array.isArray(i)&&(this._filters[e]=[...i]),s&&(this._entities[e]=s)}}}static styles=n`
+    `}}customElements.define("room-panel",mt);const vt={temperature:{label:"Temperature",emoji:"🌡️",icon:"mdi:thermometer",units:["°C","°F"]},humidity:{label:"Humidity",emoji:"💧",icon:"mdi:water-percent",units:["%"]},co2:{label:"CO₂",emoji:"🟢",icon:"mdi:molecule-co2",units:["ppm"]},lux:{label:"Luminosity",emoji:"🔆",icon:"mdi:brightness-5",units:["lx"]},uv:{label:"UV Index",emoji:"🌞",icon:"mdi:weather-sunny-alert",units:["UV"]},pressure:{label:"Pressure",emoji:"⏲️",icon:"mdi:gauge",units:["hPa"]},noise:{label:"Noise",emoji:"🔊",icon:"mdi:volume-high",units:["dB"]},pm25:{label:"PM2.5",emoji:"🌫️",icon:"mdi:blur",units:["µg/m³"]},pm10:{label:"PM10",emoji:"🌫️",icon:"mdi:blur-linear",units:["µg/m³"]}};class _t extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(8).fill(!1);const t=Object.keys(vt);this._filters=Array(8).fill().map(()=>[...t]),this._entities=Array(8).fill("")}updated(t){if(t.has("config")||t.has("hass")){gt(this.hass,this.config,"auto_discovery_sections.sensor");for(let t=0;t<8;t++){const e=`sensor${t+1}`,i=this.config.sensor_filters?.[t],s=this.config.entities?.[e]?.entity;Array.isArray(i)&&(this._filters[t]=[...i]),s&&(this._entities[t]=s)}}}static styles=n`
     :host { display: block; }
 
     .glass-panel {
@@ -418,11 +418,11 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       color: #fff;
       box-shadow: 0 6px 32px #ff4c6abf;
     }
-  `;render(){const e=this.config.auto_discovery_sections?.sensor??!1,t=Object.entries(ve).map(([e,t])=>({value:e,label:`${t.emoji} ${t.label}`}));return B`
+  `;render(){const t=this.config.auto_discovery_sections?.sensor??!1,e=Object.entries(vt).map(([t,e])=>({value:t,label:`${e.emoji} ${e.label}`}));return B`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
-        @expanded-changed=${e=>{this.expanded=e.detail.expanded,this.expanded&&(this._expanded=Array(8).fill(!1))}}
+        @expanded-changed=${t=>{this.expanded=t.detail.expanded,this.expanded&&(this._expanded=Array(8).fill(!1))}}
       >
         <div slot="header" class="glass-header">🧭 Sensors</div>
 
@@ -430,27 +430,27 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
         <div class="input-group autodiscover">
           <input
             type="checkbox"
-            .checked=${e}
-            @change=${e=>this._toggleAuto(e.target.checked)}
+            .checked=${t}
+            @change=${t=>this._toggleAuto(t.target.checked)}
           />
           <label>🪄 Auto-discover Sensors</label>
         </div>
 
         <!-- Sei mini-pill -->
-        ${this._expanded.map((e,i)=>this._renderSensor(i,e,t))}
+        ${this._expanded.map((t,i)=>this._renderSensor(i,t,e))}
 
         <!-- Reset -->
         <button class="reset-button" @click=${()=>this._reset()}>
           🧹 Reset Sensors
         </button>
       </ha-expansion-panel>
-    `}_renderSensor(e,t,i){const s=this._filters[e],o=this._entities[e],n=he(this.hass,this.config,"sensor",s);return B`
-      <div class="mini-pill ${t?"expanded":""}">
-        <div class="mini-pill-header" @click=${()=>this._togglePill(e)}>
-          Sensor ${e+1}
-          <span class="chevron">${t?"▼":"▶"}</span>
+    `}_renderSensor(t,e,i){const s=this._filters[t],o=this._entities[t],n=ht(this.hass,this.config,"sensor",s);return B`
+      <div class="mini-pill ${e?"expanded":""}">
+        <div class="mini-pill-header" @click=${()=>this._togglePill(t)}>
+          Sensor ${t+1}
+          <span class="chevron">${e?"▼":"▶"}</span>
         </div>
-        ${t?B`
+        ${e?B`
           <div class="mini-pill-content">
             <!-- Filter category (multi‐select pill) -->
             <div class="input-group">
@@ -459,7 +459,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
                 .hass=${this.hass}
                 .value=${s}
                 .selector=${{select:{multiple:!0,mode:"box",options:i}}}
-                @value-changed=${t=>this._onFilter(e,t.detail.value)}
+                @value-changed=${e=>this._onFilter(t,e.detail.value)}
               ></ha-selector>
             </div>
 
@@ -471,21 +471,21 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
                 .value=${o}
                 .selector=${{entity:{include_entities:n,multiple:!1}}}
                 allow-custom-entity
-                @value-changed=${t=>this._onEntity(e,t.detail.value)}
+                @value-changed=${e=>this._onEntity(t,e.detail.value)}
               ></ha-selector>
             </div>
 
             <!-- Preview basata su device_class -->
-            ${o?(()=>{const e=this.hass.states[o],t=e?.attributes?.device_class,i=ve[t]||{},s=i.emoji||"❓",n=e?.attributes?.unit_of_measurement||(i.units?.[0]??"");return B`
+            ${o?(()=>{const t=this.hass.states[o],e=t?.attributes?.device_class,i=vt[e]||{},s=i.emoji||"❓",n=t?.attributes?.unit_of_measurement||(i.units?.[0]??"");return B`
                 <div class="preview">
                   <span class="emoji">${s}</span>
-                  <div class="state">${e?.state??"-"} ${n}</div>
+                  <div class="state">${t?.state??"-"} ${n}</div>
                 </div>
               `})():""}
           </div>
         `:""}
       </div>
-    `}_toggleAuto(e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.sensor",val:e},bubbles:!0,composed:!0}))}_togglePill(e){this._expanded=this._expanded.map((t,i)=>i===e&&!t),this.requestUpdate()}_onFilter(e,t){this._filters[e]=[...t],this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"sensor_filters",val:this._filters},bubbles:!0,composed:!0}))}_onEntity(e,t){this._entities[e]=t,this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.sensor${e+1}.entity`,val:t},bubbles:!0,composed:!0}))}_reset(){this._expanded=Array(8).fill(!1);const e=Object.keys(ve);this._filters=Array(8).fill().map(()=>[...e]),this._entities=Array(8).fill(""),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"sensor_filters",val:this._filters},bubbles:!0,composed:!0}));for(let e=1;e<=8;e++)this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.sensor${e}.entity`,val:""},bubbles:!0,composed:!0}))}}customElements.define("sensor-panel",_e);class xe extends se{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(5).fill(!1),this._filters=Array(5).fill().map(()=>[...re]),this._entities=Array(5).fill("")}updated(e){if(e.has("config")||e.has("hass")){ge(this.hass,this.config,"auto_discovery_sections.mushroom");const e=this.config.mushroom_filters;Array.isArray(e)&&5===e.length&&(this._filters=e.map(e=>Array.isArray(e)?[...e]:[...re]));const t=this.config.entities||{};for(let e=0;e<5;e++){const i=`mushroom${e+1}`,s=t[i]?.entity;s&&(this._entities[e]=s)}}}static styles=n`
+    `}_toggleAuto(t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.sensor",val:t},bubbles:!0,composed:!0}))}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e),this.requestUpdate()}_onFilter(t,e){this._filters[t]=[...e],this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"sensor_filters",val:this._filters},bubbles:!0,composed:!0}))}_onEntity(t,e){this._entities[t]=e,this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.sensor${t+1}.entity`,val:e},bubbles:!0,composed:!0}))}_reset(){this._expanded=Array(8).fill(!1);const t=Object.keys(vt);this._filters=Array(8).fill().map(()=>[...t]),this._entities=Array(8).fill(""),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"sensor_filters",val:this._filters},bubbles:!0,composed:!0}));for(let t=1;t<=8;t++)this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.sensor${t}.entity`,val:""},bubbles:!0,composed:!0}))}}customElements.define("sensor-panel",_t);class xt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(5).fill(!1),this._filters=Array(5).fill().map(()=>[...rt]),this._entities=Array(5).fill("")}updated(t){if(t.has("config")||t.has("hass")){gt(this.hass,this.config,"auto_discovery_sections.mushroom");const t=this.config.mushroom_filters;Array.isArray(t)&&5===t.length&&(this._filters=t.map(t=>Array.isArray(t)?[...t]:[...rt]));const e=this.config.entities||{};for(let t=0;t<5;t++){const i=`mushroom${t+1}`,s=e[i]?.entity;s&&(this._entities[t]=s)}}}static styles=n`
     :host { display: block; }
     .glass-panel {
       margin: 0 !important;
@@ -591,11 +591,11 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       color: #fff;
       box-shadow: 0 6px 32px #ff4c6abf;
     }
-  `;render(){const e=this.config.auto_discovery_sections?.mushroom??!1,t=re.map(e=>({value:e,label:ne[e]||e.charAt(0).toUpperCase()+e.slice(1)}));return B`
+  `;render(){const t=this.config.auto_discovery_sections?.mushroom??!1,e=rt.map(t=>({value:t,label:nt[t]||t.charAt(0).toUpperCase()+t.slice(1)}));return B`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
-        @expanded-changed=${e=>{this.expanded=e.detail.expanded,this.expanded&&(this._expanded=Array(5).fill(!1))}}
+        @expanded-changed=${t=>{this.expanded=t.detail.expanded,this.expanded&&(this._expanded=Array(5).fill(!1))}}
       >
         <div slot="header" class="glass-header">🍄 Mushroom Entities</div>
 
@@ -603,27 +603,27 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
         <div class="input-group autodiscover">
           <input
             type="checkbox"
-            .checked=${e}
-            @change=${e=>this._toggleAuto(e.target.checked)}
+            .checked=${t}
+            @change=${t=>this._toggleAuto(t.target.checked)}
           />
           <label>🪄 Auto-discover Mushroom</label>
         </div>
 
         <!-- 2️⃣ Cinque mini-pill -->
-        ${this._expanded.map((e,i)=>this._renderMushroom(i,e,t))}
+        ${this._expanded.map((t,i)=>this._renderMushroom(i,t,e))}
 
         <!-- 3️⃣ Reset -->
         <button class="reset-button" @click=${()=>this._reset()}>
           🧹 Reset Mushrooms
         </button>
       </ha-expansion-panel>
-    `}_renderMushroom(e,t,i){const s=this._filters[e],o=this._entities[e],n=he(this.hass,this.config,"mushroom",s);return B`
-      <div class="mini-pill ${t?"expanded":""}">
-        <div class="mini-pill-header" @click=${()=>this._togglePill(e)}>
-          Mushroom ${e+1}
-          <span class="chevron">${t?"▼":"▶"}</span>
+    `}_renderMushroom(t,e,i){const s=this._filters[t],o=this._entities[t],n=ht(this.hass,this.config,"mushroom",s);return B`
+      <div class="mini-pill ${e?"expanded":""}">
+        <div class="mini-pill-header" @click=${()=>this._togglePill(t)}>
+          Mushroom ${t+1}
+          <span class="chevron">${e?"▼":"▶"}</span>
         </div>
-        ${t?B`
+        ${e?B`
           <div class="mini-pill-content">
             <!-- Filter categories -->
             <div class="input-group">
@@ -632,7 +632,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
                 .hass=${this.hass}
                 .value=${s}
                 .selector=${{select:{multiple:!0,mode:"box",options:i}}}
-                @value-changed=${t=>this._onFilter(e,t.detail.value)}
+                @value-changed=${e=>this._onFilter(t,e.detail.value)}
               ></ha-selector>
             </div>
 
@@ -644,13 +644,13 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
                 .value=${o}
                 .selector=${{entity:{include_entities:n,multiple:!1}}}
                 allow-custom-entity
-                @value-changed=${t=>this._onEntity(e,t.detail.value)}
+                @value-changed=${e=>this._onEntity(t,e.detail.value)}
               ></ha-selector>
             </div>
           </div>
         `:""}
       </div>
-    `}_toggleAuto(e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.mushroom",val:e},bubbles:!0,composed:!0}))}_togglePill(e){this._expanded=this._expanded.map((t,i)=>i===e&&!t),this.requestUpdate()}_onFilter(e,t){this._filters[e]=[...t],this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"mushroom_filters",val:this._filters},bubbles:!0,composed:!0}))}_onEntity(e,t){this._entities[e]=t,this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${e+1}.entity`,val:t},bubbles:!0,composed:!0}))}_reset(){this._expanded=Array(5).fill(!1),this._filters=Array(5).fill().map(()=>[...re]),this._entities=Array(5).fill(""),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"mushroom_filters",val:this._filters},bubbles:!0,composed:!0}));for(let e=1;e<=5;e++)this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${e}.entity`,val:""},bubbles:!0,composed:!0}))}}customElements.define("mushroom-panel",xe);const ye={door:{on:"mdi:door-open",off:"mdi:door-closed"},window:{on:"mdi:window-open",off:"mdi:window-closed"},motion:{on:"mdi:motion-sensor",off:"mdi:motion-sensor-off"},moisture:{on:"mdi:water-alert",off:"mdi:water-off"},smoke:{on:"mdi:smoke",off:"mdi:smoke-detector-off"},gas:{on:"mdi:gas-cylinder",off:"mdi:gas-off"},lock:{on:"mdi:lock-open-variant",off:"mdi:lock"},garage:{on:"mdi:garage-open",off:"mdi:garage"},light:{on:"mdi:lightbulb-on",off:"mdi:lightbulb-off"},plug:{on:"mdi:power-plug",off:"mdi:power-plug-off"},presence:{on:"mdi:account",off:"mdi:account-off"},vibration:{on:"mdi:vibrate",off:"mdi:vibrate-off"},opening:{on:"mdi:door-open",off:"mdi:door-closed"},battery:{on:"mdi:battery",off:"mdi:battery-outline"},connectivity:{on:"mdi:wifi",off:"mdi:wifi-off"},safety:{on:"mdi:shield-check",off:"mdi:shield-off"},cold:{on:"mdi:snowflake",off:"mdi:snowflake-off"}},$e={light:"mdi:lightbulb",switch:"mdi:toggle-switch",fan:"mdi:fan",climate:"mdi:thermostat",cover:"mdi:window-shutter",media_player:"mdi:play-circle",script:"mdi:script-text",scene:"mdi:palette",lock:"mdi:lock",camera:"mdi:video",binary_sensor:"mdi:checkbox-marked-circle-outline",sensor:"mdi:eye",alarm_control_panel:"mdi:shield-home",vacuum:"mdi:robot-vacuum",siren:"mdi:bullhorn"};function we(e,t){const i=t.states?.[e],s=i?.attributes||{},o=s.device_class,n=e?.split(".")?.[0]??"",r=i?.state,a=o&&ye[o]?ye[o]["on"===r?"on":"off"]:null;return s.icon||a||$e[n]||"mdi:bookmark"}class Ae extends se{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(4).fill(!1),this._filters=Array(4).fill().map(()=>[...re]),this._entities=Array(4).fill("")}updated(e){if(e.has("config")||e.has("hass")){ge(this.hass,this.config,"auto_discovery_sections.subbutton"),Array.isArray(this.config.subbuttons)||(this.config.subbuttons=Array(4).fill().map(()=>({})));const e=this.config.subbutton_filters;Array.isArray(e)&&4===e.length&&(this._filters=e.map(e=>Array.isArray(e)?[...e]:[...re]));for(let e=0;e<4;e++){const t=this.config.subbuttons[e]?.entity_id||"";this._entities[e]=t}}}static styles=n`
+    `}_toggleAuto(t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.mushroom",val:t},bubbles:!0,composed:!0}))}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e),this.requestUpdate()}_onFilter(t,e){this._filters[t]=[...e],this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"mushroom_filters",val:this._filters},bubbles:!0,composed:!0}))}_onEntity(t,e){this._entities[t]=e,this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t+1}.entity`,val:e},bubbles:!0,composed:!0}))}_reset(){this._expanded=Array(5).fill(!1),this._filters=Array(5).fill().map(()=>[...rt]),this._entities=Array(5).fill(""),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"mushroom_filters",val:this._filters},bubbles:!0,composed:!0}));for(let t=1;t<=5;t++)this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t}.entity`,val:""},bubbles:!0,composed:!0}))}}customElements.define("mushroom-panel",xt);const yt={door:{on:"mdi:door-open",off:"mdi:door-closed"},window:{on:"mdi:window-open",off:"mdi:window-closed"},motion:{on:"mdi:motion-sensor",off:"mdi:motion-sensor-off"},moisture:{on:"mdi:water-alert",off:"mdi:water-off"},smoke:{on:"mdi:smoke",off:"mdi:smoke-detector-off"},gas:{on:"mdi:gas-cylinder",off:"mdi:gas-off"},lock:{on:"mdi:lock-open-variant",off:"mdi:lock"},garage:{on:"mdi:garage-open",off:"mdi:garage"},light:{on:"mdi:lightbulb-on",off:"mdi:lightbulb-off"},plug:{on:"mdi:power-plug",off:"mdi:power-plug-off"},presence:{on:"mdi:account",off:"mdi:account-off"},vibration:{on:"mdi:vibrate",off:"mdi:vibrate-off"},opening:{on:"mdi:door-open",off:"mdi:door-closed"},battery:{on:"mdi:battery",off:"mdi:battery-outline"},connectivity:{on:"mdi:wifi",off:"mdi:wifi-off"},safety:{on:"mdi:shield-check",off:"mdi:shield-off"},cold:{on:"mdi:snowflake",off:"mdi:snowflake-off"}},$t={light:"mdi:lightbulb",switch:"mdi:toggle-switch",fan:"mdi:fan",climate:"mdi:thermostat",cover:"mdi:window-shutter",media_player:"mdi:play-circle",script:"mdi:script-text",scene:"mdi:palette",lock:"mdi:lock",camera:"mdi:video",binary_sensor:"mdi:checkbox-marked-circle-outline",sensor:"mdi:eye",alarm_control_panel:"mdi:shield-home",vacuum:"mdi:robot-vacuum",siren:"mdi:bullhorn"};function wt(t,e){const i=e.states?.[t],s=i?.attributes||{},o=s.device_class,n=t?.split(".")?.[0]??"",r=i?.state,a=o&&yt[o]?yt[o]["on"===r?"on":"off"]:null;return s.icon||a||$t[n]||"mdi:bookmark"}class At extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(4).fill(!1),this._filters=Array(4).fill().map(()=>[...rt]),this._entities=Array(4).fill("")}updated(t){if(t.has("config")||t.has("hass")){gt(this.hass,this.config,"auto_discovery_sections.subbutton"),Array.isArray(this.config.subbuttons)||(this.config.subbuttons=Array(4).fill().map(()=>({})));const t=this.config.subbutton_filters;Array.isArray(t)&&4===t.length&&(this._filters=t.map(t=>Array.isArray(t)?[...t]:[...rt]));for(let t=0;t<4;t++){const e=this.config.subbuttons[t]?.entity_id||"";this._entities[t]=e}}}static styles=n`
     :host { display: block; }
     .glass-panel {
       margin: 0 !important;
@@ -779,36 +779,36 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       color: #fff;
       box-shadow: 0 6px 32px #ff4c6abf;
     }
-  `;render(){const e=this.config.auto_discovery_sections?.subbutton??!1,t=re.map(e=>({value:e,label:ne[e]||e.charAt(0).toUpperCase()+e.slice(1)}));return B`
+  `;render(){const t=this.config.auto_discovery_sections?.subbutton??!1,e=rt.map(t=>({value:t,label:nt[t]||t.charAt(0).toUpperCase()+t.slice(1)}));return B`
         <ha-expansion-panel
           class="glass-panel"
           .expanded=${this.expanded}
-          @expanded-changed=${e=>this.expanded=e.detail.expanded}
+          @expanded-changed=${t=>this.expanded=t.detail.expanded}
         >
           <div slot="header" class="glass-header">🎛️ Sub-buttons</div>
   
           <div class="input-group autodiscover">
-            <input type="checkbox" .checked=${e}
-                   @change=${e=>this._toggleAuto(e.target.checked)} />
+            <input type="checkbox" .checked=${t}
+                   @change=${t=>this._toggleAuto(t.target.checked)} />
             <label>🪄 Auto-discover Subbuttons</label>
           </div>
   
-          ${this._expanded.map((e,i)=>this._renderSubButton(i,e,t))}
+          ${this._expanded.map((t,i)=>this._renderSubButton(i,t,e))}
   
           <button class="reset-button" @click=${()=>this._reset()}>🧹 Reset Sub-buttons</button>
         </ha-expansion-panel>
-      `}_renderSubButton(e,t,i){const s=this._filters[e],o=this._entities[e],n=he(this.hass,this.config,"subbutton",s),r=this.config.subbuttons?.[e]||{},a=["toggle","more-info","navigate","call-service","none"];return B`
-        <div class="mini-pill ${t?"expanded":""}">
-          <div class="mini-pill-header" @click=${()=>this._togglePill(e)}>
-            Sub-button ${e+1}  <span class="chevron">${t?"▼":"▶"}</span>
+      `}_renderSubButton(t,e,i){const s=this._filters[t],o=this._entities[t],n=ht(this.hass,this.config,"subbutton",s),r=this.config.subbuttons?.[t]||{},a=["toggle","more-info","navigate","call-service","none"];return B`
+        <div class="mini-pill ${e?"expanded":""}">
+          <div class="mini-pill-header" @click=${()=>this._togglePill(t)}>
+            Sub-button ${t+1}  <span class="chevron">${e?"▼":"▶"}</span>
           </div>
-          ${t?B`
+          ${e?B`
             <div class="mini-pill-content">
               <div class="input-group">
                 <label>Filter categories:</label>
                 <ha-selector .hass=${this.hass} .value=${s}
                   .selector=${{select:{multiple:!0,mode:"box",options:i}}}
-                  @value-changed=${t=>this._onFilter(e,t.detail.value)}
+                  @value-changed=${e=>this._onFilter(t,e.detail.value)}
                 ></ha-selector>
               </div>
   
@@ -817,7 +817,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
                 <ha-selector .hass=${this.hass} .value=${o}
                   .selector=${{entity:{include_entities:n,multiple:!1}}}
                   allow-custom-entity
-                  @value-changed=${t=>this._onEntity(e,t.detail.value)}
+                  @value-changed=${e=>this._onEntity(t,e.detail.value)}
                 ></ha-selector>
               </div>
   
@@ -825,42 +825,42 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
                 <label>Icon:</label>
                 <ha-icon-picker .hass=${this.hass} .value=${r.icon||""}
                   allow-custom-icon
-                  @value-changed=${t=>this._onIcon(e,t.detail.value)}
+                  @value-changed=${e=>this._onIcon(t,e.detail.value)}
                 ></ha-icon-picker>
               </div>
   
-              ${["tap","hold"].map(t=>B`
+              ${["tap","hold"].map(e=>B`
                 <div class="input-group">
-                  <label>${"tap"===t?"Tap Action":"Hold Action"}:</label>
+                  <label>${"tap"===e?"Tap Action":"Hold Action"}:</label>
                   <div class="pill-group">
                     ${a.map(i=>B`
                       <button
-                        class="pill-button ${r[`${t}_action`]?.action===i?"active":""}"
-                        @click=${()=>this._onAction(e,t,"action",i)}
+                        class="pill-button ${r[`${e}_action`]?.action===i?"active":""}"
+                        @click=${()=>this._onAction(t,e,"action",i)}
                       >${i}</button>
                     `)}
                   </div>
-                  ${this._extraFields(e,t,r)}
+                  ${this._extraFields(t,e,r)}
                 </div>
               `)}
             </div>
           `:""}
         </div>
-      `}_extraFields(e,t,i){const s=i[`${t}_action`]?.action;return"navigate"===s?B`
+      `}_extraFields(t,e,i){const s=i[`${e}_action`]?.action;return"navigate"===s?B`
           <input type="text" placeholder="Path"
-            .value=${i[`${t}_action`]?.navigation_path||""}
-            @input=${i=>this._onAction(e,t,"navigation_path",i.target.value)}
+            .value=${i[`${e}_action`]?.navigation_path||""}
+            @input=${i=>this._onAction(t,e,"navigation_path",i.target.value)}
           />
         `:"call-service"===s?B`
           <input type="text" placeholder="Service"
-            .value=${i[`${t}_action`]?.service||""}
-            @input=${i=>this._onAction(e,t,"service",i.target.value)}
+            .value=${i[`${e}_action`]?.service||""}
+            @input=${i=>this._onAction(t,e,"service",i.target.value)}
           />
           <input type="text" placeholder='Service Data (JSON)'
-            .value=${i[`${t}_action`]?.service_data?JSON.stringify(i[`${t}_action`].service_data):""}
-            @input=${i=>this._onAction(e,t,"service_data",this._safeJson(i.target.value))}
+            .value=${i[`${e}_action`]?.service_data?JSON.stringify(i[`${e}_action`].service_data):""}
+            @input=${i=>this._onAction(t,e,"service_data",this._safeJson(i.target.value))}
           />
-        `:""}_safeJson(e){try{return JSON.parse(e)}catch{return{}}}_toggleAuto(e){this._emit("auto_discovery_sections.subbutton",e)}_togglePill(e){this._expanded=this._expanded.map((t,i)=>i===e&&!t)}_onFilter(e,t){this._filters[e]=[...t],this._emit("subbutton_filters",this._filters)}_onEntity(e,t){this._entities[e]=t,this.config.subbuttons[e]||(this.config.subbuttons[e]={}),this.config.subbuttons[e].entity_id=t,!this.config.subbuttons[e].icon&&this.hass&&(this.config.subbuttons[e].icon=we(t,this.hass)),this._emit("subbuttons",this.config.subbuttons)}_onIcon(e,t){this.config.subbuttons[e]||(this.config.subbuttons[e]={}),this.config.subbuttons[e].icon=t,this._emit("subbuttons",this.config.subbuttons)}_onAction(e,t,i,s){this.config.subbuttons[e]||(this.config.subbuttons[e]={}),this.config.subbuttons[e][`${t}_action`]={...this.config.subbuttons[e][`${t}_action`],[i]:s},this._emit("subbuttons",this.config.subbuttons)}_reset(){this._expanded=Array(4).fill(!1),this._filters=Array(4).fill().map(()=>[...re]),this._entities=Array(4).fill(""),this.config.subbuttons=Array(4).fill().map(()=>({})),this._emit("subbutton_filters",this._filters),this._emit("subbuttons",this.config.subbuttons)}_emit(e,t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:e,val:t},bubbles:!0,composed:!0}))}}customElements.define("sub-button-panel",Ae);class ke extends se{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expandedColors:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expandedColors=[!1,!1]}updated(e){(e.has("config")||e.has("hass"))&&ge(this.hass,this.config,"auto_discovery_sections.colors")}static styles=n`
+        `:""}_safeJson(t){try{return JSON.parse(t)}catch{return{}}}_toggleAuto(t){this._emit("auto_discovery_sections.subbutton",t)}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e)}_onFilter(t,e){this._filters[t]=[...e],this._emit("subbutton_filters",this._filters)}_onEntity(t,e){this._entities[t]=e,this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t].entity_id=e,!this.config.subbuttons[t].icon&&this.hass&&(this.config.subbuttons[t].icon=wt(e,this.hass)),this._emit("subbuttons",this.config.subbuttons)}_onIcon(t,e){this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t].icon=e,this._emit("subbuttons",this.config.subbuttons)}_onAction(t,e,i,s){this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t][`${e}_action`]={...this.config.subbuttons[t][`${e}_action`],[i]:s},this._emit("subbuttons",this.config.subbuttons)}_reset(){this._expanded=Array(4).fill(!1),this._filters=Array(4).fill().map(()=>[...rt]),this._entities=Array(4).fill(""),this.config.subbuttons=Array(4).fill().map(()=>({})),this._emit("subbutton_filters",this._filters),this._emit("subbuttons",this.config.subbuttons)}_emit(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("sub-button-panel",At);class kt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expandedColors:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expandedColors=[!1,!1]}updated(t){(t.has("config")||t.has("hass"))&&gt(this.hass,this.config,"auto_discovery_sections.colors")}static styles=n`
     :host { display: block; }
     .glass-panel {
       margin: 0 !important;
@@ -980,7 +980,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
-        @expanded-changed=${e=>{this.expanded=e.detail.expanded,this.expanded&&(this._expandedColors=[!1,!1])}}
+        @expanded-changed=${t=>{this.expanded=t.detail.expanded,this.expanded&&(this._expandedColors=[!1,!1])}}
       >
         <div slot="header" class="glass-header">🎨 Colors</div>
 
@@ -1031,39 +1031,39 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
           🧹 Reset Colors
         </button>
       </ha-expansion-panel>
-    `}_toggleColor(e){this._expandedColors=this._expandedColors.map((t,i)=>i===e&&!t)}_renderColorField(e,t,i){const s=this.config.colors?.[e]?.[t]||"",[o,n,r,a]=this._parseRGBA(s),l=`#${[o,n,r].map(e=>e.toString(16).padStart(2,"0")).join("")}`;return B`
+    `}_toggleColor(t){this._expandedColors=this._expandedColors.map((e,i)=>i===t&&!e)}_renderColorField(t,e,i){const s=this.config.colors?.[t]?.[e]||"",[o,n,r,a]=this._parseRGBA(s),l=`#${[o,n,r].map(t=>t.toString(16).padStart(2,"0")).join("")}`;return B`
       <div class="input-group">
         <label>${i}</label>
         <input
           type="color"
           .value=${l}
-          @input=${i=>this._updateColor(e,t,i.target.value,a)}
+          @input=${i=>this._updateColor(t,e,i.target.value,a)}
         />
         <input
           type="range"
           min="0" max="1" step="0.01"
           .value=${a}
-          @input=${i=>this._updateColor(e,t,l,i.target.value)}
+          @input=${i=>this._updateColor(t,e,l,i.target.value)}
         />
         <input
           type="text"
           .value=${s}
-          @input=${i=>this._updateColorRaw(e,t,i.target.value)}
+          @input=${i=>this._updateColorRaw(t,e,i.target.value)}
         />
       </div>
-    `}_parseRGBA(e){if(!e)return[0,0,0,1];const t=/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(e);return t?[+t[1],+t[2],+t[3],+(t[4]??1)]:[0,0,0,1]}_updateColor(e,t,i,s){const o=`rgba(${parseInt(i.slice(1,3),16)},${parseInt(i.slice(3,5),16)},${parseInt(i.slice(5,7),16)},${s})`;this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${e}.${t}`,val:o},bubbles:!0,composed:!0}))}_updateColorRaw(e,t,i){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${e}.${t}`,val:i},bubbles:!0,composed:!0}))}_resetColors(){this._expandedColors=[!1,!1];const e={room:["background_active","background_inactive","icon_active","icon_inactive","text_active","text_inactive"],subbutton:["background_on","background_off","icon_on","icon_off"]};["room","subbutton"].forEach(t=>{e[t].forEach(e=>{this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${t}.${e}`,val:""},bubbles:!0,composed:!0}))})})}}customElements.define("color-panel",ke);class Ce extends se{static properties={hass:{type:Object},config:{type:Object},openPanel:{type:String,state:!0}};static styles=n`
+    `}_parseRGBA(t){if(!t)return[0,0,0,1];const e=/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(t);return e?[+e[1],+e[2],+e[3],+(e[4]??1)]:[0,0,0,1]}_updateColor(t,e,i,s){const o=`rgba(${parseInt(i.slice(1,3),16)},${parseInt(i.slice(3,5),16)},${parseInt(i.slice(5,7),16)},${s})`;this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${t}.${e}`,val:o},bubbles:!0,composed:!0}))}_updateColorRaw(t,e,i){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${t}.${e}`,val:i},bubbles:!0,composed:!0}))}_resetColors(){this._expandedColors=[!1,!1];const t={room:["background_active","background_inactive","icon_active","icon_inactive","text_active","text_inactive"],subbutton:["background_on","background_off","icon_on","icon_off"]};["room","subbutton"].forEach(e=>{t[e].forEach(t=>{this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${e}.${t}`,val:""},bubbles:!0,composed:!0}))})})}}customElements.define("color-panel",kt);class Ct extends st{static properties={hass:{type:Object},config:{type:Object},openPanel:{type:String,state:!0}};static styles=n`
     :host {
       display: block;
       padding: 0;
       margin: 0;
       background: transparent;
     }
-  `;constructor(){super(),this.hass={},this.config={},this.openPanel=""}setConfig(e){const t={layout:"wide",...e};t.auto_discovery_sections={room:!!t.area,sensor:!!t.area,mushroom:!!t.area,subbutton:!!t.area,color:!0,...t.auto_discovery_sections||{}},Array.isArray(t.sensor_filters)||(t.sensor_filters=[]),t.entities||(t.entities={}),this.config=t}render(){return B`
+  `;constructor(){super(),this.hass={},this.config={},this.openPanel=""}setConfig(t){const e={layout:"wide",...t};e.auto_discovery_sections={room:!!e.area,sensor:!!e.area,mushroom:!!e.area,subbutton:!!e.area,color:!0,...e.auto_discovery_sections||{}},Array.isArray(e.sensor_filters)||(e.sensor_filters=[]),e.entities||(e.entities={}),this.config=e}render(){return B`
       <room-panel
         .hass=${this.hass}
         .config=${this.config}
         .expanded=${"room"===this.openPanel}
-        @expanded-changed=${e=>this._togglePanel(e,"room")}
+        @expanded-changed=${t=>this._togglePanel(t,"room")}
         @panel-changed=${this._onConfigChanged}
       ></room-panel>
 
@@ -1071,7 +1071,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
         .hass=${this.hass}
         .config=${this.config}
         .expanded=${"sensor"===this.openPanel}
-        @expanded-changed=${e=>this._togglePanel(e,"sensor")}
+        @expanded-changed=${t=>this._togglePanel(t,"sensor")}
         @panel-changed=${this._onConfigChanged}
       ></sensor-panel>
 
@@ -1079,7 +1079,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
         .hass=${this.hass}
         .config=${this.config}
         .expanded=${"mushroom"===this.openPanel}
-        @expanded-changed=${e=>this._togglePanel(e,"mushroom")}
+        @expanded-changed=${t=>this._togglePanel(t,"mushroom")}
         @panel-changed=${this._onConfigChanged}
       ></mushroom-panel>
 
@@ -1087,7 +1087,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
         .hass=${this.hass}
         .config=${this.config}
         .expanded=${"subbutton"===this.openPanel}
-        @expanded-changed=${e=>this._togglePanel(e,"subbutton")}
+        @expanded-changed=${t=>this._togglePanel(t,"subbutton")}
         @panel-changed=${this._onConfigChanged}
       ></sub-button-panel>
 
@@ -1095,10 +1095,10 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
         .hass=${this.hass}
         .config=${this.config}
         .expanded=${"color"===this.openPanel}
-        @expanded-changed=${e=>this._togglePanel(e,"color")}
+        @expanded-changed=${t=>this._togglePanel(t,"color")}
         @panel-changed=${this._onConfigChanged}
       ></color-panel>
-    `}_togglePanel(e,t){this.openPanel=e.detail.expanded?t:this.openPanel===t?"":this.openPanel}_onConfigChanged(e){const{prop:t,val:i}=e.detail;this._setConfigValue(t,i),this.dispatchEvent(new CustomEvent("config-changed",{detail:{config:this.config},bubbles:!0,composed:!0}))}_setConfigValue(e,t){const i=e.split(".");let s=this.config;for(let e=0;e<i.length-1;e++){const t=i[e];null==s[t]&&(s[t]={}),s=s[t]}s[i[i.length-1]]=t,this.config={...this.config}}}customElements.define("bubble-room-editor",Ce);var Ee=Object.freeze({__proto__:null,BubbleRoomEditor:Ce});class Se extends se{static properties={subbuttons:{type:Array}};constructor(){super(),this.subbuttons=[],this._holdThreshold=500,this._holdTimer=null,this._holdFired=!1,this._currentIndex=-1}static styles=n`
+    `}_togglePanel(t,e){this.openPanel=t.detail.expanded?e:this.openPanel===e?"":this.openPanel}_onConfigChanged(t){const{prop:e,val:i}=t.detail;this._setConfigValue(e,i),this.dispatchEvent(new CustomEvent("config-changed",{detail:{config:this.config},bubbles:!0,composed:!0}))}_setConfigValue(t,e){const i=t.split(".");let s=this.config;for(let t=0;t<i.length-1;t++){const e=i[t];null==s[e]&&(s[e]={}),s=s[e]}s[i[i.length-1]]=e,this.config={...this.config}}}customElements.define("bubble-room-editor",Ct);var Et=Object.freeze({__proto__:null,BubbleRoomEditor:Ct});class St extends st{static properties={subbuttons:{type:Array}};constructor(){super(),this.subbuttons=[],this._holdThreshold=500,this._holdTimer=null,this._holdFired=!1,this._currentIndex=-1}static styles=n`
     :host {
       display: block;
       height: 100%;
@@ -1146,24 +1146,24 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     }
   `;render(){return B`
       <div class="container">
-        ${this.subbuttons.map((e,t)=>{const i=e.active?e.colorOn:e.colorOff,s=e.active?e.iconOn:e.iconOff;return B`
+        ${this.subbuttons.map((t,e)=>{const i=t.active?t.colorOn:t.colorOff,s=t.active?t.iconOn:t.iconOff;return B`
             <div
               class="sub-button"
               style="background:${i};color:${s};"
-              @pointerdown=${()=>this._onDown(t)}
-              @pointerup=${()=>this._onUp(t)}
+              @pointerdown=${()=>this._onDown(e)}
+              @pointerup=${()=>this._onUp(e)}
               @pointerleave=${()=>this._clearHoldTimer()}
               @pointercancel=${()=>this._clearHoldTimer()}
             >
-              <ha-icon icon="${e.icon}"></ha-icon>
+              <ha-icon icon="${t.icon}"></ha-icon>
             </div>
           `})}
       </div>
-    `}_onDown(e){this._holdFired=!1,this._currentIndex=e,this._holdTimer=window.setTimeout(()=>{this._holdFired=!0,this._fireHassAction(e,"hold")},this._holdThreshold)}_onUp(e){this._clearHoldTimer(),this._holdFired||this._currentIndex!==e||this._fireHassAction(e,"tap")}_clearHoldTimer(){this._holdTimer&&(clearTimeout(this._holdTimer),this._holdTimer=null)}_fireHassAction(e,t){const i=this.subbuttons?.[e];if(!i||!i.entity_id)return;const s={entity:i.entity_id,tap_action:i.tap_action||{action:"toggle"},hold_action:i.hold_action||{action:"more-info"}},o=new Event("hass-action",{bubbles:!0,composed:!0});o.detail={config:s,action:t},this.dispatchEvent(o)}}customElements.define("bubble-subbutton",Se);class ze extends se{static properties={hass:{type:Object},name:{type:String},area:{type:String},config:{type:Object},container:{type:Object}};constructor(){super(),this._resizeObserver=null}connectedCallback(){super.connectedCallback(),this.updateComplete.then(()=>{const e=this.container||this.parentElement;e&&(this._resizeObserver=new ResizeObserver(()=>this._autoScaleFont()),this._resizeObserver.observe(e))})}disconnectedCallback(){this._resizeObserver&&(this._resizeObserver.disconnect(),this._resizeObserver=null),super.disconnectedCallback()}updated(){this._autoScaleFont()}render(){const e=this._isRoomActive()?this.config?.colors?.room?.text_active||"white":this.config?.colors?.room?.text_inactive||"rgba(255,255,255,0.5)";return B`
-      <div class="bubble-name" style="color: ${e}">
+    `}_onDown(t){this._holdFired=!1,this._currentIndex=t,this._holdTimer=window.setTimeout(()=>{this._holdFired=!0,this._fireHassAction(t,"hold")},this._holdThreshold)}_onUp(t){this._clearHoldTimer(),this._holdFired||this._currentIndex!==t||this._fireHassAction(t,"tap")}_clearHoldTimer(){this._holdTimer&&(clearTimeout(this._holdTimer),this._holdTimer=null)}_fireHassAction(t,e){const i=this.subbuttons?.[t];if(!i||!i.entity_id)return;const s={entity:i.entity_id,tap_action:i.tap_action||{action:"toggle"},hold_action:i.hold_action||{action:"more-info"}},o=new Event("hass-action",{bubbles:!0,composed:!0});o.detail={config:s,action:e},this.dispatchEvent(o)}}customElements.define("bubble-subbutton",St);class zt extends st{static properties={hass:{type:Object},name:{type:String},area:{type:String},config:{type:Object},container:{type:Object}};constructor(){super(),this._resizeObserver=null}connectedCallback(){super.connectedCallback(),this.updateComplete.then(()=>{const t=this.container||this.parentElement;t&&(this._resizeObserver=new ResizeObserver(()=>this._autoScaleFont()),this._resizeObserver.observe(t))})}disconnectedCallback(){this._resizeObserver&&(this._resizeObserver.disconnect(),this._resizeObserver=null),super.disconnectedCallback()}updated(){this._autoScaleFont()}render(){const t=this._isRoomActive()?this.config?.colors?.room?.text_active||"white":this.config?.colors?.room?.text_inactive||"rgba(255,255,255,0.5)";return B`
+      <div class="bubble-name" style="color: ${t}">
         ${this.name}
       </div>
-    `}_isRoomActive(){const e=this.config?.room_presence?.entity;return e&&"on"===this.hass?.states?.[e]?.state}_autoScaleFont(){const e=this.renderRoot.querySelector(".bubble-name"),t=this.container||this.parentElement;if(!e||!t)return;let i=100;e.style.fontSize=`${i}px`,requestAnimationFrame(()=>{const s=t.clientWidth,o=t.clientHeight;for(;(e.scrollWidth>s||e.scrollHeight>o)&&i>10;)i-=1,e.style.fontSize=`${i}px`,console.log("Resizing font to:",i)})}static styles=n`
+    `}_isRoomActive(){const t=this.config?.room_presence?.entity;return t&&"on"===this.hass?.states?.[t]?.state}_autoScaleFont(){const t=this.renderRoot.querySelector(".bubble-name"),e=this.container||this.parentElement;if(!t||!e)return;let i=100;t.style.fontSize=`${i}px`,requestAnimationFrame(()=>{const s=e.clientWidth,o=e.clientHeight;for(;(t.scrollWidth>s||t.scrollHeight>o)&&i>10;)i-=1,t.style.fontSize=`${i}px`,console.log("Resizing font to:",i)})}static styles=n`
     .bubble-name {
       display: block;
       width: 100%;
@@ -1179,7 +1179,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       letter-spacing: 0.02em;
       font-stretch: condensed;
     }
-  `}customElements.define("bubble-name",ze);class Oe extends se{static properties={sensors:{type:Array}};constructor(){super(),this.sensors=[],this.rows=1,this.columns=1,this._resizeObserver=null,this._resizeScheduled=!1}connectedCallback(){super.connectedCallback(),this._updateLayout(),this._resizeObserver=new ResizeObserver(()=>{this._resizeScheduled||(this._resizeScheduled=!0,requestAnimationFrame(()=>{this._autoScaleValues(),this._resizeScheduled=!1}))}),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver?.disconnect()}updated(e){e.has("sensors")&&(this._updateLayout(),this._autoScaleValues())}_updateLayout(){const e=this.sensors?.length||0;this.rows=e>4?2:1,this.columns=e>4?4:e||1}_autoScaleValues(){const e=this.renderRoot?.querySelectorAll(".sensor-value");e&&e.forEach(e=>this._autoScaleValueFont(e))}_autoScaleValueFont(e){const t=e?.parentElement;if(!t)return;const i=.48*t.clientWidth,s=.75*t.clientHeight;if(Math.min(i,s)<=0)return;e.style.fontSize="";let o=parseInt(getComputedStyle(e).fontSize,10)||14;for(;o>8;){e.style.fontSize=`${o}px`;const{width:t,height:n}=e.getBoundingClientRect();if(t<=i&&n<=s)break;o--}e.style.fontSize=`${o}px`}static styles=n`
+  `}customElements.define("bubble-name",zt);class Ot extends st{static properties={sensors:{type:Array}};constructor(){super(),this.sensors=[],this.rows=1,this.columns=1,this._resizeObserver=null,this._resizeScheduled=!1}connectedCallback(){super.connectedCallback(),this._updateLayout(),this._resizeObserver=new ResizeObserver(()=>{this._resizeScheduled||(this._resizeScheduled=!0,requestAnimationFrame(()=>{this._autoScaleValues(),this._resizeScheduled=!1}))}),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver?.disconnect()}updated(t){t.has("sensors")&&(this._updateLayout(),this._autoScaleValues())}_updateLayout(){const t=this.sensors?.length||0;this.rows=t>4?2:1,this.columns=t>4?4:t||1}_autoScaleValues(){const t=this.renderRoot?.querySelectorAll(".sensor-value");t&&t.forEach(t=>this._autoScaleValueFont(t))}_autoScaleValueFont(t){const e=t?.parentElement;if(!e)return;const i=.48*e.clientWidth,s=.75*e.clientHeight;if(Math.min(i,s)<=0)return;t.style.fontSize="";let o=parseInt(getComputedStyle(t).fontSize,10)||14;for(;o>8;){t.style.fontSize=`${o}px`;const{width:e,height:n}=t.getBoundingClientRect();if(e<=i&&n<=s)break;o--}t.style.fontSize=`${o}px`}static styles=n`
     :host {
       display: block;
       height: 100%;
@@ -1241,7 +1241,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       overflow: hidden;
       text-overflow: ellipsis;
     }
-  `;render(){const e=(this.sensors||[]).map(e=>{const t=e.device_class,i=ve[t]||{},s=i.emoji||"❓",o=e.unit||i.units?.[0]||"";return{...e,label:s,unit:o}});return B`
+  `;render(){const t=(this.sensors||[]).map(t=>{const e=t.device_class,i=vt[e]||{},s=i.emoji||"❓",o=t.unit||i.units?.[0]||"";return{...t,label:s,unit:o}});return B`
       <div
         class="sensor-grid"
         style="
@@ -1249,16 +1249,16 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
           grid-template-rows: repeat(${this.rows}, 1fr);
         "
       >
-        ${e.map(e=>B`
-          <div class="sensor-pill" style="color: ${e.color||"#e3f6ff"}">
-            <ha-icon class="sensor-icon" .icon="${e.icon||""}"></ha-icon>
-            <span class="sensor-label">${e.label||""}</span>
-            <span class="sensor-value">${e.value??"--"}</span>
-            <span class="sensor-unit">${e.unit||""}</span>
+        ${t.map(t=>B`
+          <div class="sensor-pill" style="color: ${t.color||"#e3f6ff"}">
+            <ha-icon class="sensor-icon" .icon="${t.icon||""}"></ha-icon>
+            <span class="sensor-label">${t.label||""}</span>
+            <span class="sensor-value">${t.value??"--"}</span>
+            <span class="sensor-unit">${t.unit||""}</span>
           </div>
         `)}
       </div>
-    `}}customElements.define("bubble-sensor",Oe);class Pe extends se{static properties={entities:{type:Array}};constructor(){super(),this.entities=[],this._containerSize={width:0,height:0},this._resizeObserver=new ResizeObserver(()=>this._updateContainerSize())}connectedCallback(){super.connectedCallback(),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver.disconnect()}_updateContainerSize(){const e=this.getBoundingClientRect();this._containerSize={width:e.width,height:e.height},this.requestUpdate()}_handleClick(e){this.dispatchEvent(new CustomEvent("mushroom-entity-click",{detail:e,bubbles:!0,composed:!0}))}static styles=n`
+    `}}customElements.define("bubble-sensor",Ot);class Pt extends st{static properties={entities:{type:Array}};constructor(){super(),this.entities=[],this._containerSize={width:0,height:0},this._resizeObserver=new ResizeObserver(()=>this._updateContainerSize())}connectedCallback(){super.connectedCallback(),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver.disconnect()}_updateContainerSize(){const t=this.getBoundingClientRect();this._containerSize={width:t.width,height:t.height},this.requestUpdate()}_handleClick(t){const e=new CustomEvent("hass-action",{detail:{config:{entity:t.entity_id,tap_action:t.tap_action||{action:"toggle"},hold_action:t.hold_action||{action:"more-info"}},action:"tap"},bubbles:!0,composed:!0});this.dispatchEvent(e)}static styles=n`
     :host {
       display: block;
       width: 100%;
@@ -1287,20 +1287,20 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .mushroom-entity ha-icon {
       display: block;
     }
-  `;render(){const{width:e,height:t}=this._containerSize,i=[{x:.5,y:0},{x:1,y:.5},{x:.5,y:1},{x:0,y:.5},{x:.15,y:.15},{x:.85,y:.15}];return B`
+  `;render(){const{width:t,height:e}=this._containerSize,i=[{x:.5,y:0},{x:1,y:.5},{x:.5,y:1},{x:0,y:.5},{x:.15,y:.15},{x:.85,y:.15}];return B`
       <div class="mushroom-container">
-        ${this.entities.map((s,o)=>{const n=i[o]||{x:.5,y:.5},r=.2*e,a=e*n.x,l=t*n.y;return B`
+        ${this.entities.map((s,o)=>{const n=i[o]||{x:.5,y:.5},r=.2*t,a=t*n.x,l=e*n.y;return B`
             <div
               class="mushroom-entity"
               style="left:${a}px; top:${l}px; width:${r}px; height:${r}px; color: ${s.color};"
-              @click=${()=>this._handleClick(o)}
+              @click=${()=>this._handleClick(s)}
             >
               <ha-icon icon="${s.icon}" style="--mdc-icon-size: ${.6*r}px;"></ha-icon>
             </div>
           `})}
       </div>
-    `}}customElements.define("bubble-mushroom",Pe);class Re extends se{static properties={config:{type:Object},hass:{type:Object}};constructor(){super(),this.config={},this.hass={}}setConfig(e){this.config={layout:"wide",...e}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:[],area:[],sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return Ee}),document.createElement("bubble-room-editor")}_getSubButtons(){const e=this.config.colors?.subbutton?.background_on??"#00d46d",t=this.config.colors?.subbutton?.background_off??"#999",i=this.config.colors?.subbutton?.icon_on??"yellow",s=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(o=>{const n=this.hass.states?.[o.entity_id],r=n?.state;return{icon:we(o.entity_id,this.hass),active:"on"===r,colorOn:e,colorOff:t,iconOn:i,iconOff:s,entity_id:o.entity_id,tap_action:o.tap_action,hold_action:o.hold_action}})}_isRoomActive(){const e=this.config?.room_presence?.entity;return e&&"on"===this.hass?.states?.[e]?.state}_getSensors(){const e=this.config.entities||{},t=this._isRoomActive()?this.config.colors?.room?.text_active||"white":this.config.colors?.room?.text_inactive||"rgba(255,255,255,0.5)",i=[];for(let s=1;s<=6;s++){const o=`sensor${s}`,n=e[o]?.entity,r=this.hass?.states?.[n];if(!n||!r)continue;const a=r.attributes.device_class,l=r.state,c=r.attributes.unit_of_measurement,d=r.attributes.icon||"";i.push({icon:d,value:l,unit:c,color:t,device_class:a})}return i}render(){const e=this.config.layout||"wide",t=this._getSubButtons(),i=this._isRoomActive();return this.style.setProperty("--bubble-room-name-color",i?this.config.colors?.room?.text_active||"white":this.config.colors?.room?.text_inactive||"rgba(255,255,255,0.5)"),B`
-      <div class="bubble-room-grid ${e}">
+    `}}customElements.define("bubble-mushroom",Pt);class Rt extends st{static properties={config:{type:Object},hass:{type:Object}};constructor(){super(),this.config={},this.hass={}}setConfig(t){this.config={layout:"wide",...t}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:[],area:[],sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return Et}),document.createElement("bubble-room-editor")}_getSubButtons(){const t=this.config.colors?.subbutton?.background_on??"#00d46d",e=this.config.colors?.subbutton?.background_off??"#999",i=this.config.colors?.subbutton?.icon_on??"yellow",s=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(o=>{const n=this.hass.states?.[o.entity_id],r=n?.state;return{icon:wt(o.entity_id,this.hass),active:"on"===r,colorOn:t,colorOff:e,iconOn:i,iconOff:s,entity_id:o.entity_id,tap_action:o.tap_action,hold_action:o.hold_action}})}_isRoomActive(){const t=this.config?.room_presence?.entity;return t&&"on"===this.hass?.states?.[t]?.state}_getSensors(){const t=this.config.entities||{},e=this._isRoomActive()?this.config.colors?.room?.text_active||"white":this.config.colors?.room?.text_inactive||"rgba(255,255,255,0.5)",i=[];for(let s=1;s<=6;s++){const o=`sensor${s}`,n=t[o]?.entity,r=this.hass?.states?.[n];if(!n||!r)continue;const a=r.attributes.device_class,l=r.state,c=r.attributes.unit_of_measurement,d=r.attributes.icon||"";i.push({icon:d,value:l,unit:c,color:e,device_class:a})}return i}_getMushrooms(){const t=this.config.entities||{},e=[];for(let i=1;i<=6;i++){const s=`mushroom${i}`,o=t[s]?.entity,n=this.hass?.states?.[o];if(!o||!n)continue;const r=n.attributes.icon||"mdi:flash",a=n.state,l="on"===a?this.config.colors?.mushroom?.active||"#00e676":this.config.colors?.mushroom?.inactive||"#888";e.push({icon:r,state:a,color:l})}return e}render(){const t=this.config.layout||"wide",e=this._getSubButtons(),i=this._isRoomActive();return this.style.setProperty("--bubble-room-name-color",i?this.config.colors?.room?.text_active||"white":this.config.colors?.room?.text_inactive||"rgba(255,255,255,0.5)"),B`
+      <div class="bubble-room-grid ${t}">
         <div class="main-area">
           <div class="row1">
             <bubble-sensor .sensors="${this._getSensors()}"></bubble-sensor>
@@ -1315,12 +1315,18 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
             </div>
           </div>
           <div class="row2">
-            <div class="icon-mushroom-area">[bubble-mushroom]</div>
+            <div class="icon-mushroom-area">
+              <bubble-mushroom
+                .entities="${this._getMushrooms()}"
+                .containerSize="${{width:180,height:180}}"
+                @mushroom-entity-click="${this._onMushroomClick}"
+              ></bubble-mushroom>
+            </div>
             <div class="k-space"></div>
           </div>
         </div>
         <div class="sidebar">
-          <bubble-subbutton .subbuttons="${t}"></bubble-subbutton>
+          <bubble-subbutton .subbuttons="${e}"></bubble-subbutton>
         </div>
       </div>
     `}static styles=n`
@@ -1376,5 +1382,5 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .bubble-room-grid.wide .main-area    { grid-template-rows: 2fr 1fr; }
     .bubble-room-grid.wide .row1         { grid-template-rows: 2fr 1fr; }
     .bubble-room-grid.wide .row2         { grid-template-columns: 1fr 1fr; }
-  `}customElements.define("bubble-room",Re),window.customCards=window.customCards||[],window.customCards.push({type:"bubble-room",name:"Bubble Room",description:"A stylish room control card with environmental sensors",preview:!0,documentationURL:"https://github.com/mon3y78/Lovelace-Bubble-room"});export{Re as BubbleRoom};
+  `}customElements.define("bubble-room",Rt),window.customCards=window.customCards||[],window.customCards.push({type:"bubble-room",name:"Bubble Room",description:"A stylish room control card with environmental sensors",preview:!0,documentationURL:"https://github.com/mon3y78/Lovelace-Bubble-room"});export{Rt as BubbleRoom};
 //# sourceMappingURL=lovelace-bubble-room.js.map
