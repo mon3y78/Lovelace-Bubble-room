@@ -35,7 +35,7 @@ export class BubbleIcon extends LitElement {
       bottom:0;
     }
     .main-icon {
-      transition: color 0.2s, 
+      transition: color 0.2s;
       filter: drop-shadow(1px 1.5px 0px rgba(34,54,15,0.07));
       user-select: none;   
       --mdc-icon-size: var(--main-icon-size,64px);
