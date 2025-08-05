@@ -86,7 +86,7 @@ export class BubbleRoom extends LitElement {
     const entities = this.config.entities || {};
     const isActive = this._isRoomActive();
     
-    // colore da usare per tutte le icone dei sensori
+
     const color = isActive ?
       (this.config.colors?.room?.icon_active ?? '#21df73') :
       (this.config.colors?.room?.icon_inactive ?? '#173c16');
