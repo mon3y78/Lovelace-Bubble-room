@@ -38,15 +38,9 @@ export class BubbleName extends LitElement {
   }
   
   render() {
-    const isActive = this._isRoomActive();
-    const color = isActive ?
-      this.config?.colors?.room?.text_active || 'white' :
-      this.config?.colors?.room?.text_inactive || 'rgba(255,255,255,0.5)';
-    
     return html`
-      <div class="bubble-name" style="color: ${color}">
-        ${this.name}
-      </div>
+      <!-- il colore ora lo prende dal CSS var impostata dal genitore -->
+      <div class="bubble-name">${this.name}</div>
     `;
   }
   
@@ -104,6 +98,7 @@ export class BubbleName extends LitElement {
       text-transform: uppercase;
       letter-spacing: 0.02em;
       font-stretch: condensed;
+      color: var(--bubble-room-name-color, white);
     }
   `;
 }
