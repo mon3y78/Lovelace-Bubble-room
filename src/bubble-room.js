@@ -152,7 +152,10 @@ export class BubbleRoom extends LitElement {
             <div class="icon-mushroom-area">
               <bubble-icon
                 .icon="${this.config.icon}"
-                .color="${isActive ? this.config.colors?.room?.text_active : this.config.colors?.room?.text_inactive}"
+                .active=${isActive}
+                .colorActive="${colorActive}"
+                .colorInactive="${colorInactive}"
+                @main-icon-click=${() => this._onMainIconClick?.()}
               ></bubble-icon>
               <bubble-mushroom
                 .entities="${this._getMushrooms()}"
@@ -215,7 +218,10 @@ export class BubbleRoom extends LitElement {
       height: 100%; min-height: 0; box-sizing: border-box;
       border: 2px dashed red;
     }
-
+    .icon-mushroom-area {
+      position: relative;    /* ← serve per l’absolute di BubbleIcon */
+      /* se vuoi tieni pure il bordo tratteggiato di debug */
+    }
     .bubble-room-grid.tall .main-area    { grid-template-rows: 1fr 2fr; }
     .bubble-room-grid.tall .row1         { grid-template-rows: 1fr 2fr; }
     .bubble-room-grid.tall .row2         { grid-template-columns: 1fr 0fr; }
