@@ -85,9 +85,13 @@ export class BubbleRoom extends LitElement {
   _getSensors() {
     const entities = this.config.entities || {};
     const isActive = this._isRoomActive();
-    const color = isActive ?
-      (this.config.colors?.room?.text_active || 'white') :
-      (this.config.colors?.room?.text_inactive || 'rgba(255,255,255,0.5)');
+    // colori per l’icona
+    const iconColorActive = this.config.colors?.room?.icon_active ?? '#21df73';
+    const iconColorInactive = this.config.colors?.room?.icon_inactive ?? '#173c16';
+    
+    // colori per il testo del nome stanza
+    const textColorActive = this.config.colors?.room?.text_active ?? '#ffffff';
+    const textColorInactive = this.config.colors?.room?.text_inactive ?? 'rgba(255,255,255,0.5)';
     
     const result = [];
     for (let i = 1; i <= 6; i++) {
@@ -155,8 +159,8 @@ export class BubbleRoom extends LitElement {
               <bubble-icon
                 .icon="${this.config.icon}"
                 .active=${isActive}
-                .colorActive="${colorActive}"
-                .colorInactive="${colorInactive}"
+                .colorActive="${iconColorActive}"
+                .colorInactive="${iconColorInactive}"
               ></bubble-icon>
               <bubble-mushroom
                 .entities="${this._getMushrooms()}"
