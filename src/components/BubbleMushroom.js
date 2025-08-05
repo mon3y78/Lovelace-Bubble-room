@@ -1,98 +1,101 @@
-/**
- * BubbleMushroom.js
- * 
- * Mushroom entities disposte a raggera attorno all'icona principale.
- * Comportamento, overlay e stile come in Bubble Room originale.
- */
+// src/components/BubbleMushroom.js
 
-import { html, css, LitElement } from 'lit';
+import { LitElement, html, css } from 'lit';
 
 export class BubbleMushroom extends LitElement {
   static properties = {
     entities: { type: Array },
-    containerSize: { type: Object }
   };
 
   constructor() {
     super();
     this.entities = [];
-    this.containerSize = { width: 200, height: 200 };
+    this._containerSize = { width: 0, height: 0 };
+    this._resizeObserver = new ResizeObserver(() => this._updateContainerSize());
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._resizeObserver.observe(this);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._resizeObserver.disconnect();
+  }
+
+  _updateContainerSize() {
+    const rect = this.getBoundingClientRect();
+    this._containerSize = { width: rect.width, height: rect.height };
+    this.requestUpdate();
+  }
+
+  _handleClick(index) {
+    this.dispatchEvent(new CustomEvent('mushroom-entity-click', {
+      detail: index,
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   static styles = css`
     :host {
       display: block;
-      position: relative;
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
-      box-sizing: border-box;
-    }
-    .mushroom-container {
-      position: absolute;
-      left: 0;
-      bottom: 0;
       width: 100%;
       height: 100%;
-      pointer-events: none;
+      position: relative;
+      contain: strict;
     }
+
+    .mushroom-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
     .mushroom-entity {
       position: absolute;
-      width: auto;
-      height: auto;
-      border-radius: 50%;
-      background: rgba(23,60,22,0.13);
-      box-shadow: 0 0 6px 0 rgba(40,80,46,0.08);
+      transform: translate(-50%, -50%);
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.15em;
-      cursor: pointer;
-      pointer-events: auto;
-      transition: color 0.18s, background 0.18s, box-shadow 0.16s;
-      z-index: 2;
-      user-select: none;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.2);
     }
-    .mushroom-entity.active {
-      background: #21df73;
-      color: #fff !important;
-      box-shadow: 0 0 12px 2px rgba(33,223,115,0.14);
-      filter: brightness(1.18);
+
+    .mushroom-entity ha-icon {
+      display: block;
     }
   `;
 
-  /**
-   * Posizioni a raggera (percentuali rispetto a containerSize)
-   * - Puoi personalizzare queste per le tue 6 mushroom entity!
-   */
-  _entityRatios() {
-    // max 6 posizioni, modifica se ne vuoi di più
-    return [
-      { x: 0.20, y: 0.09 },
-      { x: 0.54, y: 0.05 },
-      { x: 0.81, y: 0.33 },
-      { x: 0.82, y: 0.67 },
-      { x: 0.54, y: 0.92 },
-      { x: 0.20, y: 0.87 },
-    ];
-  }
-
   render() {
-    const { width, height } = this.containerSize || { width: 200, height: 200 };
-    const ratios = this._entityRatios();
+    const { width, height } = this._containerSize;
+    const ratio = 0.2; // Icone mushroom al 20% della larghezza del contenitore
+    const positions = [
+      { x: 0.5, y: 0.0 },
+      { x: 1.0, y: 0.5 },
+      { x: 0.5, y: 1.0 },
+      { x: 0.0, y: 0.5 },
+      { x: 0.15, y: 0.15 },
+      { x: 0.85, y: 0.15 },
+    ];
+
     return html`
-      <div class="mushroom-container" style="width:${width}px;height:${height}px;">
-        ${this.entities.map((entity, idx) => {
-          const r = ratios[idx] || { x: 0.5, y: 0.5 };
-          const left = `${Math.round(r.x * width) - 26}px`;
-          const top = `${Math.round(r.y * height) - 26}px`;
+      <div class="mushroom-container">
+        ${this.entities.map((entity, index) => {
+          const pos = positions[index] || { x: 0.5, y: 0.5 };
+          const size = width * ratio;
+          const left = width * pos.x;
+          const top = height * pos.y;
           return html`
-            <ha-icon
-              class="mushroom-entity ${entity.state === 'on' ? 'active' : ''}"
-              .icon="${entity.icon}"
-              style="left: ${left}; top: ${top}; color: ${entity.color || '#888'}"
-              @click="${() => this.dispatchEvent(new CustomEvent('mushroom-entity-click', { detail: idx }))}"
-            ></ha-icon>
+            <div
+              class="mushroom-entity"
+              style="left:${left}px; top:${top}px; width:${size}px; height:${size}px; color: ${entity.color};"
+              @click=${() => this._handleClick(index)}
+            >
+              <ha-icon icon="${entity.icon}" style="--mdc-icon-size: ${size * 0.6}px;"></ha-icon>
+            </div>
           `;
         })}
       </div>
