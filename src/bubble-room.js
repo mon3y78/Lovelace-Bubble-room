@@ -151,7 +151,6 @@ export class BubbleRoom extends LitElement {
     // per il nome stanza
     const textColorActive = this.config.colors?.room?.text_active ?? '#ffffff';
     const textColorInactive = this.config.colors?.room?.text_inactive ?? 'rgba(255,255,255,0.5)';
-    );
     
     return html`
       <div class="bubble-room-grid ${layout}">
