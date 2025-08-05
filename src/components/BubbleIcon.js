@@ -49,6 +49,7 @@ export class BubbleIcon extends LitElement {
   `;
   
   render() {
+    console.log('[BubbleIcon] icon =', this.icon);
     const iconColor = this.active ? this.colorActive : this.colorInactive;
     return html`
       <ha-icon

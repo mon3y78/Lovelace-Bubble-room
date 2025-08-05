@@ -126,6 +126,7 @@ export class BubbleRoom extends LitElement {
   
   
   render() {
+    console.log('[BubbleRoom] icon in render =', this.config.icon);
     const layout = this.config.layout || 'wide';
     const subbuttons = this._getSubButtons();
     const isActive = this._isRoomActive();
@@ -160,6 +161,11 @@ export class BubbleRoom extends LitElement {
                 .colorInactive="${colorInactive}"
                 @main-icon-click=${() => this._onMainIconClick?.()}
               ></bubble-icon>
+              <bubble-mushroom
+                .entities="${this._getMushrooms()}"
+                .containerSize="${{ width: 180, height: 180 }}"
+                @mushroom-entity-click="${this._onMushroomClick}"
+              ></bubble-mushroom>
             </div>
             <div class="k-space"></div>
           </div>
