@@ -133,11 +133,19 @@ export class BubbleRoom extends LitElement {
     const layout = this.config.layout || 'wide';
     const subbuttons = this._getSubButtons();
     const isActive = this._isRoomActive();
-    // colori presi dal Color Panel (fallback ai default originali)
-    const colorActive   = this.config.colors?.room?.text_active   ?? '#21df73';
-    const colorInactive = this.config.colors?.room?.text_inactive ?? '#173c16';    
-    this.style.setProperty('--bubble-room-name-color',
-      isActive ? colorActive : colorInactive);
+    /* --- COLORI --------------------------------------- */
+    // per l’icona
+    const iconColorActive = this.config.colors?.room?.icon_active ?? '#21df73';
+    const iconColorInactive = this.config.colors?.room?.icon_inactive ?? '#173c16';
+    
+    // per il nome stanza
+    const textColorActive = this.config.colors?.room?.text_active ?? '#ffffff';
+    const textColorInactive = this.config.colors?.room?.text_inactive ?? 'rgba(255,255,255,0.5)';
+    /* --------------------------------------------------- */
+    this.style.setProperty(
+      '--bubble-room-name-color',
+      isActive ? textColorActive : textColorInactive
+    );
     
     return html`
       <div class="bubble-room-grid ${layout}">
@@ -234,7 +242,7 @@ export class BubbleRoom extends LitElement {
 }
 
 customElements.define('bubble-room', BubbleRoom);
-window.customCards = window.customCards || [];
+
 window.customCards.push({
   type: 'bubble-room',
   name: 'Bubble Room',
