@@ -33,19 +33,18 @@ export class BubbleIcon extends LitElement {
       position: absolute;
     }
     .main-icon {
-    }
-    .main-icon.active {
+      opacity: 1;                            
     }
   `;
   
   render() {
-    console.log('[BubbleIcon] icon =', this.icon);
-    const iconColor = this.active ? this.colorActive : this.colorInactive;
+    const iconColor = 'red'; 
+    this.style.setProperty('--debug-opacity', '1');
     return html`
       <ha-icon
         class="main-icon ${this.active ? 'active' : ''}"
         .icon="${this.icon}"
-        style="--icon-color: ${iconColor}"
+        style="--icon-color:${iconColor};opacity:var(--debug-opacity,1)"
         @click="${() => this.dispatchEvent(new CustomEvent('main-icon-click'))}"
       ></ha-icon>
     `;
