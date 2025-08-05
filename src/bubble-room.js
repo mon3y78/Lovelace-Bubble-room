@@ -211,17 +211,13 @@ export class BubbleRoom extends LitElement {
       border: 2px dashed lime;
       box-sizing: border-box;
     }
-    .icon-mushroom-area  { border: 2px dashed violet; box-sizing: border-box; }
+    .icon-mushroom-area  { border: 2px dashed violet; box-sizing: border-box; position: relative; }
     .k-space             { border: 2px dashed black; box-sizing: border-box; }
     .sidebar {
       display: flex; flex-direction: column;
       height: 100%; min-height: 0; box-sizing: border-box;
       border: 2px dashed red;
-    }
-    .icon-mushroom-area {
-      position: relative;    /* ← serve per l’absolute di BubbleIcon */
-      /* se vuoi tieni pure il bordo tratteggiato di debug */
-    }
+    } 
     .bubble-room-grid.tall .main-area    { grid-template-rows: 1fr 2fr; }
     .bubble-room-grid.tall .row1         { grid-template-rows: 1fr 2fr; }
     .bubble-room-grid.tall .row2         { grid-template-columns: 1fr 0fr; }
