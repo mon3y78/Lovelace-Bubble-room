@@ -1311,13 +1311,18 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       bottom:0;
     }
     .main-icon {
-      opacity: 0.30;                            
+      font-size: clamp(3rem, 6vw, 8.7em);
+      opacity: 0.30;
+      transition: color 0.2s, 
+      opacity 0.2s;
+      filter: drop-shadow(1px 1.5px 0px rgba(34,54,15,0.07));
+      user-select: none;                         
     }
   `;render(){const t=this.active?this.colorActive:this.colorInactive;return B`
       <ha-icon
         class="main-icon ${this.active?"active":""}"
         .icon="${this.icon}"
-        style="--icon-color:${t};opacity:var(--debug-opacity,1)"
+        style="color:${t}"
         @click="${()=>this.dispatchEvent(new CustomEvent("main-icon-click"))}"
       ></ha-icon>
     `}}customElements.define("bubble-icon",Rt);class Ut extends st{static properties={config:{type:Object},hass:{type:Object}};constructor(){super(),this.config={},this.hass={}}setConfig(t){this.config={layout:"wide",...t}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:[],area:[],sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return Et}),document.createElement("bubble-room-editor")}_getSubButtons(){const t=this.config.colors?.subbutton?.background_on??"#00d46d",e=this.config.colors?.subbutton?.background_off??"#999",i=this.config.colors?.subbutton?.icon_on??"yellow",s=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(o=>{const n=this.hass.states?.[o.entity_id],r=n?.state;return{icon:wt(o.entity_id,this.hass),active:"on"===r,colorOn:t,colorOff:e,iconOn:i,iconOff:s,entity_id:o.entity_id,tap_action:o.tap_action,hold_action:o.hold_action}})}_isRoomActive(){const t=this.config?.room_presence?.entity;return t&&"on"===this.hass?.states?.[t]?.state}_getSensors(){const t=this.config.entities||{},e=this._isRoomActive()?this.config.colors?.room?.text_active||"white":this.config.colors?.room?.text_inactive||"rgba(255,255,255,0.5)",i=[];for(let s=1;s<=6;s++){const o=`sensor${s}`,n=t[o]?.entity,r=this.hass?.states?.[n];if(!n||!r)continue;const a=r.attributes.device_class,l=r.state,c=r.attributes.unit_of_measurement,d=r.attributes.icon||"";i.push({icon:d,value:l,unit:c,color:e,device_class:a})}return i}_getMushrooms(){const t=this.config.entities||{},e=[];for(let i=1;i<=6;i++){const s=`mushroom${i}`,o=t[s]?.entity,n=this.hass?.states?.[o];if(!o||!n)continue;const r=n.attributes.icon||"mdi:flash",a=n.state,l="on"===a?this.config.colors?.mushroom?.active||"#00e676":this.config.colors?.mushroom?.inactive||"#888";e.push({icon:r,state:a,color:l})}return e}render(){const t=this.config.layout||"wide",e=this._getSubButtons(),i=this._isRoomActive(),s=this.config.colors?.room?.text_active??"#21df73",o=this.config.colors?.room?.text_inactive??"#173c16";return this.style.setProperty("--bubble-room-name-color",i?s:o),B`
