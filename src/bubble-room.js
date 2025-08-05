@@ -95,12 +95,24 @@ export class BubbleRoom extends LitElement {
     
   _getSensors() {
     const entities = this.config.entities || {};
-    const isActive = this._isRoomActive();
+    // --------------------------------------------------------------------
+    // Colori per i sensori.
+    // Usa         colors.room.sensor_active / sensor_inactive
+    // altrimenti  colors.room.icon_active   / icon_inactive
+    // altrimenti  i default originali.
+    const sensorColorActive =
+      this.config.colors?.room?.sensor_active ??
+      this.config.colors?.room?.icon_active ??
+      '#21df73';
     
-
-    const color = isActive ?
-      (this.config.colors?.room?.icon_active ?? '#21df73') :
-      (this.config.colors?.room?.icon_inactive ?? '#173c16');
+    const sensorColorInactive =
+      this.config.colors?.room?.sensor_inactive ??
+      this.config.colors?.room?.icon_inactive ??
+      '#173c16';
+    
+    // Un solo valore per tutti i sensor-pill in questo render
+    const color = this._isRoomActive() ? sensorColorActive : sensorColorInactive;
+    // --------------------------------------------------------------------
     
     const result = [];
     for (let i = 1; i <= 6; i++) {
