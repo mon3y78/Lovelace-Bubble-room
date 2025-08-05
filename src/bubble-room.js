@@ -126,16 +126,16 @@ export class BubbleRoom extends LitElement {
   
   
   render() {
-    console.log('[BubbleRoom] icon in render =', this.config.icon);
     const layout = this.config.layout || 'wide';
     const subbuttons = this._getSubButtons();
     const isActive = this._isRoomActive();
+    // colori presi dal Color Panel (fallback ai default originali)
+    const colorActive = this.config.colors?.room?.text_active ?? '#21df73';
+    const colorInactive = this.config.colors?.room?.text_inactive ?? '#173c16';
     const colorActive   = this.config.colors?.room?.text_active   ?? '#21df73';
     const colorInactive = this.config.colors?.room?.text_inactive ?? '#173c16';    
-    this.style.setProperty('--bubble-room-name-color', isActive ?
-      this.config.colors?.room?.text_active || 'white' :
-      this.config.colors?.room?.text_inactive || 'rgba(255,255,255,0.5)');
-      
+    this.style.setProperty('--bubble-room-name-color',
+      isActive ? colorActive : colorInactive);
     
     return html`
       <div class="bubble-room-grid ${layout}">
@@ -155,11 +155,10 @@ export class BubbleRoom extends LitElement {
           <div class="row2">
             <div class="icon-mushroom-area">
               <bubble-icon
-                .icon="${this.config.icon}"
-                .active=${isActive}
-                .colorActive="${colorActive}"
-                .colorInactive="${colorInactive}"
-                @main-icon-click=${() => this._onMainIconClick?.()}
+                .icon = "${this.config.icon}"
+                .active = $ { isActive }
+                .colorActive = "${colorActive}"
+                .colorInactive = "${colorInactive}"
               ></bubble-icon>
               <bubble-mushroom
                 .entities="${this._getMushrooms()}"

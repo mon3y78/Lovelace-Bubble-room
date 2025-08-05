@@ -31,6 +31,8 @@ export class BubbleIcon extends LitElement {
       min-width: 0;
       box-sizing: border-box;
       position: absolute;
+      left:0; 
+      bottom:0;
     }
     .main-icon {
       opacity: 1;                            
