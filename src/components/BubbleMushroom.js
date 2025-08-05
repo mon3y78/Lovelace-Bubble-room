@@ -30,12 +30,20 @@ export class BubbleMushroom extends LitElement {
     this.requestUpdate();
   }
 
-  _handleClick(index) {
-    this.dispatchEvent(new CustomEvent('mushroom-entity-click', {
-      detail: index,
+  _handleClick(entity) {
+    const event = new CustomEvent('hass-action', {
+      detail: {
+        config: {
+          entity: entity.entity_id,
+          tap_action: entity.tap_action || { action: 'toggle' },
+          hold_action: entity.hold_action || { action: 'more-info' },
+        },
+        action: 'tap',
+      },
       bubbles: true,
       composed: true,
-    }));
+    });
+    this.dispatchEvent(event);
   }
 
   static styles = css`
@@ -71,7 +79,7 @@ export class BubbleMushroom extends LitElement {
 
   render() {
     const { width, height } = this._containerSize;
-    const ratio = 0.2; // Icone mushroom al 20% della larghezza del contenitore
+    const ratio = 0.2;
     const positions = [
       { x: 0.5, y: 0.0 },
       { x: 1.0, y: 0.5 },
@@ -92,7 +100,7 @@ export class BubbleMushroom extends LitElement {
             <div
               class="mushroom-entity"
               style="left:${left}px; top:${top}px; width:${size}px; height:${size}px; color: ${entity.color};"
-              @click=${() => this._handleClick(index)}
+              @click=${() => this._handleClick(entity)}
             >
               <ha-icon icon="${entity.icon}" style="--mdc-icon-size: ${size * 0.6}px;"></ha-icon>
             </div>

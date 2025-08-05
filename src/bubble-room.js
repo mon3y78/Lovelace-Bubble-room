@@ -103,6 +103,26 @@ export class BubbleRoom extends LitElement {
     }
     return result;
   }
+  _getMushrooms() {
+    const entities = this.config.entities || {};
+    const result = [];
+    for (let i = 1; i <= 6; i++) {
+      const key = `mushroom${i}`;
+      const entId = entities[key]?.entity;
+      const stateObj = this.hass?.states?.[entId];
+      if (!entId || !stateObj) continue;
+  
+      const icon = stateObj.attributes.icon || 'mdi:flash';
+      const state = stateObj.state;
+      const color = state === 'on'
+        ? (this.config.colors?.mushroom?.active || '#00e676')
+        : (this.config.colors?.mushroom?.inactive || '#888');
+  
+      result.push({ icon, state, color });
+    }
+    return result;
+  }
+  
   
   render() {
     const layout = this.config.layout || 'wide';
@@ -128,7 +148,13 @@ export class BubbleRoom extends LitElement {
             </div>
           </div>
           <div class="row2">
-            <div class="icon-mushroom-area">[bubble-mushroom]</div>
+            <div class="icon-mushroom-area">
+              <bubble-mushroom
+                .entities="${this._getMushrooms()}"
+                .containerSize="${{ width: 180, height: 180 }}"
+                @mushroom-entity-click="${this._onMushroomClick}"
+              ></bubble-mushroom>
+            </div>
             <div class="k-space"></div>
           </div>
         </div>
