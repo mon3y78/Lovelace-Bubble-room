@@ -31,20 +31,10 @@ export class BubbleIcon extends LitElement {
       min-width: 0;
       box-sizing: border-box;
       position: absolute;
-      left: 0;
-      bottom: 0;
     }
     .main-icon {
-      font-size: clamp(3rem, 6vw, 8.7em);      /* icona gigante! */
-      opacity: 0.18;          /* molto trasparente */
-      color: var(--icon-color, #173c16);
-      transition: color 0.2s, opacity 0.2s;
-      filter: drop-shadow(1px 1.5px 0px rgba(34,54,15,0.07));
-      user-select: none;
     }
     .main-icon.active {
-      opacity: 0.26;
-      filter: drop-shadow(2px 4px 6px rgba(33,223,115,0.07));
     }
   `;
   
