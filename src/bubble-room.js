@@ -85,13 +85,11 @@ export class BubbleRoom extends LitElement {
   _getSensors() {
     const entities = this.config.entities || {};
     const isActive = this._isRoomActive();
-    // colori per l’icona
-    const iconColorActive = this.config.colors?.room?.icon_active ?? '#21df73';
-    const iconColorInactive = this.config.colors?.room?.icon_inactive ?? '#173c16';
     
-    // colori per il testo del nome stanza
-    const textColorActive = this.config.colors?.room?.text_active ?? '#ffffff';
-    const textColorInactive = this.config.colors?.room?.text_inactive ?? 'rgba(255,255,255,0.5)';
+    // colore da usare per tutte le icone dei sensori
+    const color = isActive ?
+      (this.config.colors?.room?.icon_active ?? '#21df73') :
+      (this.config.colors?.room?.icon_inactive ?? '#173c16');
     
     const result = [];
     for (let i = 1; i <= 6; i++) {
@@ -104,6 +102,7 @@ export class BubbleRoom extends LitElement {
       const value = stateObj.state;
       const unit = stateObj.attributes.unit_of_measurement;
       const icon = stateObj.attributes.icon || '';
+      
       result.push({ icon, value, unit, color, device_class: devClass });
     }
     return result;
