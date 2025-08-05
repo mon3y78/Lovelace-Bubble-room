@@ -50,7 +50,18 @@ export class BubbleRoom extends LitElement {
     await import('./bubble-room-editor.js');
     return document.createElement('bubble-room-editor');
   }
-  
+  connectedCallback() {
+    super.connectedCallback();
+    this._resizeObs = new ResizeObserver(() => this.requestUpdate());
+  }
+  firstUpdated() {
+    const area = this.shadowRoot?.querySelector('.icon-mushroom-area');
+    area && this._resizeObs.observe(area);
+  }
+  disconnectedCallback() {
+    this._resizeObs?.disconnect();
+    super.disconnectedCallback();
+  }
   _getSubButtons() {
     const bgOn = this.config.colors?.subbutton?.background_on ?? '#00d46d';
     const bgOff = this.config.colors?.subbutton?.background_off ?? '#999';

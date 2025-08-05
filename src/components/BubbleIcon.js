@@ -35,17 +35,17 @@ export class BubbleIcon extends LitElement {
       bottom:0;
     }
     .main-icon {
-      font-size: clamp(3rem, 6vw, 8.7em);
-      opacity: 0.30;
       transition: color 0.2s, 
-      opacity 0.2s;
       filter: drop-shadow(1px 1.5px 0px rgba(34,54,15,0.07));
       user-select: none;   
-      width: var(--main-icon-size, 64px);
-      height: var(--main-icon-size, 64px);
-      border-radius: 0 70 % 70 % 0;
-      transform-origin: center center;
-      transform: translateX(-20%);
+      --mdc-icon-size: var(--main-icon-size,64px);
+      font-size: var(--main-icon-size,64px);
+      width: var(--main-icon-size,64px);
+      height: var(--main-icon-size,64px);
+      border-radius: 0 70% 70% 0;
+      transform-origin:center center;
+      transform:translateX(-20%);
+      opacity:0.30;
     }
   `;
   
