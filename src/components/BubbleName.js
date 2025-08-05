@@ -50,10 +50,21 @@ export class BubbleName extends LitElement {
     `;
   }
   
+  /* ─────  sostituisci la vecchia _isRoomActive()  ───── */
   _isRoomActive() {
-    const entity = this.config?.room_presence?.entity;
-    return entity && this.hass?.states?.[entity]?.state === 'on';
+    const entityId = this.config?.entities?.presence?.entity;
+    if (!entityId) return false;
+    
+    const state = this.hass?.states?.[entityId]?.state;
+    return [
+      'on', // binary_sensor, switch, ecc.
+      'home', // person, device_tracker
+      'occupied', // sensori occupancy
+      'motion', // motion detected
+      'detected' // altri sensori custom
+    ].includes(state);
   }
+/* ─────────────────────────────────────────────────── */
   
   _autoScaleFont() {
     const el = this.renderRoot.querySelector('.bubble-name');
