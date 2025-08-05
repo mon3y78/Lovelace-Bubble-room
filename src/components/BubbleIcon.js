@@ -35,7 +35,12 @@ export class BubbleIcon extends LitElement {
       bottom:0;
     }
     .main-icon {
-      opacity: 0.30;                            
+      font-size: clamp(3rem, 6vw, 8.7em);
+      opacity: 0.30;
+      transition: color 0.2s, 
+      opacity 0.2s;
+      filter: drop-shadow(1px 1.5px 0px rgba(34,54,15,0.07));
+      user-select: none;                         
     }
   `;
   
@@ -45,7 +50,7 @@ export class BubbleIcon extends LitElement {
       <ha-icon
         class="main-icon ${this.active ? 'active' : ''}"
         .icon="${this.icon}"
-        style="--icon-color:${iconColor};opacity:var(--debug-opacity,1)"
+        style="color:${iconColor}"
         @click="${() => this.dispatchEvent(new CustomEvent('main-icon-click'))}"
       ></ha-icon>
     `;
