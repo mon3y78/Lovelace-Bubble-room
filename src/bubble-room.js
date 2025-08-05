@@ -77,11 +77,22 @@ export class BubbleRoom extends LitElement {
     });
   }
   
+  /* ───────────────  sostituisci tutta la vecchia funzione  ─────────────── */
   _isRoomActive() {
-    const entity = this.config?.room_presence?.entity;
-    return entity && this.hass?.states?.[entity]?.state === 'on';
+    const entityId = this.config?.entities?.presence?.entity;
+    if (!entityId) return false;
+    
+    const state = this.hass?.states?.[entityId]?.state;
+    return [
+      'on', // binary_sensor, switch, light, fan…
+      'home', // device_tracker, person
+      'occupied', // sensor occupancy
+      'motion', // motion detection
+      'detected' // some custom sensors
+    ].includes(state);
   }
-  
+  /* ──────────────────────────────────────────────────────────────────────── */
+    
   _getSensors() {
     const entities = this.config.entities || {};
     const isActive = this._isRoomActive();
