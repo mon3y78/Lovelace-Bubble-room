@@ -129,9 +129,12 @@ export class BubbleRoom extends LitElement {
     const layout = this.config.layout || 'wide';
     const subbuttons = this._getSubButtons();
     const isActive = this._isRoomActive();
+    const colorActive   = this.config.colors?.room?.text_active   ?? '#21df73';
+    const colorInactive = this.config.colors?.room?.text_inactive ?? '#173c16';    
     this.style.setProperty('--bubble-room-name-color', isActive ?
       this.config.colors?.room?.text_active || 'white' :
       this.config.colors?.room?.text_inactive || 'rgba(255,255,255,0.5)');
+      
     
     return html`
       <div class="bubble-room-grid ${layout}">
