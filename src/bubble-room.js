@@ -179,7 +179,13 @@ export class BubbleRoom extends LitElement {
     // per l’icona
     const iconColorActive = this.config.colors?.room?.icon_active ?? '#21df73';
     const iconColorInactive = this.config.colors?.room?.icon_inactive ?? '#173c16';
+    const iconBgActive =
+      this.config.colors?.room?.icon_active_bg ??
+      'rgba(33,223,115,0.12)'; // verde 12 %
     
+    const iconBgInactive =
+      this.config.colors?.room?.icon_inactive_bg ??
+      'rgba(23,60,22,0.12)'; // verde scuro 12 %
     // per il nome stanza
     const textColorActive = this.config.colors?.room?.text_active ?? '#ffffff';
     const textColorInactive = this.config.colors?.room?.text_inactive ?? 'rgba(255,255,255,0.5)';
@@ -208,7 +214,10 @@ export class BubbleRoom extends LitElement {
                 .active=${isActive}
                 .colorActive="${iconColorActive}"
                 .colorInactive="${iconColorInactive}"
-                style="--main-icon-size:${mainIconSize}px"
+                style="
+                  --main-icon-size:${mainIconSize}px;
+                  --main-icon-bg:${isActive ? iconBgActive : iconBgInactive};
+                "
               ></bubble-icon>
               <bubble-mushroom
                 .entities="${this._getMushrooms()}"

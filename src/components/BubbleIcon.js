@@ -46,6 +46,7 @@ export class BubbleIcon extends LitElement {
       transform-origin:center center;
       transform:translateX(-20%);
       opacity:0.30;
+      background: var(--main-icon-bg, rgba(33,223,115,0.12));
     }
   `;
   
