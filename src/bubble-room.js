@@ -165,10 +165,7 @@ export class BubbleRoom extends LitElement {
             <div class="name-placeholder" id="nameContainer">
               <bubble-name
                 .name="${this.config.name}"
-                .area="${this.config.area}"
-                .hass=${this.hass}
-                .config=${this.config}
-                .container=${this.shadowRoot?.getElementById('nameContainer')}
+                style="color:${isActive ? textColorActive : textColorInactive}"
               ></bubble-name>
             </div>
           </div>
