@@ -130,8 +130,6 @@ export class BubbleRoom extends LitElement {
     const subbuttons = this._getSubButtons();
     const isActive = this._isRoomActive();
     // colori presi dal Color Panel (fallback ai default originali)
-    const colorActive = this.config.colors?.room?.text_active ?? '#21df73';
-    const colorInactive = this.config.colors?.room?.text_inactive ?? '#173c16';
     const colorActive   = this.config.colors?.room?.text_active   ?? '#21df73';
     const colorInactive = this.config.colors?.room?.text_inactive ?? '#173c16';    
     this.style.setProperty('--bubble-room-name-color',
@@ -155,10 +153,10 @@ export class BubbleRoom extends LitElement {
           <div class="row2">
             <div class="icon-mushroom-area">
               <bubble-icon
-                .icon = "${this.config.icon}"
-                .active = $ { isActive }
-                .colorActive = "${colorActive}"
-                .colorInactive = "${colorInactive}"
+                .icon="${this.config.icon}"
+                .active=${isActive}
+                .colorActive="${colorActive}"
+                .colorInactive="${colorInactive}"
               ></bubble-icon>
               <bubble-mushroom
                 .entities="${this._getMushrooms()}"

@@ -35,13 +35,12 @@ export class BubbleIcon extends LitElement {
       bottom:0;
     }
     .main-icon {
-      opacity: 1;                            
+      opacity: 0.30;                            
     }
   `;
   
   render() {
-    const iconColor = 'red'; 
-    this.style.setProperty('--debug-opacity', '1');
+    const iconColor = this.active ? this.colorActive : this.colorInactive;
     return html`
       <ha-icon
         class="main-icon ${this.active ? 'active' : ''}"
