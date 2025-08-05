@@ -150,6 +150,10 @@ export class BubbleRoom extends LitElement {
           </div>
           <div class="row2">
             <div class="icon-mushroom-area">
+              <bubble-icon
+                .icon="${this.config.icon}"
+                .color="${isActive ? this.config.colors?.room?.text_active : this.config.colors?.room?.text_inactive}"
+              ></bubble-icon>
               <bubble-mushroom
                 .entities="${this._getMushrooms()}"
                 .containerSize="${{ width: 180, height: 180 }}"
