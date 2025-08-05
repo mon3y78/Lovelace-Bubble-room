@@ -3,6 +3,7 @@ import './bubble-room-editor.js';
 import './components/BubbleSubButton.js';
 import './components/BubbleName.js';
 import './components/BubbleSensor.js'; // nuovo
+import './components/BubbleMushroom.js';
 import { resolveEntityIcon } from './helpers/icon-mapping.js';
 
 export class BubbleRoom extends LitElement {
