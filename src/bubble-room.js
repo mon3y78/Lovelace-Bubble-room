@@ -102,12 +102,12 @@ export class BubbleRoom extends LitElement {
     // altrimenti  i default originali.
     const sensorColorActive =
       this.config.colors?.room?.sensor_active ??
-      this.config.colors?.room?.icon_active ??
+      this.config.colors?.room?.text_active ??
       '#21df73';
     
     const sensorColorInactive =
       this.config.colors?.room?.sensor_inactive ??
-      this.config.colors?.room?.icon_inactive ??
+      this.config.colors?.room?.text_inactive ??
       '#173c16';
     
     // Un solo valore per tutti i sensor-pill in questo render
