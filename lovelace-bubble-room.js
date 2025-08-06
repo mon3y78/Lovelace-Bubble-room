@@ -1287,7 +1287,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .mushroom-entity ha-icon {
       display: block;
     }
-  `;render(){const{width:e,height:t}=this._containerSize,i=[{x:.5,y:0},{x:1,y:.5},{x:.5,y:1},{x:0,y:.5},{x:.15,y:.15},{x:.85,y:.15}];return B`
+  `;render(){const{width:e,height:t}=this._containerSize,i=[{x:0,y:0},{x:.68,y:0},{x:.95,y:.22},{x:.95,y:.78},{x:.68,y:1}];return B`
       <div class="mushroom-container">
         ${this.entities.map((s,o)=>{const n=i[o]||{x:.5,y:.5},r=.2*e,a=e*n.x,l=t*n.y;return B`
             <div
