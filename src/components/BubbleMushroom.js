@@ -19,7 +19,7 @@ export class BubbleMushroom extends LitElement {
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback();
+    super.connectedCallback();
     this._resizeObserver.disconnect();
   }
 
@@ -44,7 +44,6 @@ export class BubbleMushroom extends LitElement {
     }));
   }
 
-  /* ─────────────── CSS ─────────────── */
   static styles = css`
     :host {
       display: block;
@@ -69,50 +68,60 @@ export class BubbleMushroom extends LitElement {
     }
   `;
 
-  /* ─────────────── Render ─────────────── */
   render() {
     const { width, height } = this._containerSize;
-    if (!width || !height) return html``;               // prima misura
+    if (!width || !height) return html``;                // prima misura utile
 
-    /* dimensione bolla = 18 % del lato minore */
+    /* dimensione di ogni bolla = 18 % del lato minore */
     const side = Math.min(width, height);
     const size = side * 0.18;
 
-    /* ellisse del bordo destro (border-radius: 0 60% 60% 0) */
+    /* ellisse della curva destra (border-radius: 0 60% 60% 0) */
     const rX = width  * 0.60;
     const rY = height * 0.60;
-    const cX = width  - rX;        // centro ellisse
-    const cY = height * 0.5;
+    const cX = width  - rX;          // centro ellisse (x)
+    const cY = height * 0.5;         // centro ellisse (y)
 
-    /* raggi interni (centro bolla resta dentro il rettangolo) */
+    /* raggi interni (centro bolla deve restare dentro) */
     const rXi = rX - size * 0.5;
     const rYi = rY - size * 0.5;
 
-    /* coordinate piatte per i lati orizzontali */
-    const flatX = (width - rX) - size * 0.5;
+    /* lato piatto: usiamo ~33 % larghezza per #1 e #4 */
+    const flatX = width * 0.33;
 
-    /* 5 posizioni fisse */
+    /* angolo per punti su ellisse */
+    const a45 = Math.PI / 4; // 45°
+
+    /* posizioni finali */
     const positions = [
-      { x: size * 0.5, y: size * 0.5 },                        // alto-sx
-      { x: flatX,      y: size * 0.5 },                        // lato alto
-      { x: cX + rXi * Math.cos(-Math.PI/3),
-        y: cY + rYi * Math.sin(-Math.PI/3) },                  // arco alto
-      { x: cX + rXi * Math.cos( Math.PI/3),
-        y: cY + rYi * Math.sin( Math.PI/3) },                  // arco basso
-      { x: flatX,      y: height - size * 0.5 },               // lato basso
+      { x: size * 0.5, y: size * 0.5 },                             // 0  angolo alto-sx
+      { x: flatX,      y: size * 0.5 },                             // 1  lato alto, prima curva
+      { x: cX + rXi * Math.cos(-a45), y: cY + rYi * Math.sin(-a45) }, // 2  arco alto (−45°)
+      { x: cX + rXi * Math.cos( a45), y: cY + rYi * Math.sin( a45) }, // 3  arco basso (+45°)
+      { x: flatX,      y: height - size * 0.5 },                    // 4  lato basso allineato a #1
     ];
 
     return html`
       ${this.entities.map((ent, idx) => {
-        const pos = positions[idx] ?? { x: cX, y: cY };
+        const pos = positions[idx] ?? { x: cX, y: cY };  // fallback centrale
         return html`
-          <div  class="mushroom-entity"
-                style="left:${pos.x}px; top:${pos.y}px;
-                       width:${size}px; height:${size}px; color:${ent.color};"
-                @click=${() => this._handleClick(ent)}>
-            <ha-icon icon="${ent.icon}"
-                     style="--mdc-icon-size:${size * 0.6}px;"></ha-icon>
-          </div>`;
+          <div
+            class="mushroom-entity"
+            style="
+              left:${pos.x}px;
+              top:${pos.y}px;
+              width:${size}px;
+              height:${size}px;
+              color:${ent.color};
+            "
+            @click=${() => this._handleClick(ent)}
+          >
+            <ha-icon
+              icon="${ent.icon}"
+              style="--mdc-icon-size:${size * 0.6}px;"
+            ></ha-icon>
+          </div>
+        `;
       })}
     `;
   }
