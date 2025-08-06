@@ -22,19 +22,21 @@ export class BubbleIcon extends LitElement {
   
   static styles = css`
     .main-icon-container {
-      width: var(--main-icon-size, 90px);
-      height: var(--main-icon-size, 90px);
+      width: var(--main-icon-size, 160px);
+      height: var(--main-icon-size, 160px);
       opacity: 0.30;
-      transform: translateX(0%);
+      transform: translateX(20%);
       box-sizing: border-box;
       background: var(--main-icon-bg, rgba(33,223,115,0.12));
       border-radius: 0 70% 70% 0;
-      display: flex;
+      display: blox;
+      width:100%;
+      height:100%;
       justify-content: center;
       align-items:   center;
     }
     main-icon {
-      --mdc-icon-size: var(--main-icon-size, 90 px);
+      --mdc-icon-size: var(--main-icon-size, 160 px);
       width: var(--mdc-icon-size);
       height: var(--mdc-icon-size);
     }
