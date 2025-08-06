@@ -218,7 +218,7 @@ export class BubbleRoom extends LitElement {
                 .backgroundInactive="${iconBgInactive}"
                 style="
                   --main-icon-size:${mainIconSize}px;
-                  --icon-shift-x:-10%;
+                  --icon-shift-x:-20%;
                 "
               ></bubble-icon>
               <bubble-mushroom
@@ -252,12 +252,12 @@ export class BubbleRoom extends LitElement {
       border: 2px dashed green;
     }
     .row1 {
-      display: grid; gap: 4px; min-height: 0; box-sizing: border-box;
+      display: grid; min-height: 0; box-sizing: border-box;
       border: 2px dashed blue;
       grid-template-columns: 1fr;
     }
     .row2 {
-      display: grid; gap: 4px; height: 100%; min-height: 0; box-sizing: border-box;
+      display: grid; height: 100%; min-height: 0; box-sizing: border-box;
       border: 2px dashed purple;
     }
     .name-placeholder {
