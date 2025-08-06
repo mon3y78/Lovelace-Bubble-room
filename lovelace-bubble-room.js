@@ -1289,13 +1289,13 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     }
   `;render(){const{width:e,height:t}=this._containerSize,i=.5*e,s=.5*t,o=.45*Math.min(e,t),n=[-135,-112.5,-90,-67.5,-45].map(e=>e*Math.PI/180),r=n.map(e=>({x:i+o*Math.cos(e),y:s+o*Math.sin(e)}));return B`
       <div class="mushroom-container">
-        ${this.entities.map((i,s)=>{const o=r[s]||{x:.5,y:.5},n=.2*e,a=e*o.x,l=t*o.y;return B`
+        ${this.entities.map((o,n)=>{const a=r[n]??{x:i,y:s},l=.2*Math.min(e,t),c=a.x,d=a.y;return B`
             <div
               class="mushroom-entity"
-              style="left:${a}px; top:${l}px; width:${n}px; height:${n}px; color: ${i.color};"
-              @click=${()=>this._handleClick(i)}
+              style="left:${c}px; top:${d}px; width:${l}px; height:${l}px; color: ${o.color};"
+              @click=${()=>this._handleClick(o)}
             >
-              <ha-icon icon="${i.icon}" style="--mdc-icon-size: ${.6*n}px;"></ha-icon>
+              <ha-icon icon="${o.icon}" style="--mdc-icon-size: ${.6*l}px;"></ha-icon>
             </div>
           `})}
       </div>
