@@ -76,10 +76,29 @@ export class BubbleMushroom extends LitElement {
     /* ── diametro con coefficiente che “slimma” al crescere della larghezza ── */
     const side = Math.min(width, height);
 
-    /*  k varia da 0.22 (fino a 400 px) a 0.16 (≥ 1400 px)  */
-    const k = 0.30 - 0.06 * Math.min(width, 1000) / 1000;
-
-    const size = side * k;          // diametro finale della bolla
+    /*  coefficiente k:
+     *  - 0.26 fino a 480 px          (mobile)
+     *  - scende linearmente
+     *  - 0.14 da 1400 px in su       (desktop)
+     */
+    const kMobile   = 0.30;   // ← più grande su mobile
+    const kDesktop  = 0.14;   // ← più piccolo su desktop
+    const wMobile   = 480;    // soglia mobile
+    const wDesktop  = 1400;   // soglia desktop
+    
+    let k;
+    if (width <= wMobile) {
+      k = kMobile;
+    } else if (width >= wDesktop) {
+      k = kDesktop;
+    } else {
+      /* interpolazione lineare fra mobile e desktop */
+      const t = (width - wMobile) / (wDesktop - wMobile);   // 0 → 1
+      k = kMobile + (kDesktop - kMobile) * t;
+    }
+    
+    const size = side * k;   // diametro finale della bolla
+            // diametro finale della bolla
 
 
     /* ellisse della curva destra (border-radius: 0 60% 60% 0) */
