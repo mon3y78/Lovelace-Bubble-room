@@ -73,8 +73,14 @@ export class BubbleMushroom extends LitElement {
     if (!width || !height) return html``;                // prima misura utile
 
     /* dimensione di ogni bolla = 18 % del lato minore */
+    /* ── diametro con coefficiente che “slimma” al crescere della larghezza ── */
     const side = Math.min(width, height);
-    const size = side * 0.30;
+
+    /*  k varia da 0.22 (fino a 400 px) a 0.16 (≥ 1400 px)  */
+    const k = 0.22 - 0.06 * Math.min(width, 1400) / 1400;
+
+    const size = side * k;          // diametro finale della bolla
+
 
     /* ellisse della curva destra (border-radius: 0 60% 60% 0) */
     const rX = width  * 0.60;
