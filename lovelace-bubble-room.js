@@ -1363,9 +1363,10 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
                 .active=${s}
                 .colorActive="${o}"
                 .colorInactive="${n}"
+                .backgroundActive="${r}"
+                .backgroundInactive="${a}"
                 style="
                   --main-icon-size:${t}px;
-                  --main-icon-bg:${s?r:a};
                 "
               ></bubble-icon>
               <bubble-mushroom
