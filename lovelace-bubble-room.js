@@ -1301,8 +1301,6 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       </div>
     `}}customElements.define("bubble-mushroom",Pe);class Re extends se{static properties={icon:{type:String},active:{type:Boolean},colorActive:{type:String},colorInactive:{type:String},backgroundActive:{type:String},backgroundInactive:{type:String}};constructor(){super(),this.icon="",this.active=!1,this.colorActive="#21df73",this.colorInactive="#173c16",this.backgroundActive="rgba(33,223,115,0.12)",this.backgroundInactive="rgba(23,60,22,0.08)"}static styles=n`
     .main-icon-container {
-      width: var(--main-icon-size, 160px);
-      height: var(--main-icon-size, 160px);
       opacity: 0.30;
       transform: translateX(20%);
       box-sizing: border-box;
