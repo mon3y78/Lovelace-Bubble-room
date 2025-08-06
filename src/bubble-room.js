@@ -277,7 +277,7 @@ export class BubbleRoom extends LitElement {
       border: 2px dashed violet;  
       box-sizing: border-box; 
       position: relative;   
-      widht: 100%;
+      width: 100%;
       height: 100;
       display: flex;
     }
