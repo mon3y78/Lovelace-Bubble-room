@@ -1321,6 +1321,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       transform: translateX(0%);
       box-sizing: border-box;
       background: var(--main-icon-bg, rgba(33,223,115,0.12));
+      align-self: center;
     }
     ha - icon.main - icon {
       --mdc-icon-size: calc(var(--main-icon-size, 90 px) * 0.65);
