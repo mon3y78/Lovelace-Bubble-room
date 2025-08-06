@@ -21,6 +21,9 @@ export class BubbleIcon extends LitElement {
   }
   
   static styles = css`
+    :host {
+      position: absolute;   /* prende come riferimento .icon-mushroom-area */
+      inset: 0; 
     .main-icon-container {
       opacity: 0.30;
       transform: translateX(20%);
@@ -33,7 +36,7 @@ export class BubbleIcon extends LitElement {
       justify-content: center;
       align-items:   center;
     }
-    main-icon {
+    .main-icon {
       --mdc-icon-size: var(--main-icon-size, 160px);
       width: var(--mdc-icon-size);
       height: var(--mdc-icon-size);
