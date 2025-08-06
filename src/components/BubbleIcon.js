@@ -46,7 +46,7 @@ export class BubbleIcon extends LitElement {
       opacity:0.30;
       background: var(--main-icon-bg, rgba(33,223,115,0.12));
       border: 1px solid red;
-      background: 1px solid yellow;
+      background: 1px solid green;
     }
   `;
   
