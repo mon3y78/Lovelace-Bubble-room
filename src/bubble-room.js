@@ -281,6 +281,7 @@ export class BubbleRoom extends LitElement {
       width: 100%;
       height: 100;
       display: flex;
+      align-items: center;  
     }
     .k-space             { border: 2px dashed black; box-sizing: border-box; }
     .sidebar {
