@@ -179,14 +179,14 @@ export class BubbleRoom extends LitElement {
     // per l’icona
     const iconColorActive = this.config.colors?.room?.icon_active ?? '#21df73';
     const iconColorInactive = this.config.colors?.room?.icon_inactive ?? '#173c16';
+    /* background dell’icona – presi dal Color Panel */
     const iconBgActive =
-      this.config.colors?.room?.icon_active_bg ??
-      'rgba(33,223,115,0.12)'; // verde 12 %
+      this.config.colors?.room?.background_active /* 🎨 dal pannello */ ??
+      'rgba(33,223,115,0.12)'; /* fallback verde 12 % */
     
     const iconBgInactive =
-      this.config.colors?.room?.icon_inactive_bg ??
-      'rgba(23,60,22,0.12)'; // verde scuro 12 %
-    // per il nome stanza
+      this.config.colors?.room?.background_inactive ??
+      'rgba(23,60,22,0.12)'; /* fallback verde scuro */
     const textColorActive = this.config.colors?.room?.text_active ?? '#ffffff';
     const textColorInactive = this.config.colors?.room?.text_inactive ?? 'rgba(255,255,255,0.5)';
     
