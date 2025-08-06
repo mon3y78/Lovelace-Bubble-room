@@ -1280,7 +1280,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .mushroom-entity ha-icon {
       display: block;
     }
-  `;render(){const{width:e,height:t}=this._containerSize;if(!e||!t)return B``;const i=.25*Math.min(e,t),s=.6*e,o=e-s,n=.5*t,r=s-.5*i,a=.6*t-.5*i,l=.33*e,c=Math.PI/4,d=[{x:.5*i,y:.5*i},{x:l,y:.5*i},{x:o+r*Math.cos(-c),y:n+a*Math.sin(-c)},{x:o+r*Math.cos(c),y:n+a*Math.sin(c)},{x:l,y:t-.5*i}];return B`
+  `;render(){const{width:e,height:t}=this._containerSize;if(!e||!t)return B``;const i=.3*Math.min(e,t),s=.6*e,o=e-s,n=.5*t,r=s-.5*i,a=.6*t-.5*i,l=.33*e,c=Math.PI/4,d=[{x:.5*i,y:.5*i},{x:l,y:.5*i},{x:o+r*Math.cos(-c),y:n+a*Math.sin(-c)},{x:o+r*Math.cos(c),y:n+a*Math.sin(c)},{x:l,y:t-.5*i}];return B`
       ${this.entities.map((e,t)=>{const s=d[t]??{x:o,y:n};return B`
           <div
             class="mushroom-entity"
