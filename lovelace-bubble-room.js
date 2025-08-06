@@ -1308,6 +1308,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       box-sizing: border-box;
       background: var(--main-icon-bg, rgba(33,223,115,0.12));
       border-radius: 0 70% 70% 0;
+      align-items: center;  
     }
     main-icon {
       --mdc-icon-size: calc(var(--main-icon-size, 90 px);
