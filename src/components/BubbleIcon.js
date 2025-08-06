@@ -34,26 +34,25 @@ export class BubbleIcon extends LitElement {
       left: 0;
     }
   
-    .main-icon-container {
+    .main - icon - container {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      width: var(--main-icon-size, 90px);
-      height: var(--main-icon-size, 90px);
-      border-radius: 0 70% 70% 0;
-      background: var(--main-icon-bg, rgba(33,223,115,0.12));
+      align - items: center;
+      justify - content: center;
+      width: var (--main - icon - size, 90 px);
+      height: var (--main - icon - size, 90 px);
+      border - radius: 0 70 % 70 % 0;
+      background: var (--main - icon - bg, rgba(33, 223, 115, 0.12));
       opacity: 0.30;
-      border: 1px solid red;
-      transform: translateX(0%);
-      transform-origin: center center;
-      user-select: none;
+      transform: translateX(0 % );
+      transform - origin: center center;
+      user - select: none;
     }
-  
-    ha-icon {
-      --mdc-icon-size: var(--main-icon-size, 90px);
-      font-size: var(--main-icon-size, 90px);
-      width: var(--main-icon-size, 90px);
-      height: var(--main-icon-size, 90px);
+    
+    ha - icon {
+      --mdc - icon - size: var (--main - icon - size, 90 px);
+      font - size: var (--main - icon - size, 90 px);
+      width: var (--main - icon - size, 90 px);
+      height: var (--main - icon - size, 90 px);
       display: block;
     }
   `;
@@ -61,12 +60,17 @@ export class BubbleIcon extends LitElement {
   render() {
     const iconColor = this.active ? this.colorActive : this.colorInactive;
     return html`
+      render() {
+  const iconColor = this.active ? this.colorActive : this.colorInactive;
+  return html`
+    <div class="main-icon-container">
       <ha-icon
-        class="main-icon ${this.active ? 'active' : ''}"
+        class="main-icon"
         .icon="${this.icon}"
         style="color:${iconColor}"
         @click="${() => this.dispatchEvent(new CustomEvent('main-icon-click'))}"
       ></ha-icon>
+    </div>
     `;
   }
 }
