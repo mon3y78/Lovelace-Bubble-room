@@ -82,7 +82,7 @@ export class BubbleMushroom extends LitElement {
      *  - 0.14 da 1400 px in su       (desktop)
      */
     const kMobile   = 0.30;   // ← più grande su mobile
-    const kDesktop  = 0.14;   // ← più piccolo su desktop
+    const kDesktop  = 0.04;   // ← più piccolo su desktop
     const wMobile   = 480;    // soglia mobile
     const wDesktop  = 1400;   // soglia desktop
     
