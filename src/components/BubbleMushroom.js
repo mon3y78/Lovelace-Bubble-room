@@ -81,12 +81,11 @@ export class BubbleMushroom extends LitElement {
     const { width, height } = this._containerSize;
     const ratio = 0.2;
     const positions = [
-      { x: 0.5, y: 0.0 },
-      { x: 1.0, y: 0.5 },
-      { x: 0.5, y: 1.0 },
-      { x: 0.0, y: 0.5 },
-      { x: 0.15, y: 0.15 },
-      { x: 0.85, y: 0.15 },
+      { x: 0.00, y: 0.00 },   // #0 angolo alto-sinistra
+      { x: 0.68, y: 0.00 },   // #1 top, poco prima della curva
+      { x: 0.95, y: 0.22 },   // #2 curva destra lato alto
+      { x: 0.95, y: 0.78 },   // #3 curva destra lato basso
+      { x: 0.68, y: 1.00 },   // #4 in basso, appena prima della curva
     ];
 
     return html`
