@@ -214,9 +214,10 @@ export class BubbleRoom extends LitElement {
                 .active=${isActive}
                 .colorActive="${iconColorActive}"
                 .colorInactive="${iconColorInactive}"
+                .backgroundActive="${iconBgActive}"
+                .backgroundInactive="${iconBgInactive}"
                 style="
                   --main-icon-size:${mainIconSize}px;
-                  --main-icon-bg:${isActive ? iconBgActive : iconBgInactive};
                 "
               ></bubble-icon>
               <bubble-mushroom
