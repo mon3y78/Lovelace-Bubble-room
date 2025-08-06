@@ -1307,22 +1307,30 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       min-width: 0;
       box-sizing: border-box;
       position: absolute;
-      left:0;
+      left: 0;
     }
-    .main-icon {
-      transition: color 0.2s;
-      user-select: none;   
-      --mdc-icon-size: var(--main-icon-size,90px);
-      font-size: var(--main-icon-size,90px);
-      width: var(--main-icon-size,90px);
-      height: var(--main-icon-size,90px);
+  
+    .main-icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--main-icon-size, 90px);
+      height: var(--main-icon-size, 90px);
       border-radius: 0 70% 70% 0;
-      transform-origin:center center;
-      transform:translateX(0%);
-      opacity:0.30;
       background: var(--main-icon-bg, rgba(33,223,115,0.12));
+      opacity: 0.30;
       border: 1px solid red;
-      background: 1px solid green;
+      transform: translateX(0%);
+      transform-origin: center center;
+      user-select: none;
+    }
+  
+    ha-icon {
+      --mdc-icon-size: var(--main-icon-size, 90px);
+      font-size: var(--main-icon-size, 90px);
+      width: var(--main-icon-size, 90px);
+      height: var(--main-icon-size, 90px);
+      display: block;
     }
   `;render(){const e=this.active?this.colorActive:this.colorInactive;return B`
       <ha-icon
