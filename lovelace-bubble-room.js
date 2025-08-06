@@ -1308,13 +1308,14 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       box-sizing: border-box;
       background: var(--main-icon-bg, rgba(33,223,115,0.12));
       border-radius: 0 70% 70% 0;
-      align-items: center;  
+      display: flex;
+      justify-content: center;
+      align-items:   center;
     }
     main-icon {
-      --mdc-icon-size: calc(var(--main-icon-size, 90 px);
+      --mdc-icon-size: var(--main-icon-size, 90 px);
       width: var(--mdc-icon-size);
       height: var(--mdc-icon-size);
-      display: block;
     }
   `;render(){const e=this.active?this.colorActive:this.colorInactive,t=this.active?this.backgroundActive:this.backgroundInactive;return B`
       <div class="main-icon-container" style="background:${t}">
