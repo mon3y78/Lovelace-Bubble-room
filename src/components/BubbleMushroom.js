@@ -80,39 +80,43 @@ export class BubbleMushroom extends LitElement {
 
   render() {
     const { width, height } = this._containerSize;
-    const ratio = 0.2;
-    // centro del rettangolo con la main-icon
-    const cx = width  * 0.5;
-    const cy = height * 0.5;
-
-    // raggio proporzionale: 45 % del lato minore
-    const r = side * 0.5 - size * 0.5 - 2;
-
-    // cinque angoli equidistanti (in gradi) lungo la curva interna
+    if (!width || !height) return html``;
+    
+    const side = Math.min(width, height);      // lato minore
+    const size = side * 0.18;                  // Ø bolla
+    const cx   = width  * 0.5;
+    const cy   = height * 0.5;
+    const r    = side * 0.5 - size * 0.5 - 2;  // raggio
+    
     const deg = [-135, -112.5, -90, -67.5, -45];
     const rad = deg.map(d => d * Math.PI / 180);
-
-    // coordinate finali delle bolle
     const positions = rad.map(a => ({
       x: cx + r * Math.cos(a),
       y: cy + r * Math.sin(a),
     }));
-
-
+    
     return html`
       <div class="mushroom-container">
         ${this.entities.map((entity, index) => {
-          const pos = positions[index] ?? { x: cx, y: cy };
-          const size = Math.min(width, height) * ratio;
+          const pos  = positions[index] ?? { x: cx, y: cy };
           const left = pos.x;
           const top  = pos.y;
           return html`
             <div
               class="mushroom-entity"
-              style="left:${left}px; top:${top}px; width:${size}px; height:${size}px; color: ${entity.color};"
+              style="
+                left:${left}px;
+                top:${top}px;
+                width:${size}px;
+                height:${size}px;
+                color:${entity.color};
+              "
               @click=${() => this._handleClick(entity)}
             >
-              <ha-icon icon="${entity.icon}" style="--mdc-icon-size: ${size * 0.6}px;"></ha-icon>
+              <ha-icon
+                icon="${entity.icon}"
+                style="--mdc-icon-size:${size * 0.6}px;">
+              </ha-icon>
             </div>
           `;
         })}
