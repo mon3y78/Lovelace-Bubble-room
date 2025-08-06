@@ -22,8 +22,6 @@ export class BubbleIcon extends LitElement {
   
   static styles = css`
     .main-icon-container {
-      width: var(--main-icon-size, 160px);
-      height: var(--main-icon-size, 160px);
       opacity: 0.30;
       transform: translateX(20%);
       box-sizing: border-box;
