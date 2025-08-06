@@ -1307,8 +1307,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       min-width: 0;
       box-sizing: border-box;
       position: absolute;
-      left:0; 
-      bottom:0;
+      left:0;
     }
     .main-icon {
       transition: color 0.2s;
@@ -1414,7 +1413,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       border: 2px dashed violet;  
       box-sizing: border-box; 
       position: relative;   
-      widht: 100%;
+      width: 100%;
       height: 100;
       display: flex;
     }
