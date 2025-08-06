@@ -1312,7 +1312,6 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     }
     .main-icon {
       transition: color 0.2s;
-      filter: drop-shadow(1px 1.5px 0px rgba(34,54,15,0.07));
       user-select: none;   
       --mdc-icon-size: var(--main-icon-size,64px);
       font-size: var(--main-icon-size,64px);
