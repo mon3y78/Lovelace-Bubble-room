@@ -1321,6 +1321,8 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       transform:translateX(0%);
       opacity:0.30;
       background: var(--main-icon-bg, rgba(33,223,115,0.12));
+      border: 1px solid red;
+      background: 1px solid yellow;
     }
   `;render(){const e=this.active?this.colorActive:this.colorInactive;return B`
       <ha-icon
