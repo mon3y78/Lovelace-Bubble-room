@@ -218,6 +218,7 @@ export class BubbleRoom extends LitElement {
                 .backgroundInactive="${iconBgInactive}"
                 style="
                   --main-icon-size:${mainIconSize}px;
+                  --icon-shift-x:-10%;
                 "
               ></bubble-icon>
               <bubble-mushroom

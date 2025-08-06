@@ -40,6 +40,7 @@ export class BubbleIcon extends LitElement {
       --mdc-icon-size: var(--main-icon-size, 160px);
       width: var(--mdc-icon-size);
       height: var(--mdc-icon-size);
+      transform: translateX(var(--icon-shift-x, -10%));
     }
   `;
   
