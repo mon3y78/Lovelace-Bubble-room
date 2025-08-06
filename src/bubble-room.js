@@ -110,7 +110,7 @@ export class BubbleRoom extends LitElement {
     const area = this.shadowRoot?.querySelector('.icon-mushroom-area');
     if (!area) return 64; // fallback fisso
     const size = Math.min(area.clientWidth, area.clientHeight);
-    return Math.round(size * 0.65); // ≈ 65 %
+    return Math.round(size * 0.60); // ≈ 65 %
   }  
   _getSensors() {
     const entities = this.config.entities || {};
