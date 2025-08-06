@@ -273,7 +273,14 @@ export class BubbleRoom extends LitElement {
       border: 2px dashed lime;
       box-sizing: border-box;
     }
-    .icon-mushroom-area  { border: 2px dashed violet; box-sizing: border-box; position: relative; }
+    .icon-mushroom-area  { 
+      border: 2px dashed violet;  
+      box-sizing: border-box; 
+      position: relative;   
+      widht: 100%;
+      height: 100;
+      display: flex;
+    }
     .k-space             { border: 2px dashed black; box-sizing: border-box; }
     .sidebar {
       display: flex; flex-direction: column;
