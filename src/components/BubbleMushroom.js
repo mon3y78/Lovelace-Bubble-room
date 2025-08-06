@@ -70,6 +70,7 @@ export class BubbleMushroom extends LitElement {
       justify-content: center;
       border-radius: 50%;
       background: rgba(0,0,0,0.2);
+      z-index: 1;  
     }
 
     .mushroom-entity ha-icon {
@@ -85,7 +86,7 @@ export class BubbleMushroom extends LitElement {
     const cy = height * 0.5;
 
     // raggio proporzionale: 45 % del lato minore
-    const r  = Math.min(width, height) * 0.45;
+    const r = side * 0.5 - size * 0.5 - 2;
 
     // cinque angoli equidistanti (in gradi) lungo la curva interna
     const deg = [-135, -112.5, -90, -67.5, -45];
