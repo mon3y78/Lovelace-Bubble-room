@@ -38,12 +38,12 @@ export class BubbleIcon extends LitElement {
       transition: color 0.2s;
       user-select: none;   
       --mdc-icon-size: var(--main-icon-size,64px);
-      font-size: var(--main-icon-size,64px);
+      font-size: var(--main-icon-size,90px);
       width: var(--main-icon-size,64px);
       height: var(--main-icon-size,64px);
       border-radius: 0 70% 70% 0;
       transform-origin:center center;
-      transform:translateX(-20%);
+      transform:translateX(0%);
       opacity:0.30;
       background: var(--main-icon-bg, rgba(33,223,115,0.12));
     }
