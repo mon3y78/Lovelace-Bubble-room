@@ -101,10 +101,10 @@ export class BubbleMushroom extends LitElement {
     return html`
       <div class="mushroom-container">
         ${this.entities.map((entity, index) => {
-          const pos = positions[index] || { x: 0.5, y: 0.5 };
-          const size = width * ratio;
-          const left = width * pos.x;
-          const top = height * pos.y;
+          const pos = positions[index] ?? { x: cx, y: cy };
+          const size = Math.min(width, height) * ratio;
+          const left = pos.x;
+          const top  = pos.y;
           return html`
             <div
               class="mushroom-entity"
