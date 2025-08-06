@@ -23,10 +23,10 @@ export class BubbleIcon extends LitElement {
   static styles = css`
     :host {
       position: absolute;   /* prende come riferimento .icon-mushroom-area */
-      inset: 0; 
+      inset: 0;
+      box-sizing: border-box;
     .main-icon-container {
       opacity: 0.30;
-      transform: translateX(20%);
       box-sizing: border-box;
       background: var(--main-icon-bg, rgba(33,223,115,0.12));
       border-radius: 0 70% 70% 0;
