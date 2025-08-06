@@ -80,13 +80,23 @@ export class BubbleMushroom extends LitElement {
   render() {
     const { width, height } = this._containerSize;
     const ratio = 0.2;
-    const positions = [
-      { x: 0.00, y: 0.00 },   // #0 angolo alto-sinistra
-      { x: 0.68, y: 0.00 },   // #1 top, poco prima della curva
-      { x: 0.95, y: 0.22 },   // #2 curva destra lato alto
-      { x: 0.95, y: 0.78 },   // #3 curva destra lato basso
-      { x: 0.68, y: 1.00 },   // #4 in basso, appena prima della curva
-    ];
+    // centro del rettangolo con la main-icon
+    const cx = width  * 0.5;
+    const cy = height * 0.5;
+
+    // raggio proporzionale: 45 % del lato minore
+    const r  = Math.min(width, height) * 0.45;
+
+    // cinque angoli equidistanti (in gradi) lungo la curva interna
+    const deg = [-135, -112.5, -90, -67.5, -45];
+    const rad = deg.map(d => d * Math.PI / 180);
+
+    // coordinate finali delle bolle
+    const positions = rad.map(a => ({
+      x: cx + r * Math.cos(a),
+      y: cy + r * Math.sin(a),
+    }));
+
 
     return html`
       <div class="mushroom-container">
