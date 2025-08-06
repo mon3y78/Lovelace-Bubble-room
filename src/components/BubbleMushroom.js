@@ -1,5 +1,4 @@
 // src/components/BubbleMushroom.js
-
 import { LitElement, html, css } from 'lit';
 
 export class BubbleMushroom extends LitElement {
@@ -69,8 +68,9 @@ export class BubbleMushroom extends LitElement {
       align-items: center;
       justify-content: center;
       border-radius: 50%;
-      background: rgba(0,0,0,0.2);
-      z-index: 1;  
+      background: rgba(0, 0, 0, 0.25);
+      z-index: 1; /* sopra lo sfondo giallo */
+      color: var(--mushroom-icon-color, white);
     }
 
     .mushroom-entity ha-icon {
@@ -80,33 +80,46 @@ export class BubbleMushroom extends LitElement {
 
   render() {
     const { width, height } = this._containerSize;
-    if (!width || !height) return html``;
-    
-    const side = Math.min(width, height);      // lato minore
-    const size = side * 0.18;                  // Ø bolla
-    const cx   = width  * 0.5;
-    const cy   = height * 0.5;
-    const r    = side * 0.5 - size * 0.5 - 2;  // raggio
-    
-    const deg = [-135, -112.5, -90, -67.5, -45];
-    const rad = deg.map(d => d * Math.PI / 180);
-    const positions = rad.map(a => ({
-      x: cx + r * Math.cos(a),
-      y: cy + r * Math.sin(a),
-    }));
-    
+    if (!width || !height) return html``;            // prima misurazione
+
+    /* ── dimensione singola bolla ───────────────────────────── */
+    const side = Math.min(width, height);            // lato minore
+    const size = side * 0.18;                        // Ø bolla = 18 %
+
+    /* ── ellisse del bordo destro (border-radius: 0 60% 60% 0) */
+    const rX = width * 0.60;
+    const rY = height * 0.60;
+    const cX = width - rX;           // centro ellisse (x)
+    const cY = height * 0.5;         // centro ellisse (y)
+
+    /* ── raggi “interni” per il CENTRO della bolla ──────────── */
+    const rXi = rX - size * 0.5;
+    const rYi = rY - size * 0.5;
+
+    /* ── coordinate piatte (lati orizzontali) ───────────────── */
+    const flatXcenter = (width - rX) - size * 0.5;   // dove inizia l’arco
+
+    /* ── 5 posizioni finali ─────────────────────────────────── */
+    const positions = [
+      { x: size * 0.5, y: size * 0.5 },                       // #0 angolo alto-sx
+      { x: flatXcenter, y: size * 0.5 },                      // #1 lato alto
+      { x: cX + rXi * Math.cos(-Math.PI / 3),                 // #2 ellisse –60 °
+        y: cY + rYi * Math.sin(-Math.PI / 3) },
+      { x: cX + rXi * Math.cos( Math.PI / 3),                 // #3 ellisse +60 °
+        y: cY + rYi * Math.sin( Math.PI / 3) },
+      { x: flatXcenter, y: height - size * 0.5 },             // #4 lato basso
+    ];
+
     return html`
       <div class="mushroom-container">
-        ${this.entities.map((entity, index) => {
-          const pos  = positions[index] ?? { x: cx, y: cy };
-          const left = pos.x;
-          const top  = pos.y;
+        ${this.entities.map((entity, idx) => {
+          const pos = positions[idx] ?? { x: cX, y: cY };      // fallback al centro
           return html`
             <div
               class="mushroom-entity"
               style="
-                left:${left}px;
-                top:${top}px;
+                left:${pos.x}px;
+                top:${pos.y}px;
                 width:${size}px;
                 height:${size}px;
                 color:${entity.color};
@@ -115,8 +128,8 @@ export class BubbleMushroom extends LitElement {
             >
               <ha-icon
                 icon="${entity.icon}"
-                style="--mdc-icon-size:${size * 0.6}px;">
-              </ha-icon>
+                style="--mdc-icon-size:${size * 0.6}px;"
+              ></ha-icon>
             </div>
           `;
         })}
