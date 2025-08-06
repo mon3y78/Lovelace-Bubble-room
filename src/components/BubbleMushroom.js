@@ -99,7 +99,11 @@ export class BubbleMushroom extends LitElement {
     
     const size = side * k;   // diametro finale della bolla
             // diametro finale della bolla
-
+    console.log(
+      '[BubbleMushroom] width=', width,
+      'k=', k,
+      'size=', size
+    );
 
     /* ellisse della curva destra (border-radius: 0 60% 60% 0) */
     const rX = width  * 0.60;
