@@ -1307,6 +1307,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       transform: translateX(0%);
       box-sizing: border-box;
       background: var(--main-icon-bg, rgba(33,223,115,0.12));
+      border-radius: 0 70% 70% 0;
     }
     main-icon {
       --mdc-icon-size: calc(var(--main-icon-size, 90 px);
@@ -1411,6 +1412,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
       width: 100%;
       height: 100;
       display: flex;
+      align-items: center;  
     }
     .k-space             { border: 2px dashed black; box-sizing: border-box; }
     .sidebar {
