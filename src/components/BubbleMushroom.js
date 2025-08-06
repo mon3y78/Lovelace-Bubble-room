@@ -74,7 +74,7 @@ export class BubbleMushroom extends LitElement {
 
     /* dimensione di ogni bolla = 18 % del lato minore */
     const side = Math.min(width, height);
-    const size = side * 0.25;
+    const size = side * 0.30;
 
     /* ellisse della curva destra (border-radius: 0 60% 60% 0) */
     const rX = width  * 0.60;
