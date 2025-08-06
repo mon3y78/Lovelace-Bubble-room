@@ -1313,10 +1313,10 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .main-icon {
       transition: color 0.2s;
       user-select: none;   
-      --mdc-icon-size: var(--main-icon-size,64px);
+      --mdc-icon-size: var(--main-icon-size,90px);
       font-size: var(--main-icon-size,90px);
-      width: var(--main-icon-size,64px);
-      height: var(--main-icon-size,64px);
+      width: var(--main-icon-size,90px);
+      height: var(--main-icon-size,90px);
       border-radius: 0 70% 70% 0;
       transform-origin:center center;
       transform:translateX(0%);
