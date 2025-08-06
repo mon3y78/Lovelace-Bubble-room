@@ -8,8 +8,12 @@ export class BubbleName extends LitElement {
     config: { type: Object },
     container: { type: Object }, // container esterno passato da bubble-room
   };
+
+  /**  Debounce handle id  */
+   _raf = null;
+   _resizeObs = null;
   
-  constructor() {
+   constructor() {
     super();
     this._resizeObserver = null;
   }
@@ -59,7 +63,38 @@ export class BubbleName extends LitElement {
     ].includes(state);
   }
 /* ─────────────────────────────────────────────────── */
-  
+ /** Primo render: calcoliamo subito il font e iniziamo ad ascoltare resize */
+firstUpdated() {
+  this._scheduleScale();           // 1) appena montata
+
+  /* ResizeObserver sul bounding box del componente */
+  this._resizeObs = new ResizeObserver(() => this._scheduleScale());
+  this._resizeObs.observe(this);   // il nodo host
+
+  /* listener sul resize finestra (cambia breakpoint / orientation) */
+  window.addEventListener('resize', this._scheduleScale, { passive: true });
+}
+
+/** Quando cambia label ricalcoliamo una sola volta */
+updated(changed) {
+  if (changed.has('label')) this._scheduleScale();
+}
+
+disconnectedCallback() {
+  super.disconnectedCallback();
+  if (this._resizeObs) this._resizeObs.disconnect();
+  window.removeEventListener('resize', this._scheduleScale);
+}
+
+/** --- utility debounce via requestAnimationFrame --------------- */
+_scheduleScale = () => {
+  if (this._raf) return;                 // già in coda
+  this._raf = requestAnimationFrame(() => {
+    this._raf = null;
+    this._autoScaleFont();
+  });
+}
+
   _autoScaleFont() {
     const el = this.renderRoot.querySelector('.bubble-name');
     const box = this.container || this.parentElement;
