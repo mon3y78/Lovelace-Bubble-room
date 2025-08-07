@@ -43,7 +43,7 @@ export class BubbleMushroom extends LitElement {
     }));
   }
 
-  /* ────────────── CSS ────────────── */
+  /* —————————————————— CSS —————————————————— */
   static styles = css`
     :host {
       display: block;
@@ -67,17 +67,17 @@ export class BubbleMushroom extends LitElement {
     }
   `;
 
-  /* ────────────── Render ────────────── */
+  /* —————————————————— Render —————————————————— */
   render() {
     const { width, height } = this._containerSize;
-    if (!width || !height) return html``;                 // prima misura
+    if (!width || !height) return html``;
 
-    /* coefficiente k dinamico (viewport) */
+    /* coefficiente k in funzione del viewport */
     const vp        = window.innerWidth;
     const kMobile   = 0.30;
     const kDesktop  = 0.08;
-    const wMobile   = 100;    // TUO breakpoint smartphone
-    const wDesktop  = 200;    // TUO breakpoint desktop
+    const wMobile   = 100;
+    const wDesktop  = 200;
 
     let k;
     if (vp <= wMobile) k = kMobile;
@@ -87,31 +87,31 @@ export class BubbleMushroom extends LitElement {
       k = kMobile + (kDesktop - kMobile) * t;
     }
 
-    /* sideEff mantiene le proporzioni quando allarghi la card */
-    const Rmax = 1.6;                               // larg/altezza max
+    /* lato “effettivo” per mantenere proporzioni quando allarghi */
+    const Rmax  = 1.6;
     const sideH = height;
     const sideW = Math.min(width, height * Rmax);
     const side  = 0.5 * (sideH + sideW);
 
-    const size = side * k;                          // diametro bolla
+    const size = side * k;
 
     /* semicerchio destro */
-    const rX = width  * 0.60;
-    const rY = height * 0.60;
-    const cX = width  - rX;
-    const cY = height * 0.5;
+    const rX  = width  * 0.60;
+    const rY  = height * 0.60;
+    const cX  = width  - rX;
+    const cY  = height * 0.5;
     const rXi = rX - size * 0.5;
     const rYi = rY - size * 0.5;
 
-    const flatX = width * 0.33;                     // punto piatto
-    const a45   = Math.PI / 4;                      // 45°
+    const flatX = width * 0.33;
+    const a45   = Math.PI / 4;   // 45°
 
     const positions = [
-      { x: size * 0.5, y: size * 0.5 },                                     // 0
-      { x: flatX,      y: size * 0.5 },                                     // 1
-      { x: cX + rXi * Math.cos(-a45), y: cY + rYi * Math.sin(-a45) },       // 2
-      { x: cX + rXi * Math.cos( a45), y: cY + rYi * Math.sin( a45) },       // 3
-      { x: flatX,      y: height - size * 0.5 },                            // 4
+      { x: size * 0.5, y: size * 0.5 },
+      { x: flatX,      y: size * 0.5 },
+      { x: cX + rXi * Math.cos(-a45), y: cY + rYi * Math.sin(-a45) },
+      { x: cX + rXi * Math.cos( a45), y: cY + rYi * Math.sin( a45) },
+      { x: flatX,      y: height - size * 0.5 },
     ];
 
     return html`
