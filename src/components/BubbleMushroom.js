@@ -59,8 +59,6 @@ export class BubbleMushroom extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.25);
       z-index: 1;
       pointer-events: auto;
     }
@@ -156,7 +154,7 @@ export class BubbleMushroom extends LitElement {
             "
             @click=${() => this._handleClick(e)}
           >
-            <ha-icon icon="${e.icon}" style="--mdc-icon-size:${size * 0.6}px;"></ha-icon>
+            <ha-icon icon="${e.icon}" style="--mdc-icon-size:${size * 1}px;"></ha-icon>
           </div>
         `;
       })}
