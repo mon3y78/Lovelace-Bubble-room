@@ -1268,8 +1268,6 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.25);
       z-index: 1;
       pointer-events: auto;
     }
@@ -1287,7 +1285,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
             "
             @click=${()=>this._handleClick(t)}
           >
-            <ha-icon icon="${t.icon}" style="--mdc-icon-size:${.6*n}px;"></ha-icon>
+            <ha-icon icon="${t.icon}" style="--mdc-icon-size:${1*n}px;"></ha-icon>
           </div>
         `})}
     `}}customElements.define("bubble-mushroom",Pt);class Rt extends st{static properties={icon:{type:String},active:{type:Boolean},colorActive:{type:String},colorInactive:{type:String},backgroundActive:{type:String},backgroundInactive:{type:String}};constructor(){super(),this.icon="",this.active=!1,this.colorActive="#21df73",this.colorInactive="#173c16",this.backgroundActive="rgba(33,223,115,0.12)",this.backgroundInactive="rgba(23,60,22,0.08)"}static styles=n`
