@@ -5,14 +5,14 @@ export class BubbleMushroom extends LitElement {
   static properties = {
     entities: { type: Array },
   };
-  
+
   constructor() {
     super();
     this.entities = [];
     this._containerSize = { width: 0, height: 0 };
     this._ro = new ResizeObserver(() => this._updateSize());
   }
-  
+
   connectedCallback() {
     super.connectedCallback();
     this._ro.observe(this);
@@ -21,19 +21,19 @@ export class BubbleMushroom extends LitElement {
     this._ro.disconnect();
     super.disconnectedCallback();
   }
-  
+
   _updateSize() {
     const r = this.getBoundingClientRect();
     this._containerSize = { width: r.width, height: r.height };
     this.requestUpdate();
   }
-  
+
   _handleClick(ent) {
     this.dispatchEvent(new CustomEvent('hass-action', {
       detail: {
         config: {
-          entity: ent.entity_id,
-          tap_action: ent.tap_action || { action: 'toggle' },
+          entity:      ent.entity_id,
+          tap_action:  ent.tap_action  || { action: 'toggle' },
           hold_action: ent.hold_action || { action: 'more-info' },
         },
         action: 'tap',
@@ -42,8 +42,8 @@ export class BubbleMushroom extends LitElement {
       composed: true,
     }));
   }
-  
-  /* ─────────────── CSS ─────────────── */
+
+  /* ────────────── CSS ────────────── */
   static styles = css`
     :host {
       display: block;
@@ -66,78 +66,78 @@ export class BubbleMushroom extends LitElement {
       display: block;
     }
   `;
-  
-  /* ─────────────── Render ─────────────── */
-render() {
-  const { width, height } = this._containerSize;
-  if (!width || !height) return html``; // prima misura
-  
-  /* coefficiente k dinamico (viewport) */
-  const vp = window.innerWidth;
-  const kMobile = 0.30;
-  const kDesktop = 0.08;
-  const wMobile = 100; // TUO breakpoint smartphone
-  const wDesktop = 200; // TUO breakpoint desktop
-  
-  let k;
-  if (vp <= wMobile) k = kMobile;
-  else if (vp >= wDesktop) k = kDesktop;
-  else {
-    const t = (vp - wMobile) / (wDesktop - wMobile);
-    k = kMobile + (kDesktop - kMobile) * t;
-  }
-  
-  /* sideEff mantiene le proporzioni quando allarghi la card */
-  const Rmax = 1.6; // larg/altezza max
-  const sideH = height;
-  const sideW = Math.min(width, height * Rmax);
-  const side = 0.5 * (sideH + sideW);
-  
-  const size = side * k; // diametro bolla
-  
-  /* semicerchio destro */
-  const rX = width * 0.60;
-  const rY = height * 0.60;
-  const cX = width - rX;
-  const cY = height * 0.5;
-  const rXi = rX - size * 0.5;
-  const rYi = rY - size * 0.5;
-  
-  const flatX = width * 0.33; // punto piatto
-  const a45 = Math.PI / 4; // 45°
-  
-  const positions = [
-    { x: size * 0.5, y: size * 0.5 }, // 0
-    { x: flatX, y: size * 0.5 }, // 1
-    { x: cX + rXi * Math.cos(-a45), y: cY + rYi * Math.sin(-a45) }, // 2
-    { x: cX + rXi * Math.cos(a45), y: cY + rYi * Math.sin(a45) }, // 3
-    { x: flatX, y: height - size * 0.5 }, // 4
-  ];
-  
-  return html`
+
+  /* ────────────── Render ────────────── */
+  render() {
+    const { width, height } = this._containerSize;
+    if (!width || !height) return html``;                 // prima misura
+
+    /* coefficiente k dinamico (viewport) */
+    const vp        = window.innerWidth;
+    const kMobile   = 0.30;
+    const kDesktop  = 0.08;
+    const wMobile   = 100;    // TUO breakpoint smartphone
+    const wDesktop  = 200;    // TUO breakpoint desktop
+
+    let k;
+    if (vp <= wMobile) k = kMobile;
+    else if (vp >= wDesktop) k = kDesktop;
+    else {
+      const t = (vp - wMobile) / (wDesktop - wMobile);
+      k = kMobile + (kDesktop - kMobile) * t;
+    }
+
+    /* sideEff mantiene le proporzioni quando allarghi la card */
+    const Rmax = 1.6;                               // larg/altezza max
+    const sideH = height;
+    const sideW = Math.min(width, height * Rmax);
+    const side  = 0.5 * (sideH + sideW);
+
+    const size = side * k;                          // diametro bolla
+
+    /* semicerchio destro */
+    const rX = width  * 0.60;
+    const rY = height * 0.60;
+    const cX = width  - rX;
+    const cY = height * 0.5;
+    const rXi = rX - size * 0.5;
+    const rYi = rY - size * 0.5;
+
+    const flatX = width * 0.33;                     // punto piatto
+    const a45   = Math.PI / 4;                      // 45°
+
+    const positions = [
+      { x: size * 0.5, y: size * 0.5 },                                     // 0
+      { x: flatX,      y: size * 0.5 },                                     // 1
+      { x: cX + rXi * Math.cos(-a45), y: cY + rYi * Math.sin(-a45) },       // 2
+      { x: cX + rXi * Math.cos( a45), y: cY + rYi * Math.sin( a45) },       // 3
+      { x: flatX,      y: height - size * 0.5 },                            // 4
+    ];
+
+    return html`
       ${this.entities.map((e, i) => {
         const p = positions[i] ?? { x: cX, y: cY };
-        return html` <
-    div
-  class = "mushroom-entity"
-  style = "
-  left: $ { p.x } px;
-  top: $ { p.y } px;
-  width: $ { size } px;
-  height: $ { size } px;
-  color: $ { e.color };
-  "
-  @click = $ {
-      () => this._handleClick(e) } >
-    <ha-icon
+        return html`
+          <div
+            class="mushroom-entity"
+            style="
+              left:${p.x}px;
+              top:${p.y}px;
+              width:${size}px;
+              height:${size}px;
+              color:${e.color};
+            "
+            @click=${() => this._handleClick(e)}
+          >
+            <ha-icon
               icon="${e.icon}"
               style="--mdc-icon-size:${size * 0.6}px;"
-            ></ha-icon> <
-    /div>
-  `;
+            ></ha-icon>
+          </div>
+        `;
       })}
     `;
-}
+  }
 }
 
 customElements.define('bubble-mushroom', BubbleMushroom);
