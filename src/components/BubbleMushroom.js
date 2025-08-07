@@ -5,37 +5,36 @@ export class BubbleMushroom extends LitElement {
   static properties = {
     entities: { type: Array },
   };
-
+  
   constructor() {
     super();
     this.entities = [];
     this._containerSize = { width: 0, height: 0 };
-    this._resizeObserver = new ResizeObserver(() => this._updateContainerSize());
+    this._ro = new ResizeObserver(() => this._updateSize());
   }
-
+  
   connectedCallback() {
     super.connectedCallback();
-    this._resizeObserver.observe(this);
+    this._ro.observe(this);
   }
-
   disconnectedCallback() {
-    super.connectedCallback();
-    this._resizeObserver.disconnect();
+    this._ro.disconnect();
+    super.disconnectedCallback();
   }
-
-  _updateContainerSize() {
-    const rect = this.getBoundingClientRect();
-    this._containerSize = { width: rect.width, height: rect.height };
+  
+  _updateSize() {
+    const r = this.getBoundingClientRect();
+    this._containerSize = { width: r.width, height: r.height };
     this.requestUpdate();
   }
-
-  _handleClick(entity) {
+  
+  _handleClick(ent) {
     this.dispatchEvent(new CustomEvent('hass-action', {
       detail: {
         config: {
-          entity:      entity.entity_id,
-          tap_action:  entity.tap_action  || { action: 'toggle'     },
-          hold_action: entity.hold_action || { action: 'more-info' },
+          entity: ent.entity_id,
+          tap_action: ent.tap_action || { action: 'toggle' },
+          hold_action: ent.hold_action || { action: 'more-info' },
         },
         action: 'tap',
       },
@@ -43,14 +42,14 @@ export class BubbleMushroom extends LitElement {
       composed: true,
     }));
   }
-
+  
+  /* ─────────────── CSS ─────────────── */
   static styles = css`
     :host {
       display: block;
       width: 100%;
       height: 100%;
       position: relative;
-      contain: strict;
     }
     .mushroom-entity {
       position: absolute;
@@ -67,90 +66,76 @@ export class BubbleMushroom extends LitElement {
       display: block;
     }
   `;
-
+  
+  /* ─────────────── Render ─────────────── */
   render() {
     const { width, height } = this._containerSize;
-    if (!width || !height) return html``;                // prima misura utile
-
-    /* dimensione di ogni bolla = 18 % del lato minore */
-    /* ── diametro con coefficiente che “slimma” al crescere della larghezza ── */
-    const side = Math.min(width, height);
-
-    /*  coefficiente k:
-     *  - 0.26 fino a 480 px          (mobile)
-     *  - scende linearmente
-     *  - 0.14 da 1400 px in su       (desktop)
-     */
-    const kMobile   = 0.35;   // ← più grande su mobile
-    const kDesktop  = 0.10;   // ← più piccolo su desktop
-    const wMobile   = 100;    // soglia mobile
-    const wDesktop  = 200;   // soglia desktop
+    if (!width || !height) return html``; // prima misura
+    
+    /* ── coefficiente k dinamico in base al VIEWPORT ------------------- */
+    const vp = window.innerWidth; // larghezza finestra
+    const kMobile = 0.30; // diametro = 30 % lato minore (mobile)
+    const kDesktop = 0.08; // diametro =  8 % lato minore (desktop)
+    const wMobile = 100;
+    const wDesktop = 200;
     
     let k;
-    if (width <= wMobile) {
-      k = kMobile;
-    } else if (width >= wDesktop) {
-      k = kDesktop;
-    } else {
-      /* interpolazione lineare fra mobile e desktop */
-      const t = (width - wMobile) / (wDesktop - wMobile);   // 0 → 1
-      k = kMobile + (kDesktop - kMobile) * t;
+    if (vp <= wMobile) k = kMobile;
+    else if (vp >= wDesktop) k = kDesktop;
+    else {
+      const t = (vp - wMobile) / (wDesktop - wMobile);
+      k = kMobile + (kDesktop - kMobile) * t; // interpola
     }
     
-    const size = side * k;   // diametro finale della bolla
-            // diametro finale della bolla
-    console.log(
-      '[BubbleMushroom] width=', width,
-      'k=', k,
-      'size=', size
-    );
-
-    /* ellisse della curva destra (border-radius: 0 60% 60% 0) */
-    const rX = width  * 0.60;
+    /* ── sideEff: mantiene le proporzioni quando allarghi la card ------ */
+    const Rmax = 1.6; // larghezza/altezza max
+    const sideH = height;
+    const sideW = Math.min(width, height * Rmax);
+    const side = 0.5 * (sideH + sideW); // media pesata
+    
+    const size = side * k; // diametro bolla
+    
+    /* ── geometria del semicerchio destro ------------------------------ */
+    const rX = width * 0.60;
     const rY = height * 0.60;
-    const cX = width  - rX;          // centro ellisse (x)
-    const cY = height * 0.5;         // centro ellisse (y)
-
-    /* raggi interni (centro bolla deve restare dentro) */
+    const cX = width - rX;
+    const cY = height * 0.5;
     const rXi = rX - size * 0.5;
     const rYi = rY - size * 0.5;
-
-    /* lato piatto: usiamo ~33 % larghezza per #1 e #4 */
-    const flatX = width * 0.33;
-
-    /* angolo per punti su ellisse */
+    
+    const flatX = width * 0.33; // punto piatto
+    
     const a45 = Math.PI / 4; // 45°
-
-    /* posizioni finali */
+    
     const positions = [
-      { x: size * 0.5, y: size * 0.5 },                             // 0  angolo alto-sx
-      { x: flatX,      y: size * 0.5 },                             // 1  lato alto, prima curva
-      { x: cX + rXi * Math.cos(-a45), y: cY + rYi * Math.sin(-a45) }, // 2  arco alto (−45°)
-      { x: cX + rXi * Math.cos( a45), y: cY + rYi * Math.sin( a45) }, // 3  arco basso (+45°)
-      { x: flatX,      y: height - size * 0.5 },                    // 4  lato basso allineato a #1
+      { x: size * 0.5, y: size * 0.5 }, // 0
+      { x: flatX, y: size * 0.5 }, // 1
+      { x: cX + rXi * Math.cos(-a45), y: cY + rYi * Math.sin(-a45) }, // 2
+      { x: cX + rXi * Math.cos(a45), y: cY + rYi * Math.sin(a45) }, // 3
+      { x: flatX, y: height - size * 0.5 }, // 4
     ];
-
+    
     return html`
-      ${this.entities.map((ent, idx) => {
-        const pos = positions[idx] ?? { x: cX, y: cY };  // fallback centrale
-        return html`
-          <div
-            class="mushroom-entity"
-            style="
-              left:${pos.x}px;
-              top:${pos.y}px;
-              width:${size}px;
-              height:${size}px;
-              color:${ent.color};
-            "
-            @click=${() => this._handleClick(ent)}
-          >
-            <ha-icon
-              icon="${ent.icon}"
+      ${this.entities.map((e, i) => {
+        const p = positions[i] ?? { x: cX, y: cY };
+        return html` <
+      div
+    class = "mushroom-entity"
+    style = "
+    left: $ { p.x } px;
+    top: $ { p.y } px;
+    width: $ { size } px;
+    height: $ { size } px;
+    color: $ { e.color };
+    "
+    @click = $ {
+        () => this._handleClick(e) } >
+      <ha-icon
+              icon="${e.icon}"
               style="--mdc-icon-size:${size * 0.6}px;"
-            ></ha-icon>
-          </div>
-        `;
+            ></ha-icon> <
+      /div>
+    `;
       })}
     `;
   }
