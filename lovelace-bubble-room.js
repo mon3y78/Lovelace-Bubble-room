@@ -1274,7 +1274,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .mushroom-entity ha-icon {
       display: block;
     }
-  `;render(){const{width:e,height:t}=this._containerSize;if(!e||!t)return H``;const i=window.innerWidth;let s;if(i<=100)s=.5;else if(i>=200)s=.2;else{s=.5+-.3*((i-100)/100)}const o=.5*(t+Math.min(e,1.6*t))*s,n=.6*e,r=e-n,a=.5*t,l=n-.5*o,c=.6*t-.5*o,d=.33*e,h=Math.PI/4,p=[{x:.5*o,y:.5*o},{x:d,y:.5*o},{x:r+l*Math.cos(-h),y:a+c*Math.sin(-h)},{x:r+l*Math.cos(h),y:a+c*Math.sin(h)},{x:d,y:t-.5*o}];return H`
+  `;render(){const{width:e,height:t}=this._containerSize;if(!e||!t)return H``;const i=window.innerWidth;let s;if(i<=100)s=.5;else if(i>=200)s=.2;else{s=.5+-.3*((i-100)/100)}const o=.5*(t+Math.min(e,1.6*t))*s,n=.6*e,r=e-n,a=.5*t,l=n-.5*o,c=.6*t-.5*o,d=.33*e,h=Math.PI/4,p=[{x:.5*o,y:.5*o},{x:.35*e,y:.5*o},{x:r+l*Math.cos(-h),y:a+c*Math.sin(-h)},{x:r+l*Math.cos(h),y:a+c*Math.sin(h)},{x:d,y:t-.5*o}];return H`
       ${this.entities.map((e,t)=>{let{x:i,y:s}=p[t]??{x:r,y:a};if(void 0!==e.angle_deg){const t=(Number(e.angle_deg)||0)*Math.PI/180,o=void 0!==e.radius_factor?Number(e.radius_factor):1;i=r+l*o*Math.cos(t),s=a+c*o*Math.sin(t)}return i+=Number(e.dx||0),s+=Number(e.dy||0),H`
           <div
             class="mushroom-entity"
