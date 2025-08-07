@@ -60,6 +60,14 @@ export class BubbleSubButton extends LitElement {
       color: var(--primary-text-color);
       word-break: break-word;
     }
+    ha-icon {
+      --mdc-icon-size: 100%;
+    }
+
+    ha-icon svg {
+      width: 100%;
+      height: 100%;
+    }
   `;
   
   render() {
