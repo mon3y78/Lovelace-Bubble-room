@@ -131,7 +131,7 @@ export class BubbleMushroom extends LitElement {
           >
             <ha-icon
               icon="${e.icon}"
-              style="--mdc-icon-size:${size * 0.6}px;"
+              style="--mdc-icon-size:${size * 1}px;"
             ></ha-icon>
           </div>
         `;
