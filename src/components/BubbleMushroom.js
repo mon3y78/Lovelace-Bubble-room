@@ -1,44 +1,9 @@
 // src/components/BubbleMushroom.js
 import { LitElement, html, css } from 'lit';
 
-/**
- * BubbleMushroom
- * ------------------------------------------------------------------
- * Dispone 5 "bolle" (entità) attorno all'icona principale della stanza.
- *
- * COME MODIFICARE LA POSIZIONE (senza toccare il codice JS)
- * - Per micro-aggiustamenti su una singola entità: usa nel YAML i campi
- *   dx / dy (in pixel). Esempio:
- *
- *     mushroom3:
- *       entity: switch.fan
- *       dx: 8     # → 8 px a destra  (negativo: sinistra)
- *       dy: -6    # → 6 px più in alto (positivo: in basso)
- *
- * - Per spostare una bolla lungo la curva destra (ricalcolo polare):
- *   usa angle_deg (in gradi) e, facoltativo, radius_factor.
- *   0° = punta a destra, -90° = in alto, +90° = in basso.
- *
- *     mushroom3:
- *       entity: switch.fan
- *       angle_deg: -72        # sposta lungo la curva
- *       radius_factor: 1.04   # >1 più esterna, <1 più interna (default 1)
- *
- * COME MODIFICARE LA GEOMETRIA GLOBALE (tocchi nel codice, vedi sotto)
- * - flatX: sposta i punti piatti (bolle 1 e 5) a destra/sinistra
- * - a45:   alza/abbassa le bolle sull’arco (bolle 3 e 4); es. 30°, 45°, 60°
- * - rX/rY: gonfia/sgonfia l’ellisse del bordo arrotondato
- * - kMobile/kDesktop: dimensione delle bolle su mobile/desktop
- * ------------------------------------------------------------------
- */
-
 export class BubbleMushroom extends LitElement {
   static properties = {
-    /** Array di entità, ciascuna con:
-     *  - entity_id, icon, color
-     *  - (opz.) dx, dy                → micro shift in px
-     *  - (opz.) angle_deg, radius_factor → ricalcolo polare
-     */
+    // Array: { entity_id, icon, color, dx?, dy?, tap_action?, hold_action? }
     entities: { type: Array },
   };
 
@@ -51,9 +16,8 @@ export class BubbleMushroom extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this._ro.observe(this); // osserva il nodo host per aggiornare width/height
+    this._ro.observe(this);
   }
-
   disconnectedCallback() {
     this._ro.disconnect();
     super.disconnectedCallback();
@@ -65,14 +29,13 @@ export class BubbleMushroom extends LitElement {
     this.requestUpdate();
   }
 
-  _handleClick(ent) {
-    // Propaga un'azione HA standard (toggle / more-info, ecc.)
+  _handleClick(entity) {
     this.dispatchEvent(new CustomEvent('hass-action', {
       detail: {
         config: {
-          entity:      ent.entity_id,
-          tap_action:  ent.tap_action  || { action: 'toggle' },
-          hold_action: ent.hold_action || { action: 'more-info' },
+          entity: entity.entity_id,
+          tap_action:  entity.tap_action  || { action: 'toggle' },
+          hold_action: entity.hold_action || { action: 'more-info' },
         },
         action: 'tap',
       },
@@ -81,59 +44,96 @@ export class BubbleMushroom extends LitElement {
     }));
   }
 
-  /* —————————————————— CSS —————————————————— */
   static styles = css`
     :host {
       display: block;
       width: 100%;
       height: 100%;
       position: relative;
+      contain: strict;
     }
     .mushroom-entity {
       position: absolute;
-      transform: translate(-50%, -50%); /* centra il cerchio rispetto a left/top */
+      transform: translate(-50%, -50%);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.25);
       z-index: 1;
+      pointer-events: auto;
     }
-    .mushroom-entity ha-icon {
-      display: block;
-    }
+    .mushroom-entity ha-icon { display: block; }
   `;
 
-  /* —————————————————— Render —————————————————— */
   render() {
     const { width, height } = this._containerSize;
-    if (!width || !height) return html``; // prima misura → niente render
+    if (!width || !height) return html``;
 
-    /* Dimensione dinamica (diametro) delle bolle in base al viewport
-     * - kMobile: dimensione su schermi stretti
-     * - kDesktop: dimensione su schermi larghi
-     * - wMobile / wDesktop: soglie per interpolare tra i due
-     *
-     * ↑ Per ingrandire su ambo i casi alza kMobile e kDesktop
-     */
-    const vpWidth   = window.innerWidth || width;
-    const kMobile   = 0.55;  // ← mobile: più grande
-    const kDesktop  = 0.25;  // ← desktop: più piccolo
-    const wMobile   = 100;
-    const wDesktop  = 200;
-
+    // --- dimensione dinamica entità (mobile -> desktop, interpolata)
+    const vpWidth  = window.innerWidth || width;
+    const kMobile  = 0.55;    // diametro = 30% lato effettivo
+    const kDesktop = 0.25;    // diametro = 10% lato effettivo
+    const wMobile  = 100;
+    const wDesktop = 200;
 
     let k;
-    if (vpWidth <= wMobile) k = kMobile;
+    if (vpWidth <= wMobile)      k = kMobile;
     else if (vpWidth >= wDesktop) k = kDesktop;
     else {
       const t = (vpWidth - wMobile) / (wDesktop - wMobile);
       k = kMobile + (kDesktop - kMobile) * t;
     }
 
-    
+    // lato effettivo per non esplodere in orizzontale
+    const Rmax  = 1.6;
+    const sideW = Math.min(width, height * Rmax);
+    const side  = 0.5 * (height + sideW);
+    const size  = side * k; // diametro della bolla
+
+    // --- ellisse reale come da CSS (border-radius: 0 60% 60% 0) con clamping
+    const rxRaw  = width  * 0.60;
+    const ryRaw  = height * 0.60;
+    const scaleH = Math.min(1, width  / (rxRaw * 2));
+    const scaleV = Math.min(1, height / (ryRaw * 2));
+    const rX     = rxRaw * scaleH;
+    const rY     = ryRaw * scaleV;
+    const cX     = width - rX;
+    const cY     = height * 0.5;
+
+    // raggio interno: togli metà bolla + un padding
+    const padBase = Math.max(4, Math.min(width, height) * 0.015);
+    const rXi     = Math.max(0, rX - (size / 2) - padBase);
+    const rYi     = Math.max(0, rY - (size / 2) - padBase);
+
+    // inizio reale della curva sul lato piatto
+    const flatX = cX - rX + padBase + (size / 2);
+
+    // angoli utili
+    const a30 = Math.PI / 6; // 30°
+    const arcShrink = size * 0.04; // micro rientro per i punti sull’arco
+
+    // --- POSIZIONI PREDEFINITE (calcolate PRIMA del map!)
+    const positions = [
+      // 0: alto-sx interno
+      { x: Math.max(size * 0.5 + padBase, size * 0.5), y: size * 0.5 + padBase },
+      // 1: lato piatto in alto
+      { x: flatX, y: size * 0.5 + padBase },
+      // 2: arco alto-destra (-30°)
+      { x: cX + (rXi - arcShrink) * Math.cos(-a30),
+        y: cY + (rYi - arcShrink) * Math.sin(-a30) },
+      // 3: arco basso-destra (+30°)
+      { x: cX + (rXi - arcShrink) * Math.cos(+a30),
+        y: cY + (rYi - arcShrink) * Math.sin(+a30) },
+      // 4: lato piatto in basso
+      { x: flatX, y: height - (size * 0.5 + padBase) },
+    ];
+
+    // --- RENDER
     return html`
       ${this.entities.map((e, i) => {
-        const pos = positions[i] ?? { x: cX, y: cY };
+        const pos = (positions[i] || { x: cX, y: cY });
         const left = pos.x + (e.dx ?? 0);
         const top  = pos.y + (e.dy ?? 0);
         return html`
@@ -148,10 +148,7 @@ export class BubbleMushroom extends LitElement {
             "
             @click=${() => this._handleClick(e)}
           >
-            <ha-icon
-              icon="${e.icon}"
-              style="--mdc-icon-size:${size * 0.6}px;"
-            ></ha-icon>
+            <ha-icon icon="${e.icon}" style="--mdc-icon-size:${size * 0.6}px;"></ha-icon>
           </div>
         `;
       })}
