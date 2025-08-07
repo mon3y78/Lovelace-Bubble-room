@@ -121,7 +121,7 @@ export class BubbleMushroom extends LitElement {
     // angoli:
     // 0° = punta a destra; -90° = in alto; +90° = in basso
     const a30  = deg(30);    // arco alto/basso “classico”
-    const aFlat = deg(55);   // più grande => più a destra (dove la curva “prende”)
+    const aFlat = deg(85);   // più grande => più a destra (dove la curva “prende”)
 
     // #1 appoggiata ai bordi top+left del rettangolo piatto
     const contactX = (size / 2) + touchPad;
