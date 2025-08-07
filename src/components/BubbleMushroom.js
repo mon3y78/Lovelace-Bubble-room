@@ -154,7 +154,7 @@ export class BubbleMushroom extends LitElement {
             "
             @click=${() => this._handleClick(e)}
           >
-            <ha-icon icon="${e.icon}" style="--mdc-icon-size:${size * 1}px;"></ha-icon>
+            <ha-icon icon="${e.icon}" style="--mdc-icon-size:${size * 0.95}px;"></ha-icon>
           </div>
         `;
       })}
