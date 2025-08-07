@@ -1289,7 +1289,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
           >
             <ha-icon
               icon="${e.icon}"
-              style="--mdc-icon-size:${.6*o}px;"
+              style="--mdc-icon-size:${1*o}px;"
             ></ha-icon>
           </div>
         `})}
