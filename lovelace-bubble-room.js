@@ -1276,23 +1276,23 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     }
   `;render(){const{width:e,height:t}=this._containerSize;if(!e||!t)return B``;const i=window.innerWidth;let s;if(i<=100)s=.3;else if(i>=200)s=.08;else{s=.3+(.08-.3)*((i-100)/100)}const o=.5*(t+Math.min(e,1.6*t))*s;return B`
       ${this.entities.map((e,t)=>B` <
-      div
-    class = "mushroom-entity"
-    style = "
-    left: $ { p.x } px;
-    top: $ { p.y } px;
-    width: $ { size } px;
-    height: $ { size } px;
-    color: $ { e.color };
-    "
-    @click = $ {
-        () => this._handleClick(e) } >
-      <ha-icon
+    div
+  class = "mushroom-entity"
+  style = "
+  left: $ { p.x } px;
+  top: $ { p.y } px;
+  width: $ { size } px;
+  height: $ { size } px;
+  color: $ { e.color };
+  "
+  @click = $ {
+      () => this._handleClick(e) } >
+    <ha-icon
               icon="${e.icon}"
               style="--mdc-icon-size:${.6*o}px;"
             ></ha-icon> <
-      /div>
-    `)}
+    /div>
+  `)}
     `}}customElements.define("bubble-mushroom",Pe);class Re extends se{static properties={icon:{type:String},active:{type:Boolean},colorActive:{type:String},colorInactive:{type:String},backgroundActive:{type:String},backgroundInactive:{type:String}};constructor(){super(),this.icon="",this.active=!1,this.colorActive="#21df73",this.colorInactive="#173c16",this.backgroundActive="rgba(33,223,115,0.12)",this.backgroundInactive="rgba(23,60,22,0.08)"}static styles=n`
     :host {
       position: absolute;   /* prende come riferimento .icon-mushroom-area */
