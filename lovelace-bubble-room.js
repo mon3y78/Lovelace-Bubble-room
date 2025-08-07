@@ -1274,7 +1274,7 @@ var te,ie;class se extends f{constructor(){super(...arguments),this.renderOption
     .mushroom-entity ha-icon {
       display: block;
     }
-  `;render(){const{width:e,height:t}=this._containerSize;if(!e||!t)return B``;const i=window.innerWidth;let s;if(i<=100)s=5;else if(i>=200)s=3;else{s=5+-2*((i-100)/100)}const o=.5*(t+Math.min(e,1.6*t))*s,n=.6*e,r=e-n,a=.5*t,l=n-.5*o,c=.6*t-.5*o,d=.33*e,h=Math.PI/4,p=[{x:.5*o,y:.5*o},{x:d,y:.5*o},{x:r+l*Math.cos(-h),y:a+c*Math.sin(-h)},{x:r+l*Math.cos(h),y:a+c*Math.sin(h)},{x:d,y:t-.5*o}];return B`
+  `;render(){const{width:e,height:t}=this._containerSize;if(!e||!t)return B``;const i=window.innerWidth;let s;if(i<=100)s=.9;else if(i>=200)s=.5;else{s=.9+-.4*((i-100)/100)}const o=.5*(t+Math.min(e,1.6*t))*s,n=.6*e,r=e-n,a=.5*t,l=n-.5*o,c=.6*t-.5*o,d=.33*e,h=Math.PI/4,p=[{x:.5*o,y:.5*o},{x:d,y:.5*o},{x:r+l*Math.cos(-h),y:a+c*Math.sin(-h)},{x:r+l*Math.cos(h),y:a+c*Math.sin(h)},{x:d,y:t-.5*o}];return B`
       ${this.entities.map((e,t)=>{const i=p[t]??{x:r,y:a};return B`
           <div
             class="mushroom-entity"
