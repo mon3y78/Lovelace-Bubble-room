@@ -83,14 +83,19 @@ export class BubbleRoom extends LitElement {
     const bgOff  = this.config.colors?.subbutton?.background_off ?? '#999';
     const iconOn = this.config.colors?.subbutton?.icon_on ?? 'yellow';
     const iconOff= this.config.colors?.subbutton?.icon_off ?? '#666';
-
+  
     return (this.config.subbuttons || []).map(sb => {
-      const stateObj   = this.hass.states?.[sb.entity_id];
-      const resolvedIcon = resolveEntityIcon(sb.entity_id, this.hass);
-      const active     = stateObj?.state === 'on';
-
+      const stateObj = this.hass.states?.[sb.entity_id];
+  
+      // Ordine di priorità icona:
+      // 1) icona personalizzata in config
+      // 2) icona da entity (device_class / icon attribute / mapping)
+      let finalIcon = sb.icon || resolveEntityIcon(sb.entity_id, this.hass);
+  
+      const active = stateObj?.state === 'on';
+  
       return {
-        icon: resolvedIcon,
+        icon: finalIcon,
         active,
         colorOn:  bgOn,
         colorOff: bgOff,
@@ -102,6 +107,7 @@ export class BubbleRoom extends LitElement {
       };
     });
   }
+  
 
   /* ───────────── presenza stanza ───────────── */
   _isRoomActive() {
