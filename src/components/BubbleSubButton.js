@@ -20,15 +20,17 @@ export class BubbleSubButton extends LitElement {
       height: 100%;
       width: 100%;
     }
+    
     .container {
       display: flex;
       flex-direction: column;
       height: 100%;
       width: 100%;
-      min-height: 0; 
-      min-width: 0; 
+      min-height: 0;
+      min-width: 0;
       box-sizing: border-box;
     }
+    
     .sub-button {
       flex: 1 1 0%;
       display: flex;
@@ -39,31 +41,32 @@ export class BubbleSubButton extends LitElement {
       border-radius: 12px;
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
-      min-height: 0;  
+      min-height: 0;
     }
-    .sub-button:last-child {
-      margin-bottom: 0;
-    }
+    
     .sub-button:first-child {
       margin-top: 0;
     }
+    
+    .sub-button:last-child {
+      margin-bottom: 0;
+    }
+    
     .sub-button:active {
       transform: scale(0.97);
     }
+    
+    /* 👇 Icona scalabile al contenitore */
     .sub-button ha-icon {
-      --mdc-icon-size: 3em;
+      width: 80%;
+      height: 80%;
     }
-    .sub-button .label {
-      font-size: 0.95rem;
-      font-weight: 600;
-      text-align: center;
-      color: var(--primary-text-color);
-      word-break: break-word;
-    }
+    
+    /* 👇 (Opzionale) Rende l'icona SVG responsiva */
     ha-icon {
       --mdc-icon-size: 100%;
     }
-
+    
     ha-icon svg {
       width: 100%;
       height: 100%;
