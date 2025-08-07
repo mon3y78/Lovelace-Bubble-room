@@ -115,87 +115,33 @@ export class BubbleMushroom extends LitElement {
      *
      * ↑ Per ingrandire su ambo i casi alza kMobile e kDesktop
      */
-    const vp        = window.innerWidth;
-    const kMobile   = 0.50;  // ← mobile: più grande
-    const kDesktop  = 0.20;  // ← desktop: più piccolo
+    const vpWidth   = window.innerWidth || width;
+    const kMobile   = 0.55;  // ← mobile: più grande
+    const kDesktop  = 0.25;  // ← desktop: più piccolo
     const wMobile   = 100;
     const wDesktop  = 200;
 
+
     let k;
-    if (vp <= wMobile) k = kMobile;
-    else if (vp >= wDesktop) k = kDesktop;
+    if (vpWidth <= wMobile) k = kMobile;
+    else if (vpWidth >= wDesktop) k = kDesktop;
     else {
-      const t = (vp - wMobile) / (wDesktop - wMobile);
+      const t = (vpWidth - wMobile) / (wDesktop - wMobile);
       k = kMobile + (kDesktop - kMobile) * t;
     }
 
-    /* Mantieni proporzioni quando la card si allarga:
-     * - Rmax limita quanto conti la larghezza rispetto all’altezza
-     * - side è una media che evita bolle troppo grandi su card larghissime
-     */
-    const Rmax  = 1.6;                           // ↓ aumenta se vuoi crescere di più in orizzontale
-    const sideH = height;
-    const sideW = Math.min(width, height * Rmax);
-    const side  = 0.5 * (sideH + sideW);
-
-    const size = side * k;                        // diametro bolla
-
-    /* Geometria del semicerchio destro (bordo arrotondato)
-     * rX, rY: raggi dell’ellisse. ↑ Aumenta per un arco più “gonfio”
-     * cX, cY: centro ellisse
-     * rXi, rYi: raggi interni (centro delle bolle) = r - size/2
-     */
-    const rX  = width  * 0.60;                    // ← gonfiaggio orizzontale
-    const rY  = height * 0.60;                    // ← gonfiaggio verticale
-    const cX  = width  - rX;
-    const cY  = height * 0.5;
-    const rXi = rX - size * 0.5;                  // ← riduci qualche px per “tirare dentro” 3 e 4
-    const rYi = rY - size * 0.5;
-
-    /* Punti piatti (in alto e in basso) prima che inizi la curva:
-     * flatX sposta entrambe le bolle 1 (alta) e 5 (bassa) a dx/sx
-     */
-    const flatX = width * 0.33;                   // ↑ porta a destra, ↓ a sinistra
-
-    /* Angolo per le bolle sull’arco: 45° (π/4) di default
-     * - usa 30° (Math.PI/6) per alzarle
-     * - usa 60° (Math.PI/3) per abbassarle
-     */
-    const a30   = Math.PI / 6;
-
-    /* Preset delle 5 posizioni (senza override per-entity) */
-    const positions = [
-      { x: size * 0.5, y: size * 0.5 },                                       // #0 alto-sx (angolo)
-      { x: width * 0.50,      y: size * 0.5 },                                       // #1 alto lato piatto
-      { x: cX + rXi * Math.cos(-a30), y: cY + rYi * Math.sin(-a30) },         // #2 arco alto
-      { x: cX + rXi * Math.cos( a30), y: cY + rYi * Math.sin( a30) },         // #3 arco basso
-      { x: width * 0.50,    y: height - size * 0.5 },                              // #4 basso lato piatto
-    ];
-
+    
     return html`
       ${this.entities.map((e, i) => {
-        // 1) base: preset
-        let { x, y } = positions[i] ?? { x: cX, y: cY };
-
-        // 2) opzionale: ricalcolo polare se è stato passato angle_deg
-        //    (0° = destra, -90° = su, +90° = giù). radius_factor default 1.
-        if (e.angle_deg !== undefined) {
-          const ang = (Number(e.angle_deg) || 0) * Math.PI / 180;
-          const rf  = (e.radius_factor !== undefined) ? Number(e.radius_factor) : 1;
-          x = cX + (rXi * rf) * Math.cos(ang);
-          y = cY + (rYi * rf) * Math.sin(ang);
-        }
-
-        // 3) micro-aggiustamenti in pixel (dx/dy) applicati dopo il calcolo
-        x += Number(e.dx || 0);
-        y += Number(e.dy || 0);
-
+        const pos = positions[i] ?? { x: cX, y: cY };
+        const left = pos.x + (e.dx ?? 0);
+        const top  = pos.y + (e.dy ?? 0);
         return html`
           <div
             class="mushroom-entity"
             style="
-              left:${x}px;
-              top:${y}px;
+              left:${left}px;
+              top:${top}px;
               width:${size}px;
               height:${size}px;
               color:${e.color};
@@ -204,7 +150,7 @@ export class BubbleMushroom extends LitElement {
           >
             <ha-icon
               icon="${e.icon}"
-              style="--mdc-icon-size:${size * 1}px;"  /* ↑ 1 = piena; 0.7 = più margin */
+              style="--mdc-icon-size:${size * 0.6}px;"
             ></ha-icon>
           </div>
         `;
