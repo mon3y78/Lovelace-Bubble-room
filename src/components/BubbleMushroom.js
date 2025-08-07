@@ -168,7 +168,7 @@ export class BubbleMushroom extends LitElement {
     /* Preset delle 5 posizioni (senza override per-entity) */
     const positions = [
       { x: size * 0.5, y: size * 0.5 },                                       // #0 alto-sx (angolo)
-      { x: width * 0.35,      y: size * 0.5 },                                       // #1 alto lato piatto
+      { x: width * 0.50,      y: size * 0.5 },                                       // #1 alto lato piatto
       { x: cX + rXi * Math.cos(-a45), y: cY + rYi * Math.sin(-a45) },         // #2 arco alto
       { x: cX + rXi * Math.cos( a45), y: cY + rYi * Math.sin( a45) },         // #3 arco basso
       { x: flatX,      y: height - size * 0.5 },                              // #4 basso lato piatto
