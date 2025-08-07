@@ -102,38 +102,46 @@ export class BubbleMushroom extends LitElement {
     const cX     = width - rX;
     const cY     = height * 0.5;
 
-    // raggio interno: togli metà bolla + un padding
+    // padding base per non “sanguinare” fuori
     const padBase = Math.max(4, Math.min(width, height) * 0.015);
-    const rXi     = Math.max(0, rX - (size / 2) - padBase);
-    const rYi     = Math.max(0, rY - (size / 2) - padBase);
 
-    // inizio reale della curva sul lato piatto
+    // helper per gradi → radianti
+    const deg = (d) => (Math.PI * d) / 180;
+
+    // gap interno tra cerchio entità e bordo dello sfondo (contatto)
+    const touchPad = 1; // px (0 = a filo)
+
+    // raggi “di contatto” (centro della bolla che tocca il bordo)
+    const rArcX = Math.max(0, rX - (size / 2) - touchPad);
+    const rArcY = Math.max(0, rY - (size / 2) - touchPad);
+
+    // inizio reale della curva sul lato piatto (se dovesse servire altrove)
     const flatX = cX - rX + padBase + (size / 2);
 
-    // angoli utili
-    const a30 = Math.PI / 6; // 30°
-    const arcShrink = size * 0.04; // micro rientro per i punti sull’arco
+    // angoli:
+    // 0° = punta a destra; -90° = in alto; +90° = in basso
+    const a30  = deg(30);    // arco alto/basso “classico”
+    const aFlat = deg(70);   // più grande => più a destra (dove la curva “prende”)
 
-    // --- POSIZIONI PREDEFINITE (calcolate PRIMA del map!)
+    // #1 appoggiata ai bordi top+left del rettangolo piatto
+    const contactX = (size / 2) + touchPad;
+    const contactY = (size / 2) + touchPad;
+
+    // POSIZIONI DEFINITIVE (1..5)
+    // 1: alto-sx appoggiata; 2: arco alto più a destra; 3: arco alto-destra;
+    // 4: arco basso-destra;   5: arco basso più a destra.
     const positions = [
-      // 0: alto-sx interno
-      { x: Math.max(size * 0.5 + padBase, size * 0.5), y: size * 0.5 + padBase },
-      // 1: lato piatto in alto
-      { x: flatX, y: size * 0.5 + padBase },
-      // 2: arco alto-destra (-30°)
-      { x: cX + (rXi - arcShrink) * Math.cos(-a30),
-        y: cY + (rYi - arcShrink) * Math.sin(-a30) },
-      // 3: arco basso-destra (+30°)
-      { x: cX + (rXi - arcShrink) * Math.cos(+a30),
-        y: cY + (rYi - arcShrink) * Math.sin(+a30) },
-      // 4: lato piatto in basso
-      { x: flatX, y: height - (size * 0.5 + padBase) },
+      { x: contactX, y: contactY },                                           // #1
+      { x: cX + rArcX * Math.cos(-aFlat), y: cY + rArcY * Math.sin(-aFlat) }, // #2
+      { x: cX + rArcX * Math.cos(-a30),   y: cY + rArcY * Math.sin(-a30)   }, // #3
+      { x: cX + rArcX * Math.cos(+a30),   y: cY + rArcY * Math.sin(+a30)   }, // #4
+      { x: cX + rArcX * Math.cos(+aFlat), y: cY + rArcY * Math.sin(+aFlat) }, // #5
     ];
 
-    // --- RENDER
+    // RENDER
     return html`
       ${this.entities.map((e, i) => {
-        const pos = (positions[i] || { x: cX, y: cY });
+        const pos  = positions[i] ?? { x: cX, y: cY };
         const left = pos.x + (e.dx ?? 0);
         const top  = pos.y + (e.dy ?? 0);
         return html`
