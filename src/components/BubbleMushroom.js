@@ -96,8 +96,6 @@ export class BubbleMushroom extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.25);
       z-index: 1;
     }
     .mushroom-entity ha-icon {
@@ -163,15 +161,15 @@ export class BubbleMushroom extends LitElement {
      * - usa 30° (Math.PI/6) per alzarle
      * - usa 60° (Math.PI/3) per abbassarle
      */
-    const a45   = Math.PI / 4;
+    const a30   = Math.PI / 6;
 
     /* Preset delle 5 posizioni (senza override per-entity) */
     const positions = [
       { x: size * 0.5, y: size * 0.5 },                                       // #0 alto-sx (angolo)
       { x: width * 0.50,      y: size * 0.5 },                                       // #1 alto lato piatto
-      { x: cX + rXi * Math.cos(-a45), y: cY + rYi * Math.sin(-a45) },         // #2 arco alto
-      { x: cX + rXi * Math.cos( a45), y: cY + rYi * Math.sin( a45) },         // #3 arco basso
-      { x: flatX,      y: height - size * 0.5 },                              // #4 basso lato piatto
+      { x: cX + rXi * Math.cos(-a30), y: cY + rYi * Math.sin(-a30) },         // #2 arco alto
+      { x: cX + rXi * Math.cos( a30), y: cY + rYi * Math.sin( a30) },         // #3 arco basso
+      { x: width * 0.50,    y: height - size * 0.5 },                              // #4 basso lato piatto
     ];
 
     return html`
