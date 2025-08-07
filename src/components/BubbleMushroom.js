@@ -74,8 +74,8 @@ export class BubbleMushroom extends LitElement {
 
     /* coefficiente k in funzione del viewport */
     const vp        = window.innerWidth;
-    const kMobile   = 5;
-    const kDesktop  = 3;
+    const kMobile   = 0.9;
+    const kDesktop  = 0.5;
     const wMobile   = 100;
     const wDesktop  = 200;
 
