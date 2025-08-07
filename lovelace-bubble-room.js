@@ -1274,7 +1274,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       pointer-events: auto;
     }
     .mushroom-entity ha-icon { display: block; }
-  `;render(){const{width:t,height:e}=this._containerSize;if(!t||!e)return H``;const i=window.innerWidth||t,s=.55;let o;if(i<=100)o=s;else if(i>=200)o=.25;else{o=s+(.25-s)*((i-100)/100)}const n=.5*(e+Math.min(t,1.6*e))*o,r=.6*t,a=.6*e,l=r*Math.min(1,t/(2*r)),c=a*Math.min(1,e/(2*a)),d=t-l,h=.5*e,p=t=>Math.PI*t/180,u=Math.max(0,l-n/2-1),b=Math.max(0,c-n/2-1),g=p(30),f=p(64),m=[{x:n/2+1,y:n/2+1},{x:d+u*Math.cos(-f),y:h+b*Math.sin(-f)},{x:d+u*Math.cos(-g),y:h+b*Math.sin(-g)},{x:d+u*Math.cos(+g),y:h+b*Math.sin(+g)},{x:d+u*Math.cos(+f),y:h+b*Math.sin(+f)}];return H`
+  `;render(){const{width:t,height:e}=this._containerSize;if(!t||!e)return H``;const i=window.innerWidth||t,s=.55;let o;if(i<=100)o=s;else if(i>=200)o=.25;else{o=s+(.25-s)*((i-100)/100)}const n=.5*(e+Math.min(t,1.6*e))*o,r=.6*t,a=.6*e,l=r*Math.min(1,t/(2*r)),c=a*Math.min(1,e/(2*a)),d=t-l,h=.5*e,p=t=>Math.PI*t/180,u=Math.max(0,l-n/2-1),b=Math.max(0,c-n/2-1),g=p(30),f=p(55),m=[{x:n/2+1,y:n/2+1},{x:d+u*Math.cos(-f),y:h+b*Math.sin(-f)},{x:d+u*Math.cos(-g),y:h+b*Math.sin(-g)},{x:d+u*Math.cos(+g),y:h+b*Math.sin(+g)},{x:d+u*Math.cos(+f),y:h+b*Math.sin(+f)}];return H`
       ${this.entities.map((t,e)=>{const i=m[e]??{x:d,y:h},s=i.x+(t.dx??0),o=i.y+(t.dy??0);return H`
           <div
             class="mushroom-entity"
