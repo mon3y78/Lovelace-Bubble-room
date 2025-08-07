@@ -68,77 +68,76 @@ export class BubbleMushroom extends LitElement {
   `;
   
   /* ─────────────── Render ─────────────── */
-  render() {
-    const { width, height } = this._containerSize;
-    if (!width || !height) return html``; // prima misura
-    
-    /* ── coefficiente k dinamico in base al VIEWPORT ------------------- */
-    const vp = window.innerWidth; // larghezza finestra
-    const kMobile = 0.30; // diametro = 30 % lato minore (mobile)
-    const kDesktop = 0.08; // diametro =  8 % lato minore (desktop)
-    const wMobile = 100;
-    const wDesktop = 200;
-    
-    let k;
-    if (vp <= wMobile) k = kMobile;
-    else if (vp >= wDesktop) k = kDesktop;
-    else {
-      const t = (vp - wMobile) / (wDesktop - wMobile);
-      k = kMobile + (kDesktop - kMobile) * t; // interpola
-    }
-    
-    /* ── sideEff: mantiene le proporzioni quando allarghi la card ------ */
-    const Rmax = 1.6; // larghezza/altezza max
-    const sideH = height;
-    const sideW = Math.min(width, height * Rmax);
-    const side = 0.5 * (sideH + sideW); // media pesata
-    
-    const size = side * k; // diametro bolla
-    
-    /* ── geometria del semicerchio destro ------------------------------ */
-    const rX = width * 0.60;
-    const rY = height * 0.60;
-    const cX = width - rX;
-    const cY = height * 0.5;
-    const rXi = rX - size * 0.5;
-    const rYi = rY - size * 0.5;
-    
-    const flatX = width * 0.33; // punto piatto
-    
-    const a45 = Math.PI / 4; // 45°
-    
-    const positions = [
-      { x: size * 0.5, y: size * 0.5 }, // 0
-      { x: flatX, y: size * 0.5 }, // 1
-      { x: cX + rXi * Math.cos(-a45), y: cY + rYi * Math.sin(-a45) }, // 2
-      { x: cX + rXi * Math.cos(a45), y: cY + rYi * Math.sin(a45) }, // 3
-      { x: flatX, y: height - size * 0.5 }, // 4
-    ];
-    
-    return html`
+render() {
+  const { width, height } = this._containerSize;
+  if (!width || !height) return html``; // prima misura
+  
+  /* coefficiente k dinamico (viewport) */
+  const vp = window.innerWidth;
+  const kMobile = 0.30;
+  const kDesktop = 0.08;
+  const wMobile = 100; // TUO breakpoint smartphone
+  const wDesktop = 200; // TUO breakpoint desktop
+  
+  let k;
+  if (vp <= wMobile) k = kMobile;
+  else if (vp >= wDesktop) k = kDesktop;
+  else {
+    const t = (vp - wMobile) / (wDesktop - wMobile);
+    k = kMobile + (kDesktop - kMobile) * t;
+  }
+  
+  /* sideEff mantiene le proporzioni quando allarghi la card */
+  const Rmax = 1.6; // larg/altezza max
+  const sideH = height;
+  const sideW = Math.min(width, height * Rmax);
+  const side = 0.5 * (sideH + sideW);
+  
+  const size = side * k; // diametro bolla
+  
+  /* semicerchio destro */
+  const rX = width * 0.60;
+  const rY = height * 0.60;
+  const cX = width - rX;
+  const cY = height * 0.5;
+  const rXi = rX - size * 0.5;
+  const rYi = rY - size * 0.5;
+  
+  const flatX = width * 0.33; // punto piatto
+  const a45 = Math.PI / 4; // 45°
+  
+  const positions = [
+    { x: size * 0.5, y: size * 0.5 }, // 0
+    { x: flatX, y: size * 0.5 }, // 1
+    { x: cX + rXi * Math.cos(-a45), y: cY + rYi * Math.sin(-a45) }, // 2
+    { x: cX + rXi * Math.cos(a45), y: cY + rYi * Math.sin(a45) }, // 3
+    { x: flatX, y: height - size * 0.5 }, // 4
+  ];
+  
+  return html`
       ${this.entities.map((e, i) => {
         const p = positions[i] ?? { x: cX, y: cY };
         return html` <
-      div
-    class = "mushroom-entity"
-    style = "
-    left: $ { p.x } px;
-    top: $ { p.y } px;
-    width: $ { size } px;
-    height: $ { size } px;
-    color: $ { e.color };
-    "
-    @click = $ {
-        () => this._handleClick(e) } >
-      <ha-icon
+    div
+  class = "mushroom-entity"
+  style = "
+  left: $ { p.x } px;
+  top: $ { p.y } px;
+  width: $ { size } px;
+  height: $ { size } px;
+  color: $ { e.color };
+  "
+  @click = $ {
+      () => this._handleClick(e) } >
+    <ha-icon
               icon="${e.icon}"
               style="--mdc-icon-size:${size * 0.6}px;"
             ></ha-icon> <
-      /div>
-    `;
+    /div>
+  `;
       })}
     `;
-  }
+}
 }
 
 customElements.define('bubble-mushroom', BubbleMushroom);
