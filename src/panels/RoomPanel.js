@@ -2,7 +2,7 @@
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor }     from '../helpers/entity-filters.js';
-import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // ← AGGIUNTA
+import { resolveEntityIcon } from '../icon-mapping.js'; // path corretto
 
 const PRESENCE_CATS = [
   'presence',
@@ -105,6 +105,18 @@ export class RoomPanel extends LitElement {
       padding: 15px 22px;
     }
 
+    /* pill actions come Mushroom/SubButton */
+    .pill-group {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;
+    }
+    .pill-button {
+      padding: 6px 10px; border-radius: 999px; border: 1px solid #555;
+      cursor: pointer; background: transparent; font-weight: 600;
+      transition: background .18s, border-color .18s, color .18s;
+    }
+    .pill-button.active { border-color: #55afff; color: #55afff; }
+    .pill-button:hover:not(.active) { background: rgba(85,175,255,0.12); }
+
     .reset-button {
       display: block;
       margin: 20px auto;
@@ -153,9 +165,7 @@ export class RoomPanel extends LitElement {
     .toggle-btn.active span {
       color: white;
     }
-    .toggle-btn:hover {
-      background: rgba(255,255,255,0.18);
-    }
+    .toggle-btn:hover { background: rgba(255,255,255,0.18); }
   `;
 
   constructor() {
@@ -179,8 +189,7 @@ export class RoomPanel extends LitElement {
         this.layout = cfgLayout;
       }
 
-      /* ── AUTO-ICONA: se ho un'entità di presence e l'icona stanza è vuota,
-         usa prima l'attributo icon dello stato, altrimenti mapping fallback. */
+      // AUTO-ICONA su mount/aggiornamento se ho entity e icon vuota
       const presEntity = this.config?.entities?.presence?.entity || '';
       const roomIcon   = this.config?.icon || '';
       if (presEntity && !roomIcon) {
@@ -205,6 +214,17 @@ export class RoomPanel extends LitElement {
     }));
   }
 
+  // ↑ auto-icona immediata quando cambi l’entità presence
+  _onPresenceEntityChange = (ent) => {
+    this._fire('entities.presence.entity', ent);
+    const currentIcon = this.config?.icon || '';
+    if (ent && !currentIcon) {
+      const st = this.hass?.states?.[ent];
+      const autoIcon = st?.attributes?.icon || resolveEntityIcon(ent, this.hass);
+      if (autoIcon) this._fire('icon', autoIcon);
+    }
+  };
+
   render() {
     const cfg      = this.config;
     const autoDisc = cfg.auto_discovery_sections?.presence ?? false;
@@ -222,6 +242,10 @@ export class RoomPanel extends LitElement {
     const presCandidates = candidatesFor(
       this.hass, this.config, 'presence', presFilters
     );
+
+    const actions = ['toggle','more-info','navigate','call-service','none'];
+    const tapCfg  = this.config?.tap_action  || {};
+    const holdCfg = this.config?.hold_action || {};
 
     return html`
       <ha-expansion-panel
@@ -252,7 +276,7 @@ export class RoomPanel extends LitElement {
               const v = e.detail.value;
               this._fire('area', v);
               if (v) {
-                this._fire('name', v.toUpperCase()); // sempre aggiorna
+                this._fire('name', v.toUpperCase());
                 this._fire('auto_discovery_sections.presence', true);
               }
             }}
@@ -303,13 +327,74 @@ export class RoomPanel extends LitElement {
                 .value=${presEntity}
                 .selector=${{ entity: { include_entities: presCandidates, multiple: false } }}
                 allow-custom-entity
-                @value-changed=${e => this._fire('entities.presence.entity', e.detail.value)}
+                @value-changed=${e => this._onPresenceEntityChange(e.detail.value)}
               ></ha-selector>
             </div>
       
             <!-- Actions -->
-            ${this._renderActions('tap')}
-            ${this._renderActions('hold')}
+            <div class="input-group">
+              <label>Tap Action</label>
+              <div class="pill-group">
+                ${actions.map(a => html`
+                  <button
+                    class="pill-button ${tapCfg.action === a ? 'active' : ''}"
+                    @click=${() => this._fire('tap_action.action', a)}
+                  >${a}</button>
+                `)}
+              </div>
+              ${tapCfg.action === 'navigate' ? html`
+                <input type="text" placeholder="Path"
+                  .value=${tapCfg.navigation_path || ''}
+                  @input=${e => this._fire('tap_action.navigation_path', e.target.value)}
+                />
+              ` : ''}
+              ${tapCfg.action === 'call-service' ? html`
+                <input type="text" placeholder="service (es. light.turn_on)"
+                  .value=${tapCfg.service || ''}
+                  @input=${e => this._fire('tap_action.service', e.target.value)}
+                />
+                <input type="text" placeholder='service_data (JSON)'
+                  .value=${tapCfg.service_data ? JSON.stringify(tapCfg.service_data) : ''}
+                  @input=${e => {
+                    let v = e.target.value;
+                    try { v = v ? JSON.parse(v) : undefined; } catch { v = undefined; }
+                    this._fire('tap_action.service_data', v);
+                  }}
+                />
+              ` : ''}
+            </div>
+
+            <div class="input-group">
+              <label>Hold Action</label>
+              <div class="pill-group">
+                ${actions.map(a => html`
+                  <button
+                    class="pill-button ${holdCfg.action === a ? 'active' : ''}"
+                    @click=${() => this._fire('hold_action.action', a)}
+                  >${a}</button>
+                `)}
+              </div>
+              ${holdCfg.action === 'navigate' ? html`
+                <input type="text" placeholder="Path"
+                  .value=${holdCfg.navigation_path || ''}
+                  @input=${e => this._fire('hold_action.navigation_path', e.target.value)}
+                />
+              ` : ''}
+              ${holdCfg.action === 'call-service' ? html`
+                <input type="text" placeholder="service (es. light.turn_on)"
+                  .value=${holdCfg.service || ''}
+                  @input=${e => this._fire('hold_action.service', e.target.value)}
+                />
+                <input type="text" placeholder='service_data (JSON)'
+                  .value=${holdCfg.service_data ? JSON.stringify(holdCfg.service_data) : ''}
+                  @input=${e => {
+                    let v = e.target.value;
+                    try { v = v ? JSON.parse(v) : undefined; } catch { v = undefined; }
+                    this._fire('hold_action.service_data', v);
+                  }}
+                />
+              ` : ''}
+            </div>
           </div>
         </div>
       
@@ -340,50 +425,6 @@ export class RoomPanel extends LitElement {
           🧹 Reset Room
         </button>
       </ha-expansion-panel>
-    `;
-  }
-
-  _renderActions(type) {
-    const cfg     = this.config?.[`${type}_action`] || {};
-    const actions = ['toggle','more-info','navigate','call-service','none'];
-    return html`
-      <div class="input-group">
-        <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}</label>
-        <div class="pill-group">
-          ${actions.map(a => html`
-            <paper-button
-              class="pill-button ${cfg.action === a ? 'active' : ''}"
-              @click=${() => this._fire(`${type}_action.action`, a)}
-            >${a}</paper-button>
-          `)}
-        </div>
-        ${cfg.action === 'navigate' ? html`
-          <input
-            type="text"
-            placeholder="Path"
-            .value=${cfg.navigation_path || ''}
-            @input=${e => this._fire(`${type}_action.navigation_path`, e.target.value)}
-          />
-        ` : ''}
-        ${cfg.action === 'call-service' ? html`
-          <input
-            type="text"
-            placeholder="service: domain.service_name"
-            .value=${cfg.service || ''}
-            @input=${e => this._fire(`${type}_action.service`, e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="service_data (JSON)"
-            .value=${cfg.service_data ? JSON.stringify(cfg.service_data) : ''}
-            @input=${e => {
-              let v = e.target.value;
-              try { v = v ? JSON.parse(v) : undefined; } catch { v = undefined; }
-              this._fire(`${type}_action.service_data`, v);
-            }}
-          />
-        ` : ''}
-      </div>
     `;
   }
 }

@@ -168,40 +168,54 @@ export class BubbleRoom extends LitElement {
   
     const list = [];
   
-    // i “mushroom” normali (1..5) — lascia 5 se vuoi, o 1..6 se ne hai sei
+    // i “mushroom” normali (1..5) — ora passiamo anche entity_id, tap_action, hold_action
     for (let i = 1; i <= 5; i++) {
-      const entId = entities[`mushroom${i}`]?.entity;
+      const key   = `mushroom${i}`;
+      const conf  = entities[key] || {};
+      const entId = conf.entity;
       const st    = this.hass?.states?.[entId];
       if (!entId || !st) continue;
   
       list.push({
-        icon:  entities[`mushroom${i}`]?.icon || st.attributes.icon || 'mdi:flash',
+        icon:  conf.icon || st.attributes.icon || resolveEntityIcon(entId, this.hass) || 'mdi:flash',
         state: st.state,
         color: st.state === 'on' ? activeCol : inactiveCol,
-        dx: entities[`mushroom${i}`]?.dx ?? 0,
-        dy: entities[`mushroom${i}`]?.dy ?? 0,
-        angle_deg: entities[`mushroom${i}`]?.angle_deg,
-        radius_factor: entities[`mushroom${i}`]?.radius_factor,
+        dx: conf.dx ?? 0,
+        dy: conf.dy ?? 0,
+        angle_deg: conf.angle_deg,
+        radius_factor: conf.radius_factor,
+
+        // >>> aggiunte per far funzionare le azioni impostate in MushroomPanel
+        entity_id: entId,
+        tap_action:  conf.tap_action,
+        hold_action: conf.hold_action,
       });
     }
   
-    // 6) CAMERA (in alto a destra, fuori sfondo – la posizione la gestisce BubbleMushroom)
-    const camId = entities.camera?.entity;
+    // 6) CAMERA (in alto a destra: posizione/scala gestite in BubbleMushroom)
+    const camCfg = entities.camera || {};
+    const camId  = camCfg.entity;
     if (camId && this.hass.states?.[camId]) {
       const st = this.hass.states[camId];
       list.push({
-        icon:  entities.camera.icon || st.attributes.icon || 'mdi:cctv',
+        icon:  camCfg.icon || st.attributes.icon || resolveEntityIcon(camId, this.hass) || 'mdi:cctv',
         state: st.state,
-        color: activeCol,                // puoi cambiare schema colori se vuoi
-        dx: entities.camera.dx ?? 0,
-        dy: entities.camera.dy ?? 0,
-        angle_deg: entities.camera.angle_deg,
-        radius_factor: entities.camera.radius_factor,
+        color: activeCol,                // schema a piacere
+        dx: camCfg.dx ?? 0,
+        dy: camCfg.dy ?? 0,
+        angle_deg: camCfg.angle_deg,
+        radius_factor: camCfg.radius_factor,
+
+        // >>> aggiunte per far funzionare le azioni impostate nel CameraPanel
+        entity_id: camId,
+        tap_action:  camCfg.tap_action,
+        hold_action: camCfg.hold_action,
+
         kind: 'camera',
       });
     }
   
-    // 7) CLIMATE (in basso a sinistra, dentro sfondo)
+    // 7) CLIMATE: lasciato com’è (non lo tocchiamo ora)
     const clId = entities.climate?.entity;
     if (clId && this.hass.states?.[clId]) {
       const st = this.hass.states[clId];

@@ -6,7 +6,7 @@ import {
   COMMON_CATS,
   FILTER_LABELS,
 } from '../helpers/entity-filters.js';
-import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // ← AGGIUNTA
+import { resolveEntityIcon } from '../helpers/icon-mapping.js';
 
 export class MushroomPanel extends LitElement {
   static properties = {
@@ -14,7 +14,6 @@ export class MushroomPanel extends LitElement {
     config:    { type: Object },
     expanded:  { type: Boolean },
 
-    // stati interni del pannello
     _expanded: { type: Array,  state: true }, // quale “pill” è aperta
     _filters:  { type: Array,  state: true }, // 5 array di categorie
     _entities: { type: Array,  state: true }, // 5 entity_id
@@ -54,13 +53,10 @@ export class MushroomPanel extends LitElement {
       }
 
       // 4) AUTO-ICONS: se c'è entity ma icona vuota → riempi ora
-      for (let i = 0; i < 5; i++) {
-        this._autoFillIconForIndex(i);
-      }
+      for (let i = 0; i < 5; i++) this._autoFillIconForIndex(i);
     }
   }
 
-  /* ------------------------------ STILI ------------------------------ */
   static styles = css`
     :host { display: block; }
     .glass-panel {
@@ -142,6 +138,30 @@ export class MushroomPanel extends LitElement {
     ha-selector { width: 100%; box-sizing: border-box; }
     ha-selector::part(combobox) { min-height: 40px; }
 
+    /* === stile bottoni azione (come SubButtonPanel) === */
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .pill-button {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #555;
+      cursor: pointer;
+      background: transparent;
+      font-weight: 600;
+      transition: background 0.18s, border-color 0.18s, color 0.18s;
+    }
+    .pill-button.active {
+      border-color: #36e6a0;
+      color: #36e6a0;
+    }
+    .pill-button:hover:not(.active) {
+      background: rgba(54,230,160,0.1);
+    }
+
     .reset-button {
       border: 3.5px solid #ff4c6a; color: #ff4c6a;
       border-radius: 24px; padding: 12px 38px;
@@ -157,11 +177,9 @@ export class MushroomPanel extends LitElement {
     }
   `;
 
-  /* ------------------------------ RENDER ----------------------------- */
   render() {
     const autoDisc = this.config.auto_discovery_sections?.mushroom ?? false;
 
-    // opzioni categorie (etichette leggibili)
     const options = COMMON_CATS.map(cat => ({
       value: cat,
       label: FILTER_LABELS[cat] || cat.charAt(0).toUpperCase() + cat.slice(1),
@@ -178,7 +196,6 @@ export class MushroomPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🍄 Mushroom Entities</div>
 
-        <!-- Auto-discover -->
         <div class="input-group autodiscover">
           <input
             type="checkbox"
@@ -188,10 +205,8 @@ export class MushroomPanel extends LitElement {
           <label>🪄 Auto-discover Mushroom</label>
         </div>
 
-        <!-- 5 “pill” -->
         ${this._expanded.map((open, i) => this._renderMushroom(i, open, options))}
 
-        <!-- Reset -->
         <button class="reset-button" @click=${() => this._reset()}>
           🧹 Reset Mushrooms
         </button>
@@ -204,9 +219,10 @@ export class MushroomPanel extends LitElement {
     const types = this._filters[i];
     const ent   = this._entities[i];
     const icon  = this._icons[i];
+    const cfg   = (this.config.entities && this.config.entities[key]) ? this.config.entities[key] : {};
 
-    // lista candidati per il selettore entità (filtrati)
     const cands = candidatesFor(this.hass, this.config, 'mushroom', types);
+    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
 
     return html`
       <div class="mini-pill ${open ? 'expanded' : ''}">
@@ -228,7 +244,7 @@ export class MushroomPanel extends LitElement {
               ></ha-selector>
             </div>
 
-            <!-- Entity selector -->
+            <!-- Entity -->
             <div class="input-group">
               <label>Entity:</label>
               <ha-selector
@@ -240,7 +256,7 @@ export class MushroomPanel extends LitElement {
               ></ha-selector>
             </div>
 
-            <!-- Icon selector -->
+            <!-- Icon -->
             <div class="input-group">
               <label>Icon:</label>
               <ha-selector
@@ -250,11 +266,66 @@ export class MushroomPanel extends LitElement {
                 @value-changed=${e => this._onIcon(i, e.detail.value)}
               ></ha-selector>
             </div>
+
+            <!-- Tap Action -->
+            <div class="input-group">
+              <label>Tap Action:</label>
+              <div class="pill-group">
+                ${actions.map(a => html`
+                  <button
+                    class="pill-button ${cfg.tap_action?.action === a ? 'active' : ''}"
+                    @click=${() => this._onAction(i, 'tap', 'action', a)}
+                  >${a}</button>
+                `)}
+              </div>
+              ${this._extraFields(i, 'tap', cfg)}
+            </div>
+
+            <!-- Hold Action -->
+            <div class="input-group">
+              <label>Hold Action:</label>
+              <div class="pill-group">
+                ${actions.map(a => html`
+                  <button
+                    class="pill-button ${cfg.hold_action?.action === a ? 'active' : ''}"
+                    @click=${() => this._onAction(i, 'hold', 'action', a)}
+                  >${a}</button>
+                `)}
+              </div>
+              ${this._extraFields(i, 'hold', cfg)}
+            </div>
           </div>
         ` : ''}
       </div>
     `;
   }
+
+  _extraFields(i, type, cfg) {
+    const act = cfg?.[`${type}_action`]?.action;
+    if (act === 'navigate') {
+      return html`
+        <input type="text" placeholder="Path"
+          .value=${cfg[`${type}_action`]?.navigation_path || ''}
+          @input=${e => this._onAction(i, type, 'navigation_path', e.target.value)}
+        />
+      `;
+    }
+    if (act === 'call-service') {
+      return html`
+        <input type="text" placeholder="Service (es. light.turn_on)"
+          .value=${cfg[`${type}_action`]?.service || ''}
+          @input=${e => this._onAction(i, type, 'service', e.target.value)}
+        />
+        <input type="text" placeholder='Service Data (JSON)'
+          .value=${cfg[`${type}_action`]?.service_data ? JSON.stringify(cfg[`${type}_action`].service_data) : ''}
+          @input=${e => this._onAction(i, type, 'service_data', this._safeJson(e.target.value))}
+        />
+      `;
+    }
+    return '';
+    }
+
+  _safeJson(txt) { try { return JSON.parse(txt); } catch { return {}; } }
 
   /* --------------------------- HANDLERS ------------------------------ */
   _toggleAuto(on) {
@@ -307,6 +378,16 @@ export class MushroomPanel extends LitElement {
     }));
   }
 
+  _onAction(i, type, field, val) {
+    const key = `mushroom${i+1}`;
+    const prev = this.config?.entities?.[key]?.[`${type}_action`] || {};
+    const next = { ...prev, [field]: val };
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: `entities.${key}.${type}_action`, val: next },
+      bubbles: true, composed: true,
+    }));
+  }
+
   _reset() {
     this._expanded = Array(5).fill(false);
     this._filters  = Array(5).fill().map(() => [...COMMON_CATS]);
@@ -325,6 +406,15 @@ export class MushroomPanel extends LitElement {
       }));
       this.dispatchEvent(new CustomEvent('panel-changed', {
         detail: { prop: `entities.mushroom${i}.icon`, val: '' },
+        bubbles: true, composed: true,
+      }));
+      // reset anche azioni
+      this.dispatchEvent(new CustomEvent('panel-changed', {
+        detail: { prop: `entities.mushroom${i}.tap_action`, val: { action: 'none' } },
+        bubbles: true, composed: true,
+      }));
+      this.dispatchEvent(new CustomEvent('panel-changed', {
+        detail: { prop: `entities.mushroom${i}.hold_action`, val: { action: 'none' } },
         bubbles: true, composed: true,
       }));
     }

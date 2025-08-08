@@ -117,34 +117,40 @@ export class BubbleMushroom extends LitElement {
     const contactX = (size / 2) + touchPad;
     const contactY = (size / 2) + touchPad;
 
-    // fattore SOLO per la camera (6ª entità)
-    const cameraScale = 0.75;
-    const dCam = size * cameraScale; // diametro reale camera
+    // scale per elementi speciali
+    const cameraScale  = 0.75;            // #6
+    const climateScale = 0.75;            // #7 ← AGGIUNTO
+    const dCam = size * cameraScale;      // diametro camera
+    const dCli = size * climateScale;     // diametro climate  ← AGGIUNTO
 
     // POSIZIONI 1..7
     const positions = [
-      // 1
+      // 1 — alto-sinistra, dentro lo sfondo
       { x: contactX, y: contactY },
-      // 2 (arco alto, vicino all'inizio curvatura)
+
+      // 2 — arco alto, vicino all'inizio curvatura (sposta con aFlat)
       { x: cX + rArcX * Math.cos(-aFlat), y: cY + rArcY * Math.sin(-aFlat) },
-      // 3 (arco alto-destra)
+
+      // 3 — arco alto-destra
       { x: cX + rArcX * Math.cos(-a30),   y: cY + rArcY * Math.sin(-a30)   },
-      // 4 (arco basso-destra)
+
+      // 4 — arco basso-destra
       { x: cX + rArcX * Math.cos(+a30),   y: cY + rArcY * Math.sin(+a30)   },
-      // 5 (arco basso, vicino all'inizio curvatura)
+
+      // 5 — arco basso, vicino all'inizio curvatura
       { x: cX + rArcX * Math.cos(+aFlat), y: cY + rArcY * Math.sin(+aFlat) },
 
-      // 6 = CAMERA → angolo alto-destra, DENTRO l’area (usa il suo diametro!)
+      // 6 — CAMERA → angolo alto-destra, DENTRO l’area (usa il suo diametro)
       { x: width - (dCam / 2), y: (dCam / 2) },
 
-      // 7 = CLIMATE → angolo basso-sinistra, dentro lo sfondo
-      { x: (size / 2) + touchPad, y: height - (size / 2) - touchPad },
+      // 7 — CLIMATE → angolo basso-sinistra, DENTRO l’area (usa il suo diametro)
+      { x: (dCli / 2) + touchPad, y: height - (dCli / 2) - touchPad },
     ];
 
     return html`
       ${this.entities.map((e, i) => {
-        // diametro per-ENTITÀ (camera più piccola)
-        const d = (i === 5) ? dCam : size;
+        // diametro per-ENTITÀ: camera (#6) e climate (#7) più piccoli
+        const d = (i === 5) ? dCam : (i === 6 ? dCli : size);
         const iconSize = d * 0.95;
 
         const base = positions[i] ?? { x: cX, y: cY };
