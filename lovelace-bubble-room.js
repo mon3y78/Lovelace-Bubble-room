@@ -1533,11 +1533,11 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
     `}}customElements.define("bubble-sensor",Tt);class Ft extends st{static properties={entities:{type:Array}};constructor(){super(),this.entities=[],this._containerSize={width:0,height:0},this._rafSize=null,this._ro=new ResizeObserver(t=>{const e=t[0]?.contentRect;e&&(this._rafSize&&cancelAnimationFrame(this._rafSize),this._rafSize=requestAnimationFrame(()=>{const t=Math.round(e.width),i=Math.round(e.height);t===this._containerSize.width&&i===this._containerSize.height||(this._containerSize={width:t,height:i},this.requestUpdate())}))}),this._holdThreshold=500,this._holdTimer=null,this._holdFired=!1,this._lastTapTs=0}connectedCallback(){super.connectedCallback(),this._ro.observe(this)}disconnectedCallback(){this._ro.disconnect(),super.disconnectedCallback()}static styles=n`
     :host {
       display: block;
-      position: relative;
       width: 100%;
       height: 100%;
-      contain: content;
-      pointer-events: none;
+      position: relative;
+      contain: strict;
+      pointer-events: none; /* solo gli elementi interni rispondono */
     }
     .mushroom-entity {
       position: absolute;
@@ -1547,11 +1547,13 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       align-items: center;
       justify-content: center;
       z-index: 1;
-      pointer-events: auto;
+      pointer-events: auto; /* riabilita click sui bottoni */
     }
-    .mushroom-entity ha-icon { display: block; }
+    .mushroom-entity ha-icon {
+      display: block;
+    }
   `;render(){const{width:t,height:e}=this._containerSize;if(!t||!e)return I``;const i=Math.max(Math.round(.14*Math.min(t,e)),36),s=Math.round(.62*i),o=Math.round(t/2),n=Math.round(e/2);return I`
-      ${this.entities?.map(t=>{if(!t)return I``;if(!("string"==typeof t?t:t.entity_id))return I``;const e=n,a=o+(t.dx??0),r=e+(t.dy??0);return I`
+      ${this.entities?.map(t=>{if(!t)return I``;if(!("string"==typeof t?t:t.entity_id||t.entity))return I``;const e=n,a=o+(t.dx??0),r=e+(t.dy??0);return I`
           <div
             class="mushroom-entity"
             style="
@@ -1570,7 +1572,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
             <ha-icon icon="${t.icon}" style="--mdc-icon-size:${s}px;"></ha-icon>
           </div>
         `})}
-    `}_handleClick(t){this.dispatchEvent(new CustomEvent("hass-action",{detail:{config:{entity:t.entity_id,tap_action:t.tap_action||{action:"toggle"},hold_action:t.hold_action||{action:"more-info"}},action:"tap"},bubbles:!0,composed:!0}))}_dispatchAction(t,e){const i={entity:t.entity_id,tap_action:t.tap_action||{action:"toggle"},hold_action:t.hold_action||{action:"more-info"},double_tap_action:t.double_tap_action};this.dispatchEvent(new CustomEvent("hass-action",{detail:{config:i,action:e},bubbles:!0,composed:!0}))}_onPointerDown(t,e){t.preventDefault(),this._holdFired=!1,clearTimeout(this._holdTimer),this._holdTimer=setTimeout(()=>{this._holdFired=!0,this._dispatchAction(e,"hold")},this._holdThreshold)}_onPointerUp(t,e){if(t.preventDefault(),clearTimeout(this._holdTimer),this._holdFired)return void(this._holdFired=!1);const i=Date.now();if(e?.double_tap_action&&i-this._lastTapTs<300)return this._lastTapTs=0,void this._dispatchAction(e,"double_tap");this._lastTapTs=i,setTimeout(()=>{Date.now()-this._lastTapTs>=280&&this._dispatchAction(e,"tap")},280)}_onPointerCancel(){clearTimeout(this._holdTimer),this._holdFired=!1}}customElements.define("bubble-mushroom",Ft);class Rt extends st{static properties={icon:{type:String},active:{type:Boolean},colorActive:{type:String},colorInactive:{type:String},backgroundActive:{type:String},backgroundInactive:{type:String}};constructor(){super(),this.icon="",this.active=!1,this.colorActive="#21df73",this.colorInactive="#173c16",this.backgroundActive="rgba(33,223,115,0.12)",this.backgroundInactive="rgba(23,60,22,0.08)"}static styles=n`
+    `}_handleClick(t){const e={entity:t.entity_id,tap_action:t.tap_action||{action:"toggle"},hold_action:t.hold_action||{action:"more-info"}},i=new Event("hass-action",{bubbles:!0,composed:!0});i.detail={config:e,action:"tap"},this.dispatchEvent(i)}_dispatchAction(t,e){const i={entity:t.entity_id||t.entity||t,tap_action:t.tap_action||{action:"toggle"},hold_action:t.hold_action||{action:"more-info"},double_tap_action:t.double_tap_action},s=new Event("hass-action",{bubbles:!0,composed:!0});s.detail={config:i,action:e},this.dispatchEvent(s)}_onPointerDown(t,e){t.preventDefault(),this._holdFired=!1,clearTimeout(this._holdTimer),this._holdTimer=setTimeout(()=>{this._holdFired=!0,this._dispatchAction(e,"hold")},this._holdThreshold)}_onPointerUp(t,e){if(t.preventDefault(),clearTimeout(this._holdTimer),this._holdFired)return void(this._holdFired=!1);const i=Date.now();if(e?.double_tap_action&&i-this._lastTapTs<300)return this._lastTapTs=0,void this._dispatchAction(e,"double_tap");this._lastTapTs=i,setTimeout(()=>{Date.now()-this._lastTapTs>=280&&this._dispatchAction(e,"tap")},280)}_onPointerCancel(){clearTimeout(this._holdTimer),this._holdFired=!1}}customElements.define("bubble-mushroom",Ft);class Rt extends st{static properties={icon:{type:String},active:{type:Boolean},colorActive:{type:String},colorInactive:{type:String},backgroundActive:{type:String},backgroundInactive:{type:String}};constructor(){super(),this.icon="",this.active=!1,this.colorActive="#21df73",this.colorInactive="#173c16",this.backgroundActive="rgba(33,223,115,0.12)",this.backgroundInactive="rgba(23,60,22,0.08)"}static styles=n`
     :host {
       position: absolute;   /* prende come riferimento .icon-mushroom-area */
       inset: 0;
