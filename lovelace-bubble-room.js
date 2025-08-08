@@ -1400,8 +1400,8 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
     .bubble-room-grid.tall .row1      { grid-template-rows:1fr 2fr; }
     .bubble-room-grid.tall .row2      { grid-template-columns:1fr 0fr; }
 
-    .bubble-room-grid.wide .main-area { grid-template-rows:2fr 1fr; }
-    .bubble-room-grid.wide .row1      { grid-template-rows:2fr 1fr; }
-    .bubble-room-grid.wide .row2      { grid-template-columns:1fr 1fr; }
+    .bubble-room-grid.wide .main-area { grid-template-rows:1fr 2fr; }
+    .bubble-room-grid.wide .row1      { grid-template-rows:1fr 2fr; }
+    .bubble-room-grid.wide .row2      { grid-template-columns:2fr 1fr; }
   `}customElements.define("bubble-room",Ut),window.customCards.push({type:"bubble-room",name:"Bubble Room",description:"A stylish room control card with environmental sensors",preview:!0,documentationURL:"https://github.com/mon3y78/Lovelace-Bubble-room"});export{Ut as BubbleRoom};
 //# sourceMappingURL=lovelace-bubble-room.js.map
