@@ -3,15 +3,17 @@ import { LitElement, html, css } from 'lit';
 
 export class BubbleMushroom extends LitElement {
   static properties = {
-    // Array: { entity_id, icon, color, dx?, dy?, tap_action?, hold_action? }
+    // Array di entità “mushroom” posizionate radialmente/XY:
+    //   { entity_id, icon, color, dx?, dy?, tap_action?, hold_action?, double_tap_action? }
     entities: { type: Array },
   };
 
-  // BubbleMushroom.js
   constructor() {
     super();
     this.entities = [];
     this._containerSize = { width: 0, height: 0 };
+
+    // Resize observer per adattare la disposizione
     this._rafSize = null;
     this._ro = new ResizeObserver((entries) => {
       const cr = entries[0]?.contentRect;
@@ -28,13 +30,12 @@ export class BubbleMushroom extends LitElement {
       });
     });
 
-    // gesture state for actions
-    this._holdThreshold = 500;   // ms
+    // 👇 Stato gesture per azioni, coerente coi SubButton
+    this._holdThreshold = 500;   // ms per hold
     this._holdTimer = null;
     this._holdFired = false;
-    this._lastTapTs = 0;         // for double tap
+    this._lastTapTs = 0;         // per double tap
   }
-
 
   connectedCallback() {
     super.connectedCallback();
@@ -48,11 +49,11 @@ export class BubbleMushroom extends LitElement {
   static styles = css`
     :host {
       display: block;
-      position: relative;
       width: 100%;
       height: 100%;
-      contain: content;
-      pointer-events: none;
+      position: relative;
+      contain: strict;
+      pointer-events: none; /* solo gli elementi interni rispondono */
     }
     .mushroom-entity {
       position: absolute;
@@ -62,20 +63,22 @@ export class BubbleMushroom extends LitElement {
       align-items: center;
       justify-content: center;
       z-index: 1;
-      pointer-events: auto;
+      pointer-events: auto; /* riabilita click sui bottoni */
     }
-    .mushroom-entity ha-icon { display: block; }
+    .mushroom-entity ha-icon {
+      display: block;
+    }
   `;
 
   render() {
     const { width, height } = this._containerSize;
     if (!width || !height) return html``;
 
-    // Calcolo dimensioni “funghetti”
-    const d = Math.max(Math.round(Math.min(width, height) * 0.14), 36); // diametro base
+    // Calcolo dimensioni “funghi”
+    const d = Math.max(Math.round(Math.min(width, height) * 0.14), 36); // diametro
     const iconSize = Math.round(d * 0.62);
 
-    // Centro del contenitore
+    // Centro (se poi li sposti con dx/dy li prenderemo in considerazione sotto)
     const cX = Math.round(width / 2);
     const cY = Math.round(height / 2);
 
@@ -83,13 +86,12 @@ export class BubbleMushroom extends LitElement {
       ${this.entities?.map((e) => {
         if (!e) return html``;
 
-        // Supporta entity come stringa o oggetto {entity_id: '...', ...}
-        const entityId = typeof e === 'string' ? e : e.entity_id;
+        // Supporta string o oggetto
+        const entityId = typeof e === 'string' ? e : (e.entity_id || e.entity);
         if (!entityId) return html``;
 
-        // Coordinate di base (derivate da posizione polare o altro, qui semplifico)
+        // Coordinate base + micro shift (dx/dy) dal config
         const base = { x: cX, y: cY };
-        // micro-shift da YAML
         const left = base.x + (e.dx ?? 0);
         const top  = base.y + (e.dy ?? 0);
 
@@ -116,35 +118,32 @@ export class BubbleMushroom extends LitElement {
     `;
   }
 
+  // (retrocompat) handler click legacy – non usato più dopo l’introduzione dei pointer
   _handleClick(entity) {
-    // (rimasto per retrocompatibilità; non più usato perché ora gestiamo pointer)
-    this.dispatchEvent(new CustomEvent('hass-action', {
-      detail: {
-        config: {
-          entity: entity.entity_id,
-          tap_action:  entity.tap_action  || { action: 'toggle' },
-          hold_action: entity.hold_action || { action: 'more-info' },
-        },
-        action: 'tap',
-      },
-      bubbles: true,
-      composed: true,
-    }));
+    const actionConfig = {
+      entity: entity.entity_id,
+      tap_action:  entity.tap_action  || { action: 'toggle' },
+      hold_action: entity.hold_action || { action: 'more-info' },
+    };
+    const evt = new Event('hass-action', { bubbles: true, composed: true });
+    evt.detail = { config: actionConfig, action: 'tap' };
+    this.dispatchEvent(evt);
   }
 
-  _dispatchAction(entity, which) {
-    // which: 'tap' | 'hold' | 'double_tap'
-    const cfg = {
-      entity: entity.entity_id,
+  // 👇 Dispatch identico ai SubButton: evento 'hass-action' + detail {config, action}
+  _dispatchAction(entity, actionType) {
+    const actionConfig = {
+      entity: entity.entity_id || entity.entity || entity,
       tap_action: entity.tap_action || { action: 'toggle' },
       hold_action: entity.hold_action || { action: 'more-info' },
       double_tap_action: entity.double_tap_action,
     };
-    this.dispatchEvent(new CustomEvent('hass-action', {
-      detail: { config: cfg, action: which },
-      bubbles: true,
-      composed: true,
-    }));
+    const evt = new Event('hass-action', { bubbles: true, composed: true });
+    evt.detail = {
+      config: actionConfig,
+      action: actionType,
+    };
+    this.dispatchEvent(evt);
   }
 
   _onPointerDown(ev, entity) {
@@ -162,14 +161,18 @@ export class BubbleMushroom extends LitElement {
     clearTimeout(this._holdTimer);
     if (this._holdFired) {
       this._holdFired = false;
-      return;
+      return; // già gestito hold
     }
+
+    // double tap opzionale
     const now = Date.now();
-    if (entity?.double_tap_action && now - this._lastTapTs < 300) {
+    if (entity?.double_tap_action && (now - this._lastTapTs) < 300) {
       this._lastTapTs = 0;
       this._dispatchAction(entity, 'double_tap');
       return;
     }
+
+    // tap (con piccolo delay per dare priorità al double)
     this._lastTapTs = now;
     setTimeout(() => {
       if (Date.now() - this._lastTapTs >= 280) {
