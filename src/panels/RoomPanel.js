@@ -2,7 +2,7 @@
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor }     from '../helpers/entity-filters.js';
-import { resolveEntityIcon } from '../icon-mapping.js'; // path corretto
+import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // path corretto
 
 const PRESENCE_CATS = [
   'presence',
