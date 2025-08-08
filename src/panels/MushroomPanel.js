@@ -12,9 +12,12 @@ export class MushroomPanel extends LitElement {
     hass:      { type: Object },
     config:    { type: Object },
     expanded:  { type: Boolean },
-    _expanded: { type: Array,  state: true }, // quale pill è aperta
-    _filters:  { type: Array,  state: true }, // array di 5: categorie selezionate
-    _entities: { type: Array,  state: true }, // array di 5: entity_id selezionate
+
+    // stati interni del pannello
+    _expanded: { type: Array,  state: true }, // quale “pill” è aperta
+    _filters:  { type: Array,  state: true }, // 5 array di categorie
+    _entities: { type: Array,  state: true }, // 5 entity_id
+    _icons:    { type: Array,  state: true }, // 5 icone (mdi:...)
   };
 
   constructor() {
@@ -22,30 +25,36 @@ export class MushroomPanel extends LitElement {
     this.hass      = {};
     this.config    = {};
     this.expanded  = false;
+
     this._expanded = Array(5).fill(false);
-    // inizializza con TUTTE le categorie comuni
     this._filters  = Array(5).fill().map(() => [...COMMON_CATS]);
     this._entities = Array(5).fill('');
+    this._icons    = Array(5).fill('');
   }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // 1️⃣ auto-discover
+      // 1) auto-discover opzionale
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.mushroom');
-      // 2️⃣ sync da config
+
+      // 2) sincronizza filtri da config (se presenti)
       const cfgFilters = this.config.mushroom_filters;
       if (Array.isArray(cfgFilters) && cfgFilters.length === 5) {
         this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...COMMON_CATS]);
       }
+
+      // 3) sincronizza entity + icon da config.entities
       const ents = this.config.entities || {};
       for (let i = 0; i < 5; i++) {
         const key = `mushroom${i+1}`;
-        const e   = ents[key]?.entity;
-        if (e) this._entities[i] = e;
+        const rec = ents[key] || {};
+        if (rec.entity) this._entities[i] = rec.entity;
+        if (typeof rec.icon === 'string') this._icons[i] = rec.icon;
       }
     }
   }
 
+  /* ------------------------------ STILI ------------------------------ */
   static styles = css`
     :host { display: block; }
     .glass-panel {
@@ -119,44 +128,34 @@ export class MushroomPanel extends LitElement {
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .input-group {
-      margin-bottom: 12px;
-    }
+    .input-group { margin-bottom: 12px; }
     .input-group label {
       display: block; font-weight: 600;
       margin-bottom: 6px; color: #36e6a0;
     }
-    ha-selector {
-      width: 100%; box-sizing: border-box;
-    }
-    ha-selector::part(combobox) {
-      min-height: 40px;
-    }
+    ha-selector { width: 100%; box-sizing: border-box; }
+    ha-selector::part(combobox) { min-height: 40px; }
 
     .reset-button {
-      border: 3.5px solid #ff4c6a;
-      color: #ff4c6a;
-      border-radius: 24px;
-      padding: 12px 38px;
-      background: transparent;
-      cursor: pointer;
-      display: block;
-      margin: 20px auto;
-      font-size: 1.15rem;
-      font-weight: 700;
+      border: 3.5px solid #ff4c6a; color: #ff4c6a;
+      border-radius: 24px; padding: 12px 38px;
+      background: transparent; cursor: pointer;
+      display: block; margin: 20px auto;
+      font-size: 1.15rem; font-weight: 700;
       box-shadow: 0 2px 24px #ff4c6a44;
       transition: background 0.18s, color 0.18s, box-shadow 0.18s;
     }
     .reset-button:hover {
       background: rgba(255,76,106,0.18);
-      color: #fff;
-      box-shadow: 0 6px 32px #ff4c6abf;
+      color: #fff; box-shadow: 0 6px 32px #ff4c6abf;
     }
   `;
 
+  /* ------------------------------ RENDER ----------------------------- */
   render() {
     const autoDisc = this.config.auto_discovery_sections?.mushroom ?? false;
-    // opzioni: domini comuni + device_class, etichettate da FILTER_LABELS
+
+    // opzioni categorie (etichette leggibili)
     const options = COMMON_CATS.map(cat => ({
       value: cat,
       label: FILTER_LABELS[cat] || cat.charAt(0).toUpperCase() + cat.slice(1),
@@ -173,7 +172,7 @@ export class MushroomPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🍄 Mushroom Entities</div>
 
-        <!-- 1️⃣ Auto-discover -->
+        <!-- Auto-discover -->
         <div class="input-group autodiscover">
           <input
             type="checkbox"
@@ -183,10 +182,10 @@ export class MushroomPanel extends LitElement {
           <label>🪄 Auto-discover Mushroom</label>
         </div>
 
-        <!-- 2️⃣ Cinque mini-pill -->
+        <!-- 5 “pill” -->
         ${this._expanded.map((open, i) => this._renderMushroom(i, open, options))}
 
-        <!-- 3️⃣ Reset -->
+        <!-- Reset -->
         <button class="reset-button" @click=${() => this._reset()}>
           🧹 Reset Mushrooms
         </button>
@@ -198,6 +197,9 @@ export class MushroomPanel extends LitElement {
     const key   = `mushroom${i+1}`;
     const types = this._filters[i];
     const ent   = this._entities[i];
+    const icon  = this._icons[i];
+
+    // lista candidati per il selettore entità (filtrati)
     const cands = candidatesFor(this.hass, this.config, 'mushroom', types);
 
     return html`
@@ -206,6 +208,7 @@ export class MushroomPanel extends LitElement {
           Mushroom ${i+1}
           <span class="chevron">${open ? '▼' : '▶'}</span>
         </div>
+
         ${open ? html`
           <div class="mini-pill-content">
             <!-- Filter categories -->
@@ -230,12 +233,24 @@ export class MushroomPanel extends LitElement {
                 @value-changed=${e => this._onEntity(i, e.detail.value)}
               ></ha-selector>
             </div>
+
+            <!-- Icon selector -->
+            <div class="input-group">
+              <label>Icon:</label>
+              <ha-selector
+                .hass=${this.hass}
+                .value=${icon}
+                .selector=${{ icon: {} }}
+                @value-changed=${e => this._onIcon(i, e.detail.value)}
+              ></ha-selector>
+            </div>
           </div>
         ` : ''}
       </div>
     `;
   }
 
+  /* --------------------------- HANDLERS ------------------------------ */
   _toggleAuto(on) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: 'auto_discovery_sections.mushroom', val: on },
@@ -244,7 +259,7 @@ export class MushroomPanel extends LitElement {
   }
 
   _togglePill(i) {
-    this._expanded = this._expanded.map((v, idx) => idx === i ? !v : false);
+    this._expanded = this._expanded.map((v, idx) => (idx === i ? !v : false));
     this.requestUpdate();
   }
 
@@ -264,18 +279,32 @@ export class MushroomPanel extends LitElement {
     }));
   }
 
+  _onIcon(i, icon) {
+    this._icons[i] = icon || '';
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: `entities.mushroom${i+1}.icon`, val: this._icons[i] },
+      bubbles: true, composed: true,
+    }));
+  }
+
   _reset() {
     this._expanded = Array(5).fill(false);
     this._filters  = Array(5).fill().map(() => [...COMMON_CATS]);
     this._entities = Array(5).fill('');
+    this._icons    = Array(5).fill('');
 
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: 'mushroom_filters', val: this._filters },
       bubbles: true, composed: true,
     }));
+
     for (let i = 1; i <= 5; i++) {
       this.dispatchEvent(new CustomEvent('panel-changed', {
         detail: { prop: `entities.mushroom${i}.entity`, val: '' },
+        bubbles: true, composed: true,
+      }));
+      this.dispatchEvent(new CustomEvent('panel-changed', {
+        detail: { prop: `entities.mushroom${i}.icon`, val: '' },
         bubbles: true, composed: true,
       }));
     }
