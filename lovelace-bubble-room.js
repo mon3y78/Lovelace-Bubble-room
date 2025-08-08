@@ -1458,7 +1458,7 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
     }
     .mushroom-entity ha-icon { display: block; }
   `;render(){const{width:e,height:t}=this._containerSize;if(!e||!t)return T``;const i=window.innerWidth||e,s=.55;let o;if(i<=100)o=s;else if(i>=200)o=.25;else{o=s+(.25-s)*((i-100)/100)}const n=.5*(t+Math.min(e,1.6*t))*o,a=.95*n,r=.6*e,l=.6*t,c=r*Math.min(1,e/(2*r)),d=l*Math.min(1,t/(2*l)),h=e-c,p=.5*t,u=Math.max(4,.015*Math.min(e,t)),b=Math.max(0,c-n/2-1),g=Math.max(0,d-n/2-1),m=e=>Math.PI*e/180,f=m(30),v=m(85),_=[{x:n/2+1,y:n/2+1},{x:h+b*Math.cos(-v),y:p+g*Math.sin(-v)},{x:h+b*Math.cos(-f),y:p+g*Math.sin(-f)},{x:h+b*Math.cos(+f),y:p+g*Math.sin(+f)},{x:h+b*Math.cos(+v),y:p+g*Math.sin(+v)},{x:e-n/2-u,y:n/2+u},{x:n/2+1,y:t-n/2-1}];return T`
-      ${this.entities.map((e,t)=>{const i=_[t]??{x:h,y:p},s=i.x+(e.dx??0),o=i.y+(e.dy??0);return T`
+      ${this.entities.map((e,t)=>{const i=_[t]??{x:h,y:p},s=i.x+(e.dx??0),o=i.y+(e.dy??0);let r=1;return t<5?r=.95:5!==t&&6!==t||(r=.75),T`
           <div
             class="mushroom-entity"
             style="
@@ -1470,7 +1470,10 @@ var te,ie;class se extends m{constructor(){super(...arguments),this.renderOption
             "
             @click=${()=>this._handleClick(e)}
           >
-            <ha-icon icon="${e.icon}" style="--mdc-icon-size:${a}px;"></ha-icon>
+            <ha-icon
+              icon="${e.icon}"
+              style="--mdc-icon-size:${a*r}px;"
+            ></ha-icon>
           </div>
         `})}
     `}}customElements.define("bubble-mushroom",je);class Me extends se{static properties={icon:{type:String},active:{type:Boolean},colorActive:{type:String},colorInactive:{type:String},backgroundActive:{type:String},backgroundInactive:{type:String}};constructor(){super(),this.icon="",this.active=!1,this.colorActive="#21df73",this.colorInactive="#173c16",this.backgroundActive="rgba(33,223,115,0.12)",this.backgroundInactive="rgba(23,60,22,0.08)"}static styles=n`
