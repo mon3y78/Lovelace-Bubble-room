@@ -276,9 +276,9 @@ export class BubbleRoom extends LitElement {
     .bubble-room-grid.tall .row1      { grid-template-rows:1fr 2fr; }
     .bubble-room-grid.tall .row2      { grid-template-columns:1fr 0fr; }
 
-    .bubble-room-grid.wide .main-area { grid-template-rows:2fr 1fr; }
-    .bubble-room-grid.wide .row1      { grid-template-rows:2fr 1fr; }
-    .bubble-room-grid.wide .row2      { grid-template-columns:1fr 1fr; }
+    .bubble-room-grid.wide .main-area { grid-template-rows:1fr 2fr; }
+    .bubble-room-grid.wide .row1      { grid-template-rows:1fr 2fr; }
+    .bubble-room-grid.wide .row2      { grid-template-columns:2fr 1fr; }
   `;
 }
 
