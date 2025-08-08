@@ -25,11 +25,14 @@ export class BubbleRoom extends LitElement {
 
   /* ───────────── configurazione ───────────── */
   setConfig(rawConfig) {
-    /* salvo il config (HA lo congelerà) */
     this.config = { layout: 'wide', ...rawConfig };
-    /* clono solo la parte che potrei modificare */
     this._entities = structuredClone(this.config.entities || {});
+  
+    // default soft per i nuovi gruppi (se non ci sono)
+    this._entities.camera  = this._entities.camera  || { entity: '', icon: '' };
+    this._entities.climate = this._entities.climate || { entity: '', icon: '' };
   }
+  
 
   static getStubConfig() {
     return {
@@ -159,29 +162,68 @@ export class BubbleRoom extends LitElement {
   /* ───────────── mushroom ───────────── */
   _getMushrooms() {
     const entities = this._entities || {};
-    const res = [];
-    for (let i = 1; i <= 6; i++) {
+  
+    const activeCol   = this.config.colors?.mushroom?.active   ?? '#00e676';
+    const inactiveCol = this.config.colors?.mushroom?.inactive ?? '#888';
+  
+    const list = [];
+  
+    // i “mushroom” normali (1..5) — lascia 5 se vuoi, o 1..6 se ne hai sei
+    for (let i = 1; i <= 5; i++) {
       const entId = entities[`mushroom${i}`]?.entity;
       const st    = this.hass?.states?.[entId];
       if (!entId || !st) continue;
-
-      const color = st.state === 'on'
-        ? (this.config.colors?.mushroom?.active   ?? '#00e676')
-        : (this.config.colors?.mushroom?.inactive ?? '#888');
-
-      res.push({
-        icon:  st.attributes.icon || 'mdi:flash',
+  
+      list.push({
+        icon:  entities[`mushroom${i}`]?.icon || st.attributes.icon || 'mdi:flash',
         state: st.state,
-        color,
+        color: st.state === 'on' ? activeCol : inactiveCol,
         dx: entities[`mushroom${i}`]?.dx ?? 0,
         dy: entities[`mushroom${i}`]?.dy ?? 0,
         angle_deg: entities[`mushroom${i}`]?.angle_deg,
         radius_factor: entities[`mushroom${i}`]?.radius_factor,
       });
     }
-    return res;
+  
+    // 6) CAMERA (in alto a destra, fuori sfondo – la posizione la gestisce BubbleMushroom)
+    const camId = entities.camera?.entity;
+    if (camId && this.hass.states?.[camId]) {
+      const st = this.hass.states[camId];
+      list.push({
+        icon:  entities.camera.icon || st.attributes.icon || 'mdi:cctv',
+        state: st.state,
+        color: activeCol,                // puoi cambiare schema colori se vuoi
+        dx: entities.camera.dx ?? 0,
+        dy: entities.camera.dy ?? 0,
+        angle_deg: entities.camera.angle_deg,
+        radius_factor: entities.camera.radius_factor,
+        kind: 'camera',
+      });
+    }
+  
+    // 7) CLIMATE (in basso a sinistra, dentro sfondo)
+    const clId = entities.climate?.entity;
+    if (clId && this.hass.states?.[clId]) {
+      const st = this.hass.states[clId];
+      const isActive =
+        st.state && st.state !== 'off' && st.state !== 'idle' ||
+        (st.attributes?.hvac_action && st.attributes.hvac_action !== 'off');
+  
+      list.push({
+        icon:  entities.climate.icon || st.attributes.icon || 'mdi:thermometer',
+        state: st.state,
+        color: isActive ? activeCol : inactiveCol,
+        dx: entities.climate.dx ?? 0,
+        dy: entities.climate.dy ?? 0,
+        angle_deg: entities.climate.angle_deg,
+        radius_factor: entities.climate.radius_factor,
+        kind: 'climate',
+      });
+    }
+  
+    return list;
   }
-
+  
   /* stub click */
   _onMushroomClick(ev) {
     /* puoi gestire altri eventi qui */

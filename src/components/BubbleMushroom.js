@@ -69,28 +69,29 @@ export class BubbleMushroom extends LitElement {
     const { width, height } = this._containerSize;
     if (!width || !height) return html``;
 
-    // --- dimensione dinamica entità (mobile -> desktop, interpolata)
+    // dimensione dinamica (mobile -> desktop)
     const vpWidth  = window.innerWidth || width;
-    const kMobile  = 0.55;    // diametro = 30% lato effettivo
-    const kDesktop = 0.25;    // diametro = 10% lato effettivo
+    const kMobile  = 0.55;
+    const kDesktop = 0.25;
     const wMobile  = 100;
     const wDesktop = 200;
 
     let k;
-    if (vpWidth <= wMobile)      k = kMobile;
-    else if (vpWidth >= wDesktop) k = kDesktop;
+    if (vpWidth <= wMobile)        k = kMobile;
+    else if (vpWidth >= wDesktop)  k = kDesktop;
     else {
       const t = (vpWidth - wMobile) / (wDesktop - wMobile);
       k = kMobile + (kDesktop - kMobile) * t;
     }
 
-    // lato effettivo per non esplodere in orizzontale
+    // lato effettivo per non “allargare” troppo
     const Rmax  = 1.6;
     const sideW = Math.min(width, height * Rmax);
     const side  = 0.5 * (height + sideW);
-    const size  = side * k; // diametro della bolla
+    const size  = side * k; // diametro bolla
+    const iconSize = size * 0.95;
 
-    // --- ellisse reale come da CSS (border-radius: 0 60% 60% 0) con clamping
+    // ellisse (border-radius: 0 60% 60% 0) con clamping
     const rxRaw  = width  * 0.60;
     const ryRaw  = height * 0.60;
     const scaleH = Math.min(1, width  / (rxRaw * 2));
@@ -100,43 +101,43 @@ export class BubbleMushroom extends LitElement {
     const cX     = width - rX;
     const cY     = height * 0.5;
 
-    // padding base per non “sanguinare” fuori
     const padBase = Math.max(4, Math.min(width, height) * 0.015);
+    const touchPad = 1; // 0 = a filo
 
-    // helper per gradi → radianti
-    const deg = (d) => (Math.PI * d) / 180;
-
-    // gap interno tra cerchio entità e bordo dello sfondo (contatto)
-    const touchPad = 1; // px (0 = a filo)
-
-    // raggi “di contatto” (centro della bolla che tocca il bordo)
+    // raggi per il contatto (centro bolla che “tocca” il bordo)
     const rArcX = Math.max(0, rX - (size / 2) - touchPad);
     const rArcY = Math.max(0, rY - (size / 2) - touchPad);
 
-    // inizio reale della curva sul lato piatto (se dovesse servire altrove)
-    const flatX = cX - rX + padBase + (size / 2);
+    const deg = (d) => (Math.PI * d) / 180;
 
-    // angoli:
-    // 0° = punta a destra; -90° = in alto; +90° = in basso
-    const a30  = deg(30);    // arco alto/basso “classico”
-    const aFlat = deg(85);   // più grande => più a destra (dove la curva “prende”)
+    // angoli
+    const a30   = deg(30);
+    const aFlat = deg(85); // più grande = più a destra lungo la curva
 
-    // #1 appoggiata ai bordi top+left del rettangolo piatto
+    // #1: appoggiata in alto-sinistra (dentro lo sfondo)
     const contactX = (size / 2) + touchPad;
     const contactY = (size / 2) + touchPad;
 
-    // POSIZIONI DEFINITIVE (1..5)
-    // 1: alto-sx appoggiata; 2: arco alto più a destra; 3: arco alto-destra;
-    // 4: arco basso-destra;   5: arco basso più a destra.
+    // POSIZIONI 1..7
     const positions = [
-      { x: contactX, y: contactY },                                           // #1
-      { x: cX + rArcX * Math.cos(-aFlat), y: cY + rArcY * Math.sin(-aFlat) }, // #2
-      { x: cX + rArcX * Math.cos(-a30),   y: cY + rArcY * Math.sin(-a30)   }, // #3
-      { x: cX + rArcX * Math.cos(+a30),   y: cY + rArcY * Math.sin(+a30)   }, // #4
-      { x: cX + rArcX * Math.cos(+aFlat), y: cY + rArcY * Math.sin(+aFlat) }, // #5
+      // 1
+      { x: contactX, y: contactY },
+      // 2 (arco alto, vicino all'inizio curvatura → più a sinistra? abbassa aFlat)
+      { x: cX + rArcX * Math.cos(-aFlat), y: cY + rArcY * Math.sin(-aFlat) },
+      // 3 (arco alto-destra)
+      { x: cX + rArcX * Math.cos(-a30),   y: cY + rArcY * Math.sin(-a30)   },
+      // 4 (arco basso-destra)
+      { x: cX + rArcX * Math.cos(+a30),   y: cY + rArcY * Math.sin(+a30)   },
+      // 5 (arco basso, vicino all'inizio curvatura)
+      { x: cX + rArcX * Math.cos(+aFlat), y: cY + rArcY * Math.sin(+aFlat) },
+
+      // 6 = CAMERA → angolo alto-destra, *fuori* dallo sfondo (quindi a ridosso del bordo dell’area)
+      { x: width - (size / 2) - padBase, y: (size / 2) + padBase },
+
+      // 7 = CLIMATE → angolo basso-sinistra, *dentro* lo sfondo
+      { x: (size / 2) + touchPad, y: height - (size / 2) - touchPad },
     ];
 
-    // RENDER
     return html`
       ${this.entities.map((e, i) => {
         const pos  = positions[i] ?? { x: cX, y: cY };
@@ -154,7 +155,7 @@ export class BubbleMushroom extends LitElement {
             "
             @click=${() => this._handleClick(e)}
           >
-            <ha-icon icon="${e.icon}" style="--mdc-icon-size:${size * 0.95}px;"></ha-icon>
+            <ha-icon icon="${e.icon}" style="--mdc-icon-size:${iconSize}px;"></ha-icon>
           </div>
         `;
       })}

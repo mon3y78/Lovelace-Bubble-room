@@ -1,9 +1,16 @@
+// src/bubble-room-editor.js
 import { LitElement, html, css } from 'lit';
+
+// Pannelli già esistenti
 import './panels/RoomPanel.js';
 import './panels/SensorPanel.js';
 import './panels/MushroomPanel.js';
 import './panels/SubButtonPanel.js';
 import './panels/ColorPanel.js';
+
+// 🔸 NUOVI pannelli
+import './panels/CameraPanel.js';
+import './panels/ClimatePanel.js';
 
 export class BubbleRoomEditor extends LitElement {
   static properties = {
@@ -35,18 +42,35 @@ export class BubbleRoomEditor extends LitElement {
       ...rawConfig,
     };
 
-    // Mantieni le sezioni di auto-discovery
+    // Mantieni/integra le sezioni di auto-discovery
     config.auto_discovery_sections = {
       room:      !!config.area,
       sensor:    !!config.area,
       mushroom:  !!config.area,
+      camera:    !!config.area,   // 🔸 nuovo
+      climate:   !!config.area,   // 🔸 nuovo
       subbutton: !!config.area,
       color:     true,
       ...(config.auto_discovery_sections || {}),
     };
 
+    // Struttura base
     if (!Array.isArray(config.sensor_filters)) config.sensor_filters = [];
     if (!config.entities) config.entities = {};
+
+    // 🔸 Default per i nuovi gruppi
+    if (!config.entities.camera) {
+      config.entities.camera = {
+        entity: '',
+        icon:   '',   // selezionata dal pannello come per gli altri
+      };
+    }
+    if (!config.entities.climate) {
+      config.entities.climate = {
+        entity: '',
+        icon:   '',
+      };
+    }
 
     this.config = config;
   }
@@ -61,14 +85,6 @@ export class BubbleRoomEditor extends LitElement {
         @panel-changed=${this._onConfigChanged}
       ></room-panel>
 
-      <sensor-panel
-        .hass=${this.hass}
-        .config=${this.config}
-        .expanded=${this.openPanel === 'sensor'}
-        @expanded-changed=${e => this._togglePanel(e, 'sensor')}
-        @panel-changed=${this._onConfigChanged}
-      ></sensor-panel>
-
       <mushroom-panel
         .hass=${this.hass}
         .config=${this.config}
@@ -76,6 +92,32 @@ export class BubbleRoomEditor extends LitElement {
         @expanded-changed=${e => this._togglePanel(e, 'mushroom')}
         @panel-changed=${this._onConfigChanged}
       ></mushroom-panel>
+
+      <!-- 🔸 Nuovo: CAMERA -->
+      <camera-panel
+        .hass=${this.hass}
+        .config=${this.config}
+        .expanded=${this.openPanel === 'camera'}
+        @expanded-changed=${e => this._togglePanel(e, 'camera')}
+        @panel-changed=${this._onConfigChanged}
+      ></camera-panel>
+
+      <!-- 🔸 Nuovo: CLIMATE -->
+      <climate-panel
+        .hass=${this.hass}
+        .config=${this.config}
+        .expanded=${this.openPanel === 'climate'}
+        @expanded-changed=${e => this._togglePanel(e, 'climate')}
+        @panel-changed=${this._onConfigChanged}
+      ></climate-panel>
+
+      <sensor-panel
+        .hass=${this.hass}
+        .config=${this.config}
+        .expanded=${this.openPanel === 'sensor'}
+        @expanded-changed=${e => this._togglePanel(e, 'sensor')}
+        @panel-changed=${this._onConfigChanged}
+      ></sensor-panel>
 
       <sub-button-panel
         .hass=${this.hass}
@@ -99,7 +141,7 @@ export class BubbleRoomEditor extends LitElement {
     this.openPanel = e.detail.expanded ? key : (this.openPanel === key ? '' : this.openPanel);
   }
 
-  _onConfigChanged(e) {
+  _onConfigChanged = (e) => {
     const { prop, val } = e.detail;
     this._setConfigValue(prop, val);
     this.dispatchEvent(new CustomEvent('config-changed', {
@@ -107,7 +149,7 @@ export class BubbleRoomEditor extends LitElement {
       bubbles: true,
       composed: true,
     }));
-  }
+  };
 
   _setConfigValue(path, value) {
     const keys = path.split('.');
