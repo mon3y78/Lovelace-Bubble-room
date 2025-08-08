@@ -27,6 +27,12 @@ export class BubbleMushroom extends LitElement {
         }
       });
     });
+
+    // gesture state for actions
+    this._holdThreshold = 500;   // ms
+    this._holdTimer = null;
+    this._holdFired = false;
+    this._lastTapTs = 0;         // for double tap
   }
 
 
@@ -39,34 +45,14 @@ export class BubbleMushroom extends LitElement {
     super.disconnectedCallback();
   }
 
-  _updateSize() {
-    const r = this.getBoundingClientRect();
-    this._containerSize = { width: r.width, height: r.height };
-    this.requestUpdate();
-  }
-
-  _handleClick(entity) {
-    this.dispatchEvent(new CustomEvent('hass-action', {
-      detail: {
-        config: {
-          entity: entity.entity_id,
-          tap_action:  entity.tap_action  || { action: 'toggle' },
-          hold_action: entity.hold_action || { action: 'more-info' },
-        },
-        action: 'tap',
-      },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
   static styles = css`
     :host {
       display: block;
+      position: relative;
       width: 100%;
       height: 100%;
-      position: relative;
-      contain: strict;
+      contain: content;
+      pointer-events: none;
     }
     .mushroom-entity {
       position: absolute;
@@ -85,91 +71,24 @@ export class BubbleMushroom extends LitElement {
     const { width, height } = this._containerSize;
     if (!width || !height) return html``;
 
-    // dimensione dinamica (mobile -> desktop)
-    const vpWidth  = window.innerWidth || width;
-    const kMobile  = 0.55;
-    const kDesktop = 0.25;
-    const wMobile  = 100;
-    const wDesktop = 200;
+    // Calcolo dimensioni “funghetti”
+    const d = Math.max(Math.round(Math.min(width, height) * 0.14), 36); // diametro base
+    const iconSize = Math.round(d * 0.62);
 
-    let k;
-    if (vpWidth <= wMobile)        k = kMobile;
-    else if (vpWidth >= wDesktop)  k = kDesktop;
-    else {
-      const t = (vpWidth - wMobile) / (wDesktop - wMobile);
-      k = kMobile + (kDesktop - kMobile) * t;
-    }
-
-    // lato effettivo per non “allargare” troppo
-    const Rmax  = 1.6;
-    const sideW = Math.min(width, height * Rmax);
-    const side  = 0.5 * (height + sideW);
-    const size  = side * k; // diametro standard bolla
-
-    // ellisse (border-radius: 0 60% 60% 0) con clamping
-    const rxRaw  = width  * 0.60;
-    const ryRaw  = height * 0.60;
-    const scaleH = Math.min(1, width  / (rxRaw * 2));
-    const scaleV = Math.min(1, height / (ryRaw * 2));
-    const rX     = rxRaw * scaleH;
-    const rY     = ryRaw * scaleV;
-    const cX     = width - rX;
-    const cY     = height * 0.5;
-
-    const padBase  = Math.max(4, Math.min(width, height) * 0.015);
-    const touchPad = 1; // 0 = a filo
-
-    // raggi per il contatto (centro bolla che “tocca” il bordo)
-    const rArcX = Math.max(0, rX - (size / 2) - touchPad);
-    const rArcY = Math.max(0, rY - (size / 2) - touchPad);
-
-    const deg = (d) => (Math.PI * d) / 180;
-
-    // angoli
-    const a30   = deg(30);
-    const aFlat = deg(85); // più grande = più a destra lungo la curva
-
-    // #1: appoggiata in alto-sinistra (dentro lo sfondo)
-    const contactX = (size / 2) + touchPad;
-    const contactY = (size / 2) + touchPad;
-
-    // scale per elementi speciali
-    const cameraScale  = 0.75;            // #6
-    const climateScale = 0.75;            // #7 ← AGGIUNTO
-    const dCam = size * cameraScale;      // diametro camera
-    const dCli = size * climateScale;     // diametro climate  ← AGGIUNTO
-
-    // POSIZIONI 1..7
-    const positions = [
-      // 1 — alto-sinistra, dentro lo sfondo
-      { x: contactX, y: contactY },
-
-      // 2 — arco alto, vicino all'inizio curvatura (sposta con aFlat)
-      { x: cX + rArcX * Math.cos(-aFlat), y: cY + rArcY * Math.sin(-aFlat) },
-
-      // 3 — arco alto-destra
-      { x: cX + rArcX * Math.cos(-a30),   y: cY + rArcY * Math.sin(-a30)   },
-
-      // 4 — arco basso-destra
-      { x: cX + rArcX * Math.cos(+a30),   y: cY + rArcY * Math.sin(+a30)   },
-
-      // 5 — arco basso, vicino all'inizio curvatura
-      { x: cX + rArcX * Math.cos(+aFlat), y: cY + rArcY * Math.sin(+aFlat) },
-
-      // 6 — CAMERA → angolo alto-destra, DENTRO l’area (usa il suo diametro)
-      { x: width - (dCam / 2), y: (dCam / 2) },
-
-      // 7 — CLIMATE → angolo basso-sinistra, DENTRO l’area (usa il suo diametro)
-      { x: (dCli / 2) + touchPad, y: height - (dCli / 2) - touchPad },
-    ];
+    // Centro del contenitore
+    const cX = Math.round(width / 2);
+    const cY = Math.round(height / 2);
 
     return html`
-      ${this.entities.map((e, i) => {
-        // diametro per-ENTITÀ: camera (#6) e climate (#7) più piccoli
-        const d = (i === 5) ? dCam : (i === 6 ? dCli : size);
-        const iconSize = d * 0.95;
+      ${this.entities?.map((e) => {
+        if (!e) return html``;
 
-        const base = positions[i] ?? { x: cX, y: cY };
+        // Supporta entity come stringa o oggetto {entity_id: '...', ...}
+        const entityId = typeof e === 'string' ? e : e.entity_id;
+        if (!entityId) return html``;
+
+        // Coordinate di base (derivate da posizione polare o altro, qui semplifico)
+        const base = { x: cX, y: cY };
         // micro-shift da YAML
         const left = base.x + (e.dx ?? 0);
         const top  = base.y + (e.dy ?? 0);
@@ -184,13 +103,84 @@ export class BubbleMushroom extends LitElement {
               height:${d}px;
               color:${e.color};
             "
-            @click=${() => this._handleClick(e)}
+            @pointerdown=${(ev) => this._onPointerDown(ev, e)}
+            @pointerup=${(ev) => this._onPointerUp(ev, e)}
+            @pointercancel=${this._onPointerCancel}
+            @pointerleave=${this._onPointerCancel}
+            @contextmenu=${(ev) => ev.preventDefault()}
           >
             <ha-icon icon="${e.icon}" style="--mdc-icon-size:${iconSize}px;"></ha-icon>
           </div>
         `;
       })}
     `;
+  }
+
+  _handleClick(entity) {
+    // (rimasto per retrocompatibilità; non più usato perché ora gestiamo pointer)
+    this.dispatchEvent(new CustomEvent('hass-action', {
+      detail: {
+        config: {
+          entity: entity.entity_id,
+          tap_action:  entity.tap_action  || { action: 'toggle' },
+          hold_action: entity.hold_action || { action: 'more-info' },
+        },
+        action: 'tap',
+      },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  _dispatchAction(entity, which) {
+    // which: 'tap' | 'hold' | 'double_tap'
+    const cfg = {
+      entity: entity.entity_id,
+      tap_action: entity.tap_action || { action: 'toggle' },
+      hold_action: entity.hold_action || { action: 'more-info' },
+      double_tap_action: entity.double_tap_action,
+    };
+    this.dispatchEvent(new CustomEvent('hass-action', {
+      detail: { config: cfg, action: which },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  _onPointerDown(ev, entity) {
+    ev.preventDefault();
+    this._holdFired = false;
+    clearTimeout(this._holdTimer);
+    this._holdTimer = setTimeout(() => {
+      this._holdFired = true;
+      this._dispatchAction(entity, 'hold');
+    }, this._holdThreshold);
+  }
+
+  _onPointerUp(ev, entity) {
+    ev.preventDefault();
+    clearTimeout(this._holdTimer);
+    if (this._holdFired) {
+      this._holdFired = false;
+      return;
+    }
+    const now = Date.now();
+    if (entity?.double_tap_action && now - this._lastTapTs < 300) {
+      this._lastTapTs = 0;
+      this._dispatchAction(entity, 'double_tap');
+      return;
+    }
+    this._lastTapTs = now;
+    setTimeout(() => {
+      if (Date.now() - this._lastTapTs >= 280) {
+        this._dispatchAction(entity, 'tap');
+      }
+    }, 280);
+  }
+
+  _onPointerCancel() {
+    clearTimeout(this._holdTimer);
+    this._holdFired = false;
   }
 }
 
