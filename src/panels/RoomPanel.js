@@ -2,6 +2,7 @@
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor }     from '../helpers/entity-filters.js';
+import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // ← AGGIUNTA
 
 const PRESENCE_CATS = [
   'presence',
@@ -176,6 +177,17 @@ export class RoomPanel extends LitElement {
       const cfgLayout = this.config.layout;
       if (cfgLayout && cfgLayout !== this.layout) {
         this.layout = cfgLayout;
+      }
+
+      /* ── AUTO-ICONA: se ho un'entità di presence e l'icona stanza è vuota,
+         usa prima l'attributo icon dello stato, altrimenti mapping fallback. */
+      const presEntity = this.config?.entities?.presence?.entity || '';
+      const roomIcon   = this.config?.icon || '';
+      if (presEntity && !roomIcon) {
+        const st = this.hass?.states?.[presEntity];
+        const iconFromState = st?.attributes?.icon;
+        const autoIcon = iconFromState || resolveEntityIcon(presEntity, this.hass);
+        if (autoIcon) this._fire('icon', autoIcon);
       }
     }
   }

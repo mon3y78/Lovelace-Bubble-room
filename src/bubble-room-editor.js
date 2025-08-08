@@ -44,6 +44,8 @@ export class BubbleRoomEditor extends LitElement {
 
     // Mantieni/integra le sezioni di auto-discovery
     config.auto_discovery_sections = {
+      // 🔧 aggiungo 'presence' perché RoomPanel si aspetta proprio questa chiave
+      presence:  !!config.area,
       room:      !!config.area,
       sensor:    !!config.area,
       mushroom:  !!config.area,
@@ -62,13 +64,13 @@ export class BubbleRoomEditor extends LitElement {
     if (!config.entities.camera) {
       config.entities.camera = {
         entity: '',
-        icon:   '',   // selezionata dal pannello come per gli altri
+        icon:   '',   // popolata automaticamente dal CameraPanel se vuota
       };
     }
     if (!config.entities.climate) {
       config.entities.climate = {
         entity: '',
-        icon:   '',
+        icon:   '',   // popolata automaticamente dal ClimatePanel se vuota
       };
     }
 

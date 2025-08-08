@@ -25,16 +25,17 @@ export class BubbleIcon extends LitElement {
       position: absolute;   /* prende come riferimento .icon-mushroom-area */
       inset: 0;
       box-sizing: border-box;
+    }
     .main-icon-container {
       opacity: 0.30;
       box-sizing: border-box;
       background: var(--main-icon-bg, rgba(33,223,115,0.12));
       border-radius: 0 70% 70% 0;
       display: flex;
-      width:100%;
-      height:100%;
+      width: 100%;
+      height: 100%;
       justify-content: center;
-      align-items:   center;
+      align-items: center;
     }
     .main-icon {
       --mdc-icon-size: var(--main-icon-size, 160px);

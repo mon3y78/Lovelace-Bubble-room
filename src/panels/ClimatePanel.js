@@ -1,6 +1,7 @@
 // src/panels/ClimatePanel.js
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
+import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // ← AGGIUNTA
 
 export class ClimatePanel extends LitElement {
   static properties = {
@@ -23,10 +24,22 @@ export class ClimatePanel extends LitElement {
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.climate');
+
       const ent = this.config?.entities?.climate?.entity || '';
       const ico = this.config?.entities?.climate?.icon   || '';
+
+      // AUTO-ICONA: se ho un'entità e l'icona è vuota → impostala
+      if (ent && !ico) {
+        const st = this.hass?.states?.[ent];
+        const iconFromState = st?.attributes?.icon;
+        const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
+        if (autoIcon) {
+          this._set('entities.climate.icon', autoIcon);
+        }
+      }
+
       this._entity = ent;
-      this._icon   = ico;
+      this._icon   = this.config?.entities?.climate?.icon || '';
     }
   }
 

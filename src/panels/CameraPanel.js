@@ -1,6 +1,7 @@
 // src/panels/CameraPanel.js
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
+import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // ← aggiunta
 
 export class CameraPanel extends LitElement {
   static properties = {
@@ -27,8 +28,21 @@ export class CameraPanel extends LitElement {
 
       const ent = this.config?.entities?.camera?.entity || '';
       const ico = this.config?.entities?.camera?.icon   || '';
+
+      // → se ho un'entità e l'icona è vuota, la imposto automaticamente
+      //    priorità: attributo stato → mapping device_class/dominio → default
+      if (ent && !ico) {
+        const st = this.hass?.states?.[ent];
+        const iconFromState = st?.attributes?.icon;
+        const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
+        if (autoIcon) {
+          // Aggiorna il config tramite l'evento già usato dal pannello
+          this._set('entities.camera.icon', autoIcon);
+        }
+      }
+
       this._entity = ent;
-      this._icon   = ico;
+      this._icon   = this.config?.entities?.camera?.icon || '';
     }
   }
 

@@ -6,6 +6,7 @@ import {
   COMMON_CATS,
   FILTER_LABELS,
 } from '../helpers/entity-filters.js';
+import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // ← AGGIUNTA
 
 export class MushroomPanel extends LitElement {
   static properties = {
@@ -50,6 +51,11 @@ export class MushroomPanel extends LitElement {
         const rec = ents[key] || {};
         if (rec.entity) this._entities[i] = rec.entity;
         if (typeof rec.icon === 'string') this._icons[i] = rec.icon;
+      }
+
+      // 4) AUTO-ICONS: se c'è entity ma icona vuota → riempi ora
+      for (let i = 0; i < 5; i++) {
+        this._autoFillIconForIndex(i);
       }
     }
   }
@@ -273,10 +279,24 @@ export class MushroomPanel extends LitElement {
 
   _onEntity(i, ent) {
     this._entities[i] = ent;
+
+    // salva l’entità
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: `entities.mushroom${i+1}.entity`, val: ent },
       bubbles: true, composed: true,
     }));
+
+    // se l’icona è vuota → imposta subito auto-icona (stato → fallback)
+    if (!this._icons[i]) {
+      const autoIco = this._autoIconFor(ent);
+      if (autoIco) {
+        this._icons[i] = autoIco;
+        this.dispatchEvent(new CustomEvent('panel-changed', {
+          detail: { prop: `entities.mushroom${i+1}.icon`, val: autoIco },
+          bubbles: true, composed: true,
+        }));
+      }
+    }
   }
 
   _onIcon(i, icon) {
@@ -307,6 +327,28 @@ export class MushroomPanel extends LitElement {
         detail: { prop: `entities.mushroom${i}.icon`, val: '' },
         bubbles: true, composed: true,
       }));
+    }
+  }
+
+  /* --------------------------- UTILS -------------------------------- */
+  _autoIconFor(entityId) {
+    if (!entityId) return '';
+    const st = this.hass?.states?.[entityId];
+    return st?.attributes?.icon || resolveEntityIcon(entityId, this.hass);
+  }
+
+  _autoFillIconForIndex(i) {
+    const ent = this._entities[i];
+    const ico = this._icons[i];
+    if (ent && !ico) {
+      const autoIco = this._autoIconFor(ent);
+      if (autoIco) {
+        this._icons[i] = autoIco;
+        this.dispatchEvent(new CustomEvent('panel-changed', {
+          detail: { prop: `entities.mushroom${i+1}.icon`, val: autoIco },
+          bubbles: true, composed: true,
+        }));
+      }
     }
   }
 }
