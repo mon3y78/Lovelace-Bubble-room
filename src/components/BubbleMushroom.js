@@ -117,7 +117,11 @@ export class BubbleMushroom extends LitElement {
     const contactX = (size / 2) + touchPad;
     const contactY = (size / 2) + touchPad;
 
-    // POSIZIONI 1..7 (geometria invariata)
+    // fattore SOLO per la camera (6ª entità)
+    const cameraScale = 0.75;
+    const dCam = size * cameraScale; // diametro reale camera
+
+    // POSIZIONI 1..7
     const positions = [
       // 1
       { x: contactX, y: contactY },
@@ -130,26 +134,23 @@ export class BubbleMushroom extends LitElement {
       // 5 (arco basso, vicino all'inizio curvatura)
       { x: cX + rArcX * Math.cos(+aFlat), y: cY + rArcY * Math.sin(+aFlat) },
 
-      // 6 = CAMERA → angolo alto-destra, **dentro** l’area
-      { x: width - (size / 2) - padBase, y: (size / 2) + padBase },
+      // 6 = CAMERA → angolo alto-destra, DENTRO l’area (usa il suo diametro!)
+      { x: width - (dCam / 2), y: (dCam / 2) },
 
       // 7 = CLIMATE → angolo basso-sinistra, dentro lo sfondo
       { x: (size / 2) + touchPad, y: height - (size / 2) - touchPad },
     ];
 
-    // fattore solo per la camera (6ª entità)
-    const cameraScale = 0.75;
-
     return html`
       ${this.entities.map((e, i) => {
-        const pos  = positions[i] ?? { x: cX, y: cY };
-
         // diametro per-ENTITÀ (camera più piccola)
-        const d = (i === 5) ? size * cameraScale : size;
+        const d = (i === 5) ? dCam : size;
         const iconSize = d * 0.95;
 
-        const left = pos.x + (e.dx ?? 0);
-        const top  = pos.y + (e.dy ?? 0);
+        const base = positions[i] ?? { x: cX, y: cY };
+        // micro-shift da YAML
+        const left = base.x + (e.dx ?? 0);
+        const top  = base.y + (e.dy ?? 0);
 
         return html`
           <div
