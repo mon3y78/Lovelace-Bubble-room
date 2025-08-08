@@ -89,7 +89,7 @@ export class BubbleMushroom extends LitElement {
     const sideW = Math.min(width, height * Rmax);
     const side  = 0.5 * (height + sideW);
     const size  = side * k; // diametro bolla
-    const iconSize = size * 0.95;
+    const iconSize = size * 0.95; // base comune
 
     // ellisse (border-radius: 0 60% 60% 0) con clamping
     const rxRaw  = width  * 0.60;
@@ -112,30 +112,21 @@ export class BubbleMushroom extends LitElement {
 
     // angoli
     const a30   = deg(30);
-    const aFlat = deg(85); // più grande = più a destra lungo la curva
+    const aFlat = deg(85);
 
-    // #1: appoggiata in alto-sinistra (dentro lo sfondo)
+    // contatti base
     const contactX = (size / 2) + touchPad;
     const contactY = (size / 2) + touchPad;
 
     // POSIZIONI 1..7
     const positions = [
-      // 1
       { x: contactX, y: contactY },
-      // 2 (arco alto, vicino all'inizio curvatura → più a sinistra? abbassa aFlat)
       { x: cX + rArcX * Math.cos(-aFlat), y: cY + rArcY * Math.sin(-aFlat) },
-      // 3 (arco alto-destra)
       { x: cX + rArcX * Math.cos(-a30),   y: cY + rArcY * Math.sin(-a30)   },
-      // 4 (arco basso-destra)
       { x: cX + rArcX * Math.cos(+a30),   y: cY + rArcY * Math.sin(+a30)   },
-      // 5 (arco basso, vicino all'inizio curvatura)
       { x: cX + rArcX * Math.cos(+aFlat), y: cY + rArcY * Math.sin(+aFlat) },
-
-      // 6 = CAMERA → angolo alto-destra, *fuori* dallo sfondo (quindi a ridosso del bordo dell’area)
-      { x: width - (size / 2) - padBase, y: (size / 2) + padBase },
-
-      // 7 = CLIMATE → angolo basso-sinistra, *dentro* lo sfondo
-      { x: (size / 2) + touchPad, y: height - (size / 2) - touchPad },
+      { x: width - (size / 2) - padBase,  y: (size / 2) + padBase }, // camera
+      { x: (size / 2) + touchPad,         y: height - (size / 2) - touchPad }, // climate
     ];
 
     return html`
@@ -143,6 +134,12 @@ export class BubbleMushroom extends LitElement {
         const pos  = positions[i] ?? { x: cX, y: cY };
         const left = pos.x + (e.dx ?? 0);
         const top  = pos.y + (e.dy ?? 0);
+
+        // calcolo dimensione icona per posizione
+        let scaleFactor = 1;
+        if (i < 5) scaleFactor = 0.95;      // prime 5
+        else if (i === 5 || i === 6) scaleFactor = 0.75; // 6 e 7
+
         return html`
           <div
             class="mushroom-entity"
@@ -155,7 +152,10 @@ export class BubbleMushroom extends LitElement {
             "
             @click=${() => this._handleClick(e)}
           >
-            <ha-icon icon="${e.icon}" style="--mdc-icon-size:${iconSize}px;"></ha-icon>
+            <ha-icon
+              icon="${e.icon}"
+              style="--mdc-icon-size:${iconSize * scaleFactor}px;"
+            ></ha-icon>
           </div>
         `;
       })}
