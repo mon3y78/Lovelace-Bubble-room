@@ -175,29 +175,30 @@ export class RoomPanel extends LitElement {
     this._expanded     = false;
     this.activeFilters = [];
     this.layout        = 'wide';
+
+    // guardia anti-loop durante la sync da config/hass
+    this._syncingFromConfig = false;
   }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
+      this._syncingFromConfig = true;
+
       maybeAutoDiscover(this.hass, this.config, 'area');
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
+
       if (changed.has('config') && Array.isArray(this.config.presence_filters)) {
         this.activeFilters = [...this.config.presence_filters];
       }
+
       const cfgLayout = this.config.layout;
       if (cfgLayout && cfgLayout !== this.layout) {
         this.layout = cfgLayout;
       }
 
-      // AUTO-ICONA su mount/aggiornamento se ho entity e icon vuota
-      const presEntity = this.config?.entities?.presence?.entity || '';
-      const roomIcon   = this.config?.icon || '';
-      if (presEntity && !roomIcon) {
-        const st = this.hass?.states?.[presEntity];
-        const iconFromState = st?.attributes?.icon;
-        const autoIcon = iconFromState || resolveEntityIcon(presEntity, this.hass);
-        if (autoIcon) this._fire('icon', autoIcon);
-      }
+      // ⛔️ NIENTE auto-icona qui: la gestiamo SOLO su scelta entità (vedi _onPresenceEntityChange)
+
+      this._syncingFromConfig = false;
     }
   }
 
@@ -207,6 +208,7 @@ export class RoomPanel extends LitElement {
   }
 
   _fire(prop, val) {
+    if (this._syncingFromConfig) return; // blocca eventi durante la sync
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop, val },
       bubbles: true,
@@ -214,9 +216,11 @@ export class RoomPanel extends LitElement {
     }));
   }
 
-  // ↑ auto-icona immediata quando cambi l’entità presence
+  // auto-icona immediata quando cambi l’entità presence
   _onPresenceEntityChange = (ent) => {
     this._fire('entities.presence.entity', ent);
+
+    // imposta icona solo se vuota (rispetta eventuale scelta manuale)
     const currentIcon = this.config?.icon || '';
     if (ent && !currentIcon) {
       const st = this.hass?.states?.[ent];

@@ -30,10 +30,15 @@ export class MushroomPanel extends LitElement {
     this._filters  = Array(5).fill().map(() => [...COMMON_CATS]);
     this._entities = Array(5).fill('');
     this._icons    = Array(5).fill('');
+
+    // flag di servizio: evita side-effect mentre sincronizziamo lo stato locale
+    this._syncingFromConfig = false;
   }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
+      this._syncingFromConfig = true;
+
       // 1) auto-discover opzionale
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.mushroom');
 
@@ -52,8 +57,11 @@ export class MushroomPanel extends LitElement {
         if (typeof rec.icon === 'string') this._icons[i] = rec.icon;
       }
 
-      // 4) AUTO-ICONS: se c'è entity ma icona vuota → riempi ora
-      for (let i = 0; i < 5; i++) this._autoFillIconForIndex(i);
+      // 4) **IMPORTANTE**: niente auto-icona qui.
+      //    L’auto-icona viene gestita SOLO in _onEntity() quando l’utente
+      //    seleziona l’entità, così evitiamo loop di panel-changed.
+
+      this._syncingFromConfig = false;
     }
   }
 
@@ -323,12 +331,13 @@ export class MushroomPanel extends LitElement {
       `;
     }
     return '';
-    }
+  }
 
   _safeJson(txt) { try { return JSON.parse(txt); } catch { return {}; } }
 
   /* --------------------------- HANDLERS ------------------------------ */
   _toggleAuto(on) {
+    if (this._syncingFromConfig) return;
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: 'auto_discovery_sections.mushroom', val: on },
       bubbles: true, composed: true,
@@ -342,6 +351,7 @@ export class MushroomPanel extends LitElement {
 
   _onFilter(i, values) {
     this._filters[i] = [...values];
+    if (this._syncingFromConfig) return;
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: 'mushroom_filters', val: this._filters },
       bubbles: true, composed: true,
@@ -351,27 +361,30 @@ export class MushroomPanel extends LitElement {
   _onEntity(i, ent) {
     this._entities[i] = ent;
 
-    // salva l’entità
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: `entities.mushroom${i+1}.entity`, val: ent },
-      bubbles: true, composed: true,
-    }));
+    if (!this._syncingFromConfig) {
+      // salva l’entità
+      this.dispatchEvent(new CustomEvent('panel-changed', {
+        detail: { prop: `entities.mushroom${i+1}.entity`, val: ent },
+        bubbles: true, composed: true,
+      }));
 
-    // se l’icona è vuota → imposta subito auto-icona (stato → fallback)
-    if (!this._icons[i]) {
-      const autoIco = this._autoIconFor(ent);
-      if (autoIco) {
-        this._icons[i] = autoIco;
-        this.dispatchEvent(new CustomEvent('panel-changed', {
-          detail: { prop: `entities.mushroom${i+1}.icon`, val: autoIco },
-          bubbles: true, composed: true,
-        }));
+      // se l’icona è vuota → imposta subito auto-icona (stato → fallback)
+      if (!this._icons[i]) {
+        const autoIco = this._autoIconFor(ent);
+        if (autoIco) {
+          this._icons[i] = autoIco;
+          this.dispatchEvent(new CustomEvent('panel-changed', {
+            detail: { prop: `entities.mushroom${i+1}.icon`, val: autoIco },
+            bubbles: true, composed: true,
+          }));
+        }
       }
     }
   }
 
   _onIcon(i, icon) {
     this._icons[i] = icon || '';
+    if (this._syncingFromConfig) return;
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: `entities.mushroom${i+1}.icon`, val: this._icons[i] },
       bubbles: true, composed: true,
@@ -379,6 +392,7 @@ export class MushroomPanel extends LitElement {
   }
 
   _onAction(i, type, field, val) {
+    if (this._syncingFromConfig) return;
     const key = `mushroom${i+1}`;
     const prev = this.config?.entities?.[key]?.[`${type}_action`] || {};
     const next = { ...prev, [field]: val };
@@ -425,21 +439,6 @@ export class MushroomPanel extends LitElement {
     if (!entityId) return '';
     const st = this.hass?.states?.[entityId];
     return st?.attributes?.icon || resolveEntityIcon(entityId, this.hass);
-  }
-
-  _autoFillIconForIndex(i) {
-    const ent = this._entities[i];
-    const ico = this._icons[i];
-    if (ent && !ico) {
-      const autoIco = this._autoIconFor(ent);
-      if (autoIco) {
-        this._icons[i] = autoIco;
-        this.dispatchEvent(new CustomEvent('panel-changed', {
-          detail: { prop: `entities.mushroom${i+1}.icon`, val: autoIco },
-          bubbles: true, composed: true,
-        }));
-      }
-    }
   }
 }
 

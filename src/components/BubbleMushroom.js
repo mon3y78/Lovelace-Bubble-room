@@ -7,12 +7,28 @@ export class BubbleMushroom extends LitElement {
     entities: { type: Array },
   };
 
+  // BubbleMushroom.js
   constructor() {
     super();
     this.entities = [];
     this._containerSize = { width: 0, height: 0 };
-    this._ro = new ResizeObserver(() => this._updateSize());
+    this._rafSize = null;
+    this._ro = new ResizeObserver((entries) => {
+      const cr = entries[0]?.contentRect;
+      if (!cr) return;
+      // throttle ad un frame
+      if (this._rafSize) cancelAnimationFrame(this._rafSize);
+      this._rafSize = requestAnimationFrame(() => {
+        const w = Math.round(cr.width);
+        const h = Math.round(cr.height);
+        if (w !== this._containerSize.width || h !== this._containerSize.height) {
+          this._containerSize = { width: w, height: h };
+          this.requestUpdate();
+        }
+      });
+    });
   }
+
 
   connectedCallback() {
     super.connectedCallback();
