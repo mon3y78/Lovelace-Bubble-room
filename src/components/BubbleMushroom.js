@@ -3,17 +3,15 @@ import { LitElement, html, css } from 'lit';
 
 export class BubbleMushroom extends LitElement {
   static properties = {
-    // Array di entità “mushroom” posizionate radialmente/XY:
-    //   { entity_id, icon, color, dx?, dy?, tap_action?, hold_action?, double_tap_action? }
+    // Array: { entity_id, icon, color, dx?, dy?, tap_action?, hold_action?, double_tap_action? }
     entities: { type: Array },
   };
 
+  // BubbleMushroom.js
   constructor() {
     super();
     this.entities = [];
     this._containerSize = { width: 0, height: 0 };
-
-    // Resize observer per adattare la disposizione
     this._rafSize = null;
     this._ro = new ResizeObserver((entries) => {
       const cr = entries[0]?.contentRect;
@@ -30,11 +28,11 @@ export class BubbleMushroom extends LitElement {
       });
     });
 
-    // 👇 Stato gesture per azioni, coerente coi SubButton
-    this._holdThreshold = 500;   // ms per hold
+    // === GESTURE STATE (tap/hold/double_tap) ===
+    this._holdThreshold = 500; // ms
     this._holdTimer = null;
     this._holdFired = false;
-    this._lastTapTs = 0;         // per double tap
+    this._lastTapTs = 0; // per double tap
   }
 
   connectedCallback() {
@@ -46,6 +44,86 @@ export class BubbleMushroom extends LitElement {
     super.disconnectedCallback();
   }
 
+  _updateSize() {
+    const r = this.getBoundingClientRect();
+    this._containerSize = { width: r.width, height: r.height };
+    this.requestUpdate();
+  }
+
+  // LEGACY: rimane per retrocompatibilità (ora usiamo pointer events)
+  _handleClick(entity) {
+    this.dispatchEvent(new CustomEvent('hass-action', {
+      detail: {
+        config: {
+          entity: entity.entity_id,
+          tap_action:  entity.tap_action  || { action: 'toggle' },
+          hold_action: entity.hold_action || { action: 'more-info' },
+        },
+        action: 'tap',
+      },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  // === NUOVO: invio unificato dell'azione come fanno i SubButton ===
+  _dispatchAction(entity, which) {
+    const id = entity.entity_id || entity.entity || entity;
+    const cfg = {
+      entity: id,
+      tap_action: entity.tap_action || { action: 'toggle' },
+      hold_action: entity.hold_action || { action: 'more-info' },
+      double_tap_action: entity.double_tap_action,
+    };
+    this.dispatchEvent(new CustomEvent('hass-action', {
+      detail: { config: cfg, action: which },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  _onPointerDown(ev, entity) {
+    ev.preventDefault();
+    this._holdFired = false;
+    clearTimeout(this._holdTimer);
+    this._holdTimer = setTimeout(() => {
+      this._holdFired = true;
+      this._dispatchAction(entity, 'hold');
+    }, this._holdThreshold);
+  }
+
+  _onPointerUp(ev, entity) {
+    ev.preventDefault();
+    clearTimeout(this._holdTimer);
+
+    // se è già partito l'hold, non fare altro
+    if (this._holdFired) {
+      this._holdFired = false;
+      return;
+    }
+
+    // double tap opzionale
+    const now = Date.now();
+    if (entity?.double_tap_action && (now - this._lastTapTs) < 300) {
+      this._lastTapTs = 0;
+      this._dispatchAction(entity, 'double_tap');
+      return;
+    }
+
+    // tap (piccolo delay per dare priorità al double tap)
+    this._lastTapTs = now;
+    setTimeout(() => {
+      if (Date.now() - this._lastTapTs >= 280) {
+        this._dispatchAction(entity, 'tap');
+      }
+    }, 280);
+  }
+
+  _onPointerCancel() {
+    clearTimeout(this._holdTimer);
+    this._holdFired = false;
+  }
+
   static styles = css`
     :host {
       display: block;
@@ -53,7 +131,6 @@ export class BubbleMushroom extends LitElement {
       height: 100%;
       position: relative;
       contain: strict;
-      pointer-events: none; /* solo gli elementi interni rispondono */
     }
     .mushroom-entity {
       position: absolute;
@@ -63,35 +140,100 @@ export class BubbleMushroom extends LitElement {
       align-items: center;
       justify-content: center;
       z-index: 1;
-      pointer-events: auto; /* riabilita click sui bottoni */
+      pointer-events: auto;
     }
-    .mushroom-entity ha-icon {
-      display: block;
-    }
+    .mushroom-entity ha-icon { display: block; }
   `;
 
   render() {
     const { width, height } = this._containerSize;
     if (!width || !height) return html``;
 
-    // Calcolo dimensioni “funghi”
-    const d = Math.max(Math.round(Math.min(width, height) * 0.14), 36); // diametro
-    const iconSize = Math.round(d * 0.62);
+    // dimensione dinamica (mobile -> desktop)
+    const vpWidth  = window.innerWidth || width;
+    const kMobile  = 0.55;
+    const kDesktop = 0.25;
+    const wMobile  = 100;
+    const wDesktop = 200;
 
-    // Centro (se poi li sposti con dx/dy li prenderemo in considerazione sotto)
-    const cX = Math.round(width / 2);
-    const cY = Math.round(height / 2);
+    let k;
+    if (vpWidth <= wMobile)        k = kMobile;
+    else if (vpWidth >= wDesktop)  k = kDesktop;
+    else {
+      const t = (vpWidth - wMobile) / (wDesktop - wMobile);
+      k = kMobile + (kDesktop - kMobile) * t;
+    }
+
+    // lato effettivo per non “allargare” troppo
+    const Rmax  = 1.6;
+    const sideW = Math.min(width, height * Rmax);
+    const side  = 0.5 * (height + sideW);
+    const size  = side * k; // diametro standard bolla
+
+    // ellisse (border-radius: 0 60% 60% 0) con clamping
+    const rxRaw  = width  * 0.60;
+    const ryRaw  = height * 0.60;
+    const scaleH = Math.min(1, width  / (rxRaw * 2));
+    const scaleV = Math.min(1, height / (ryRaw * 2));
+    const rX     = rxRaw * scaleH;
+    const rY     = ryRaw * scaleV;
+    const cX     = width - rX;
+    const cY     = height * 0.5;
+
+    const touchPad = 1; // 0 = a filo
+
+    // raggi per il contatto (centro bolla che “tocca” il bordo)
+    const rArcX = Math.max(0, rX - (size / 2) - touchPad);
+    const rArcY = Math.max(0, rY - (size / 2) - touchPad);
+
+    const deg = (d) => (Math.PI * d) / 180;
+
+    // angoli
+    const a30   = deg(30);
+    const aFlat = deg(85); // più grande = più a destra lungo la curva
+
+    // #1: appoggiata in alto-sinistra (dentro lo sfondo)
+    const contactX = (size / 2) + touchPad;
+    const contactY = (size / 2) + touchPad;
+
+    // scale per elementi speciali
+    const cameraScale  = 0.75;            // #6
+    const climateScale = 0.75;            // #7
+    const dCam = size * cameraScale;      // diametro camera
+    const dCli = size * climateScale;     // diametro climate
+
+    // POSIZIONI 1..7
+    const positions = [
+      // 1 — alto-sinistra, dentro lo sfondo
+      { x: contactX, y: contactY },
+
+      // 2 — arco alto, vicino all'inizio curvatura (sposta con aFlat)
+      { x: cX + rArcX * Math.cos(-aFlat), y: cY + rArcY * Math.sin(-aFlat) },
+
+      // 3 — arco alto-destra
+      { x: cX + rArcX * Math.cos(-a30),   y: cY + rArcY * Math.sin(-a30)   },
+
+      // 4 — arco basso-destra
+      { x: cX + rArcX * Math.cos(+a30),   y: cY + rArcY * Math.sin(+a30)   },
+
+      // 5 — arco basso, vicino all'inizio curvatura
+      { x: cX + rArcX * Math.cos(+aFlat), y: cY + rArcY * Math.sin(+aFlat) },
+
+      // 6 — CAMERA → angolo alto-destra, DENTRO l’area (usa il suo diametro)
+      { x: width - (dCam / 2), y: (dCam / 2) },
+
+      // 7 — CLIMATE → angolo basso-sinistra, DENTRO l’area (usa il suo diametro)
+      { x: (dCli / 2) + touchPad, y: height - (dCli / 2) - touchPad },
+    ];
 
     return html`
-      ${this.entities?.map((e) => {
-        if (!e) return html``;
+      ${this.entities.map((e, i) => {
+        // diametro per-ENTITÀ: camera (#6) e climate (#7) più piccoli
+        const d = (i === 5) ? dCam : (i === 6 ? dCli : size);
+        const iconSize = d * 0.95;
 
-        // Supporta string o oggetto
-        const entityId = typeof e === 'string' ? e : (e.entity_id || e.entity);
-        if (!entityId) return html``;
-
-        // Coordinate base + micro shift (dx/dy) dal config
-        const base = { x: cX, y: cY };
+        const base = positions[i] ?? { x: cX, y: cY };
+        // micro-shift da YAML
         const left = base.x + (e.dx ?? 0);
         const top  = base.y + (e.dy ?? 0);
 
@@ -116,74 +258,6 @@ export class BubbleMushroom extends LitElement {
         `;
       })}
     `;
-  }
-
-  // (retrocompat) handler click legacy – non usato più dopo l’introduzione dei pointer
-  _handleClick(entity) {
-    const actionConfig = {
-      entity: entity.entity_id,
-      tap_action:  entity.tap_action  || { action: 'toggle' },
-      hold_action: entity.hold_action || { action: 'more-info' },
-    };
-    const evt = new Event('hass-action', { bubbles: true, composed: true });
-    evt.detail = { config: actionConfig, action: 'tap' };
-    this.dispatchEvent(evt);
-  }
-
-  // 👇 Dispatch identico ai SubButton: evento 'hass-action' + detail {config, action}
-  _dispatchAction(entity, actionType) {
-    const actionConfig = {
-      entity: entity.entity_id || entity.entity || entity,
-      tap_action: entity.tap_action || { action: 'toggle' },
-      hold_action: entity.hold_action || { action: 'more-info' },
-      double_tap_action: entity.double_tap_action,
-    };
-    const evt = new Event('hass-action', { bubbles: true, composed: true });
-    evt.detail = {
-      config: actionConfig,
-      action: actionType,
-    };
-    this.dispatchEvent(evt);
-  }
-
-  _onPointerDown(ev, entity) {
-    ev.preventDefault();
-    this._holdFired = false;
-    clearTimeout(this._holdTimer);
-    this._holdTimer = setTimeout(() => {
-      this._holdFired = true;
-      this._dispatchAction(entity, 'hold');
-    }, this._holdThreshold);
-  }
-
-  _onPointerUp(ev, entity) {
-    ev.preventDefault();
-    clearTimeout(this._holdTimer);
-    if (this._holdFired) {
-      this._holdFired = false;
-      return; // già gestito hold
-    }
-
-    // double tap opzionale
-    const now = Date.now();
-    if (entity?.double_tap_action && (now - this._lastTapTs) < 300) {
-      this._lastTapTs = 0;
-      this._dispatchAction(entity, 'double_tap');
-      return;
-    }
-
-    // tap (con piccolo delay per dare priorità al double)
-    this._lastTapTs = now;
-    setTimeout(() => {
-      if (Date.now() - this._lastTapTs >= 280) {
-        this._dispatchAction(entity, 'tap');
-      }
-    }, 280);
-  }
-
-  _onPointerCancel() {
-    clearTimeout(this._holdTimer);
-    this._holdFired = false;
   }
 }
 
