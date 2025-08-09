@@ -49,36 +49,72 @@ export class BubbleSensor extends LitElement {
     this.rows = count > 4 ? 2 : 1;
     this.columns = count > 4 ? 4 : count || 1;
   }
-  
+
+  /** Esegue lo scaling per ogni pill (valore + unità in coppia) */
   _autoScaleValues() {
-    const values = this.renderRoot?.querySelectorAll('.sensor-value');
-    if (!values) return;
-    values.forEach(el => this._autoScaleValueFont(el));
-  }
-  
-  _autoScaleValueFont(element) {
-    const parent = element?.parentElement;
-    if (!parent) return;
-    
-    const maxWidth = parent.clientWidth * 0.48;
-    const maxHeight = parent.clientHeight * 0.75;
-    const maxSize = Math.min(maxWidth, maxHeight);
-    if (maxSize <= 0) return;
-    
-    element.style.fontSize = '';
-    let fontSize = parseInt(getComputedStyle(element).fontSize, 10) || 14;
-    
-    while (fontSize > 8) {
-      element.style.fontSize = `${fontSize}px`;
-      const { width, height } = element.getBoundingClientRect();
-      if (width <= maxWidth && height <= maxHeight) break;
-      fontSize--;
-    }
-    
-    element.style.fontSize = `${fontSize}px`;
+    const pills = this.renderRoot?.querySelectorAll('.sensor-pill');
+    if (!pills?.length) return;
+    pills.forEach(pill => this._fitValueAndUnit(pill));
   }
 
-  /** Apre il more-info nativo di Home Assistant (grafico history incluso). */
+  /**
+   * Calcola la dimensione del font del valore (con unità in proporzione)
+   * in modo che (valore + unità) stiano entro i limiti di spazio della pill.
+   */
+  _fitValueAndUnit(pill) {
+    const valueEl = pill.querySelector('.sensor-value');
+    const unitEl  = pill.querySelector('.sensor-unit');
+    if (!valueEl) return;
+
+    // Limiti di spazio disponibili (approssimati per non misurare ogni micro-gap)
+    const maxWidth  = pill.clientWidth * 0.52;  // porzione destinata a value+unit
+    const maxHeight = pill.clientHeight * 0.78; // altezza massima ammissibile
+    if (maxWidth <= 0 || maxHeight <= 0) return;
+
+    // Riparti da dimensioni "neutre" per misurazioni coerenti
+    valueEl.style.fontSize = '';
+    if (unitEl) unitEl.style.fontSize = '';
+
+    // Ricerca binaria sulla size del valore
+    let lo = 10;   // px min
+    let hi = 44;   // px max
+    let best = lo;
+
+    for (let i = 0; i < 16; i++) { // 16 iterazioni sono più che sufficienti
+      const mid = Math.floor((lo + hi) / 2);
+
+      // Applica dimensione di prova
+      valueEl.style.fontSize = `${mid}px`;
+      if (unitEl) {
+        const unitSize = Math.max(10, Math.round(mid * 0.75));
+        unitEl.style.fontSize = `${unitSize}px`;
+      }
+
+      // Forza reflow per misure aggiornate
+      const vRect = valueEl.getBoundingClientRect();
+      const uRect = unitEl ? unitEl.getBoundingClientRect() : { width: 0, height: 0 };
+
+      const totalWidth  = vRect.width + uRect.width + 6; // piccolo gap
+      const totalHeight = Math.max(vRect.height, uRect.height);
+
+      const fits = totalWidth <= maxWidth && totalHeight <= maxHeight;
+
+      if (fits) {
+        best = mid;
+        lo = mid + 1;
+      } else {
+        hi = mid - 1;
+      }
+    }
+
+    // Applica la dimensione "migliore"
+    valueEl.style.fontSize = `${best}px`;
+    if (unitEl) {
+      unitEl.style.fontSize = `${Math.max(10, Math.round(best * 0.75))}px`;
+    }
+  }
+
+  /** Apre il more-info nativo (grafico history incluso) */
   _openMoreInfo(entityId) {
     if (!entityId || typeof entityId !== 'string') return;
     const ev = new CustomEvent('hass-more-info', {
@@ -112,6 +148,7 @@ export class BubbleSensor extends LitElement {
     .sensor-pill {
       display: flex;
       align-items: center;
+      gap: 8px;
       background: rgba(32,38,55,0.12);
       border-radius: 18px;
       font-size: 1em;
@@ -122,21 +159,24 @@ export class BubbleSensor extends LitElement {
       width: 100%;
       height: 100%;
       contain: strict;
-      cursor: pointer; /* UX: cliccabile */
+      cursor: pointer;
+      padding: 10px 12px;
     }
 
     .sensor-icon {
-      font-size: 1.14em;
+      font-size: 1.4em; /* leggermente più grande dell'originale */
       opacity: 0.81;
+      flex: 0 0 auto;
     }
 
     .sensor-label {
-      opacity: 0.78;
+      opacity: 0.85;
       font-weight: 600;
-      font-size: clamp(9px, 0.85vw, 13px);
-      transform: scale(0.85);
+      font-size: clamp(14px, 1.5vw, 20px); /* emoji più grande */
+      transform: scale(0.95);
       display: inline-block;
       line-height: 1;
+      flex: 0 0 auto;
     }
 
     .sensor-value {
@@ -144,15 +184,19 @@ export class BubbleSensor extends LitElement {
       font-variant-numeric: tabular-nums;
       letter-spacing: 0.01em;
       line-height: 1;
+      /* la size viene impostata dinamicamente via JS */
     }
 
     .sensor-unit {
-      opacity: 0.75;
+      opacity: 0.8;
       font-weight: 600;
-      font-size: clamp(9px, 1vw, 14px);
+      /* la size viene impostata dinamicamente via JS */
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1;
+      margin-left: 4px;
+      flex: 0 0 auto;
     }
   `;
   
