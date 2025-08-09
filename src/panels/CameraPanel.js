@@ -11,7 +11,7 @@ export class CameraPanel extends LitElement {
     expanded: { type: Boolean },
     _entity:  { type: String,  state: true },
     _icon:    { type: String,  state: true },
-    _presence: { type: String, state: true },
+    _presence:{ type: String,  state: true },
     _cameraCandidates:   { type: Array, state: true },
     _presenceCandidates: { type: Array, state: true },
   };
@@ -30,14 +30,14 @@ export class CameraPanel extends LitElement {
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // allinea il toggle di autodiscovery come negli altri pannelli
+      // allinea il toggle come gli altri pannelli
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.camera');
 
       const ent = this.config?.entities?.camera?.entity || '';
-      const ico = this.config?.entities?.camera?.icon || '';
+      const ico = this.config?.entities?.camera?.icon   || '';
       const prs = this.config?.entities?.camera?.presence?.entity || '';
 
-      // auto-icon: se icona vuota prova a risolvere dall'entità
+      // auto-icona se vuota
       if (ent && !ico) {
         const st = this.hass?.states?.[ent];
         const iconFromState = st?.attributes?.icon;
@@ -45,26 +45,17 @@ export class CameraPanel extends LitElement {
         if (autoIcon) this._set('entities.camera.icon', autoIcon);
       }
 
-      this._entity = ent;
-      this._icon = this.config?.entities?.camera?.icon || '';
+      this._entity   = ent;
+      this._icon     = this.config?.entities?.camera?.icon || '';
       this._presence = prs;
 
-      // 🔸 ricava i candidati SOLO quando l’autodiscovery camera è ON
+      // 🔸 costruisci i candidati SOLO se autodiscovery camera è ON
       const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
       if (autoDisc) {
-        // Camera → solo dominio camera
-        this._cameraCandidates = candidatesFor(
-          this.hass,
-          this.config,
-          'camera',
-          ['camera'] // categoria dominio camera
-        ) || [];
-
-        // Presenza → solo binary_sensor con classi utili
+        // come nel SubButtonPanel: usiamo candidatesFor(...) e passiamo include_entities
+        this._cameraCandidates = candidatesFor(this.hass, this.config, 'camera', ['camera']) || [];
         this._presenceCandidates = candidatesFor(
-          this.hass,
-          this.config,
-          'camera',
+          this.hass, this.config, 'camera',
           ['motion', 'occupancy', 'presence', 'moving']
         ) || [];
       } else {
@@ -138,11 +129,11 @@ export class CameraPanel extends LitElement {
           <ha-selector
             .hass=${this.hass}
             .value=${this._entity}
-            .selector=${{
-              entity: this._cameraCandidates.length
-                ? { include_entities: this._cameraCandidates }
-                : { domain: 'camera' }
-            }}
+            .selector=${
+              this._cameraCandidates.length
+                ? { entity: { include_entities: this._cameraCandidates } }
+                : { entity: { domain: 'camera' } }
+            }
             allow-custom-entity
             @value-changed=${e => this._set('entities.camera.entity', e.detail.value)}
           ></ha-selector>
@@ -163,11 +154,11 @@ export class CameraPanel extends LitElement {
           <ha-selector
             .hass=${this.hass}
             .value=${this._presence}
-            .selector=${{
-              entity: this._presenceCandidates.length
-                ? { include_entities: this._presenceCandidates }
-                : { domain: 'binary_sensor' }
-            }}
+            .selector=${
+              this._presenceCandidates.length
+                ? { entity: { include_entities: this._presenceCandidates } }
+                : { entity: { domain: 'binary_sensor' } }
+            }
             allow-custom-entity
             @value-changed=${e => this._set('entities.camera.presence.entity', e.detail.value)}
           ></ha-selector>
@@ -184,14 +175,12 @@ export class CameraPanel extends LitElement {
       bubbles: true, composed: true,
     }));
   }
-
   _set(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop, val },
       bubbles: true, composed: true,
     }));
   }
-
   _reset = () => {
     this._set('entities.camera.entity', '');
     this._set('entities.camera.icon',   '');
