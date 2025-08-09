@@ -30,6 +30,7 @@ export class BubbleRoom extends LitElement {
   
     // default soft per i nuovi gruppi (se non ci sono)
     this._entities.camera  = this._entities.camera  || { entity: '', icon: '' };
+    if (!this._entities.camera.presence) this._entities.camera.presence = { entity: '' };
     this._entities.climate = this._entities.climate || { entity: '', icon: '' };
   }
   
@@ -198,10 +199,13 @@ export class BubbleRoom extends LitElement {
     const camId  = camCfg.entity;
     if (camId && this.hass.states?.[camId]) {
       const st = this.hass.states[camId];
+      const presId = camCfg.presence?.entity;
+      const presState = presId ? this.hass?.states?.[presId]?.state : undefined;
+      const presActive = presId ? ['on', 'home', 'occupied', 'motion', 'detected'].includes(presState) : true;
       list.push({
         icon:  camCfg.icon || st.attributes.icon || resolveEntityIcon(camId, this.hass) || 'mdi:cctv',
         state: st.state,
-        color: activeCol,                // schema a piacere
+        color: presActive ? activeCol : inactiveCol,                // schema a piacere
         dx: camCfg.dx ?? 0,
         dy: camCfg.dy ?? 0,
         angle_deg: camCfg.angle_deg,
@@ -209,8 +213,8 @@ export class BubbleRoom extends LitElement {
 
         // >>> aggiunte per far funzionare le azioni impostate nel CameraPanel
         entity_id: camId,
-        tap_action:  camCfg.tap_action,
-        hold_action: camCfg.hold_action,
+        tap_action:  { action: 'more-info' },
+        hold_action: { action: 'none' },
 
         kind: 'camera',
       });

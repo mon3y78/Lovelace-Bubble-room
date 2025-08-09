@@ -64,7 +64,8 @@ export class BubbleRoomEditor extends LitElement {
     if (!config.entities.camera) {
       config.entities.camera = {
         entity: '',
-        icon:   '',   // popolata automaticamente dal CameraPanel se vuota
+        icon:   '',   
+        presence: { entity: '' }, // 
       };
     }
     if (!config.entities.climate) {

@@ -10,6 +10,7 @@ export class CameraPanel extends LitElement {
     expanded: { type: Boolean },
     _entity:  { type: String,  state: true },
     _icon:    { type: String,  state: true },
+    _presence: { type: String, state: true },
   };
 
   constructor() {
@@ -19,6 +20,7 @@ export class CameraPanel extends LitElement {
     this.expanded = false;
     this._entity  = '';
     this._icon    = '';
+    this._presence = '';
   }
 
   updated(changed) {
@@ -28,6 +30,7 @@ export class CameraPanel extends LitElement {
 
       const ent = this.config?.entities?.camera?.entity || '';
       const ico = this.config?.entities?.camera?.icon   || '';
+      const prs = this.config?.entities?.camera?.presence?.entity || '';
 
       // → se ho un'entità e l'icona è vuota, la imposto automaticamente
       //    priorità: attributo stato → mapping device_class/dominio → default
@@ -43,6 +46,7 @@ export class CameraPanel extends LitElement {
 
       this._entity = ent;
       this._icon   = this.config?.entities?.camera?.icon || '';
+      this._presence = prs;
     }
   }
 
@@ -123,6 +127,16 @@ export class CameraPanel extends LitElement {
             .value=${this._icon}
             .selector=${{ icon: {} }}
             @value-changed=${e => this._set('entities.camera.icon', e.detail.value)}
+          ></ha-selector>
+        </div>
+        <div class="input-group">
+          <label>Entità Presenza/Motion (binary_sensor):</label>
+          <ha-selector
+            .hass=${this.hass}
+            .value=${this._presence}
+            .selector=${{ entity: { domain: 'binary_sensor' } }}
+            allow-custom-entity
+            @value-changed=${e => this._set('entities.camera.presence.entity', e.detail.value)}
           ></ha-selector>
         </div>
 
