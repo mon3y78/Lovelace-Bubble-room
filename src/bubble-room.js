@@ -154,6 +154,7 @@ export class BubbleRoom extends LitElement {
         unit:  st.attributes.unit_of_measurement,
         device_class: st.attributes.device_class,
         color,
+        entity: entId,
       });
     }
     return result;
