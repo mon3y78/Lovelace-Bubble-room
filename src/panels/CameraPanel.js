@@ -65,8 +65,8 @@ export class CameraPanel extends LitElement {
       this._icon = camRec.icon || '';
       this._presence = camRec.presence?.entity || '';
 
-      // 3) Auto‑icon se vuota
-      if (this._entity && !this._icon) {
+      // 3) Auto‑icon se NON definita (evita di riempire quando l'utente l'ha svuotata con "")
+      if (this._entity && (this._icon === undefined || this._icon === null)) {
         const st = this.hass?.states?.[this._entity];
         const autoIcon = st?.attributes?.icon || resolveEntityIcon(this._entity, this.hass);
         if (autoIcon) {
@@ -243,11 +243,22 @@ export class CameraPanel extends LitElement {
     }));
   }
 
-  _reset() {
-    this._set('entities.camera.entity', '');
-    this._set('entities.camera.icon',   '');
-    this._set('entities.camera.presence.entity', '');
-  }
+  _reset = () => {
+    // Aggiorna subito lo stato locale per feedback instantaneo
+    this._entity = '';
+    this._icon = '';
+    this._presence = '';
+
+    // Invia un comando atomico all'editor (che già gestisce section: 'camera')
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: {
+        prop: '__panel_cmd__',
+        val: { cmd: 'reset', section: 'camera' },
+      },
+      bubbles: true,
+      composed: true,
+    }));
+  };
 }
 
 customElements.define('camera-panel', CameraPanel);
