@@ -1,119 +1,159 @@
 // src/components/BubbleSensor.js
 
 import { LitElement, html, css } from 'lit';
-
-/**
- * BubbleSensor
- * - Mostra una griglia di "pill" per sensori
- * - Al click su una pill apre il more-info di Home Assistant per l'entità
- *   -> nel more-info è presente il grafico dello storico (se recorder attivo)
- *
- * Atteso che ogni elemento di `sensors` contenga:
- * {
- *   entity: 'sensor.temperature_soggiorno' // oppure entity_id
- *   icon: 'mdi:thermometer',
- *   value: '22.4',
- *   unit: '°C',
- *   label: '🌡️' // opzionale (se non lo passi, mostriamo l'icona)
- *   color: '#e3f6ff', // opzionale
- *   device_class: 'temperature' // opzionale
- * }
- */
+import { SENSOR_TYPE_MAP } from '../helpers/sensor-mapping.js';
 
 export class BubbleSensor extends LitElement {
   static properties = {
     sensors: { type: Array },
-    rows: { type: Number, reflect: true },
-    columns: { type: Number, reflect: true },
   };
-  
-  static styles = css`
-    :host {
-      display: block;
-      box-sizing: border-box;
-      width: 100%;
-      height: 100%;
-    }
-
-    .sensor-grid {
-      display: grid;
-      gap: 8px;
-      width: 100%;
-      height: 100%;
-      grid-auto-rows: 1fr;
-      grid-auto-columns: 1fr;
-    }
-
-    .sensor-pill {
-      display: grid;
-      grid-template-columns: auto 1fr auto auto;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.10);
-      user-select: none;
-      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
-      cursor: pointer;
-    }
-
-    .sensor-pill:hover {
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.09);
-      border-color: rgba(255,255,255,0.18);
-    }
-
-    .sensor-icon {
-      width: 22px;
-      height: 22px;
-      opacity: 0.95;
-    }
-
-    .sensor-label {
-      font-size: 0.92rem;
-      opacity: 0.9;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .sensor-value {
-      font-weight: 600;
-      font-size: 1rem;
-      justify-self: end;
-      opacity: 0.98;
-    }
-
-    .sensor-unit {
-      font-size: 0.85rem;
-      opacity: 0.8;
-      margin-left: 2px;
-    }
-  `;
   
   constructor() {
     super();
     this.sensors = [];
     this.rows = 1;
     this.columns = 1;
+    this._resizeObserver = null;
+    this._resizeScheduled = false;
   }
   
-  /**
-   * Facoltativo: se vuoi calcolare dinamicamente la griglia in base al numero di sensori,
-   * puoi chiamare questo metodo quando aggiorni `sensors`.
-   */
-  updated(changed) {
-    if (changed.has('sensors')) {
-      const count = Array.isArray(this.sensors) ? this.sensors.length : 0;
-      // semplice euristica: 1 riga fino a 4, poi 2 righe
-      this.rows = count > 4 ? 2 : 1;
-      this.columns = Math.max(1, Math.min(4, count)); // fino a 4 colonne
+  connectedCallback() {
+    super.connectedCallback();
+    this._updateLayout();
+    this._resizeObserver = new ResizeObserver(() => {
+      if (!this._resizeScheduled) {
+        this._resizeScheduled = true;
+        requestAnimationFrame(() => {
+          this._autoScaleValues();
+          this._resizeScheduled = false;
+        });
+      }
+    });
+    this._resizeObserver.observe(this);
+  }
+  
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._resizeObserver?.disconnect();
+  }
+  
+  updated(changedProperties) {
+    if (changedProperties.has('sensors')) {
+      this._updateLayout();
+      this._autoScaleValues();
     }
   }
   
+  _updateLayout() {
+    const count = this.sensors?.length || 0;
+    this.rows = count > 4 ? 2 : 1;
+    this.columns = count > 4 ? 4 : count || 1;
+  }
+  
+  _autoScaleValues() {
+    const values = this.renderRoot?.querySelectorAll('.sensor-value');
+    if (!values) return;
+    values.forEach(el => this._autoScaleValueFont(el));
+  }
+  
+  _autoScaleValueFont(element) {
+    const parent = element?.parentElement;
+    if (!parent) return;
+    
+    const maxWidth = parent.clientWidth * 0.48;
+    const maxHeight = parent.clientHeight * 0.75;
+    const maxSize = Math.min(maxWidth, maxHeight);
+    if (maxSize <= 0) return;
+    
+    element.style.fontSize = '';
+    let fontSize = parseInt(getComputedStyle(element).fontSize, 10) || 14;
+    
+    while (fontSize > 8) {
+      element.style.fontSize = `${fontSize}px`;
+      const { width, height } = element.getBoundingClientRect();
+      if (width <= maxWidth && height <= maxHeight) break;
+      fontSize--;
+    }
+    
+    element.style.fontSize = `${fontSize}px`;
+  }
+  
+  static styles = css`
+    :host {
+      display: block;
+      height: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      contain: strict;
+    }
+
+    .sensor-grid {
+      display: grid;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sensor-pill {
+      display: flex;
+      align-items: center;
+      background: rgba(32,38,55,0.12);
+      border-radius: 18px;
+      font-size: 1em;
+      font-family: "Bebas Neue", "Arial Narrow", sans-serif;
+      font-weight: 700;
+      color: #e3f6ff;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      contain: strict;
+    }
+
+    .sensor-icon {
+      font-size: 1.14em;
+      opacity: 0.81;
+    }
+
+    .sensor-label {
+      opacity: 0.78;
+      font-weight: 600;
+      font-size: clamp(9px, 0.85vw, 13px);
+      transform: scale(0.85);
+      display: inline-block;
+      line-height: 1;
+    }
+
+    .sensor-value {
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.01em;
+      line-height: 1;
+    }
+
+    .sensor-unit {
+      opacity: 0.75;
+      font-weight: 600;
+      font-size: clamp(9px, 1vw, 14px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  `;
+  
   render() {
-    const sensors = Array.isArray(this.sensors) ? this.sensors : [];
+    const sensors = (this.sensors || []).map(sensor => {
+      const devClass = sensor.device_class;
+      const map = SENSOR_TYPE_MAP[devClass] || {};
+      const emoji = map.emoji || '❓';
+      const unit = sensor.unit || map.units?.[0] || '';
+      return {
+        ...sensor,
+        label: emoji,
+        unit,
+      };
+    });
     
     return html`
       <div
@@ -123,45 +163,29 @@ export class BubbleSensor extends LitElement {
           grid-template-rows: repeat(${this.rows}, 1fr);
         "
       >
-        ${sensors.map((sensor) => {
-          const color = sensor?.color || '#e3f6ff';
-          const label = sensor?.label ?? '';
-          const icon = sensor?.icon ?? '';
-          const value = sensor?.value ?? '--';
-          const unit = sensor?.unit ?? '';
-          const entityId = sensor?.entity || sensor?.entity_id || '';
-
-          return html`
-            <div
-              class="sensor-pill"
-              style="color: ${color}"
-              title="Mostra grafico storico"
-              @click=${() => this._openMoreInfo(entityId)}
-            >
-              ${icon
-                ? html`<ha-icon class="sensor-icon" .icon=${icon}></ha-icon>`
-                : html`<span class="sensor-label">${label}</span>`}
-              <span class="sensor-label">${label}</span>
-              <span class="sensor-value">${value}</span>
-              <span class="sensor-unit">${unit}</span>
-            </div>
-          `;
-        })}
+        ${sensors.map(sensor => html`
+          <div 
+            class="sensor-pill"
+            style="color: ${sensor.color || '#e3f6ff'}"
+              @click=${() => this._openMoreInfo(sensor.entity || sensor.entity_id)}
+             title="History"
+          >
+            <ha-icon class="sensor-icon" .icon="${sensor.icon || ''}"></ha-icon>
+            <span class="sensor-label">${sensor.label || ''}</span>
+            <span class="sensor-value">${sensor.value ?? '--'}</span>
+            <span class="sensor-unit">${sensor.unit || ''}</span>
+          </div>
+        `)}
       </div>
     `;
   }
-  
-  /**
-   * Apre il more-info nativo di Home Assistant per l'entità (grafico incluso).
-   */
   _openMoreInfo(entityId) {
-    if (!entityId || typeof entityId !== 'string') return;
+    if (!entityId) return;
     const ev = new CustomEvent('hass-more-info', {
       bubbles: true,
       composed: true,
-      detail: { entityId },
+      detail: { entityId }
     });
-    // Dispatch verso il root di HA se presente, altrimenti sul componente stesso
     const ha = document.querySelector('home-assistant');
     (ha || this).dispatchEvent(ev);
   }
