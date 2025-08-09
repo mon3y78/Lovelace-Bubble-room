@@ -204,9 +204,13 @@ export class RoomPanel extends LitElement {
 
   _onLayoutClick(mode) {
     this.layout = mode;
+    // 1) aggiorna il layout
     this._fire('layout', mode);
+    // 2) invia i grid_options coerenti con la scelta
+    const grid = mode === 'tall' ? { columns: 6, rows: 4 } : { columns: 12, rows: 4 };
+    this._fire('grid_options', grid);
   }
-
+  
   _fire(prop, val) {
     if (this._syncingFromConfig) return; // blocca eventi durante la sync
     this.dispatchEvent(new CustomEvent('panel-changed', {
