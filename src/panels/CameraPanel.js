@@ -40,17 +40,17 @@ export class CameraPanel extends LitElement {
     if (typeof raw === 'string' && raw.startsWith('area_')) return raw;
     const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
     if (areas.length && raw) {
-      const hit = areas.find(a => (a.name || '').toLowerCase() === String(raw).toLowerCase());
+      const hit = areas.find((a) => (a.name || '').toLowerCase() === String(raw).toLowerCase());
       if (hit?.area_id) return hit.area_id;
     }
     const cam = this.config?.entities?.camera?.entity;
     const reg = this.hass?.entities;
-    return cam && reg ? (reg[cam]?.area_id || '') : '';
+    return cam && reg ? reg[cam]?.area_id || '' : '';
   }
 
   _filterByAreaIncludeSelected(list, areaId, selected) {
     const reg = this.hass?.entities || {};
-    const filtered = (list || []).filter(id => !areaId || reg[id]?.area_id === areaId);
+    const filtered = (list || []).filter((id) => !areaId || reg[id]?.area_id === areaId);
     if (selected && !filtered.includes(selected)) filtered.unshift(selected);
     return Array.from(new Set(filtered));
   }
@@ -64,30 +64,34 @@ export class CameraPanel extends LitElement {
       // 2) Sync valori correnti
       const camRec = this.config?.entities?.camera || {};
       this._entity = camRec.entity || '';
-      this._icon = camRec.icon || '';
+      this._icon = camRec.icon ?? '';
       this._presence = camRec.presence?.entity || '';
 
-       // 3) Auto‑icon SOLO quando cambia l'entità e l'icona è vuota/indefinita
-      
-      const prev = this._lastEntity; 
-      const needAutoIcon = +this._entity &&
+      // 3) Auto‑icon SOLO quando cambia l'entità e l'icona è vuota/indefinita
+      const prev = this._lastEntity;
+      const needAutoIcon =
+        this._entity &&
         (this._icon === '' || this._icon == null) &&
-        this._entity !== prev; 
+        this._entity !== prev;
+
       if (needAutoIcon) {
         const st = this.hass?.states?.[this._entity];
-        const autoIcon = 
+        const autoIcon =
           st?.attributes?.icon ||
-          +resolveEntityIcon(this._entity, this.hass) ||
-          'mdi:cctv'; 
-        this._icon = autoIcon; 
-        this.dispatchEvent(new CustomEvent('panel-changed', {
-          detail: { prop: 'entities.camera.icon', val: autoIcon },
-          +bubbles: true,
-          composed: true,
-        })); 
-      } 
+          resolveEntityIcon(this._entity, this.hass) ||
+          'mdi:cctv';
+        this._icon = autoIcon;
+        this.dispatchEvent(
+          new CustomEvent('panel-changed', {
+            detail: { prop: 'entities.camera.icon', val: autoIcon },
+            bubbles: true,
+            composed: true,
+          })
+        );
+      }
       this._lastEntity = this._entity;
-      // 4) Liste catg ndidate
+
+      // 4) Liste candidate
       const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
       if (autoDisc) {
         // Camera: usa filtri centralizzati
@@ -95,13 +99,18 @@ export class CameraPanel extends LitElement {
 
         // Presence/Motion: filtra per device_class e poi applica filtro area "duro"
         const areaId = this._resolveAreaId();
-        const presAll = candidatesFor(
-          this.hass, this.config, 'presence',
-          ['motion','occupancy','presence','moving']
-        ) || [];
-        const presBin = presAll.filter(id => id.startsWith('binary_sensor.'));
+        const presAll =
+          candidatesFor(this.hass, this.config, 'presence', [
+            'motion',
+            'occupancy',
+            'presence',
+            'moving',
+          ]) || [];
+        const presBin = presAll.filter((id) => id.startsWith('binary_sensor.'));
         this._presenceCandidates = this._filterByAreaIncludeSelected(
-          presBin, areaId, this._presence
+          presBin,
+          areaId,
+          this._presence
         );
       } else {
         this._cameraCandidates = [];
@@ -111,24 +120,33 @@ export class CameraPanel extends LitElement {
   }
 
   static styles = css`
-    :host { display: block; }
+    :host {
+      display: block;
+    }
     .glass-panel {
       margin: 0 !important;
       width: 100%;
       box-sizing: border-box;
       border-radius: 40px;
       position: relative;
-      background: var(--glass-bg, rgba(80,235,175,0.28));
-      box-shadow: var(--glass-shadow, 0 2px 24px rgba(40,220,145,0.18));
+      background: var(--glass-bg, rgba(80, 235, 175, 0.28));
+      box-shadow: var(--glass-shadow, 0 2px 24px rgba(40, 220, 145, 0.18));
       overflow: hidden;
     }
     .glass-panel::after {
       content: '';
-      position: absolute; inset: 0;
+      position: absolute;
+      inset: 0;
       border-radius: inherit;
-      background: var(--glass-sheen,
-        linear-gradient(120deg, rgba(255,255,255,0.18),
-        rgba(255,255,255,0.10) 70%, transparent 100%));
+      background: var(
+        --glass-sheen,
+        linear-gradient(
+          120deg,
+          rgba(255, 255, 255, 0.18),
+          rgba(255, 255, 255, 0.1) 70%,
+          transparent 100%
+        )
+      );
       pointer-events: none;
     }
     .glass-header {
@@ -141,19 +159,26 @@ export class CameraPanel extends LitElement {
     .input-group.autodiscover {
       margin: 0 16px 13px;
       padding: 14px 18px 10px;
-      background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.13);
+      background: rgba(44, 70, 100, 0.23);
+      border: 1.5px solid rgba(255, 255, 255, 0.13);
       border-radius: 18px;
-      display: flex; align-items: center; gap: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .input-group { margin: 12px 16px; }
+    .input-group {
+      margin: 12px 16px;
+    }
     .input-group label {
       display: block;
       font-weight: 600;
       margin-bottom: 6px;
       color: #36e6a0;
     }
-    ha-selector { width: 100%; box-sizing: border-box; }
+    ha-selector {
+      width: 100%;
+      box-sizing: border-box;
+    }
     .reset-button {
       border: 3.5px solid #ff4c6a;
       color: #ff4c6a;
@@ -176,7 +201,7 @@ export class CameraPanel extends LitElement {
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
-        @expanded-changed=${e => (this.expanded = e.detail.expanded)}
+        @expanded-changed=${(e) => (this.expanded = e.detail.expanded)}
       >
         <div slot="header" class="glass-header">📷 Camera</div>
 
@@ -185,7 +210,7 @@ export class CameraPanel extends LitElement {
           <input
             type="checkbox"
             .checked=${autoDisc}
-            @change=${e => this._toggleAuto(e.target.checked)}
+            @change=${(e) => this._toggleAuto(e.target.checked)}
           />
           <label>🪄 Auto‑discover Camera</label>
         </div>
@@ -196,13 +221,11 @@ export class CameraPanel extends LitElement {
           <ha-selector
             .hass=${this.hass}
             .value=${this._entity}
-            .selector=${
-              this._cameraCandidates.length
-                ? { entity: { include_entities: this._cameraCandidates } }
-                : { entity: { domain: 'camera' } }
-            }
+            .selector=${this._cameraCandidates.length
+              ? { entity: { include_entities: this._cameraCandidates } }
+              : { entity: { domain: 'camera' } }}
             allow-custom-entity
-            @value-changed=${e => this._set('entities.camera.entity', e.detail.value)}
+            @value-changed=${(e) => this._set('entities.camera.entity', e.detail.value)}
           ></ha-selector>
         </div>
 
@@ -213,7 +236,7 @@ export class CameraPanel extends LitElement {
             .hass=${this.hass}
             .value=${this._icon}
             .selector=${{ icon: {} }}
-            @value-changed=${e => this._set('entities.camera.icon', e.detail.value)}
+            @value-changed=${(e) => this._set('entities.camera.icon', e.detail.value)}
           ></ha-selector>
         </div>
 
@@ -223,13 +246,11 @@ export class CameraPanel extends LitElement {
           <ha-selector
             .hass=${this.hass}
             .value=${this._presence}
-            .selector=${
-              this._presenceCandidates.length
-                ? { entity: { include_entities: this._presenceCandidates } }
-                : { entity: { domain: 'binary_sensor' } }
-            }
+            .selector=${this._presenceCandidates.length
+              ? { entity: { include_entities: this._presenceCandidates } }
+              : { entity: { domain: 'binary_sensor' } }}
             allow-custom-entity
-            @value-changed=${e => this._set('entities.camera.presence.entity', e.detail.value)}
+            @value-changed=${(e) => this._set('entities.camera.presence.entity', e.detail.value)}
           ></ha-selector>
         </div>
 
@@ -239,34 +260,43 @@ export class CameraPanel extends LitElement {
   }
 
   _toggleAuto(on) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'auto_discovery_sections.camera', val: on },
-      bubbles: true, composed: true,
-    }));
+    this.dispatchEvent(
+      new CustomEvent('panel-changed', {
+        detail: { prop: 'auto_discovery_sections.camera', val: on },
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   _set(prop, val) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val },
-      bubbles: true, composed: true,
-    }));
+    this.dispatchEvent(
+      new CustomEvent('panel-changed', {
+        detail: { prop, val },
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   _reset = () => {
-    // Aggiorna subito lo stato locale per feedback instantaneo
+    // svuota lo stato locale per feedback immediato
     this._entity = '';
     this._icon = '';
     this._presence = '';
+    this._lastEntity = '';
 
-    // Invia un comando atomico all'editor (che già gestisce section: 'camera')
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: {
-        prop: '__panel_cmd__',
-        val: { cmd: 'reset', section: 'camera' },
-      },
-      bubbles: true,
-      composed: true,
-    }));
+    // invia il comando atomico all'editor (che gestisce la sezione 'camera')
+    this.dispatchEvent(
+      new CustomEvent('panel-changed', {
+        detail: {
+          prop: '__panel_cmd__',
+          val: { cmd: 'reset', section: 'camera' },
+        },
+        bubbles: true,
+        composed: true,
+      })
+    );
   };
 }
 
