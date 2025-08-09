@@ -32,41 +32,18 @@ export class CameraPanel extends LitElement {
     this._presenceCandidates = [];
   }
 
-  // --- helpers area/registry -------------------------------------------------
-  _resolveAreaId() {
-    const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
-    if (typeof raw === 'string' && raw.startsWith('area_')) return raw;
-    const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
-    if (areas.length && raw) {
-      const hit = areas.find(a => (a.name || '').toLowerCase() === String(raw).toLowerCase());
-      if (hit?.area_id) return hit.area_id;
-    }
-    // fallback: area_id della camera selezionata
-    const cam = this.config?.entities?.camera?.entity;
-    const reg = this.hass?.entities;
-    return cam && reg ? (reg[cam]?.area_id || '') : '';
-  }
-
-  _filterByAreaIncludeSelected(list, areaId, selected) {
-    const reg = this.hass?.entities || {};
-    const filtered = (list || []).filter(id => !areaId || reg[id]?.area_id === areaId);
-    if (selected && !filtered.includes(selected)) filtered.unshift(selected);
-    return Array.from(new Set(filtered));
-  }
-  // --------------------------------------------------------------------------
-
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // 1) auto-discovery per la sezione Camera (usa il trigger centrale)
+      // 1) Auto‑discovery per la sezione Camera (trigger centrale)
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.camera');
 
-      // 2) sync valori
+      // 2) Sync valori correnti
       const camRec = this.config?.entities?.camera || {};
       this._entity = camRec.entity || '';
       this._icon = camRec.icon || '';
       this._presence = camRec.presence?.entity || '';
 
-      // 3) auto-icon se vuota
+      // 3) Auto‑icon se vuota
       if (this._entity && !this._icon) {
         const st = this.hass?.states?.[this._entity];
         const autoIcon = st?.attributes?.icon || resolveEntityIcon(this._entity, this.hass);
@@ -79,25 +56,11 @@ export class CameraPanel extends LitElement {
         }
       }
 
-      // 4) candidati (pattern Mushroom) + filtro duro per area_id
+      // 4) Liste candidate usando i filtri centralizzati (area già gestita lì)
       const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
       if (autoDisc) {
-        const areaId = this._resolveAreaId();
-
-        const all = candidatesFor(this.hass, this.config, 'mushroom') || [];
-        const camsAll = all.filter(id => id.startsWith('camera.'));
-        this._cameraCandidates = this._filterByAreaIncludeSelected(
-          camsAll, areaId, this._entity
-        );
-
-        const presAll = candidatesFor(
-          this.hass, this.config, 'mushroom',
-          ['motion','occupancy','presence','moving']
-        ) || [];
-        const presBin = presAll.filter(id => id.startsWith('binary_sensor.'));
-        this._presenceCandidates = this._filterByAreaIncludeSelected(
-          presBin, areaId, this._presence
-        );
+        this._cameraCandidates   = candidatesFor(this.hass, this.config, 'camera')   || [];
+        this._presenceCandidates = candidatesFor(this.hass, this.config, 'presence') || [];
       } else {
         this._cameraCandidates = [];
         this._presenceCandidates = [];

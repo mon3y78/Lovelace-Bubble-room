@@ -119,44 +119,16 @@ export function autoFillPresence(hass, config) {
   return { ...config, entities };
 }
 
-// Camera: autofill con filtro *duro* per area_id (se disponibile)
+// Camera: usa candidatesFor per dominio camera con filtro area
 export function autoFillCamera(hass, config) {
   const entities = { ...(config.entities || {}) };
   const camera = entities.camera || (entities.camera = {});
   if (camera.entity) return { ...config, entities };
 
-  // --- 1) Risolvi area_id: accetta area come id o nome; fallback: area della camera già selezionata ---
-  const reg = hass?.entities || {};
-  const raw = Array.isArray(config?.area) ? config.area[0] : config?.area;
-  let areaId = '';
-  if (typeof raw === 'string' && raw.startsWith('area_')) {
-    areaId = raw;
-  } else {
-    const areas = Array.isArray(hass?.areas) ? hass.areas : [];
-    if (areas.length && raw) {
-      const hit = areas.find(a => (a.name || '').toLowerCase() === String(raw).toLowerCase());
-      areaId = hit?.area_id || '';
-    }
-  }
-  if (!areaId && camera.entity) {
-    areaId = reg[camera.entity]?.area_id || '';
-  }
-
-  // --- 2) Costruisci candidati: se ho area_id prendo dal registry solo le camera.* di quell'area ---
-  let candidates = [];
-  if (areaId) {
-    candidates = Object.values(reg)
-      .filter(e => e?.area_id === areaId && e?.entity_id?.startsWith?.('camera.'))
-      .map(e => e.entity_id);
-  } else {
-    // fallback: usa i candidati "mushroom" e filtra camera.*
-    const list = candidatesFor(hass, config, 'mushroom') || [];
-    candidates = list.filter(id => id.startsWith('camera.'));
-  }
-
-  // --- 3) Pick prima camera disponibile ---
+  const candidates = candidatesFor(hass, config, 'camera') || [];
   const pick = candidates[0];
   if (pick) camera.entity = pick;
+
   return { ...config, entities };
 }
 
