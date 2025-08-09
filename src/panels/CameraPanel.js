@@ -16,6 +16,7 @@ export class CameraPanel extends LitElement {
 
     _cameraCandidates: { type: Array, state: true },
     _presenceCandidates: { type: Array, state: true },
+    _lastEntity: { type: String, state: true },
   };
 
   constructor() {
@@ -30,6 +31,7 @@ export class CameraPanel extends LitElement {
 
     this._cameraCandidates = [];
     this._presenceCandidates = [];
+    this._lastEntity = '';
   }
 
   // --- helpers area/registry (per filtro presence) ---------------------------
@@ -65,20 +67,27 @@ export class CameraPanel extends LitElement {
       this._icon = camRec.icon || '';
       this._presence = camRec.presence?.entity || '';
 
-      // 3) Auto‑icon se NON definita (evita di riempire quando l'utente l'ha svuotata con "")
-      if (this._entity && (this._icon === undefined || this._icon === null)) {
+       // 3) Auto‑icon SOLO quando cambia l'entità e l'icona è vuota/indefinita
+      
+      const prev = this._lastEntity; 
+      const needAutoIcon = +this._entity &&
+        (this._icon === '' || this._icon == null) &&
+        this._entity !== prev; 
+      if (needAutoIcon) {
         const st = this.hass?.states?.[this._entity];
-        const autoIcon = st?.attributes?.icon || resolveEntityIcon(this._entity, this.hass);
-        if (autoIcon) {
-          this._icon = autoIcon;
-          this.dispatchEvent(new CustomEvent('panel-changed', {
-            detail: { prop: 'entities.camera.icon', val: autoIcon },
-            bubbles: true, composed: true,
-          }));
-        }
-      }
-
-      // 4) Liste candidate
+        const autoIcon = 
+          st?.attributes?.icon ||
+          +resolveEntityIcon(this._entity, this.hass) ||
+          'mdi:cctv'; 
+        this._icon = autoIcon; 
+        this.dispatchEvent(new CustomEvent('panel-changed', {
+          detail: { prop: 'entities.camera.icon', val: autoIcon },
+          +bubbles: true,
+          composed: true,
+        })); 
+      } 
+      this._lastEntity = this._entity;
+      // 4) Liste catg ndidate
       const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
       if (autoDisc) {
         // Camera: usa filtri centralizzati
