@@ -13,7 +13,8 @@ export class CameraPanel extends LitElement {
     _presence:{ type: String,  state: true },
     _cameraCandidates:   { type: Array, state: true },
     _presenceCandidates: { type: Array, state: true },
-    _debugArea: { type: String, state: true },
+    _debugAreaRaw:  { type: String, state: true },
+    _debugAreaId:   { type: String, state: true },
   };
 
   constructor() {
@@ -26,7 +27,37 @@ export class CameraPanel extends LitElement {
     this._presence = '';
     this._cameraCandidates = [];
     this._presenceCandidates = [];
-    this._debugArea = '';
+    this._debugAreaRaw = '';
+    this._debugAreaId  = '';
+  }
+
+  // --- helper: normalizza area a area_id ---
+  _areaToId(raw) {
+    if (!raw) return '';
+    // se è già un area_id, lo ritorniamo
+    if (typeof raw === 'string' && raw.startsWith('area_')) return raw;
+    // cerca per nome (case-insensitive) tra le aree note al frontend
+    const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
+    const found = areas.find(a => String(a?.name || '').toLowerCase() === String(raw).toLowerCase());
+    return found?.area_id || '';
+  }
+
+  _normalizedConfigForCandidates() {
+    // accetta stringa o array; tieni solo il primo valore (come fanno gli altri pannelli)
+    const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
+    const areaId = this._areaToId(raw) || (typeof raw === 'string' && raw.startsWith('area_') ? raw : '');
+    // prepara una shallow copy della config con area come array di area_id (se presente)
+    const cfg = { ...(this.config || {}) };
+    if (areaId) {
+      cfg.area = [areaId];
+    } else {
+      // se non riusciamo a risolvere, lasciamo com’è: candidatesFor non filtrerà per area
+      cfg.area = this.config?.area;
+    }
+    // aggiorna badge
+    this._debugAreaRaw = raw || '';
+    this._debugAreaId  = areaId || '';
+    return cfg;
   }
 
   updated(changed) {
@@ -37,6 +68,7 @@ export class CameraPanel extends LitElement {
       const ico = this.config?.entities?.camera?.icon   || '';
       const prs = this.config?.entities?.camera?.presence?.entity || '';
 
+      // auto-icona se vuota
       if (ent && !ico) {
         const st = this.hass?.states?.[ent];
         const iconFromState = st?.attributes?.icon;
@@ -49,19 +81,28 @@ export class CameraPanel extends LitElement {
       this._presence = prs;
 
       const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
-      this._debugArea = Array.isArray(this.config?.area)
-        ? this.config.area.join(',')
-        : (this.config?.area || '');
 
       if (autoDisc) {
-        this._cameraCandidates = candidatesFor(this.hass, this.config, 'camera', ['camera']) || [];
+        // 🔸 usa SEMPRE la config normalizzata (area → area_id) per candidatesFor
+        const cfgForQuery = this._normalizedConfigForCandidates();
+
+        // Camera → dominio camera (filtrata per area)
+        this._cameraCandidates = candidatesFor(
+          this.hass, cfgForQuery, 'camera', ['camera']
+        ) || [];
+
+        // Presenza → binary_sensor con classi utili (filtrata per area)
         this._presenceCandidates = candidatesFor(
-          this.hass, this.config, 'camera',
-          ['motion', 'occupancy', 'presence', 'moving']
+          this.hass, cfgForQuery, 'camera', ['motion','occupancy','presence','moving']
         ) || [];
       } else {
+        // autodiscovery OFF → nessuna lista pre‑filtrata
         this._cameraCandidates = [];
         this._presenceCandidates = [];
+        // badge: mostra comunque l'area raw
+        const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
+        this._debugAreaRaw = raw || '';
+        this._debugAreaId  = '';
       }
     }
   }
@@ -127,9 +168,10 @@ export class CameraPanel extends LitElement {
 
         ${autoDisc ? html`
           <div class="debug-badge">
-            Area: ${this._debugArea || '(nessuna)'} |
-            Camera: ${this._cameraCandidates.length} |
-            Presence: ${this._presenceCandidates.length}
+            Area (raw): ${this._debugAreaRaw || '—'}
+            &nbsp;|&nbsp; Area ID: ${this._debugAreaId || '—'}
+            &nbsp;|&nbsp; Camera: ${this._cameraCandidates.length}
+            &nbsp;|&nbsp; Presence: ${this._presenceCandidates.length}
           </div>
         ` : ''}
 
