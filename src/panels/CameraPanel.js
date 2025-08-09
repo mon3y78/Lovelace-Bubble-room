@@ -11,6 +11,7 @@ export class CameraPanel extends LitElement {
     _entity:  { type: String,  state: true },
     _icon:    { type: String,  state: true },
     _presence: { type: String, state: true },
+    _presenceCandidates: { type: Array, state: true },
   };
 
   constructor() {
@@ -21,6 +22,29 @@ export class CameraPanel extends LitElement {
     this._entity  = '';
     this._icon    = '';
     this._presence = '';
+    this._presenceCandidates = [];
+    const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
+    if (autoDisc) {
+      const areaIds = Array.isArray(this.config?.area) ? this.config.area : [];
+      const areaId  = areaIds[0]; // stessa logica degli altri pannelli
+      if (areaId && this.hass?.entities) {
+        const reg = this.hass.entities; // 
+        const idsInArea = Object.values(reg)
+          .filter(e => e.area_id === areaId && e.entity_id?.startsWith('binary_sensor.'))
+          .map(e => e.entity_id);
+        const goodClasses = new Set(['motion','occupancy','presence','moving']);
+        this._presenceCandidates = idsInArea.filter(id => {
+          const st = this.hass.states?.[id];
+          const dc = st?.attributes?.device_class;
+          return !dc || goodClasses.has(dc);
+        });
+      } else {
+        this._presenceCandidates = [];
+      }
+    } else {
+      this._presenceCandidates = [];
+    }
+     
   }
 
   updated(changed) {
@@ -134,7 +158,11 @@ export class CameraPanel extends LitElement {
           <ha-selector
             .hass=${this.hass}
             .value=${this._presence}
-            .selector=${{ entity: { domain: 'binary_sensor' } }}
+            .selector=${{ 
+              entity: this._presenceCandidates.length
+                ? { include_entities: this._presenceCandidates }
+                : { domain: 'binary_sensor' }
+            }}
             allow-custom-entity
             @value-changed=${e => this._set('entities.camera.presence.entity', e.detail.value)}
           ></ha-selector>
@@ -162,6 +190,7 @@ export class CameraPanel extends LitElement {
   _reset = () => {
     this._set('entities.camera.entity', '');
     this._set('entities.camera.icon',   '');
+    this._set('entities.camera.presence.entity', '');
   };
 }
 
