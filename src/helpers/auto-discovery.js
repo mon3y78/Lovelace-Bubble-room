@@ -8,9 +8,12 @@ const pickFirstFree = (list, used) => list.find((id) => !used.has(id)) || null;
  *   AUTO-FILL (per sezione)
  * ========================= */
 
-// Sensors: sensor1..sensor6 – riempi solo slot vuoti, rispetta type & area, evita duplicati
+// Sensors: sensor1..sensor8 – riempi solo slot vuoti, rispetta type & area, evita duplicati
 export function autoFillSensors(hass, config) {
-  const keys = ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6','sensor7','sensor8'];
+  const keys = [
+    'sensor1','sensor2','sensor3','sensor4',
+    'sensor5','sensor6','sensor7','sensor8'
+  ];
   const entities = { ...(config.entities || {}) };
   const used = new Set(keys.map((k) => entities[k]?.entity_id).filter(Boolean));
 
@@ -110,53 +113,84 @@ export function autoFillPresence(hass, config) {
   const entities = { ...(config.entities || {}) };
   const ent = entities.presence || (entities.presence = {});
   if (!ent.entity) {
-    // Se hai aggiunto 'presence' in entity-filters, puoi usare: candidatesFor(hass, config, 'presence')
     const list = presenceCandidatesLocal(hass, config);
     if (list.length) ent.entity = list[0];
   }
   return { ...config, entities };
 }
 
-// Camera: riempi lo slot camera se vuoto, filtrando per area (sezione dedicata)
+// Camera: autofill con filtro *duro* per area_id (se disponibile)
 export function autoFillCamera(hass, config) {
   const entities = { ...(config.entities || {}) };
   const camera = entities.camera || (entities.camera = {});
-  if (!camera.entity) {
-    // riusa i candidati già filtrati per area (mushroom) e scegli la prima camera.*
-    const list = candidatesFor(hass, config, 'mushroom') || [];
-    const pick = list.find((id) => id.startsWith('camera.'));
-    if (pick) camera.entity = pick;
+  if (camera.entity) return { ...config, entities };
+
+  // --- 1) Risolvi area_id: accetta area come id o nome; fallback: area della camera già selezionata ---
+  const reg = hass?.entities || {};
+  const raw = Array.isArray(config?.area) ? config.area[0] : config?.area;
+  let areaId = '';
+  if (typeof raw === 'string' && raw.startsWith('area_')) {
+    areaId = raw;
+  } else {
+    const areas = Array.isArray(hass?.areas) ? hass.areas : [];
+    if (areas.length && raw) {
+      const hit = areas.find(a => (a.name || '').toLowerCase() === String(raw).toLowerCase());
+      areaId = hit?.area_id || '';
+    }
   }
+  if (!areaId && camera.entity) {
+    areaId = reg[camera.entity]?.area_id || '';
+  }
+
+  // --- 2) Costruisci candidati: se ho area_id prendo dal registry solo le camera.* di quell'area ---
+  let candidates = [];
+  if (areaId) {
+    candidates = Object.values(reg)
+      .filter(e => e?.area_id === areaId && e?.entity_id?.startsWith?.('camera.'))
+      .map(e => e.entity_id);
+  } else {
+    // fallback: usa i candidati "mushroom" e filtra camera.*
+    const list = candidatesFor(hass, config, 'mushroom') || [];
+    candidates = list.filter(id => id.startsWith('camera.'));
+  }
+
+  // --- 3) Pick prima camera disponibile ---
+  const pick = candidates[0];
+  if (pick) camera.entity = pick;
   return { ...config, entities };
 }
 
 /* =========================
  *           RESET
  * ========================= */
-
 export function resetSensors(config) {
   const entities = { ...(config.entities || {}) };
-  ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6','sensor7','sensor8'].forEach((k) => delete entities[k]);
+  [
+    'sensor1','sensor2','sensor3','sensor4',
+    'sensor5','sensor6','sensor7','sensor8'
+  ].forEach((k) => delete entities[k]);
   return { ...config, entities };
 }
 export function resetMushrooms(config) {
   const entities = { ...(config.entities || {}) };
-  ['entities1','entities2','entities3','entities4','entities5','climate','camera'].forEach((k) => delete entities[k]);
+  ['entities1','entities2','entities3','entities4','entities5','climate','camera']
+    .forEach((k) => delete entities[k]);
   return { ...config, entities };
 }
 export function resetSubButtons(config) {
   const entities = { ...(config.entities || {}) };
-  ['sub-button1','sub-button2','sub-button3','sub-button4','sub-button5','sub-button6'].forEach((k) => delete entities[k]);
+  ['sub-button1','sub-button2','sub-button3','sub-button4','sub-button5','sub-button6']
+    .forEach((k) => delete entities[k]);
   return { ...config, entities };
 }
 export function resetRoom(config) {
   const entities = { ...(config.entities || {}) };
-  delete entities.presence;                 // pulisci presence
+  delete entities.presence;
   const next = { ...config, entities };
-  delete next.name;                         // pulisci campi base Room
+  delete next.name;
   delete next.icon;
   delete next.area;
-  delete next.presence_entity;             // legacy
+  delete next.presence_entity;
   return next;
 }
 
@@ -174,7 +208,7 @@ export function maybeAutoDiscover(hass, config, changedProp, debug = false) {
   if (ad.mushroom)  next = autoFillMushrooms(hass, next);
   if (ad.subbutton) next = autoFillSubButtons(hass, next);
   if (ad.presence)  next = autoFillPresence(hass, next);
-  if (ad.camera)    next = autoFillCamera(hass, next);   // 👈 nuova sezione dedicata
+  if (ad.camera)    next = autoFillCamera(hass, next);
 
   if (debug && typeof window !== 'undefined' && window.__BUBBLE_DEBUG__) {
     console.info('[AutoDiscovery] applied after', changedProp, { sections: ad });
