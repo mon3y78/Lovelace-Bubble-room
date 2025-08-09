@@ -1203,7 +1203,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           <ha-selector
             .hass=${this.hass}
             .value=${this._entity}
-            .selector=${{entity:this._cameraCandidates.length?{include_entities:this._cameraCandidates}:{domain:"camera"}}}
+            .selector=${this._cameraCandidates.length?{entity:{include_entities:this._cameraCandidates}}:{entity:{domain:"camera"}}}
             allow-custom-entity
             @value-changed=${t=>this._set("entities.camera.entity",t.detail.value)}
           ></ha-selector>
@@ -1224,7 +1224,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           <ha-selector
             .hass=${this.hass}
             .value=${this._presence}
-            .selector=${{entity:this._presenceCandidates.length?{include_entities:this._presenceCandidates}:{domain:"binary_sensor"}}}
+            .selector=${this._presenceCandidates.length?{entity:{include_entities:this._presenceCandidates}}:{entity:{domain:"binary_sensor"}}}
             allow-custom-entity
             @value-changed=${t=>this._set("entities.camera.presence.entity",t.detail.value)}
           ></ha-selector>
