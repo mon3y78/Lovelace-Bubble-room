@@ -32,6 +32,28 @@ export class CameraPanel extends LitElement {
     this._presenceCandidates = [];
   }
 
+  // --- helpers area/registry (per filtro presence) ---------------------------
+  _resolveAreaId() {
+    const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
+    if (typeof raw === 'string' && raw.startsWith('area_')) return raw;
+    const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
+    if (areas.length && raw) {
+      const hit = areas.find(a => (a.name || '').toLowerCase() === String(raw).toLowerCase());
+      if (hit?.area_id) return hit.area_id;
+    }
+    const cam = this.config?.entities?.camera?.entity;
+    const reg = this.hass?.entities;
+    return cam && reg ? (reg[cam]?.area_id || '') : '';
+  }
+
+  _filterByAreaIncludeSelected(list, areaId, selected) {
+    const reg = this.hass?.entities || {};
+    const filtered = (list || []).filter(id => !areaId || reg[id]?.area_id === areaId);
+    if (selected && !filtered.includes(selected)) filtered.unshift(selected);
+    return Array.from(new Set(filtered));
+  }
+  // --------------------------------------------------------------------------
+
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
       // 1) Auto‑discovery per la sezione Camera (trigger centrale)
@@ -56,11 +78,22 @@ export class CameraPanel extends LitElement {
         }
       }
 
-      // 4) Liste candidate usando i filtri centralizzati (area già gestita lì)
+      // 4) Liste candidate
       const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
       if (autoDisc) {
-        this._cameraCandidates   = candidatesFor(this.hass, this.config, 'camera')   || [];
-        this._presenceCandidates = candidatesFor(this.hass, this.config, 'presence') || [];
+        // Camera: usa filtri centralizzati
+        this._cameraCandidates = candidatesFor(this.hass, this.config, 'camera') || [];
+
+        // Presence/Motion: filtra per device_class e poi applica filtro area "duro"
+        const areaId = this._resolveAreaId();
+        const presAll = candidatesFor(
+          this.hass, this.config, 'presence',
+          ['motion','occupancy','presence','moving']
+        ) || [];
+        const presBin = presAll.filter(id => id.startsWith('binary_sensor.'));
+        this._presenceCandidates = this._filterByAreaIncludeSelected(
+          presBin, areaId, this._presence
+        );
       } else {
         this._cameraCandidates = [];
         this._presenceCandidates = [];
