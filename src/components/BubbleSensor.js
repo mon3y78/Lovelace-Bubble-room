@@ -1,7 +1,5 @@
 // src/components/BubbleSensor.js
-
 import { LitElement, html, css } from 'lit';
-import { SENSOR_TYPE_MAP } from '../helpers/sensor-mapping.js';
 
 export class BubbleSensor extends LitElement {
   static properties = {
@@ -14,40 +12,42 @@ export class BubbleSensor extends LitElement {
       box-sizing: border-box;
       width: 100%;
       height: 100%;
-      /* Consente al componente di crescere in layout flessibili */
-      min-height: 0;
       min-width: 0;
+      min-height: 0;
     }
 
-    /* Contenitore griglia che si adatta allo spazio e distribuisce i figli */
+    /* Griglia a righe fisse; le colonne si creano da sole.
+       Con grid-auto-flow: column, gli item riempiono PRIMA LE RIGHE,
+       poi aprono una nuova colonna. Così controlliamo solo il numero di RIGHE. */
     .sensor-grid {
       display: grid;
       width: 100%;
       height: 100%;
       gap: 10px;
 
-      /* Ogni colonna è almeno 180px e poi si espande, si aggiungono colonne finché c'è spazio */
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-
-      /* Ogni riga ha la stessa altezza e si stira per occupare lo spazio verticale */
+      /* Righe di altezza uniforme che si stirano per occupare tutto lo spazio verticale */
       grid-auto-rows: 1fr;
       align-items: stretch;
       align-content: stretch;
 
-      /* Evita overflow nei layout annidati */
-      min-height: 0;
+      /* Chiave: definisco solo il numero di righe; le colonne si aggiungono automaticamente */
+      grid-auto-flow: column;   /* riempi righe, poi vai a nuova colonna */
+      grid-auto-columns: 1fr;   /* ogni colonna occupa una frazione dell’area orizzontale */
+
+      /* Evitiamo overflow orizzontale: le colonne 1fr si comprimono correttamente */
+      overflow: hidden;
       min-width: 0;
+      min-height: 0;
     }
 
-    /* La “pill” del sensore riempie completamente la cella della griglia */
     .sensor-pill {
       display: flex;
       flex-direction: row;
       align-items: center;
       gap: 10px;
 
-      height: 100%;
       width: 100%;
+      height: 100%;
 
       padding: 12px 14px;
       border-radius: 12px;
@@ -59,7 +59,7 @@ export class BubbleSensor extends LitElement {
       cursor: pointer;
 
       transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
-      min-width: 0; /* importante per il truncation del testo */
+      min-width: 0; /* importante per troncamento testo */
     }
 
     .sensor-pill:hover {
@@ -75,7 +75,6 @@ export class BubbleSensor extends LitElement {
       opacity: 0.95;
     }
 
-    /* Wrapper centrale che si stira, con il label ellissato */
     .sensor-center {
       display: flex;
       flex: 1 1 auto;
@@ -93,7 +92,6 @@ export class BubbleSensor extends LitElement {
       min-width: 0;
     }
 
-    /* Wrapper destra per valore+unità che resta appiccicato al bordo */
     .sensor-right {
       display: inline-flex;
       gap: 4px;
@@ -119,11 +117,23 @@ export class BubbleSensor extends LitElement {
     this.sensors = [];
   }
 
+  /** 1..4 sensori => 1 riga ; 5..8 => 2 righe */
+  _rowsForCount(n) {
+    if (!n || n <= 4) return 1;
+    if (n <= 8) return 2;
+    // Se mai arrivassero >8, restiamo su 2 righe (coerente con la tua regola)
+    return 2;
+  }
+
   render() {
     const sensors = Array.isArray(this.sensors) ? this.sensors : [];
+    const rows = this._rowsForCount(sensors.length);
 
     return html`
-      <div class="sensor-grid">
+      <div
+        class="sensor-grid"
+        style="grid-template-rows: repeat(${rows}, 1fr);"
+      >
         ${sensors.map((sensor) => {
           const color = sensor?.color || '#e3f6ff';
           const label = sensor?.label ?? '';
@@ -131,7 +141,9 @@ export class BubbleSensor extends LitElement {
           const value = sensor?.value ?? '--';
           const unit = sensor?.unit ?? '';
           const entityId = sensor?.entity || sensor?.entity_id || '';
-          const title = entityId ? `Mostra grafico storico: ${entityId}` : 'Mostra grafico storico';
+          const title = entityId
+            ? `Mostra grafico storico: ${entityId}`
+            : 'Mostra grafico storico';
 
           return html`
             <div
@@ -140,9 +152,7 @@ export class BubbleSensor extends LitElement {
               title=${title}
               @click=${() => this._openMoreInfo(entityId)}
             >
-              ${icon
-                ? html`<ha-icon class="sensor-icon" .icon=${icon}></ha-icon>`
-                : html``}
+              ${icon ? html`<ha-icon class="sensor-icon" .icon=${icon}></ha-icon>` : html``}
 
               <div class="sensor-center">
                 ${label ? html`<span class="sensor-label">${label}</span>` : html``}
@@ -159,9 +169,7 @@ export class BubbleSensor extends LitElement {
     `;
   }
 
-  /**
-   * Apre il more-info nativo di Home Assistant per l'entità (grafico incluso).
-   */
+  /** Apre il more-info nativo (che mostra anche il grafico storico). */
   _openMoreInfo(entityId) {
     if (!entityId || typeof entityId !== 'string') return;
     const ev = new CustomEvent('hass-more-info', {
