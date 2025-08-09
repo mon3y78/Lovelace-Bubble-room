@@ -10,7 +10,7 @@ const pickFirstFree = (list, used) => list.find((id) => !used.has(id)) || null;
 
 // Sensors: sensor1..sensor6 – riempi solo slot vuoti, rispetta type & area, evita duplicati
 export function autoFillSensors(hass, config) {
-  const keys = ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'];
+  const keys = ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6','sensor7','sensor8'];
   const entities = { ...(config.entities || {}) };
   const used = new Set(keys.map((k) => entities[k]?.entity_id).filter(Boolean));
 
@@ -117,13 +117,26 @@ export function autoFillPresence(hass, config) {
   return { ...config, entities };
 }
 
+// Camera: riempi lo slot camera se vuoto, filtrando per area (sezione dedicata)
+export function autoFillCamera(hass, config) {
+  const entities = { ...(config.entities || {}) };
+  const camera = entities.camera || (entities.camera = {});
+  if (!camera.entity) {
+    // riusa i candidati già filtrati per area (mushroom) e scegli la prima camera.*
+    const list = candidatesFor(hass, config, 'mushroom') || [];
+    const pick = list.find((id) => id.startsWith('camera.'));
+    if (pick) camera.entity = pick;
+  }
+  return { ...config, entities };
+}
+
 /* =========================
  *           RESET
  * ========================= */
 
 export function resetSensors(config) {
   const entities = { ...(config.entities || {}) };
-  ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6'].forEach((k) => delete entities[k]);
+  ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6','sensor7','sensor8'].forEach((k) => delete entities[k]);
   return { ...config, entities };
 }
 export function resetMushrooms(config) {
@@ -161,6 +174,7 @@ export function maybeAutoDiscover(hass, config, changedProp, debug = false) {
   if (ad.mushroom)  next = autoFillMushrooms(hass, next);
   if (ad.subbutton) next = autoFillSubButtons(hass, next);
   if (ad.presence)  next = autoFillPresence(hass, next);
+  if (ad.camera)    next = autoFillCamera(hass, next);   // 👈 nuova sezione dedicata
 
   if (debug && typeof window !== 'undefined' && window.__BUBBLE_DEBUG__) {
     console.info('[AutoDiscovery] applied after', changedProp, { sections: ad });

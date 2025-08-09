@@ -9,9 +9,11 @@ export class CameraPanel extends LitElement {
     hass: { type: Object },
     config: { type: Object },
     expanded: { type: Boolean },
+
     _entity: { type: String, state: true },
     _icon: { type: String, state: true },
     _presence: { type: String, state: true },
+
     _cameraCandidates: { type: Array, state: true },
     _presenceCandidates: { type: Array, state: true },
   };
@@ -21,28 +23,29 @@ export class CameraPanel extends LitElement {
     this.hass = {};
     this.config = {};
     this.expanded = false;
+
     this._entity = '';
     this._icon = '';
     this._presence = '';
+
     this._cameraCandidates = [];
     this._presenceCandidates = [];
   }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // 1) auto-discover opzionale
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.camera');
+      // 1) auto-discovery per la sezione Camera (usa il trigger centrale)
+      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.camera'); // attiva autoFillCamera
 
-      // 2) sincronizza campi base
-      const ents = this.config.entities || {};
-      const camRec = ents.camera || {};
+      // 2) sincronizza valori correnti
+      const camRec = this.config?.entities?.camera || {};
       this._entity = camRec.entity || '';
       this._icon = camRec.icon || '';
       this._presence = camRec.presence?.entity || '';
 
       // 3) auto-icon se vuota
       if (this._entity && !this._icon) {
-        const st = this.hass.states?.[this._entity];
+        const st = this.hass?.states?.[this._entity];
         const autoIcon = st?.attributes?.icon || resolveEntityIcon(this._entity, this.hass);
         if (autoIcon) {
           this._icon = autoIcon;
@@ -53,17 +56,17 @@ export class CameraPanel extends LitElement {
         }
       }
 
-      // 4) costruzione liste candidate (come MushroomPanel)
+      // 4) costruisci liste candidate (pattern Mushroom → già filtrate per area)
       const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
       if (autoDisc) {
         const all = candidatesFor(this.hass, this.config, 'mushroom') || [];
-        this._cameraCandidates = all.filter(id => id.startsWith('camera.'));
+        this._cameraCandidates = all.filter((id) => id.startsWith('camera.'));
 
         const pres = candidatesFor(
           this.hass, this.config, 'mushroom',
-          ['motion', 'occupancy', 'presence', 'moving']
+          ['motion','occupancy','presence','moving']
         ) || [];
-        this._presenceCandidates = pres.filter(id => id.startsWith('binary_sensor.'));
+        this._presenceCandidates = pres.filter((id) => id.startsWith('binary_sensor.'));
       } else {
         this._cameraCandidates = [];
         this._presenceCandidates = [];
@@ -141,19 +144,19 @@ export class CameraPanel extends LitElement {
       >
         <div slot="header" class="glass-header">📷 Camera</div>
 
-        <!-- Auto-discover -->
+        <!-- Auto‑discover Camera -->
         <div class="input-group autodiscover">
           <input
             type="checkbox"
             .checked=${autoDisc}
             @change=${e => this._toggleAuto(e.target.checked)}
           />
-          <label>🪄 Auto-discover Camera</label>
+          <label>🪄 Auto‑discover Camera</label>
         </div>
 
-        <!-- Camera entity -->
+        <!-- Camera -->
         <div class="input-group">
-          <label>Camera Entity:</label>
+          <label>Camera (ID):</label>
           <ha-selector
             .hass=${this.hass}
             .value=${this._entity}
@@ -167,7 +170,7 @@ export class CameraPanel extends LitElement {
           ></ha-selector>
         </div>
 
-        <!-- Camera icon -->
+        <!-- Icona -->
         <div class="input-group">
           <label>Camera Icon:</label>
           <ha-selector
@@ -178,9 +181,9 @@ export class CameraPanel extends LitElement {
           ></ha-selector>
         </div>
 
-        <!-- Presence entity -->
+        <!-- Presence/Motion -->
         <div class="input-group">
-          <label>Presence / Motion Entity:</label>
+          <label>Entità Presenza/Motion (binary_sensor):</label>
           <ha-selector
             .hass=${this.hass}
             .value=${this._presence}
@@ -194,10 +197,7 @@ export class CameraPanel extends LitElement {
           ></ha-selector>
         </div>
 
-        <!-- Reset -->
-        <button class="reset-button" @click=${this._reset}>
-          🧹 Reset Camera
-        </button>
+        <button class="reset-button" @click=${this._reset}>🧹 Reset Camera</button>
       </ha-expansion-panel>
     `;
   }
@@ -218,7 +218,7 @@ export class CameraPanel extends LitElement {
 
   _reset() {
     this._set('entities.camera.entity', '');
-    this._set('entities.camera.icon', '');
+    this._set('entities.camera.icon',   '');
     this._set('entities.camera.presence.entity', '');
   }
 }
