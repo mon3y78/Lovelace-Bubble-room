@@ -1,6 +1,7 @@
 // src/panels/CameraPanel.js
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
+import { candidatesFor } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
 
 export class CameraPanel extends LitElement {
@@ -11,84 +12,32 @@ export class CameraPanel extends LitElement {
     _entity:  { type: String,  state: true },
     _icon:    { type: String,  state: true },
     _presence: { type: String, state: true },
-    _presenceCandidates: { type: Array, state: true },
     _cameraCandidates:   { type: Array, state: true },
+    _presenceCandidates: { type: Array, state: true },
   };
 
   constructor() {
     super();
-    this.hass     = {};
-    this.config   = {};
+    this.hass = {};
+    this.config = {};
     this.expanded = false;
-    this._entity  = '';
-    this._icon    = '';
+    this._entity = '';
+    this._icon = '';
     this._presence = '';
+    this._cameraCandidates = [];
     this._presenceCandidates = [];
-    this._cameraCandidates   = [];
-  }
-
-  /** Ritorna l'area_id selezionato, accettando sia area_id che nome area */
-  _getSelectedAreaId() {
-    const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
-    if (!raw) return '';
-    // se già è un area_id presente, usalo
-    const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
-    const byId  = areas.find(a => a.area_id === raw);
-    if (byId) return byId.area_id;
-    // prova per nome (case-insensitive)
-    const byName = areas.find(a => (a.name || '').toLowerCase() === String(raw).toLowerCase());
-    return byName ? byName.area_id : (typeof raw === 'string' ? raw : '');
-  }
-
-  /** Ricava tutte le entity_id di un'area dal registry frontend */
-  _getEntityIdsInArea(areaId) {
-    const reg = this.hass?.entities;
-    if (!areaId || !reg) return [];
-    // hass.entities è un map { entity_id -> { area_id, ... } } in frontend
-    return Object.values(reg)
-      .filter(e => e?.area_id === areaId && e?.entity_id)
-      .map(e => e.entity_id);
-  }
-
-  /** Ricostruisce le liste candidate per i selector quando l'auto-discovery è attivo */
-  _rebuildAutoDiscoveryLists() {
-    const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
-    if (!autoDisc) {
-      this._cameraCandidates = [];
-      this._presenceCandidates = [];
-      return;
-    }
-    const areaId = this._getSelectedAreaId();
-    const inArea = this._getEntityIdsInArea(areaId);
-    if (!inArea.length) {
-      this._cameraCandidates = [];
-      this._presenceCandidates = [];
-      return;
-    }
-
-    // Camera → solo camera.*
-    this._cameraCandidates = inArea.filter(id => id.startsWith('camera.'));
-
-    // Presenza → binary_sensor.* con classi utili
-    const good = new Set(['motion','occupancy','presence','moving']);
-    this._presenceCandidates = inArea
-      .filter(id => id.startsWith('binary_sensor.'))
-      .filter(id => {
-        const dc = this.hass?.states?.[id]?.attributes?.device_class;
-        return !dc || good.has(dc);
-      });
   }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // mantieni l'allineamento con la logica globale di auto-discovery
+      // allinea il toggle di autodiscovery come negli altri pannelli
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.camera');
 
       const ent = this.config?.entities?.camera?.entity || '';
-      const ico = this.config?.entities?.camera?.icon   || '';
+      const ico = this.config?.entities?.camera?.icon || '';
       const prs = this.config?.entities?.camera?.presence?.entity || '';
 
-      // Se ho una camera e l'icona è vuota, prova a ricavarla
+      // auto-icon: se icona vuota prova a risolvere dall'entità
       if (ent && !ico) {
         const st = this.hass?.states?.[ent];
         const iconFromState = st?.attributes?.icon;
@@ -96,12 +45,32 @@ export class CameraPanel extends LitElement {
         if (autoIcon) this._set('entities.camera.icon', autoIcon);
       }
 
-      this._entity   = ent;
-      this._icon     = this.config?.entities?.camera?.icon || '';
+      this._entity = ent;
+      this._icon = this.config?.entities?.camera?.icon || '';
       this._presence = prs;
 
-      // 🔸 Qui è il punto giusto per calcolare i candidati
-      this._rebuildAutoDiscoveryLists();
+      // 🔸 ricava i candidati SOLO quando l’autodiscovery camera è ON
+      const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
+      if (autoDisc) {
+        // Camera → solo dominio camera
+        this._cameraCandidates = candidatesFor(
+          this.hass,
+          this.config,
+          'camera',
+          ['camera'] // categoria dominio camera
+        ) || [];
+
+        // Presenza → solo binary_sensor con classi utili
+        this._presenceCandidates = candidatesFor(
+          this.hass,
+          this.config,
+          'camera',
+          ['motion', 'occupancy', 'presence', 'moving']
+        ) || [];
+      } else {
+        this._cameraCandidates = [];
+        this._presenceCandidates = [];
+      }
     }
   }
 
