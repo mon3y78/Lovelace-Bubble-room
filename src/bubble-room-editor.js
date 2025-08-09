@@ -14,11 +14,11 @@ import './panels/ClimatePanel.js';
 
 export class BubbleRoomEditor extends LitElement {
   static properties = {
-    hass:      { type: Object },
-    config:    { type: Object },
+    hass: { type: Object },
+    config: { type: Object },
     openPanel: { type: String, state: true },
   };
-
+  
   static styles = css`
     :host {
       display: block;
@@ -27,57 +27,57 @@ export class BubbleRoomEditor extends LitElement {
       background: transparent;
     }
   `;
-
+  
   constructor() {
     super();
-    this.hass      = {};
-    this.config    = {};
+    this.hass = {};
+    this.config = {};
     this.openPanel = '';
   }
-
+  
   setConfig(rawConfig) {
     // Clona rawConfig e imposta default layout “wide”
     const config = {
       layout: 'wide',
       ...rawConfig,
     };
-
+    
     // Mantieni/integra le sezioni di auto-discovery
     config.auto_discovery_sections = {
       // 🔧 aggiungo 'presence' perché RoomPanel si aspetta proprio questa chiave
-      presence:  !!config.area,
-      room:      !!config.area,
-      sensor:    !!config.area,
-      mushroom:  !!config.area,
-      camera:    !!config.area,   // 🔸 nuovo
-      climate:   !!config.area,   // 🔸 nuovo
+      presence: !!config.area,
+      room: !!config.area,
+      sensor: !!config.area,
+      mushroom: !!config.area,
+      camera: !!config.area, // 🔸 nuovo
+      climate: !!config.area, // 🔸 nuovo
       subbutton: !!config.area,
-      color:     true,
+      color: true,
       ...(config.auto_discovery_sections || {}),
     };
-
+    
     // Struttura base
     if (!Array.isArray(config.sensor_filters)) config.sensor_filters = [];
     if (!config.entities) config.entities = {};
-
+    
     // 🔸 Default per i nuovi gruppi
     if (!config.entities.camera) {
       config.entities.camera = {
         entity: '',
-        icon:   '',   
-        presence: { entity: '' }, // 
+        icon: '',
+        presence: { entity: '' },
       };
     }
     if (!config.entities.climate) {
       config.entities.climate = {
         entity: '',
-        icon:   '',   // popolata automaticamente dal ClimatePanel se vuota
+        icon: '', // popolata automaticamente dal ClimatePanel se vuota
       };
     }
-
+    
     this.config = config;
   }
-
+  
   render() {
     return html`
       <room-panel
@@ -139,21 +139,89 @@ export class BubbleRoomEditor extends LitElement {
       ></color-panel>
     `;
   }
-
+  
   _togglePanel(e, key) {
     this.openPanel = e.detail.expanded ? key : (this.openPanel === key ? '' : this.openPanel);
   }
-
+  
   _onConfigChanged = (e) => {
     const { prop, val } = e.detail;
+    
+    // Intercetta comandi speciali dai pannelli (es. reset)
+    if (prop === '__panel_cmd__' && val?.cmd === 'reset') {
+      this._handlePanelCmd(val);
+      this._emitConfigChanged();
+      return;
+    }
+    
     this._setConfigValue(prop, val);
+    this._emitConfigChanged();
+  };
+  
+  _emitConfigChanged() {
     this.dispatchEvent(new CustomEvent('config-changed', {
       detail: { config: this.config },
       bubbles: true,
       composed: true,
     }));
-  };
-
+  }
+  
+  _handlePanelCmd({ section }) {
+    switch (section) {
+      case 'room':
+        this._resetRoom();
+        break;
+      case 'camera':
+        this._resetCamera();
+        break;
+        // altri reset in futuro...
+      default:
+        break;
+    }
+  }
+  
+  _resetRoom() {
+    // ripristina solo i campi gestiti dal RoomPanel
+    this.config = {
+      ...this.config,
+      area: '',
+      name: '',
+      icon: '',
+      layout: 'wide',
+      presence_filters: undefined, // lascia i default interni del pannello
+      entities: {
+        ...this.config.entities,
+        presence: { entity: '' },
+      },
+      auto_discovery_sections: {
+        ...this.config.auto_discovery_sections,
+        presence: false,
+        room: false,
+      },
+    };
+  }
+  
+  _resetCamera() {
+    // azzera i campi della sezione camera in base alla struttura attesa
+    const cam = (this.config.entities && this.config.entities.camera) || {};
+    this.config = {
+      ...this.config,
+      entities: {
+        ...this.config.entities,
+        camera: {
+          ...cam,
+          entity: '',
+          icon: '',
+          presence: { entity: '' },
+        },
+      },
+      auto_discovery_sections: {
+        ...this.config.auto_discovery_sections,
+        camera: false,
+      },
+    };
+  }
+  
   _setConfigValue(path, value) {
     const keys = path.split('.');
     let obj = this.config;
