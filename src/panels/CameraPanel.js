@@ -1,4 +1,3 @@
-// src/panels/CameraPanel.js
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor } from '../helpers/entity-filters.js';
@@ -14,6 +13,7 @@ export class CameraPanel extends LitElement {
     _presence:{ type: String,  state: true },
     _cameraCandidates:   { type: Array, state: true },
     _presenceCandidates: { type: Array, state: true },
+    _debugArea: { type: String, state: true },
   };
 
   constructor() {
@@ -26,18 +26,17 @@ export class CameraPanel extends LitElement {
     this._presence = '';
     this._cameraCandidates = [];
     this._presenceCandidates = [];
+    this._debugArea = '';
   }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // allinea il toggle come gli altri pannelli
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.camera');
 
       const ent = this.config?.entities?.camera?.entity || '';
       const ico = this.config?.entities?.camera?.icon   || '';
       const prs = this.config?.entities?.camera?.presence?.entity || '';
 
-      // auto-icona se vuota
       if (ent && !ico) {
         const st = this.hass?.states?.[ent];
         const iconFromState = st?.attributes?.icon;
@@ -49,10 +48,12 @@ export class CameraPanel extends LitElement {
       this._icon     = this.config?.entities?.camera?.icon || '';
       this._presence = prs;
 
-      // 🔸 costruisci i candidati SOLO se autodiscovery camera è ON
       const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
+      this._debugArea = Array.isArray(this.config?.area)
+        ? this.config.area.join(',')
+        : (this.config?.area || '');
+
       if (autoDisc) {
-        // come nel SubButtonPanel: usiamo candidatesFor(...) e passiamo include_entities
         this._cameraCandidates = candidatesFor(this.hass, this.config, 'camera', ['camera']) || [];
         this._presenceCandidates = candidatesFor(
           this.hass, this.config, 'camera',
@@ -67,12 +68,11 @@ export class CameraPanel extends LitElement {
 
   static styles = css`
     :host { display: block; }
-    .glass-panel {
-      margin: 0 !important; width: 100%; box-sizing: border-box;
-      border-radius: 40px; position: relative;
-      background: var(--glass-bg, rgba(80,235,175,0.28));
-      box-shadow: var(--glass-shadow, 0 2px 24px rgba(40,220,145,0.18));
-      overflow: hidden;
+    .glass-panel { margin:0 !important; width:100%; box-sizing:border-box;
+      border-radius:40px; position:relative;
+      background:var(--glass-bg, rgba(80,235,175,0.28));
+      box-shadow:var(--glass-shadow, 0 2px 24px rgba(40,220,145,0.18));
+      overflow:hidden;
     }
     .glass-panel::after {
       content:''; position:absolute; inset:0; border-radius:inherit;
@@ -81,27 +81,28 @@ export class CameraPanel extends LitElement {
         rgba(255,255,255,0.10) 70%, transparent 100%));
       pointer-events:none;
     }
-    .glass-header {
-      padding: 22px 0; text-align: center; font-size: 1.12rem;
-      font-weight: 700; color: #fff;
+    .glass-header { padding:22px 0; text-align:center; font-size:1.12rem;
+      font-weight:700; color:#fff;
     }
     .input-group.autodiscover {
-      margin: 0 16px 13px; padding: 14px 18px 10px;
-      background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.13);
-      box-shadow: 0 2px 14px rgba(70,120,220,0.10);
-      border-radius: 18px; display:flex; align-items:center; gap:8px;
+      margin:0 16px 8px; padding:14px 18px 10px;
+      background:rgba(44,70,100,0.23);
+      border:1.5px solid rgba(255,255,255,0.13);
+      border-radius:18px; display:flex; align-items:center; gap:8px;
+    }
+    .debug-badge {
+      font-size:0.8rem; margin:0 16px 12px;
+      color:#ccc; background:rgba(255,255,255,0.08);
+      padding:6px 10px; border-radius:8px;
     }
     .input-group { margin: 12px 16px; }
-    .input-group label {
-      display:block; font-weight:700; margin-bottom:6px; color:#36e6a0;
-    }
+    .input-group label { display:block; font-weight:700; margin-bottom:6px; color:#36e6a0; }
     ha-selector { width:100%; box-sizing:border-box; }
     .reset-button {
-      border: 3.5px solid #ff4c6a; color:#ff4c6a; border-radius:24px;
+      border:3.5px solid #ff4c6a; color:#ff4c6a; border-radius:24px;
       padding:12px 38px; background:transparent; cursor:pointer;
-      display:block; margin: 20px auto; font-size:1.15rem; font-weight:700;
-      box-shadow: 0 2px 24px #ff4c6a44;
+      display:block; margin:20px auto; font-size:1.15rem; font-weight:700;
+      box-shadow:0 2px 24px #ff4c6a44;
     }
   `;
 
@@ -123,6 +124,14 @@ export class CameraPanel extends LitElement {
           />
           <label>🪄 Auto-discovery</label>
         </div>
+
+        ${autoDisc ? html`
+          <div class="debug-badge">
+            Area: ${this._debugArea || '(nessuna)'} |
+            Camera: ${this._cameraCandidates.length} |
+            Presence: ${this._presenceCandidates.length}
+          </div>
+        ` : ''}
 
         <div class="input-group">
           <label>Camera (ID):</label>
