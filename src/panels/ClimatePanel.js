@@ -1,7 +1,8 @@
 // src/panels/ClimatePanel.js
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
-import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // ← AGGIUNTA
+import { candidatesFor } from '../helpers/entity-filters.js';
+import { resolveEntityIcon } from '../helpers/icon-mapping.js';
 
 export class ClimatePanel extends LitElement {
   static properties = {
@@ -10,6 +11,7 @@ export class ClimatePanel extends LitElement {
     expanded: { type: Boolean },
     _entity:  { type: String, state: true },
     _icon:    { type: String, state: true },
+    _climateCandidates: { type: Array, state: true }
   };
 
   constructor() {
@@ -19,6 +21,7 @@ export class ClimatePanel extends LitElement {
     this.expanded = false;
     this._entity  = '';
     this._icon    = '';
+    this._climateCandidates = [];
   }
 
   updated(changed) {
@@ -28,7 +31,7 @@ export class ClimatePanel extends LitElement {
       const ent = this.config?.entities?.climate?.entity || '';
       const ico = this.config?.entities?.climate?.icon   || '';
 
-      // AUTO-ICONA: se ho un'entità e l'icona è vuota → impostala
+      // Auto-icona
       if (ent && !ico) {
         const st = this.hass?.states?.[ent];
         const iconFromState = st?.attributes?.icon;
@@ -40,6 +43,14 @@ export class ClimatePanel extends LitElement {
 
       this._entity = ent;
       this._icon   = this.config?.entities?.climate?.icon || '';
+
+      // Candidati filtrati per area
+      const autoDisc = this.config?.auto_discovery_sections?.climate ?? false;
+      if (autoDisc) {
+        this._climateCandidates = candidatesFor(this.hass, this.config, 'climate') || [];
+      } else {
+        this._climateCandidates = [];
+      }
     }
   }
 
@@ -107,7 +118,11 @@ export class ClimatePanel extends LitElement {
           <ha-selector
             .hass=${this.hass}
             .value=${this._entity}
-            .selector=${{ entity: { domain: 'climate' } }}
+            .selector=${
+              this._climateCandidates.length
+                ? { entity: { include_entities: this._climateCandidates } }
+                : { entity: { domain: 'climate' } }
+            }
             allow-custom-entity
             @value-changed=${e => this._set('entities.climate.entity', e.detail.value)}
           ></ha-selector>
