@@ -1143,13 +1143,14 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           @input=${i=>this._updateColorRaw(t,e,i.target.value)}
         />
       </div>
-    `}_parseRGBA(t){if(!t)return[0,0,0,1];const e=/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(t);return e?[+e[1],+e[2],+e[3],+(e[4]??1)]:[0,0,0,1]}_updateColor(t,e,i,s){const o=`rgba(${parseInt(i.slice(1,3),16)},${parseInt(i.slice(3,5),16)},${parseInt(i.slice(5,7),16)},${s})`;this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${t}.${e}`,val:o},bubbles:!0,composed:!0}))}_updateColorRaw(t,e,i){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${t}.${e}`,val:i},bubbles:!0,composed:!0}))}_resetColors(){this._expandedColors=[!1,!1];const t={room:["background_active","background_inactive","icon_active","icon_inactive","text_active","text_inactive"],subbutton:["background_on","background_off","icon_on","icon_off"]};["room","subbutton"].forEach(e=>{t[e].forEach(t=>{this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${e}.${t}`,val:""},bubbles:!0,composed:!0}))})})}}customElements.define("color-panel",kt);class Ct extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_entity:{type:String,state:!0},_icon:{type:String,state:!0},_presence:{type:String,state:!0},_cameraCandidates:{type:Array,state:!0},_presenceCandidates:{type:Array,state:!0},_debugAreaRaw:{type:String,state:!0},_debugAreaId:{type:String,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._entity="",this._icon="",this._presence="",this._cameraCandidates=[],this._presenceCandidates=[],this._debugAreaRaw="",this._debugAreaId=""}_areaToId(t){if(!t)return"";if("string"==typeof t&&t.startsWith("area_"))return t;const e=(Array.isArray(this.hass?.areas)?this.hass.areas:[]).find(e=>String(e?.name||"").toLowerCase()===String(t).toLowerCase());return e?.area_id||""}_normalizedConfigForCandidates(){const t=Array.isArray(this.config?.area)?this.config.area[0]:this.config?.area,e=this._areaToId(t)||("string"==typeof t&&t.startsWith("area_")?t:""),i={...this.config||{}};return i.area=e?[e]:this.config?.area,this._debugAreaRaw=t||"",this._debugAreaId=e||"",i}updated(t){if(t.has("config")||t.has("hass")){bt(this.hass,this.config,"auto_discovery_sections.camera");const t=this.config?.entities?.camera?.entity||"",e=this.config?.entities?.camera?.icon||"",i=this.config?.entities?.camera?.presence?.entity||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon,s=i||_t(t,this.hass);s&&this._set("entities.camera.icon",s)}this._entity=t,this._icon=this.config?.entities?.camera?.icon||"",this._presence=i;if(this.config?.auto_discovery_sections?.camera??!1){const t=this._normalizedConfigForCandidates();this._cameraCandidates=ht(this.hass,t,"camera",["camera"])||[],this._presenceCandidates=ht(this.hass,t,"camera",["motion","occupancy","presence","moving"])||[]}else{this._cameraCandidates=[],this._presenceCandidates=[];const t=Array.isArray(this.config?.area)?this.config.area[0]:this.config?.area;this._debugAreaRaw=t||"",this._debugAreaId=""}}}static styles=n`
+    `}_parseRGBA(t){if(!t)return[0,0,0,1];const e=/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(t);return e?[+e[1],+e[2],+e[3],+(e[4]??1)]:[0,0,0,1]}_updateColor(t,e,i,s){const o=`rgba(${parseInt(i.slice(1,3),16)},${parseInt(i.slice(3,5),16)},${parseInt(i.slice(5,7),16)},${s})`;this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${t}.${e}`,val:o},bubbles:!0,composed:!0}))}_updateColorRaw(t,e,i){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${t}.${e}`,val:i},bubbles:!0,composed:!0}))}_resetColors(){this._expandedColors=[!1,!1];const t={room:["background_active","background_inactive","icon_active","icon_inactive","text_active","text_inactive"],subbutton:["background_on","background_off","icon_on","icon_off"]};["room","subbutton"].forEach(e=>{t[e].forEach(t=>{this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`colors.${e}.${t}`,val:""},bubbles:!0,composed:!0}))})})}}customElements.define("color-panel",kt);class Ct extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_entity:{type:String,state:!0},_icon:{type:String,state:!0},_presence:{type:String,state:!0},_cameraCandidates:{type:Array,state:!0},_presenceCandidates:{type:Array,state:!0},_debugAreaRaw:{type:String,state:!0},_debugAreaId:{type:String,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._entity="",this._icon="",this._presence="",this._cameraCandidates=[],this._presenceCandidates=[],this._debugAreaRaw="",this._debugAreaId=""}_areaToId(t){if(!t)return"";if("string"==typeof t&&t.startsWith("area_"))return t;const e=(Array.isArray(this.hass?.areas)?this.hass.areas:[]).find(e=>String(e?.name||"").toLowerCase()===String(t).toLowerCase());return e?.area_id||""}_configWithAreaId(){const t=Array.isArray(this.config?.area)?this.config.area[0]:this.config?.area,e=this._areaToId(t)||("string"==typeof t&&t.startsWith("area_")?t:""),i={...this.config||{}};return e&&(i.area=[e]),this._debugAreaRaw=t||"",this._debugAreaId=e||"",i}updated(t){if(t.has("config")||t.has("hass")){bt(this.hass,this.config,"auto_discovery_sections.camera");const t=this.config?.entities?.camera?.entity||"",e=this.config?.entities?.camera?.icon||"",i=this.config?.entities?.camera?.presence?.entity||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon,s=i||_t(t,this.hass);s&&this._set("entities.camera.icon",s)}this._entity=t,this._icon=this.config?.entities?.camera?.icon||"",this._presence=i;if(this.config?.auto_discovery_sections?.camera??!1){const t=this._configWithAreaId();this._cameraCandidates=ht(this.hass,t,"camera",["camera"])||[],this._presenceCandidates=ht(this.hass,t,"camera",["motion","occupancy","presence","moving"])||[]}else this._cameraCandidates=[],this._presenceCandidates=[],this._configWithAreaId()}}static styles=n`
     :host { display: block; }
-    .glass-panel { margin:0 !important; width:100%; box-sizing:border-box;
-      border-radius:40px; position:relative;
-      background:var(--glass-bg, rgba(80,235,175,0.28));
-      box-shadow:var(--glass-shadow, 0 2px 24px rgba(40,220,145,0.18));
-      overflow:hidden;
+    .glass-panel {
+      margin: 0 !important; width: 100%; box-sizing: border-box;
+      border-radius: 40px; position: relative;
+      background: var(--glass-bg, rgba(80,235,175,0.28));
+      box-shadow: var(--glass-shadow, 0 2px 24px rgba(40,220,145,0.18));
+      overflow: hidden;
     }
     .glass-panel::after {
       content:''; position:absolute; inset:0; border-radius:inherit;
@@ -1158,28 +1159,29 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
         rgba(255,255,255,0.10) 70%, transparent 100%));
       pointer-events:none;
     }
-    .glass-header { padding:22px 0; text-align:center; font-size:1.12rem;
-      font-weight:700; color:#fff;
+    .glass-header {
+      padding: 22px 0; text-align: center; font-size: 1.12rem;
+      font-weight: 700; color: #fff;
     }
     .input-group.autodiscover {
-      margin:0 16px 8px; padding:14px 18px 10px;
-      background:rgba(44,70,100,0.23);
-      border:1.5px solid rgba(255,255,255,0.13);
-      border-radius:18px; display:flex; align-items:center; gap:8px;
+      margin: 0 16px 8px; padding: 14px 18px 10px;
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.13);
+      border-radius: 18px; display:flex; align-items:center; gap:8px;
     }
     .debug-badge {
-      font-size:0.8rem; margin:0 16px 12px;
-      color:#ccc; background:rgba(255,255,255,0.08);
-      padding:6px 10px; border-radius:8px;
+      font-size: 0.8rem; margin: 0 16px 12px;
+      color: #ccc; background: rgba(255,255,255,0.08);
+      padding: 6px 10px; border-radius: 8px;
     }
     .input-group { margin: 12px 16px; }
     .input-group label { display:block; font-weight:700; margin-bottom:6px; color:#36e6a0; }
     ha-selector { width:100%; box-sizing:border-box; }
     .reset-button {
-      border:3.5px solid #ff4c6a; color:#ff4c6a; border-radius:24px;
+      border: 3.5px solid #ff4c6a; color:#ff4c6a; border-radius:24px;
       padding:12px 38px; background:transparent; cursor:pointer;
-      display:block; margin:20px auto; font-size:1.15rem; font-weight:700;
-      box-shadow:0 2px 24px #ff4c6a44;
+      display:block; margin: 20px auto; font-size:1.15rem; font-weight:700;
+      box-shadow: 0 2px 24px #ff4c6a44;
     }
   `;render(){const t=this.config?.auto_discovery_sections?.camera??!1;return I`
       <ha-expansion-panel
@@ -1190,11 +1192,8 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
         <div slot="header" class="glass-header">📷 Camera</div>
 
         <div class="input-group autodiscover">
-          <input
-            type="checkbox"
-            .checked=${t}
-            @change=${t=>this._toggleAuto(t.target.checked)}
-          />
+          <input type="checkbox" .checked=${t}
+                 @change=${t=>this._toggleAuto(t.target.checked)} />
           <label>🪄 Auto-discovery</label>
         </div>
 
