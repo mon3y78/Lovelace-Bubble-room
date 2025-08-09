@@ -202,22 +202,27 @@ export class BubbleRoomEditor extends LitElement {
   }
   
   _resetCamera() {
-    // azzera i campi della sezione camera in base alla struttura attesa
-    const cam = (this.config.entities && this.config.entities.camera) || {};
+    // clona i rami per garantire nuovi riferimenti (trigger re-render)
+    const entities = { ...(this.config.entities || {}) };
+    const camera = { ...(entities.camera || {}) };
+    
+    // HARD RESET: elimina radicalmente l'ID e correlati
+    delete camera.entity; // rimuove l'ID della camera
+    delete camera.stream_source; // se presente
+    delete camera.image_entity; // se presente
+    if (camera.presence && typeof camera.presence === 'object') {
+      delete camera.presence.entity; // eventuale presenza legata alla camera
+    }
+    camera.icon = ''; // reset icona
+    
+    entities.camera = camera;
+    
     this.config = {
       ...this.config,
-      entities: {
-        ...this.config.entities,
-        camera: {
-          ...cam,
-          entity: '',
-          icon: '',
-          presence: { entity: '' },
-        },
-      },
+      entities,
       auto_discovery_sections: {
         ...this.config.auto_discovery_sections,
-        camera: false,
+        camera: false, // evita che l'auto-discovery la reimposti subito
       },
     };
   }
