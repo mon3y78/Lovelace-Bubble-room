@@ -12,6 +12,7 @@ export class CameraPanel extends LitElement {
     _icon:    { type: String,  state: true },
     _presence: { type: String, state: true },
     _presenceCandidates: { type: Array, state: true },
+    _cameraCandidates:   { type: Array, state: true }
   };
 
   constructor() {
@@ -23,28 +24,7 @@ export class CameraPanel extends LitElement {
     this._icon    = '';
     this._presence = '';
     this._presenceCandidates = [];
-    const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
-    if (autoDisc) {
-      const areaIds = Array.isArray(this.config?.area) ? this.config.area : [];
-      const areaId  = areaIds[0]; // stessa logica degli altri pannelli
-      if (areaId && this.hass?.entities) {
-        const reg = this.hass.entities; // 
-        const idsInArea = Object.values(reg)
-          .filter(e => e.area_id === areaId && e.entity_id?.startsWith('binary_sensor.'))
-          .map(e => e.entity_id);
-        const goodClasses = new Set(['motion','occupancy','presence','moving']);
-        this._presenceCandidates = idsInArea.filter(id => {
-          const st = this.hass.states?.[id];
-          const dc = st?.attributes?.device_class;
-          return !dc || goodClasses.has(dc);
-        });
-      } else {
-        this._presenceCandidates = [];
-      }
-    } else {
-      this._presenceCandidates = [];
-    }
-     
+    this._cameraCandidates   = [];
   }
 
   updated(changed) {
@@ -71,6 +51,35 @@ export class CameraPanel extends LitElement {
       this._entity = ent;
       this._icon   = this.config?.entities?.camera?.icon || '';
       this._presence = prs;
+     // 🔸 COSTRUZIONE LISTE CANDIDATE (solo quando auto-discovery camera è ON)
+      const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
+      if (autoDisc) {
+        const areaIds = Array.isArray(this.config?.area) ? this.config.area : [];
+        const areaId  = areaIds[0];
+        if (areaId && this.hass?.entities) {
+          const reg = this.hass.entities;
+          const inArea = Object.values(reg).filter(e => e.area_id === areaId);
+          // solo camera.*
+          this._cameraCandidates = inArea
+            .filter(e => e.entity_id?.startsWith('camera.'))
+            .map(e => e.entity_id);
+          // solo binary_sensor.* con classi utili
+          const good = new Set(['motion','occupancy','presence','moving']);
+          const binIds = inArea
+            .filter(e => e.entity_id?.startsWith('binary_sensor.'))
+            .map(e => e.entity_id);
+          this._presenceCandidates = binIds.filter(id => {
+            const dc = this.hass?.states?.[id]?.attributes?.device_class;
+            return !dc || good.has(dc);
+          });
+        } else {
+          this._cameraCandidates = [];
+          this._presenceCandidates = [];
+        }
+      } else {
+        this._cameraCandidates = [];
+        this._presenceCandidates = [];
+      }
     }
   }
 
@@ -138,7 +147,11 @@ export class CameraPanel extends LitElement {
           <ha-selector
             .hass=${this.hass}
             .value=${this._entity}
-            .selector=${{ entity: { domain: 'camera' } }}
+            .selector=${{
+              entity: this._cameraCandidates.length
+                ? { include_entities: this._cameraCandidates }
+                : { domain: 'camera' }
+            }}
             allow-custom-entity
             @value-changed=${e => this._set('entities.camera.entity', e.detail.value)}
           ></ha-selector>
