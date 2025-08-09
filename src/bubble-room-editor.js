@@ -206,49 +206,56 @@ export class BubbleRoomEditor extends LitElement {
   }
   
   _resetCamera() {
-    // HARD RESET in due fasi per forzare il vuoto nel selettore:
-    // 1) rimuovo proprio la chiave camera (nessun valore precedente da riusare)
-    // 2) nel microtask successivo creo un oggetto pulito
+    // 1) clona i rami principali per nuovi riferimenti (trigger update Lit)
+    const entities = { ...(this.config.entities || {}) };
     
-    // Fase 1: rimuovi completamente il ramo camera
-    const entities1 = { ...(this.config.entities || {}) };
-    if ('camera' in entities1) {
-      // clona prima per sicurezza e poi elimina chiavi sensibili
-      const cam = { ...entities1.camera };
-      delete cam.entity;
-      delete cam.icon;
-      if (cam.presence && typeof cam.presence === 'object') {
-        delete cam.presence.entity;
-      }
-      // rimuovi l'intero ramo per segnalare "assenza"
-      delete entities1.camera;
-    }
+    // 2) crea un oggetto camera "pulito" usando null (svuota davvero nei config)
+    const clearedCamera = {
+      entity: null, // <— usa null per cancellare davvero
+      icon: null, // <— idem per icona
+      presence: { entity: null }, // se la camera ha "presence" associata
+    };
+    
+    // 3) assegna camera pulita e spegni l’auto-discovery della camera
+    entities.camera = clearedCamera;
     
     this.config = {
       ...this.config,
-      entities: entities1,
+      entities,
       auto_discovery_sections: {
         ...this.config.auto_discovery_sections,
         camera: false,
       },
+      // bump di revisione per forzare l’aggiornamento anche nei figli “capoccioni”
+      __rev: (this.config.__rev || 0) + 1,
     };
     
-    // Fase 2: reimposta un oggetto vuoto nel prossimo microtask
+    // 4) emetti subito l’evento di cambio config
+    this.dispatchEvent(new CustomEvent('config-changed', {
+      detail: { config: this.config },
+      bubbles: true,
+      composed: true,
+    }));
+    
+    // 5) opzionale ma utile: microtask che rimette stringhe vuote dopo l’azzeramento,
+    //    così i picker che preferiscono '' vedono comunque un valore controllato.
     queueMicrotask(() => {
-      const entities2 = { ...(this.config.entities || {}) };
-      entities2.camera = {
-        entity: undefined, // undefined => selettore vuoto
-        icon: '', // svuotato esplicitamente
-        presence: { entity: undefined },
+      const ents2 = { ...(this.config.entities || {}) };
+      ents2.camera = {
+        entity: '', // per ha-selector che preferiscono stringa vuota
+        icon: '', // per ha-icon-picker
+        presence: { entity: '' },
       };
-      
       this.config = {
         ...this.config,
-        entities: entities2,
+        entities: ents2,
+        __rev: (this.config.__rev || 0) + 1,
       };
-      
-      // emetti un altro change per riflettere la seconda fase
-      this._emitConfigChanged();
+      this.dispatchEvent(new CustomEvent('config-changed', {
+        detail: { config: this.config },
+        bubbles: true,
+        composed: true,
+      }));
     });
   }
   
