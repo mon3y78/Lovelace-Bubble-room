@@ -159,6 +159,10 @@ export class BubbleRoomEditor extends LitElement {
   };
   
   _emitConfigChanged() {
+    // bump di revisione per forzare rinfresco profondo nei pannelli figli
+    const next = { ...this.config, __rev: (this.config.__rev || 0) + 1 };
+    this.config = next;
+    
     this.dispatchEvent(new CustomEvent('config-changed', {
       detail: { config: this.config },
       bubbles: true,
@@ -202,29 +206,50 @@ export class BubbleRoomEditor extends LitElement {
   }
   
   _resetCamera() {
-    // clona i rami per garantire nuovi riferimenti (trigger re-render)
-    const entities = { ...(this.config.entities || {}) };
-    const camera = { ...(entities.camera || {}) };
+    // HARD RESET in due fasi per forzare il vuoto nel selettore:
+    // 1) rimuovo proprio la chiave camera (nessun valore precedente da riusare)
+    // 2) nel microtask successivo creo un oggetto pulito
     
-    // HARD RESET: elimina radicalmente l'ID e correlati
-    delete camera.entity; // rimuove l'ID della camera
-    delete camera.stream_source; // se presente
-    delete camera.image_entity; // se presente
-    if (camera.presence && typeof camera.presence === 'object') {
-      delete camera.presence.entity; // eventuale presenza legata alla camera
+    // Fase 1: rimuovi completamente il ramo camera
+    const entities1 = { ...(this.config.entities || {}) };
+    if ('camera' in entities1) {
+      // clona prima per sicurezza e poi elimina chiavi sensibili
+      const cam = { ...entities1.camera };
+      delete cam.entity;
+      delete cam.icon;
+      if (cam.presence && typeof cam.presence === 'object') {
+        delete cam.presence.entity;
+      }
+      // rimuovi l'intero ramo per segnalare "assenza"
+      delete entities1.camera;
     }
-    camera.icon = ''; // reset icona
-    
-    entities.camera = camera;
     
     this.config = {
       ...this.config,
-      entities,
+      entities: entities1,
       auto_discovery_sections: {
         ...this.config.auto_discovery_sections,
-        camera: false, // evita che l'auto-discovery la reimposti subito
+        camera: false,
       },
     };
+    
+    // Fase 2: reimposta un oggetto vuoto nel prossimo microtask
+    queueMicrotask(() => {
+      const entities2 = { ...(this.config.entities || {}) };
+      entities2.camera = {
+        entity: undefined, // undefined => selettore vuoto
+        icon: '', // svuotato esplicitamente
+        presence: { entity: undefined },
+      };
+      
+      this.config = {
+        ...this.config,
+        entities: entities2,
+      };
+      
+      // emetti un altro change per riflettere la seconda fase
+      this._emitConfigChanged();
+    });
   }
   
   _setConfigValue(path, value) {
@@ -236,6 +261,7 @@ export class BubbleRoomEditor extends LitElement {
       obj = obj[k];
     }
     obj[keys[keys.length - 1]] = value;
+    // ricrea l'oggetto radice per trigger re-render
     this.config = { ...this.config };
   }
 }
