@@ -34,6 +34,18 @@ export class BubbleRoomEditor extends LitElement {
     this.config = {};
     this.openPanel = '';
   }
+
+  // --- helpers grid ----------------------------------------------------------
+  _gridFor(layout) {
+    // "stretto" è rappresentato dal layout 'tall' (o 'narrow'), "largo" da 'wide'
+    if (layout === 'tall' || layout === 'narrow') return { columns: 6, rows: 4 };
+    return { columns: 12, rows: 4 };
+  }
+  _gridsEqual(a, b) {
+    if (!a || !b) return false;
+    return Number(a.columns) === Number(b.columns) && Number(a.rows) === Number(b.rows);
+  }
+  // ---------------------------------------------------------------------------
   
   setConfig(rawConfig) {
     // Clona rawConfig e imposta default layout “wide”
@@ -42,6 +54,11 @@ export class BubbleRoomEditor extends LitElement {
       ...rawConfig,
     };
     
+    // Default grid_options in base al layout se mancante
+    if (!config.grid_options) {
+      config.grid_options = this._gridFor(config.layout);
+    }
+
     // Mantieni/integra le sezioni di auto-discovery
     config.auto_discovery_sections = {
       // 🔧 aggiungo 'presence' perché RoomPanel si aspetta proprio questa chiave
@@ -146,6 +163,22 @@ export class BubbleRoomEditor extends LitElement {
   
   _onConfigChanged = (e) => {
     const { prop, val } = e.detail;
+
+    // Cambio layout: aggiorna grid_options solo se erano i default del layout precedente
+    if (prop === 'layout') {
+      const prevLayout = this.config.layout || 'wide';
+      const prevDefault = this._gridFor(prevLayout);
+      const hadGrid = !!this.config.grid_options;
+      const wasPrevDefault = hadGrid && this._gridsEqual(this.config.grid_options, prevDefault);
+
+      this._setConfigValue('layout', val);
+
+      if (!hadGrid || wasPrevDefault) {
+        this._setConfigValue('grid_options', this._gridFor(val));
+      }
+      this._emitConfigChanged();
+      return;
+    }
     
     // Intercetta comandi speciali dai pannelli (es. reset)
     if (prop === '__panel_cmd__' && val?.cmd === 'reset') {
@@ -212,7 +245,7 @@ export class BubbleRoomEditor extends LitElement {
     // 2) crea un oggetto camera "pulito" usando null (svuota davvero nei config)
     const clearedCamera = {
       entity: null, // <— usa null per cancellare davvero
-      icon: null, // <— idem per icona
+      icon: null,   // <— idem per icona
       presence: { entity: null }, // se la camera ha "presence" associata
     };
     
@@ -226,7 +259,7 @@ export class BubbleRoomEditor extends LitElement {
         ...this.config.auto_discovery_sections,
         camera: false,
       },
-      // bump di revisione per forzare l’aggiornamento anche nei figli “capoccioni”
+      // bump di revisione per forzare l’aggiornamento anche nei figli
       __rev: (this.config.__rev || 0) + 1,
     };
     
@@ -237,13 +270,12 @@ export class BubbleRoomEditor extends LitElement {
       composed: true,
     }));
     
-    // 5) opzionale ma utile: microtask che rimette stringhe vuote dopo l’azzeramento,
-    //    così i picker che preferiscono '' vedono comunque un valore controllato.
+    // 5) microtask per compatibilità con selector che preferiscono stringhe vuote
     queueMicrotask(() => {
       const ents2 = { ...(this.config.entities || {}) };
       ents2.camera = {
-        entity: '', // per ha-selector che preferiscono stringa vuota
-        icon: '', // per ha-icon-picker
+        entity: '',
+        icon: '',
         presence: { entity: '' },
       };
       this.config = {
