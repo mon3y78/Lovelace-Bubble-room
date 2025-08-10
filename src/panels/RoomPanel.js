@@ -433,19 +433,20 @@ export class RoomPanel extends LitElement {
         <div class="input-group">
           <label>📐 Layout:</label>
           <div class="toggle-group">
-            <button
-              class="toggle-btn ${this.layout === 'wide' ? 'active' : ''}"
-              @click=${() => this._onLayoutClick('wide')}
-            >
-              <ha-icon icon="mdi:tablet"></ha-icon>
-              <span>Largo</span>
-            </button>
+
             <button
               class="toggle-btn ${this.layout === 'tall' ? 'active' : ''}"
               @click=${() => this._onLayoutClick('tall')}
             >
               <ha-icon icon="mdi:cellphone"></ha-icon>
               <span>Stretto</span>
+            </button>
+            <button
+              class="toggle-btn ${this.layout === 'wide' ? 'active' : ''}"
+              @click=${() => this._onLayoutClick('wide')}
+            >
+              <ha-icon icon="mdi:tablet"></ha-icon> 
+              <span>Largo</span> 
             </button>
           </div>
         </div>
