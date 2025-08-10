@@ -23,11 +23,11 @@ export class ClimatePanel extends LitElement {
     this._climateCandidates = [];
   }
 
-  // --- helpers area/registry -------------------------------------------------
+  // ---- helpers area/registry ------------------------------------------------
   _resolveAreaRef() {
     const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
-    const areaName = typeof raw === 'string' && !raw.startsWith('area_') ? raw : '';
-    let areaId = typeof raw === 'string' && raw.startsWith('area_') ? raw : '';
+    const areaName = (typeof raw === 'string' && !raw.startsWith('area_')) ? raw : '';
+    let areaId = (typeof raw === 'string' && raw.startsWith('area_')) ? raw : '';
     const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
     if (!areaId && areas.length && areaName) {
       const hit = areas.find(a => (a.name || '').toLowerCase() === String(areaName).toLowerCase());
@@ -81,12 +81,11 @@ export class ClimatePanel extends LitElement {
       this._entity = ent;
       this._icon   = this.config?.entities?.climate?.icon || '';
 
-      // candidati con filtro area robusto (solo se auto-discovery attivo)
+      // candidati: dominio corretto + filtro area + mantieni selezionato
       const autoDisc = this.config?.auto_discovery_sections?.climate ?? false;
       if (autoDisc) {
         const { areaId, areaName } = this._resolveAreaRef();
 
-        // dominio corretto + fallback
         let climatesAll = candidatesFor(this.hass, this.config, 'climate') || [];
         if (!climatesAll.length && this.hass?.states) {
           climatesAll = Object.keys(this.hass.states).filter(id => id.startsWith('climate.'));
@@ -149,7 +148,7 @@ export class ClimatePanel extends LitElement {
         .expanded=${this.expanded}
         @expanded-changed=${e => (this.expanded = e.detail.expanded)}
       >
-        <div slot="header" class="glass-header">🌡 Climate</div>
+        <div slot="header" class="glass-header">🌡️ Climate</div>
 
         <div class="input-group autodiscover">
           <input
@@ -180,7 +179,7 @@ export class ClimatePanel extends LitElement {
           <ha-selector
             .hass=${this.hass}
             .value=${this._icon}
-            .selector=${{ icon: {} }}
+            .selector={{ icon: {} }}
             @value-changed=${e => this._set('entities.climate.icon', e.detail.value)}
           ></ha-selector>
         </div>

@@ -19,8 +19,8 @@ import {
 
 export class BubbleRoomEditor extends LitElement {
   static properties = {
-    hass:   { type: Object },
-    config: { type: Object },
+    hass:      { type: Object },
+    config:    { type: Object },
     openPanel: { type: String, state: true },
   };
 
@@ -28,9 +28,9 @@ export class BubbleRoomEditor extends LitElement {
     super();
     this.hass = undefined;
     this.config = {};
-    this.openPanel = ''; // nessuno aperto di default
+    this.openPanel = ''; // nessun pannello aperto di default
 
-    // bind per sicurezza
+    // bind espliciti
     this._onPanelChanged  = this._onPanelChanged.bind(this);
     this._onPanelCmd      = this._onPanelCmd.bind(this);
     this._togglePanel     = this._togglePanel.bind(this);
@@ -58,6 +58,7 @@ export class BubbleRoomEditor extends LitElement {
   }
 
   /* ============ utils config & dispatch ============ */
+
   _emitConfig(next) {
     // preserva/forza sempre il type della card (fix “Nessun tipo fornito”)
     const withType = { type: this.config?.type || 'custom:bubble-room', ...(next || {}) };
@@ -69,7 +70,7 @@ export class BubbleRoomEditor extends LitElement {
     this.requestUpdate();
   }
 
-  /** Imposta un path puntato (es: "entities.climate.icon") */
+  /** Imposta un path puntato (es: "entities.climate.icon") e emette config-changed */
   _setConfigValue(path, value) {
     const keys = String(path).split('.');
     const next = structuredClone(this.config || {});
@@ -97,7 +98,7 @@ export class BubbleRoomEditor extends LitElement {
     const { prop, val } = e.detail || {};
     if (!prop) return;
 
-    // 1) applica
+    // 1) applica il cambiamento
     const prev = this.config;
     const next = structuredClone(prev || {});
     const parts = String(prop).split('.');
@@ -109,7 +110,7 @@ export class BubbleRoomEditor extends LitElement {
     }
     cur[parts[parts.length - 1]] = val;
 
-    // 2) autodiscovery se l'evento lo richiede
+    // 2) autodiscovery se l'evento riguarda area o sezioni auto
     const isArea = prop === 'area';
     const isAD   = prop.startsWith('auto_discovery_sections.');
     const applied = (isArea || isAD)
@@ -120,7 +121,7 @@ export class BubbleRoomEditor extends LitElement {
   }
 
   /**
-   * Alcuni pannelli più vecchi emettono detail { path, value }.
+   * Alcuni pannelli legacy emettono detail { path, value }.
    * Li normalizziamo a (prop,val).
    */
   _onConfigChanged(e) {
@@ -128,7 +129,7 @@ export class BubbleRoomEditor extends LitElement {
     const { path, value } = e.detail || {};
     if (!path) return;
 
-    // 1) set del valore
+    // 1) applica
     const prev = this.config;
     const next = structuredClone(prev || {});
     const parts = String(path).split('.');
@@ -140,7 +141,7 @@ export class BubbleRoomEditor extends LitElement {
     }
     cur[parts[parts.length - 1]] = value;
 
-    // 2) autodiscovery se il path riguarda area o sezioni auto
+    // 2) autodiscovery se area / sezioni
     const isArea = path === 'area';
     const isAD   = path.startsWith('auto_discovery_sections.');
     const applied = (isArea || isAD)
@@ -216,7 +217,7 @@ export class BubbleRoomEditor extends LitElement {
         <!-- ROOM -->
         <room-panel
           .hass=${this.hass}
-          .config =${cfg}
+          .config=${cfg}
           .expanded=${this.openPanel === 'room'}
           @expanded-changed=${e => this._togglePanel(e, 'room')}
           @panel-changed=${this._onPanelChanged}

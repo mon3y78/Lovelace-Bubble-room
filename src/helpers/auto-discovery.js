@@ -12,6 +12,7 @@ function resolveAreaRef(hass, config) {
   const raw = Array.isArray(config?.area) ? config.area[0] : config?.area;
   const areaName = (typeof raw === 'string' && !raw.startsWith('area_')) ? raw : '';
   let areaId = (typeof raw === 'string' && raw.startsWith('area_')) ? raw : '';
+
   const areas = Array.isArray(hass?.areas) ? hass.areas : [];
   if (!areaId && areas.length && areaName) {
     const hit = areas.find((a) => (a.name || '').toLowerCase() === String(areaName).toLowerCase());
@@ -55,12 +56,16 @@ function gatherCandidates(hass, config, sectionOrDomain) {
   return list;
 }
 
+/** Trova il primo elemento non usato in “list”. */
+const pickFirstFree = (list, used) => list.find((id) => !used.has(id)) || null;
+
 /** Generico “autofill” per dominio (es.: climate, camera) */
 function autoFillByDomain(hass, config, domain, key) {
   const entities = { ...(config.entities || {}) };
   const slot = entities[key] || (entities[key] = {});
   if (slot.entity) return { ...config, entities }; // già valorizzato
 
+  // prendiamo candidati generici (mushroom) come pool base, poi filtriamo per dominio
   let pool = gatherCandidates(hass, config, 'mushroom');
   pool = pool.filter((id) => id.startsWith(domain + '.'));
 
@@ -76,9 +81,6 @@ function autoFillByDomain(hass, config, domain, key) {
 
   return { ...config, entities };
 }
-
-/** Trova il primo elemento non usato in “list”. */
-const pickFirstFree = (list, used) => list.find((id) => !used.has(id)) || null;
 
 /* =========================
  *   AUTO-FILL (per sezione)
@@ -259,11 +261,11 @@ export function maybeAutoDiscover(hass, config, changedProp, debug = false) {
   if (ad.mushroom)  next = autoFillMushrooms(hass, next);
   if (ad.subbutton) next = autoFillSubButtons(hass, next);
   if (ad.presence)  next = autoFillPresence(hass, next);
-  if (ad.climate)   next = autoFillClimate(hass, next); // stessa logica degli altri
-  if (ad.camera)    next = autoFillCamera(hass, next);  // stessa logica degli altri
+  if (ad.climate)   next = autoFillClimate(hass, next);
+  if (ad.camera)    next = autoFillCamera(hass, next);
 
   if (debug && typeof window !== 'undefined' && window.__BUBBLE_DEBUG__) {
-    console.info('[AutoDiscovery] applied after', changedProp, { sections: ad });
+    console.info('[AutoDiscovery] applied after', changedProp, { sections: ad, config: next });
   }
   return next;
 }
