@@ -202,13 +202,7 @@ export class BubbleMushroom extends LitElement {
     const dCam = size * cameraScale;      // diametro camera
     const dCli = size * climateScale;     // diametro climate
 
-    // === MARGINI FISSI DA CODICE (px)
-    const CAM_MX = 12;  // distanza dal bordo destro
-    const CAM_MY = 12;  // distanza dal bordo alto
-    const CLI_MX = 12;  // distanza dal bordo sinistro
-    const CLI_MY = 12;  // distanza dal bordo basso
-
-    // POSIZIONI GENERICHE (usate solo per entità “normali”)
+    // POSIZIONI 1..5 per i mushroom “normali” (come nel codice originale)
     const positionsGeneric = [
       // 1 — alto-sinistra, dentro lo sfondo
       { x: contactX, y: contactY },
@@ -226,7 +220,7 @@ export class BubbleMushroom extends LitElement {
       { x: cX + rArcX * Math.cos(+aFlat), y: cY + rArcY * Math.sin(+aFlat) },
     ];
 
-    // cursore locale per assegnare slot generici (si resetta a ogni render)
+    // indice locale per assegnare slot ai “generici”
     let genIdx = 0;
 
     return html`
@@ -234,16 +228,18 @@ export class BubbleMushroom extends LitElement {
         const isCam = e?.kind === 'camera';
         const isCli = e?.kind === 'climate';
 
-        // diametro per-ENTITÀ: camera/climate più piccoli
+        // diametro per-ENTITÀ: camera/climate più piccoli (come prima)
         const d = isCam ? dCam : (isCli ? dCli : size);
         const iconSize = d * 0.95;
 
-        // base position: fissa per camera/climate, slot generico per le altre
+        // === POSIZIONI: camera/climate esattamente come nel codice che hai incollato ===
+        // camera: { x: width - (dCam / 2), y: (dCam / 2) }
+        // climate: { x: (dCli / 2) + touchPad, y: height - (dCli / 2) - touchPad }
         let base;
         if (isCam) {
-          base = { x: (width - (d / 2) - CAM_MX), y: ((d / 2) + CAM_MY) };            // alto-destra
+          base = { x: (width - (d / 2)), y: (d / 2) }; // alto-destra, come prima (nessun margine extra)
         } else if (isCli) {
-          base = { x: ((d / 2) + CLI_MX), y: (height - (d / 2) - CLI_MY) };           // basso-sinistra
+          base = { x: ((d / 2) + touchPad), y: (height - (d / 2) - touchPad) }; // basso-sinistra, come prima
         } else {
           base = positionsGeneric[Math.min(genIdx, positionsGeneric.length - 1)] ?? { x: cX, y: cY };
           genIdx++;
