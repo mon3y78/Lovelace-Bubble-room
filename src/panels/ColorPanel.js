@@ -1,561 +1,320 @@
 // src/panels/ColorPanel.js
 import { LitElement, html, css } from 'lit';
 
+/** Preset: per ciascuno definisco colori active/inactive per bg e icon */
+const PRESETS = {
+  green: {
+    label: 'Green',
+    active:   { bg: '#1f3a2e', icon: '#7de2a8' },
+    inactive: { bg: '#162a22', icon: '#4fb684' },
+  },
+  blue: {
+    label: 'Blue',
+    active:   { bg: '#18293d', icon: '#8fd0ff' },
+    inactive: { bg: '#122031', icon: '#6fb7ef' },
+  },
+  amber: {
+    label: 'Amber',
+    active:   { bg: '#3a2d18', icon: '#ffd37a' },
+    inactive: { bg: '#2b2112', icon: '#efbf62' },
+  },
+  red: {
+    label: 'Red',
+    active:   { bg: '#3a2224', icon: '#ff9aa4' },
+    inactive: { bg: '#2b191b', icon: '#e67c87' },
+  },
+  gray: {
+    label: 'Gray',
+    active:   { bg: '#2c2f36', icon: '#cfd6e4' },
+    inactive: { bg: '#24262c', icon: '#aeb7c7' },
+  },
+};
+
 export class ColorPanel extends LitElement {
   static properties = {
-    hass:            { type: Object },
-    config:          { type: Object },
-    expanded:        { type: Boolean },
-    _expandedColors: { type: Array, state: true }, // [roomOpen, subbuttonOpen]
-    _selectedPreset: { type: String, state: true },
+    hass:     { type: Object },
+    config:   { type: Object },
+    expanded: { type: Boolean },
+
+    // stato locale UI
+    _preset:         { type: String, state: true },
     _applyRoom:      { type: Boolean, state: true },
     _applySub:       { type: Boolean, state: true },
-    _applyText:      { type: Boolean, state: true }, // applica anche text_* (solo Room)
+    _applyMushroom:  { type: Boolean, state: true },
+    _applySensors:   { type: Boolean, state: true },
+    _includeText:    { type: Boolean, state: true },
   };
 
   constructor() {
     super();
-    this.hass = {};
-    this.config = {};
+    this.hass     = {};
+    this.config   = {};
     this.expanded = false;
-    this._expandedColors = [false, false];
 
-    this._selectedPreset = 'green';
-    this._applyRoom = true;
-    this._applySub  = true;
-    this._applyText = true; // come da richiesta: includere il testo (Room)
+    this._preset        = 'green';
+    this._applyRoom     = true;
+    this._applySub      = true;
+    this._applyMushroom = true;  // nuovo
+    this._applySensors  = true;  // nuovo
+    this._includeText   = true;  // titolo stanza
   }
 
-  // ===================== PRESET =====================
-  // Valori ispirati alla palette della schermata di esempio
-  // Ogni preset definisce colori per Room (active/inactive, icon, text) e Subbutton (on/off, icon)
-  // I valori sono RGBA per coerenza con i campi esistenti.
-  get PRESETS() {
-    return {
-      green: {
-        label: 'Green',
-        room: {
-          background_active:  'rgba( 85, 175, 135, 0.22)',
-          background_inactive:'rgba( 85, 175, 135, 0.10)',
-          icon_active:        'rgba( 85, 235, 175, 1.00)',
-          icon_inactive:      'rgba( 85, 235, 175, 0.45)',
-          text_active:        'rgba( 85, 235, 175, 1.00)',
-          text_inactive:      'rgba( 200, 220, 210, 0.80)',
-        },
-        sub: {
-          background_on:      'rgba( 85, 175, 135, 0.22)',
-          background_off:     'rgba( 85, 175, 135, 0.08)',
-          icon_on:            'rgba( 85, 235, 175, 1.00)',
-          icon_off:           'rgba( 85, 235, 175, 0.45)',
-        }
-      },
-      blue: {
-        label: 'Blue',
-        room: {
-          background_active:  'rgba( 90, 140, 220, 0.22)',
-          background_inactive:'rgba( 90, 140, 220, 0.10)',
-          icon_active:        'rgba(120, 170, 255, 1.00)',
-          icon_inactive:      'rgba(120, 170, 255, 0.45)',
-          text_active:        'rgba(180, 205, 255, 1.00)',
-          text_inactive:      'rgba(210, 220, 240, 0.80)',
-        },
-        sub: {
-          background_on:      'rgba( 90, 140, 220, 0.22)',
-          background_off:     'rgba( 90, 140, 220, 0.08)',
-          icon_on:            'rgba(120, 170, 255, 1.00)',
-          icon_off:           'rgba(120, 170, 255, 0.45)',
-        }
-      },
-      amber: {
-        label: 'Amber',
-        room: {
-          background_active:  'rgba(220, 165,  80, 0.22)',
-          background_inactive:'rgba(220, 165,  80, 0.10)',
-          icon_active:        'rgba(255, 210, 120, 1.00)',
-          icon_inactive:      'rgba(255, 210, 120, 0.50)',
-          text_active:        'rgba(255, 220, 170, 1.00)',
-          text_inactive:      'rgba(245, 235, 210, 0.85)',
-        },
-        sub: {
-          background_on:      'rgba(220, 165,  80, 0.22)',
-          background_off:     'rgba(220, 165,  80, 0.08)',
-          icon_on:            'rgba(255, 210, 120, 1.00)',
-          icon_off:           'rgba(255, 210, 120, 0.50)',
-        }
-      },
-      purple: {
-        label: 'Purple',
-        room: {
-          background_active:  'rgba(155, 120, 220, 0.22)',
-          background_inactive:'rgba(155, 120, 220, 0.10)',
-          icon_active:        'rgba(200, 170, 255, 1.00)',
-          icon_inactive:      'rgba(200, 170, 255, 0.45)',
-          text_active:        'rgba(220, 200, 255, 1.00)',
-          text_inactive:      'rgba(225, 215, 240, 0.85)',
-        },
-        sub: {
-          background_on:      'rgba(155, 120, 220, 0.22)',
-          background_off:     'rgba(155, 120, 220, 0.08)',
-          icon_on:            'rgba(200, 170, 255, 1.00)',
-          icon_off:           'rgba(200, 170, 255, 0.45)',
-        }
-      },
-      red: {
-        label: 'Red',
-        room: {
-          background_active:  'rgba(220,  95, 100, 0.22)',
-          background_inactive:'rgba(220,  95, 100, 0.10)',
-          icon_active:        'rgba(255, 140, 150, 1.00)',
-          icon_inactive:      'rgba(255, 140, 150, 0.50)',
-          text_active:        'rgba(255, 190, 195, 1.00)',
-          text_inactive:      'rgba(245, 225, 228, 0.85)',
-        },
-        sub: {
-          background_on:      'rgba(220,  95, 100, 0.22)',
-          background_off:     'rgba(220,  95, 100, 0.08)',
-          icon_on:            'rgba(255, 140, 150, 1.00)',
-          icon_off:           'rgba(255, 140, 150, 0.50)',
-        }
-      },
-      gray: {
-        label: 'Gray',
-        room: {
-          background_active:  'rgba(120, 130, 140, 0.22)',
-          background_inactive:'rgba(120, 130, 140, 0.10)',
-          icon_active:        'rgba(210, 220, 230, 1.00)',
-          icon_inactive:      'rgba(210, 220, 230, 0.50)',
-          text_active:        'rgba(230, 235, 240, 1.00)',
-          text_inactive:      'rgba(210, 215, 220, 0.85)',
-        },
-        sub: {
-          background_on:      'rgba(120, 130, 140, 0.22)',
-          background_off:     'rgba(120, 130, 140, 0.08)',
-          icon_on:            'rgba(210, 220, 230, 1.00)',
-          icon_off:           'rgba(210, 220, 230, 0.50)',
-        }
-      },
-    };
-  }
-
-  // ===================== LIFECYCLE =====================
-  updated(changed) {
-    if (changed.has('config') || changed.has('hass')) {
-      // niente autodiscovery qui: solo UI colori/preset
-      // la sincronizzazione avviene a livello di editor tramite panel-changed
-    }
-  }
-
-  // ===================== STILI =====================
   static styles = css`
     :host { display: block; }
     .glass-panel {
-      margin: 0 !important;
-      width: 100%;
-      box-sizing: border-box;
-      border-radius: 40px;
-      position: relative;
-      background: var(--glass-bg, rgba(95,255,235,0.26));
-      box-shadow: var(--glass-shadow, 0 2px 24px rgba(95,255,235,0.13));
-      overflow: hidden;
+      margin: 0 !important; width: 100%; box-sizing: border-box;
+      border-radius: 40px; position: relative; overflow: hidden;
+      background: var(--glass-bg, rgba(110,160,170,0.25));
+      box-shadow: var(--glass-shadow, 0 2px 24px rgba(110,160,170,0.18));
     }
     .glass-panel::after {
-      content: '';
-      position: absolute; inset: 0;
-      border-radius: inherit;
-      background: var(--glass-sheen,
-        linear-gradient(120deg, rgba(255,255,255,0.14),
-        rgba(255,255,255,0.08) 70%, transparent 100%));
-      pointer-events: none;
+      content:''; position:absolute; inset:0; border-radius:inherit;
+      background: linear-gradient(120deg, rgba(255,255,255,0.16),
+        rgba(255,255,255,0.08) 70%, transparent 100%);
+      pointer-events:none;
     }
     .glass-header {
-      padding: 22px 0;
-      text-align: center;
-      font-size: 1.11rem;
-      font-weight: 700;
-      color: #fff;
+      padding: 22px 0; text-align: center; font-size: 1.12rem;
+      font-weight: 700; color: #fff;
     }
 
-    .preset-bar {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 10px;
-      padding: 8px 16px 2px 16px;
-      box-sizing: border-box;
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 720px) { .row { grid-template-columns: 1fr; } }
+
+    .group {
+      margin: 10px 16px; padding: 14px; border-radius: 18px;
+      background: rgba(20,30,40,0.28);
+      border: 1px solid rgba(255,255,255,0.12);
     }
+    .group h4 {
+      margin: 0 0 10px; font-weight: 800; color: #bfe7ff;
+      letter-spacing: .2px;
+    }
+
     .preset-card {
-      position: relative;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(24,32,40,0.45);
-      padding: 10px 10px 12px;
-      cursor: pointer;
-      user-select: none;
-      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
-      outline: none;
+      border: 2px solid rgba(255,255,255,0.18);
+      border-radius: 16px; padding: 10px; cursor: pointer;
+      background: rgba(255,255,255,0.04);
+      transition: transform .15s, border-color .15s, background .15s;
     }
-    .preset-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-      border-color: rgba(255,255,255,0.28);
+    .preset-card.active {
+      border-color: #67e8f9;
+      background: rgba(103,232,249,0.10);
+      transform: translateY(-1px);
     }
-    .preset-card.selected {
-      border-color: #73f6e5;
-      box-shadow: 0 0 0 2px inset rgba(115,246,229,0.35);
-    }
-    .preset-name {
-      font-weight: 700;
-      color: #e9f8ff;
-      font-size: .95rem;
-      margin-bottom: 6px;
-      text-align: left;
-    }
-    .swatches {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
+    .preset-title { color:#fff; font-weight:700; margin-bottom:8px; }
+    .swatches { display:flex; gap:12px; }
     .swatch {
-      border-radius: 10px;
-      padding: 8px;
-      border: 1px solid rgba(255,255,255,0.10);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      flex:1; display:flex; align-items:center; gap:8px;
+      padding:10px; border-radius:12px;
+      border:1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.2);
     }
-    .dot {
-      width: 14px; height: 14px; border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.75);
-      flex: 0 0 auto;
-    }
-    .swatch-label {
-      color: #f0f6ff; font-size: .85rem; opacity: .9;
-    }
+    .dot { width:20px; height:20px; border-radius:50%; border:2px solid #fff3; }
+    .lbl { color:#fff; font-weight:600; }
 
-    .apply-row {
-      display: flex; flex-wrap: wrap; gap: 10px;
-      align-items: center; padding: 10px 16px 2px 16px;
-    }
-    .apply-row .checks { display: flex; gap: 14px; align-items: center; }
-    .apply-row label { color: #dfefff; font-weight: 600; font-size: .95rem; }
+    .toggles { display:flex; flex-wrap:wrap; gap:16px; margin: 10px 16px; }
+    .toggle { display:flex; align-items:center; gap:8px; color:#d4efff; font-weight:700; }
+    .actions { display:flex; gap:12px; margin: 14px 16px 6px; }
     .apply-btn {
-      margin-left: auto;
-      border: 2.5px solid #73f6e5;
-      color: #073a34;
-      background: #73f6e5;
-      border-radius: 12px;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-weight: 800;
-      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+      flex:1; padding:12px 16px; border-radius:14px;
+      border:0; cursor:pointer; font-weight:800; font-size:1rem;
+      background:#7af8d0; color:#05302a;
+      box-shadow: 0 8px 24px rgba(122,248,208,0.24);
     }
-    .apply-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
 
-    .mini-pill {
-      background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.12);
-      box-shadow: 0 3px 22px rgba(70,120,220,0.13);
-      backdrop-filter: blur(10px) saturate(1.2);
-      border-radius: 24px;
-      margin: 8px 16px;
-      overflow: hidden;
-      transition: background 0.18s, box-shadow 0.18s, border 0.18s;
-    }
-    .mini-pill-header {
-      display: flex;
-      align-items: center;
-      padding: 15px 22px;
-      font-weight: 800;
-      color: var(--section-accent, #73f6e5);
-      cursor: pointer;
-      user-select: none;
-    }
-    .mini-pill-header .chevron {
-      margin-left: auto;
-      font-size: 1.2em;
-      transition: transform 0.18s;
-    }
-    .mini-pill.expanded .mini-pill-header .chevron {
-      transform: rotate(90deg);
-    }
-    .mini-pill-content {
-      padding: 15px 22px 16px;
-      animation: pill-expand 0.22s cubic-bezier(.5,1.2,.6,1) both;
-      position: relative;
-      z-index: 1;
-    }
-    @keyframes pill-expand {
-      from { opacity: 0; transform: translateY(-12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .input-group {
-      background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.13);
-      box-shadow: 0 2px 14px rgba(70,120,220,0.10);
-      border-radius: 18px;
-      margin-bottom: 13px;
-      padding: 14px 18px 10px;
-    }
-    .input-group label {
-      display: block;
-      font-size: 1.13rem;
-      font-weight: 700;
-      color: var(--section-accent, #73f6e5);
-      margin-bottom: 6px;
-    }
-    input[type="color"] {
-      width: 56px; height: 32px;
-      border: 2px solid #fff4;
-      border-radius: 9px;
-      cursor: pointer;
-    }
-    input[type="range"] { width: 100%; }
-    input[type="text"] {
-      width: 100%;
-      border: 1px solid #444;
-      border-radius: 6px;
-      padding: 8px;
-      background-color: #202020;
-      color: #f1f1f1;
-      font-size: 0.97rem;
-    }
-    .reset-button {
-      border: 3.5px solid #ff4c6a !important;
-      color: #ff4c6a !important;
-      font-size: 1.15rem;
-      font-weight: 700;
+    .reset {
+      display:block; margin: 20px auto; padding:12px 30px;
+      border-radius:24px; border:3px solid #ff4c6a; background:transparent;
+      color:#ff9cab; font-weight:800; cursor:pointer;
       box-shadow: 0 2px 24px #ff4c6a44;
-      padding: 12px 38px !important;
-      margin: 20px auto 0 auto !important;
-      display: block;
-      background: transparent;
-      border-radius: 24px !important;
-      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
     }
-    .reset-button:hover {
-      background: rgba(255,76,106,0.18) !important;
-      color: #fff !important;
-      box-shadow: 0 6px 32px #ff4c6abf;
+
+    details { margin: 0 16px 12px; }
+    summary {
+      list-style: none; cursor: pointer; padding: 12px 14px;
+      border-radius: 14px; background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12); color:#c9e3ff; font-weight:800;
+      display:flex; align-items:center; gap:10px;
     }
+    summary::-webkit-details-marker { display:none; }
+    .kbd {
+      margin-left:auto; background:#0b2233; border:1px solid #193245;
+      padding: 4px 8px; border-radius:8px; color:#7ec8ff; font-weight:800;
+    }
+    .hint { color:#9ccaf0; font-size:.93rem; padding:12px 2px 0; }
   `;
 
-  // ===================== RENDER =====================
   render() {
     return html`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
-        @expanded-changed=${e => {
-          this.expanded = e.detail.expanded;
-          if (this.expanded) this._expandedColors = [false, false];
-        }}
+        @expanded-changed=${e => (this.expanded = e.detail.expanded)}
       >
-        <div slot="header" class="glass-header">🎨 Colors & Presets</div>
+        <div slot="header" class="glass-header">🎨 Color Presets</div>
 
-        <!-- Preset chooser -->
-        ${this._renderPresetChooser()}
-
-        <!-- Room colors pill -->
-        <div class="mini-pill ${this._expandedColors[0] ? 'expanded' : ''}">
-          <div
-            class="mini-pill-header"
-            style="--section-accent: #55afff;"
-            @click=${() => this._toggleColor(0)}
-          >
-            Room Colors
-            <span class="chevron">${this._expandedColors[0] ? '▼' : '▶'}</span>
-          </div>
-          ${this._expandedColors[0] ? html`
-            <div class="mini-pill-content">
-              ${this._renderColorField('room', 'background_active',   'Background Active')}
-              ${this._renderColorField('room', 'background_inactive', 'Background Inactive')}
-              ${this._renderColorField('room', 'icon_active',         'Icon Active')}
-              ${this._renderColorField('room', 'icon_inactive',       'Icon Inactive')}
-              ${this._renderColorField('room', 'text_active',         'Text Active')}
-              ${this._renderColorField('room', 'text_inactive',       'Text Inactive')}
+        <!-- Preset picker -->
+        <div class="row">
+          ${Object.entries(PRESETS).map(([key, p]) => html`
+            <div
+              class="preset-card ${this._preset === key ? 'active' : ''}"
+              @click=${() => (this._preset = key)}
+            >
+              <div class="preset-title">${p.label}</div>
+              <div class="swatches">
+                <div class="swatch">
+                  <div class="dot" style="background:${p.active.bg}"></div>
+                  <div class="lbl">Active</div>
+                </div>
+                <div class="swatch">
+                  <div class="dot" style="background:${p.inactive.bg}"></div>
+                  <div class="lbl">Inactive</div>
+                </div>
+              </div>
             </div>
-          ` : ''}
+          `)}
         </div>
 
-        <!-- Subbutton colors pill -->
-        <div class="mini-pill ${this._expandedColors[1] ? 'expanded' : ''}">
-          <div
-            class="mini-pill-header"
-            style="--section-accent: #b28fff;"
-            @click=${() => this._toggleColor(1)}
-          >
-            Subbutton Colors
-            <span class="chevron">${this._expandedColors[1] ? '▼' : '▶'}</span>
-          </div>
-          ${this._expandedColors[1] ? html`
-            <div class="mini-pill-content">
-              ${this._renderColorField('subbutton', 'background_on',  'Background On')}
-              ${this._renderColorField('subbutton', 'background_off', 'Background Off')}
-              ${this._renderColorField('subbutton', 'icon_on',        'Icon On')}
-              ${this._renderColorField('subbutton', 'icon_off',       'Icon Off')}
-            </div>
-          ` : ''}
-        </div>
-
-        <!-- Reset -->
-        <button class="reset-button" @click=${() => this._resetColors()}>
-          🧹 Reset Colors
-        </button>
-      </ha-expansion-panel>
-    `;
-  }
-
-  // ===================== UI helpers =====================
-  _renderPresetChooser() {
-    const keys = Object.keys(this.PRESETS);
-    return html`
-      <div class="preset-bar">
-        ${keys.map(k => this._renderPresetCard(k, this.PRESETS[k]))}
-      </div>
-      <div class="apply-row">
-        <div class="checks">
-          <label>
+        <!-- Target toggles -->
+        <div class="toggles">
+          <label class="toggle">
             <input type="checkbox" .checked=${this._applyRoom}
               @change=${e => this._applyRoom = e.target.checked} />
             Applica a Room
           </label>
-          <label>
+          <label class="toggle">
             <input type="checkbox" .checked=${this._applySub}
               @change=${e => this._applySub = e.target.checked} />
             Applica a Subbutton
           </label>
-          <label title="Solo per Room">
-            <input type="checkbox" .checked=${this._applyText}
-              @change=${e => this._applyText = e.target.checked} />
+          <label class="toggle">
+            <input type="checkbox" .checked=${this._applyMushroom}
+              @change=${e => this._applyMushroom = e.target.checked} />
+            Applica ai Mushroom (incl. Camera & Climate)
+          </label>
+          <label class="toggle">
+            <input type="checkbox" .checked=${this._applySensors}
+              @change=${e => this._applySensors = e.target.checked} />
+            Applica ai Sensori
+          </label>
+          <label class="toggle">
+            <input type="checkbox" .checked=${this._includeText}
+              @change=${e => this._includeText = e.target.checked} />
             Includi testo (Room)
           </label>
         </div>
-        <button class="apply-btn" @click=${this._applySelectedPreset}>
-          Applica preset
-        </button>
-      </div>
-    `;
-  }
 
-  _renderPresetCard(key, p) {
-    const sel = this._selectedPreset === key ? 'selected' : '';
-    const roomA = p.room.background_active;
-    const roomI = p.room.background_inactive;
-    const iconA = p.room.icon_active;
-    const iconI = p.room.icon_inactive;
-    return html`
-      <div class="preset-card ${sel}" @click=${() => this._selectedPreset = key}>
-        <div class="preset-name">${p.label}</div>
-        <div class="swatches">
-          <div class="swatch" style="background:${roomA}">
-            <span class="dot" style="background:${iconA}"></span>
-            <span class="swatch-label">Active</span>
-          </div>
-          <div class="swatch" style="background:${roomI}">
-            <span class="dot" style="background:${iconI}"></span>
-            <span class="swatch-label">Inactive</span>
-          </div>
+        <div class="actions">
+          <button class="apply-btn" @click=${this._applyPreset}>Applica preset</button>
         </div>
-      </div>
+
+        <!-- (Facoltativo) Mostra i rami che andremo a toccare -->
+        <details>
+          <summary>
+            Room Colors & Subbutton Colors
+            <span class="kbd">preview</span>
+          </summary>
+          <div class="hint">
+            Applichiamo background/icon per Active/Inactive.
+            Se “Includi testo” è attivo, aggiorniamo anche
+            <code>colors.room.text_active</code> / <code>text_inactive</code>
+            (con alias <code>title_active</code> / <code>title_inactive</code>).
+          </div>
+        </details>
+
+        <button class="reset" @click=${this._resetAll}>🧹 Reset Colors</button>
+      </ha-expansion-panel>
     `;
   }
 
-  _toggleColor(index) {
-    this._expandedColors = this._expandedColors.map((v, i) => i === index ? !v : false);
-  }
+  /* -------------------- APPLY / RESET -------------------- */
 
-  _renderColorField(section, key, label) {
-    const rgba = this.config.colors?.[section]?.[key] || '';
-    const [r, g, b, a] = this._parseRGBA(rgba);
-    const hex = `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
-    return html`
-      <div class="input-group">
-        <label>${label}</label>
-        <input
-          type="color"
-          .value=${hex}
-          @input=${e => this._updateColor(section, key, e.target.value, a)}
-        />
-        <input
-          type="range"
-          min="0" max="1" step="0.01"
-          .value=${a}
-          @input=${e => this._updateColor(section, key, hex, e.target.value)}
-        />
-        <input
-          type="text"
-          .value=${rgba}
-          @input=${e => this._updateColorRaw(section, key, e.target.value)}
-        />
-      </div>
-    `;
-  }
+  _applyPreset = () => {
+    const p = PRESETS[this._preset];
+    if (!p) return;
 
-  // ===================== APPLY / RESET =====================
-  _applySelectedPreset = () => {
-    const key = this._selectedPreset;
-    const preset = this.PRESETS[key];
-    if (!preset) return;
+    const ACTIVE   = p.active;
+    const INACTIVE = p.inactive;
 
-    const ops = [];
-
+    // ROOM
     if (this._applyRoom) {
-      ops.push(['colors.room.background_active',   preset.room.background_active]);
-      ops.push(['colors.room.background_inactive', preset.room.background_inactive]);
-      ops.push(['colors.room.icon_active',         preset.room.icon_active]);
-      ops.push(['colors.room.icon_inactive',       preset.room.icon_inactive]);
-      if (this._applyText) {
-        ops.push(['colors.room.text_active',       preset.room.text_active]);
-        ops.push(['colors.room.text_inactive',     preset.room.text_inactive]);
+      this._set('colors.room.background_active', ACTIVE.bg);
+      this._set('colors.room.background_inactive', INACTIVE.bg);
+      this._set('colors.room.icon_active', ACTIVE.icon);
+      this._set('colors.room.icon_inactive', INACTIVE.icon);
+      if (this._includeText) {
+        // allinea titolo/nome stanza
+        this._set('colors.room.text_active', ACTIVE.icon);
+        this._set('colors.room.text_inactive', INACTIVE.icon);
+        // alias compatibili
+        this._set('colors.room.title_active', ACTIVE.icon);
+        this._set('colors.room.title_inactive', INACTIVE.icon);
       }
     }
 
+    // SUBBUTTON
     if (this._applySub) {
-      ops.push(['colors.subbutton.background_on',  preset.sub.background_on]);
-      ops.push(['colors.subbutton.background_off', preset.sub.background_off]);
-      ops.push(['colors.subbutton.icon_on',        preset.sub.icon_on]);
-      ops.push(['colors.subbutton.icon_off',       preset.sub.icon_off]);
+      this._set('colors.subbutton.background_active', ACTIVE.bg);
+      this._set('colors.subbutton.background_inactive', INACTIVE.bg);
+      this._set('colors.subbutton.icon_active', ACTIVE.icon);
+      this._set('colors.subbutton.icon_inactive', INACTIVE.icon);
     }
 
-    for (const [prop, val] of ops) {
-      this._emit(prop, val);
+    // MUSHROOM (+ alias camera/climate)
+    if (this._applyMushroom) {
+      // bucket generico per tutte le mushroom-entities 1..5
+      this._set('colors.mushroom.background_active', ACTIVE.bg);
+      this._set('colors.mushroom.background_inactive', INACTIVE.bg);
+      this._set('colors.mushroom.icon_active', ACTIVE.icon);
+      this._set('colors.mushroom.icon_inactive', INACTIVE.icon);
+
+      // alias specifici perché a volte vengono letti separatamente
+      for (const key of ['camera','climate']) {
+        this._set(`colors.${key}.background_active`, ACTIVE.bg);
+        this._set(`colors.${key}.background_inactive`, INACTIVE.bg);
+        this._set(`colors.${key}.icon_active`, ACTIVE.icon);
+        this._set(`colors.${key}.icon_inactive`, INACTIVE.icon);
+      }
+    }
+
+    // SENSORS (badge in alto)
+    if (this._applySensors) {
+      this._set('colors.sensors.chip_bg_active', ACTIVE.bg);
+      this._set('colors.sensors.chip_bg_inactive', INACTIVE.bg);
+      this._set('colors.sensors.chip_icon_active', ACTIVE.icon);
+      this._set('colors.sensors.chip_icon_inactive', INACTIVE.icon);
     }
   };
 
-  _resetColors() {
-    this._expandedColors = [false, false];
-    const sections = ['room','subbutton'];
-    const keys = {
-      room:      ['background_active','background_inactive','icon_active','icon_inactive','text_active','text_inactive'],
-      subbutton: ['background_on','background_off','icon_on','icon_off']
-    };
-    sections.forEach(sec => {
-      keys[sec].forEach(k => this._emit(`colors.${sec}.${k}`, ''));
-    });
-  }
+  _resetAll = () => {
+    const paths = [
+      // room
+      'colors.room.background_active','colors.room.background_inactive',
+      'colors.room.icon_active','colors.room.icon_inactive',
+      'colors.room.text_active','colors.room.text_inactive',
+      'colors.room.title_active','colors.room.title_inactive',
+      // subbutton
+      'colors.subbutton.background_active','colors.subbutton.background_inactive',
+      'colors.subbutton.icon_active','colors.subbutton.icon_inactive',
+      // mushroom
+      'colors.mushroom.background_active','colors.mushroom.background_inactive',
+      'colors.mushroom.icon_active','colors.mushroom.icon_inactive',
+      // camera/climate alias
+      'colors.camera.background_active','colors.camera.background_inactive',
+      'colors.camera.icon_active','colors.camera.icon_inactive',
+      'colors.climate.background_active','colors.climate.background_inactive',
+      'colors.climate.icon_active','colors.climate.icon_inactive',
+      // sensors
+      'colors.sensors.chip_bg_active','colors.sensors.chip_bg_inactive',
+      'colors.sensors.chip_icon_active','colors.sensors.chip_icon_inactive',
+    ];
+    for (const p of paths) this._set(p, '');
+  };
 
-  // ===================== Low-level helpers =====================
-  _parseRGBA(str) {
-    if (!str) return [0,0,0,1];
-    const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(str);
-    if (m) return [ +m[1], +m[2], +m[3], +(m[4] ?? 1) ];
-    return [0,0,0,1];
-  }
+  /* -------------------- helpers -------------------- */
 
-  _updateColor(section, key, hex, alpha) {
-    const r = parseInt(hex.slice(1,3),16);
-    const g = parseInt(hex.slice(3,5),16);
-    const b = parseInt(hex.slice(5,7),16);
-    const a = Number(alpha);
-    const rgba = `rgba(${r},${g},${b},${isNaN(a) ? 1 : a})`;
-    this._emit(`colors.${section}.${key}`, rgba);
-  }
-
-  _updateColorRaw(section, key, raw) {
-    this._emit(`colors.${section}.${key}`, raw);
-  }
-
-  _emit(prop, val) {
+  _set(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop, val },
       bubbles: true, composed: true,
