@@ -995,6 +995,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       font-size: 1.12rem; font-weight: 700; color: #fff;
     }
 
+    /* Preset grid */
     .preset-grid {
       display: grid; gap: 12px; padding: 0 16px 8px;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -1004,25 +1005,48 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       border-radius: 16px; padding: 12px; background: rgba(255,255,255,0.06);
     }
     .preset-title {
-      font-weight: 700; color: #fff; margin-bottom: 8px;
-      display:flex; align-items:center; justify-content:space-between;
+      font-weight: 700; color: #fff; margin-bottom: 10px;
+      text-align: center;
     }
-    .swatch-row { display: flex; gap: 8px; margin-bottom: 8px; }
-    .swatch {
-      flex: 1; border-radius: 10px; height: 24px; border: 1px solid rgba(0,0,0,0.15);
-      display:flex; align-items:center; justify-content:center; color:#000; font-weight:700; font-size:0.8rem;
-      background: repeating-linear-gradient(
-        45deg, rgba(255,255,255,0.18), rgba(255,255,255,0.18) 6px, transparent 6px, transparent 12px
-      );
-    }
-    .swatch .label { background: rgba(255,255,255,0.86); padding: 0 8px; border-radius: 8px; }
-    .apply-btn {
-      width: 100%; margin-top: 4px; border-radius: 10px; padding: 8px 10px;
-      border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.12);
-      cursor: pointer; color: #fff; font-weight: 700;
-    }
-    .apply-btn:hover { background: rgba(255,255,255,0.18); }
 
+    /* Nuovo layout: box colore + etichetta sotto */
+    .swatch-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .swatch-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .swatch-box {
+      width: 100%;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.18);
+    }
+    .swatch-label {
+      color: #e6eef9;
+      font-weight: 700;
+      font-size: 0.85rem;
+      opacity: 0.95;
+    }
+
+    .apply-btn {
+      display: inline-block;
+      margin: 4px auto 0 auto;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.14);
+      color: #fff; font-weight: 800; cursor: pointer;
+    }
+    .apply-btn:hover { background: rgba(255,255,255,0.2); }
+
+    /* Sezioni editing manuale */
     .section {
       margin: 14px 16px; padding: 14px;
       border: 1px solid rgba(255,255,255,0.12);
@@ -1064,18 +1088,24 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
         <div class="preset-grid">
           ${this._presets.map(t=>F`
             <div class="preset-card">
-              <div class="preset-title">
-                <span>${t.name}</span>
-              </div>
-              <div class="swatch-row">
-                <div class="swatch" style="background:${t.preview.active}">
-                  <span class="label">Active</span>
+              <div class="preset-title">${t.name}</div>
+
+              <div class="swatch-grid">
+                <div class="swatch-col">
+                  <div class="swatch-box" style="background:${t.preview.active}"></div>
+                  <div class="swatch-label">Active</div>
                 </div>
-                <div class="swatch" style="background:${t.preview.inactive}">
-                  <span class="label">Inactive</span>
+                <div class="swatch-col">
+                  <div class="swatch-box" style="background:${t.preview.inactive}"></div>
+                  <div class="swatch-label">Inactive</div>
                 </div>
               </div>
-              <button class="apply-btn" @click=${()=>this._applyPreset(t.map)}>Applica preset</button>
+
+              <div style="text-align:center;">
+                <button class="apply-btn" @click=${()=>this._applyPreset(t.map)}>
+                  Applica preset
+                </button>
+              </div>
             </div>
           `)}
         </div>
