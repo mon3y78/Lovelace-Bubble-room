@@ -155,11 +155,12 @@ export class BubbleRoomEditor extends LitElement {
    * Reset centralizzati.
    * I pannelli inviano: detail { cmd:'reset', section: 'room'|'sensors'|'mushrooms'|'subbuttons'|'climate'|'camera' }
    */
+// dentro src/bubble-room-editor.js
   _onPanelCmd(e) {
     e.stopPropagation();
     const { cmd, section } = e.detail || {};
     if (cmd !== 'reset') return;
-
+    
     let next = this.config || {};
     switch (section) {
       case 'room':
@@ -176,13 +177,22 @@ export class BubbleRoomEditor extends LitElement {
         break;
       case 'climate':
         next = resetClimate(next);
+        // 🔁 se l'autodiscovery è attivo, rilancia l'autofill ORA
+        if (next?.auto_discovery_sections?.climate) {
+          next = maybeAutoDiscover(this.hass, next, 'auto_discovery_sections.climate', false);
+        }
         break;
       case 'camera':
         next = resetCamera(next);
+        // 🔁 se l'autodiscovery è attivo, rilancia l'autofill ORA
+        if (next?.auto_discovery_sections?.camera) {
+          next = maybeAutoDiscover(this.hass, next, 'auto_discovery_sections.camera', false);
+        }
         break;
       default:
         return; // sezione ignota, esci
     }
+    
     this._emitConfig(next);
   }
 
