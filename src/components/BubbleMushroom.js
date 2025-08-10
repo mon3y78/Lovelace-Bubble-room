@@ -197,13 +197,19 @@ export class BubbleMushroom extends LitElement {
     const contactY = (size / 2) + touchPad;
 
     // scale per elementi speciali
-    const cameraScale  = 0.75;            // #6
-    const climateScale = 0.75;            // #7
+    const cameraScale  = 0.75;            // camera
+    const climateScale = 0.75;            // climate
     const dCam = size * cameraScale;      // diametro camera
     const dCli = size * climateScale;     // diametro climate
 
-    // POSIZIONI 1..7
-    const positions = [
+    // === MARGINI FISSI DA CODICE (px)
+    const CAM_MX = 12;  // distanza dal bordo destro
+    const CAM_MY = 12;  // distanza dal bordo alto
+    const CLI_MX = 12;  // distanza dal bordo sinistro
+    const CLI_MY = 12;  // distanza dal bordo basso
+
+    // POSIZIONI GENERICHE (usate solo per entità “normali”)
+    const positionsGeneric = [
       // 1 — alto-sinistra, dentro lo sfondo
       { x: contactX, y: contactY },
 
@@ -218,38 +224,43 @@ export class BubbleMushroom extends LitElement {
 
       // 5 — arco basso, vicino all'inizio curvatura
       { x: cX + rArcX * Math.cos(+aFlat), y: cY + rArcY * Math.sin(+aFlat) },
-
-      // 6 — CAMERA → angolo alto-destra, DENTRO l’area (usa il suo diametro)
-      { x: width - (dCam / 2), y: (dCam / 2) },
-
-      // 7 — CLIMATE → angolo basso-sinistra, DENTRO l’area (usa il suo diametro)
-      { x: (dCli / 2) + touchPad, y: height - (dCli / 2) - touchPad },
     ];
 
+    // cursore locale per assegnare slot generici (si resetta a ogni render)
+    let genIdx = 0;
+
     return html`
-      ${this.entities.map((e, i) => {
-        // diametro per-ENTITÀ: camera (#6) e climate (#7) più piccoli
-        const d = (i === 5) ? dCam : (i === 6 ? dCli : size);
+      ${this.entities.map((e) => {
+        const isCam = e?.kind === 'camera';
+        const isCli = e?.kind === 'climate';
+
+        // diametro per-ENTITÀ: camera/climate più piccoli
+        const d = isCam ? dCam : (isCli ? dCli : size);
         const iconSize = d * 0.95;
 
-        const base = positions[i] ?? { x: cX, y: cY };
+        // base position: fissa per camera/climate, slot generico per le altre
+        let base;
+        if (isCam) {
+          base = { x: (width - (d / 2) - CAM_MX), y: ((d / 2) + CAM_MY) };            // alto-destra
+        } else if (isCli) {
+          base = { x: ((d / 2) + CLI_MX), y: (height - (d / 2) - CLI_MY) };           // basso-sinistra
+        } else {
+          base = positionsGeneric[Math.min(genIdx, positionsGeneric.length - 1)] ?? { x: cX, y: cY };
+          genIdx++;
+        }
 
-        // Se e.left/e.top sono definiti → posizione fissa.
-        // Accetta numeri (px) o stringhe (es. "20%").
-        const hasFixed = (e.left !== undefined) && (e.top !== undefined);
-        const leftVal = hasFixed
-          ? (typeof e.left === 'string' ? e.left : `${e.left}px`)
-          : `${(base.x + (e.dx ?? 0))}px`;
-        const topVal = hasFixed
-          ? (typeof e.top === 'string' ? e.top : `${e.top}px`)
-          : `${(base.y + (e.dy ?? 0))}px`;
+        // micro-shift solo per entità generiche; camera/climate ignorano dx/dy
+        const useDx = (isCam || isCli) ? 0 : (e.dx ?? 0);
+        const useDy = (isCam || isCli) ? 0 : (e.dy ?? 0);
+        const left = base.x + useDx;
+        const top  = base.y + useDy;
 
         return html`
           <div
             class="mushroom-entity"
             style="
-              left:${leftVal};
-              top:${topVal};
+              left:${left}px;
+              top:${top}px;
               width:${d}px;
               height:${d}px;
               color:${e.color};
