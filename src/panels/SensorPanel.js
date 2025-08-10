@@ -165,9 +165,14 @@ export class SensorPanel extends LitElement {
 
   render() {
     const autoDisc = this.config.auto_discovery_sections?.sensor ?? false;
-    const options  = Object.entries(SENSOR_TYPE_MAP).map(
-      ([type, info]) => ({ value: type, label: `${info.emoji} ${info.label}` })
-    );
+    const options = Object.entries(SENSOR_TYPE_MAP)
+      .filter(([type]) => type !== '_fallback')
+      .map(([type, info]) => {
+        const niceLabel = info.label ||
+          type.replace(/_/g, ' ')
+          .replace(/\b\w/g, c => c.toUpperCase());
+        return { value: type, label: `${info.emoji || ''} ${niceLabel}`.trim() };
+    });
 
     return html`
       <ha-expansion-panel
