@@ -220,25 +220,25 @@ export class BubbleRoom extends LitElement {
     }
   
     // 7) CLIMATE: lasciato com’è (non lo tocchiamo ora)
-    const clId = entities.climate?.entity;
-    if (clId && this.hass.states?.[clId]) {
-      const st = this.hass.states[clId];
+    // CLIMATE (fisso via kind:'climate')
+    const cliCfg = this._entities?.climate || {};
+    const cliId = cliCfg.entity;
+    if (cliId && this.hass.states?.[cliId]) {
+      const st = this.hass.states[cliId];
       const isActive =
-        st.state && st.state !== 'off' && st.state !== 'idle' ||
+        (st.state && st.state !== 'off' && st.state !== 'idle') ||
         (st.attributes?.hvac_action && st.attributes.hvac_action !== 'off');
-  
+      
       list.push({
         icon: cliCfg.icon || st.attributes.icon || resolveEntityIcon(cliId, this.hass) || 'mdi:thermostat',
         state: st.state,
         color: isActive ? activeCol : inactiveCol,
-        left: 12, // fisso in basso-sinistra
-        top: 'calc(100% - 12px - 36px)',
         dx: 0,
         dy: 0,
-        kind: 'climate',
         angle_deg: cliCfg.angle_deg,
         radius_factor: cliCfg.radius_factor,
         kind: 'climate',
+        entity_id: cliId,
       });
     }
   

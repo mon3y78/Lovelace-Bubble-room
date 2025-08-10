@@ -1,8 +1,8 @@
 // src/panels/ClimatePanel.js
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
-import { candidatesFor } from '../helpers/entity-filters.js'; // 👈 aggiunto
-import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // ← AGGIUNTA
+import { candidatesFor } from '../helpers/entity-filters.js'; // 👈 per autodiscovery area
+import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // 👈 auto-icona
 
 export class ClimatePanel extends LitElement {
   static properties = {
@@ -11,7 +11,7 @@ export class ClimatePanel extends LitElement {
     expanded: { type: Boolean },
     _entity:  { type: String, state: true },
     _icon:    { type: String, state: true },
-    _climateCandidates: { type: Array, state: true }, // 👈 aggiunto
+    _climateCandidates: { type: Array, state: true },
   };
 
   constructor() {
@@ -21,10 +21,10 @@ export class ClimatePanel extends LitElement {
     this.expanded = false;
     this._entity  = '';
     this._icon    = '';
-    this._climateCandidates = []; // 👈 aggiunto
+    this._climateCandidates = [];
   }
 
-  // --- helpers area/registry (stessi di CameraPanel) -------------------------
+  // --- helpers area/registry (come CameraPanel) ------------------------------
   _resolveAreaId() {
     const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
     if (typeof raw === 'string' && raw.startsWith('area_')) return raw;
@@ -49,12 +49,13 @@ export class ClimatePanel extends LitElement {
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
+      // sync flag di autodiscovery
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.climate');
 
       const ent = this.config?.entities?.climate?.entity || '';
       const ico = this.config?.entities?.climate?.icon   || '';
 
-      // AUTO-ICONA: se ho un'entità e l'icona è vuota → impostala
+      // auto-icona: se ho un'entità e l'icona è vuota → prova a impostarla
       if (ent && !ico) {
         const st = this.hass?.states?.[ent];
         const iconFromState = st?.attributes?.icon;
@@ -67,12 +68,12 @@ export class ClimatePanel extends LitElement {
       this._entity = ent;
       this._icon   = this.config?.entities?.climate?.icon || '';
 
-      // 👇 Candidati con filtro area "duro" (come per Camera)
+      // candidati con filtro area (come Camera)
       const autoDisc = this.config?.auto_discovery_sections?.climate ?? false;
       if (autoDisc) {
         const areaId = this._resolveAreaId();
 
-        // usa i candidati mushroom e tieni solo climate.*
+        // prendi candidati "mushroom" e filtra solo climate.*
         const all = candidatesFor(this.hass, this.config, 'mushroom') || [];
         const climatesAll = all.filter(id => id.startsWith('climate.'));
 
