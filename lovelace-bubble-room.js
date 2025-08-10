@@ -8,19 +8,19 @@ const t=window,e=t.ShadowRoot&&(void 0===t.ShadyCSS||t.ShadyCSS.nativeShadow)&&"
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */var r;const l=window,c=l.trustedTypes,d=c?c.emptyScript:"",h=l.reactiveElementPolyfillSupport,p={toAttribute(t,e){switch(e){case Boolean:t=t?d:null;break;case Object:case Array:t=null==t?t:JSON.stringify(t)}return t},fromAttribute(t,e){let i=t;switch(e){case Boolean:i=null!==t;break;case Number:i=null===t?null:Number(t);break;case Object:case Array:try{i=JSON.parse(t)}catch(t){i=null}}return i}},u=(t,e)=>e!==t&&(e==e||t==t),b={attribute:!0,type:String,converter:p,reflect:!1,hasChanged:u},g="finalized";class m extends HTMLElement{constructor(){super(),this._$Ei=new Map,this.isUpdatePending=!1,this.hasUpdated=!1,this._$El=null,this._$Eu()}static addInitializer(t){var e;this.finalize(),(null!==(e=this.h)&&void 0!==e?e:this.h=[]).push(t)}static get observedAttributes(){this.finalize();const t=[];return this.elementProperties.forEach((e,i)=>{const s=this._$Ep(i,e);void 0!==s&&(this._$Ev.set(s,i),t.push(s))}),t}static createProperty(t,e=b){if(e.state&&(e.attribute=!1),this.finalize(),this.elementProperties.set(t,e),!e.noAccessor&&!this.prototype.hasOwnProperty(t)){const i="symbol"==typeof t?Symbol():"__"+t,s=this.getPropertyDescriptor(t,i,e);void 0!==s&&Object.defineProperty(this.prototype,t,s)}}static getPropertyDescriptor(t,e,i){return{get(){return this[e]},set(s){const o=this[t];this[e]=s,this.requestUpdate(t,o,i)},configurable:!0,enumerable:!0}}static getPropertyOptions(t){return this.elementProperties.get(t)||b}static finalize(){if(this.hasOwnProperty(g))return!1;this[g]=!0;const t=Object.getPrototypeOf(this);if(t.finalize(),void 0!==t.h&&(this.h=[...t.h]),this.elementProperties=new Map(t.elementProperties),this._$Ev=new Map,this.hasOwnProperty("properties")){const t=this.properties,e=[...Object.getOwnPropertyNames(t),...Object.getOwnPropertySymbols(t)];for(const i of e)this.createProperty(i,t[i])}return this.elementStyles=this.finalizeStyles(this.styles),!0}static finalizeStyles(t){const e=[];if(Array.isArray(t)){const i=new Set(t.flat(1/0).reverse());for(const t of i)e.unshift(a(t))}else void 0!==t&&e.push(a(t));return e}static _$Ep(t,e){const i=e.attribute;return!1===i?void 0:"string"==typeof i?i:"string"==typeof t?t.toLowerCase():void 0}_$Eu(){var t;this._$E_=new Promise(t=>this.enableUpdating=t),this._$AL=new Map,this._$Eg(),this.requestUpdate(),null===(t=this.constructor.h)||void 0===t||t.forEach(t=>t(this))}addController(t){var e,i;(null!==(e=this._$ES)&&void 0!==e?e:this._$ES=[]).push(t),void 0!==this.renderRoot&&this.isConnected&&(null===(i=t.hostConnected)||void 0===i||i.call(t))}removeController(t){var e;null===(e=this._$ES)||void 0===e||e.splice(this._$ES.indexOf(t)>>>0,1)}_$Eg(){this.constructor.elementProperties.forEach((t,e)=>{this.hasOwnProperty(e)&&(this._$Ei.set(e,this[e]),delete this[e])})}createRenderRoot(){var i;const s=null!==(i=this.shadowRoot)&&void 0!==i?i:this.attachShadow(this.constructor.shadowRootOptions);return((i,s)=>{e?i.adoptedStyleSheets=s.map(t=>t instanceof CSSStyleSheet?t:t.styleSheet):s.forEach(e=>{const s=document.createElement("style"),o=t.litNonce;void 0!==o&&s.setAttribute("nonce",o),s.textContent=e.cssText,i.appendChild(s)})})(s,this.constructor.elementStyles),s}connectedCallback(){var t;void 0===this.renderRoot&&(this.renderRoot=this.createRenderRoot()),this.enableUpdating(!0),null===(t=this._$ES)||void 0===t||t.forEach(t=>{var e;return null===(e=t.hostConnected)||void 0===e?void 0:e.call(t)})}enableUpdating(t){}disconnectedCallback(){var t;null===(t=this._$ES)||void 0===t||t.forEach(t=>{var e;return null===(e=t.hostDisconnected)||void 0===e?void 0:e.call(t)})}attributeChangedCallback(t,e,i){this._$AK(t,i)}_$EO(t,e,i=b){var s;const o=this.constructor._$Ep(t,i);if(void 0!==o&&!0===i.reflect){const n=(void 0!==(null===(s=i.converter)||void 0===s?void 0:s.toAttribute)?i.converter:p).toAttribute(e,i.type);this._$El=t,null==n?this.removeAttribute(o):this.setAttribute(o,n),this._$El=null}}_$AK(t,e){var i;const s=this.constructor,o=s._$Ev.get(t);if(void 0!==o&&this._$El!==o){const t=s.getPropertyOptions(o),n="function"==typeof t.converter?{fromAttribute:t.converter}:void 0!==(null===(i=t.converter)||void 0===i?void 0:i.fromAttribute)?t.converter:p;this._$El=o,this[o]=n.fromAttribute(e,t.type),this._$El=null}}requestUpdate(t,e,i){let s=!0;void 0!==t&&(((i=i||this.constructor.getPropertyOptions(t)).hasChanged||u)(this[t],e)?(this._$AL.has(t)||this._$AL.set(t,e),!0===i.reflect&&this._$El!==t&&(void 0===this._$EC&&(this._$EC=new Map),this._$EC.set(t,i))):s=!1),!this.isUpdatePending&&s&&(this._$E_=this._$Ej())}async _$Ej(){this.isUpdatePending=!0;try{await this._$E_}catch(t){Promise.reject(t)}const t=this.scheduleUpdate();return null!=t&&await t,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){var t;if(!this.isUpdatePending)return;this.hasUpdated,this._$Ei&&(this._$Ei.forEach((t,e)=>this[e]=t),this._$Ei=void 0);let e=!1;const i=this._$AL;try{e=this.shouldUpdate(i),e?(this.willUpdate(i),null===(t=this._$ES)||void 0===t||t.forEach(t=>{var e;return null===(e=t.hostUpdate)||void 0===e?void 0:e.call(t)}),this.update(i)):this._$Ek()}catch(t){throw e=!1,this._$Ek(),t}e&&this._$AE(i)}willUpdate(t){}_$AE(t){var e;null===(e=this._$ES)||void 0===e||e.forEach(t=>{var e;return null===(e=t.hostUpdated)||void 0===e?void 0:e.call(t)}),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(t)),this.updated(t)}_$Ek(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$E_}shouldUpdate(t){return!0}update(t){void 0!==this._$EC&&(this._$EC.forEach((t,e)=>this._$EO(e,this[e],t)),this._$EC=void 0),this._$Ek()}updated(t){}firstUpdated(t){}}
+ */var r;const l=window,c=l.trustedTypes,d=c?c.emptyScript:"",h=l.reactiveElementPolyfillSupport,p={toAttribute(t,e){switch(e){case Boolean:t=t?d:null;break;case Object:case Array:t=null==t?t:JSON.stringify(t)}return t},fromAttribute(t,e){let i=t;switch(e){case Boolean:i=null!==t;break;case Number:i=null===t?null:Number(t);break;case Object:case Array:try{i=JSON.parse(t)}catch(t){i=null}}return i}},u=(t,e)=>e!==t&&(e==e||t==t),g={attribute:!0,type:String,converter:p,reflect:!1,hasChanged:u},b="finalized";class m extends HTMLElement{constructor(){super(),this._$Ei=new Map,this.isUpdatePending=!1,this.hasUpdated=!1,this._$El=null,this._$Eu()}static addInitializer(t){var e;this.finalize(),(null!==(e=this.h)&&void 0!==e?e:this.h=[]).push(t)}static get observedAttributes(){this.finalize();const t=[];return this.elementProperties.forEach((e,i)=>{const s=this._$Ep(i,e);void 0!==s&&(this._$Ev.set(s,i),t.push(s))}),t}static createProperty(t,e=g){if(e.state&&(e.attribute=!1),this.finalize(),this.elementProperties.set(t,e),!e.noAccessor&&!this.prototype.hasOwnProperty(t)){const i="symbol"==typeof t?Symbol():"__"+t,s=this.getPropertyDescriptor(t,i,e);void 0!==s&&Object.defineProperty(this.prototype,t,s)}}static getPropertyDescriptor(t,e,i){return{get(){return this[e]},set(s){const o=this[t];this[e]=s,this.requestUpdate(t,o,i)},configurable:!0,enumerable:!0}}static getPropertyOptions(t){return this.elementProperties.get(t)||g}static finalize(){if(this.hasOwnProperty(b))return!1;this[b]=!0;const t=Object.getPrototypeOf(this);if(t.finalize(),void 0!==t.h&&(this.h=[...t.h]),this.elementProperties=new Map(t.elementProperties),this._$Ev=new Map,this.hasOwnProperty("properties")){const t=this.properties,e=[...Object.getOwnPropertyNames(t),...Object.getOwnPropertySymbols(t)];for(const i of e)this.createProperty(i,t[i])}return this.elementStyles=this.finalizeStyles(this.styles),!0}static finalizeStyles(t){const e=[];if(Array.isArray(t)){const i=new Set(t.flat(1/0).reverse());for(const t of i)e.unshift(a(t))}else void 0!==t&&e.push(a(t));return e}static _$Ep(t,e){const i=e.attribute;return!1===i?void 0:"string"==typeof i?i:"string"==typeof t?t.toLowerCase():void 0}_$Eu(){var t;this._$E_=new Promise(t=>this.enableUpdating=t),this._$AL=new Map,this._$Eg(),this.requestUpdate(),null===(t=this.constructor.h)||void 0===t||t.forEach(t=>t(this))}addController(t){var e,i;(null!==(e=this._$ES)&&void 0!==e?e:this._$ES=[]).push(t),void 0!==this.renderRoot&&this.isConnected&&(null===(i=t.hostConnected)||void 0===i||i.call(t))}removeController(t){var e;null===(e=this._$ES)||void 0===e||e.splice(this._$ES.indexOf(t)>>>0,1)}_$Eg(){this.constructor.elementProperties.forEach((t,e)=>{this.hasOwnProperty(e)&&(this._$Ei.set(e,this[e]),delete this[e])})}createRenderRoot(){var i;const s=null!==(i=this.shadowRoot)&&void 0!==i?i:this.attachShadow(this.constructor.shadowRootOptions);return((i,s)=>{e?i.adoptedStyleSheets=s.map(t=>t instanceof CSSStyleSheet?t:t.styleSheet):s.forEach(e=>{const s=document.createElement("style"),o=t.litNonce;void 0!==o&&s.setAttribute("nonce",o),s.textContent=e.cssText,i.appendChild(s)})})(s,this.constructor.elementStyles),s}connectedCallback(){var t;void 0===this.renderRoot&&(this.renderRoot=this.createRenderRoot()),this.enableUpdating(!0),null===(t=this._$ES)||void 0===t||t.forEach(t=>{var e;return null===(e=t.hostConnected)||void 0===e?void 0:e.call(t)})}enableUpdating(t){}disconnectedCallback(){var t;null===(t=this._$ES)||void 0===t||t.forEach(t=>{var e;return null===(e=t.hostDisconnected)||void 0===e?void 0:e.call(t)})}attributeChangedCallback(t,e,i){this._$AK(t,i)}_$EO(t,e,i=g){var s;const o=this.constructor._$Ep(t,i);if(void 0!==o&&!0===i.reflect){const n=(void 0!==(null===(s=i.converter)||void 0===s?void 0:s.toAttribute)?i.converter:p).toAttribute(e,i.type);this._$El=t,null==n?this.removeAttribute(o):this.setAttribute(o,n),this._$El=null}}_$AK(t,e){var i;const s=this.constructor,o=s._$Ev.get(t);if(void 0!==o&&this._$El!==o){const t=s.getPropertyOptions(o),n="function"==typeof t.converter?{fromAttribute:t.converter}:void 0!==(null===(i=t.converter)||void 0===i?void 0:i.fromAttribute)?t.converter:p;this._$El=o,this[o]=n.fromAttribute(e,t.type),this._$El=null}}requestUpdate(t,e,i){let s=!0;void 0!==t&&(((i=i||this.constructor.getPropertyOptions(t)).hasChanged||u)(this[t],e)?(this._$AL.has(t)||this._$AL.set(t,e),!0===i.reflect&&this._$El!==t&&(void 0===this._$EC&&(this._$EC=new Map),this._$EC.set(t,i))):s=!1),!this.isUpdatePending&&s&&(this._$E_=this._$Ej())}async _$Ej(){this.isUpdatePending=!0;try{await this._$E_}catch(t){Promise.reject(t)}const t=this.scheduleUpdate();return null!=t&&await t,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){var t;if(!this.isUpdatePending)return;this.hasUpdated,this._$Ei&&(this._$Ei.forEach((t,e)=>this[e]=t),this._$Ei=void 0);let e=!1;const i=this._$AL;try{e=this.shouldUpdate(i),e?(this.willUpdate(i),null===(t=this._$ES)||void 0===t||t.forEach(t=>{var e;return null===(e=t.hostUpdate)||void 0===e?void 0:e.call(t)}),this.update(i)):this._$Ek()}catch(t){throw e=!1,this._$Ek(),t}e&&this._$AE(i)}willUpdate(t){}_$AE(t){var e;null===(e=this._$ES)||void 0===e||e.forEach(t=>{var e;return null===(e=t.hostUpdated)||void 0===e?void 0:e.call(t)}),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(t)),this.updated(t)}_$Ek(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$E_}shouldUpdate(t){return!0}update(t){void 0!==this._$EC&&(this._$EC.forEach((t,e)=>this._$EO(e,this[e],t)),this._$EC=void 0),this._$Ek()}updated(t){}firstUpdated(t){}}
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-var f;m[g]=!0,m.elementProperties=new Map,m.elementStyles=[],m.shadowRootOptions={mode:"open"},null==h||h({ReactiveElement:m}),(null!==(r=l.reactiveElementVersions)&&void 0!==r?r:l.reactiveElementVersions=[]).push("1.6.3");const _=window,v=_.trustedTypes,x=v?v.createPolicy("lit-html",{createHTML:t=>t}):void 0,y="$lit$",$=`lit$${(Math.random()+"").slice(9)}$`,w="?"+$,k=`<${w}>`,A=document,C=()=>A.createComment(""),S=t=>null===t||"object"!=typeof t&&"function"!=typeof t,E=Array.isArray,P="[ \t\n\f\r]",z=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,O=/-->/g,j=/>/g,R=RegExp(`>|${P}(?:([^\\s"'>=/]+)(${P}*=${P}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),T=/'/g,F=/"/g,I=/^(?:script|style|textarea|title)$/i,M=(t=>(e,...i)=>({_$litType$:t,strings:e,values:i}))(1),U=Symbol.for("lit-noChange"),N=Symbol.for("lit-nothing"),B=new WeakMap,H=A.createTreeWalker(A,129,null,!1);function L(t,e){if(!Array.isArray(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==x?x.createHTML(e):e}const W=(t,e)=>{const i=t.length-1,s=[];let o,n=2===e?"<svg>":"",a=z;for(let e=0;e<i;e++){const i=t[e];let r,l,c=-1,d=0;for(;d<i.length&&(a.lastIndex=d,l=a.exec(i),null!==l);)d=a.lastIndex,a===z?"!--"===l[1]?a=O:void 0!==l[1]?a=j:void 0!==l[2]?(I.test(l[2])&&(o=RegExp("</"+l[2],"g")),a=R):void 0!==l[3]&&(a=R):a===R?">"===l[0]?(a=null!=o?o:z,c=-1):void 0===l[1]?c=-2:(c=a.lastIndex-l[2].length,r=l[1],a=void 0===l[3]?R:'"'===l[3]?F:T):a===F||a===T?a=R:a===O||a===j?a=z:(a=R,o=void 0);const h=a===R&&t[e+1].startsWith("/>")?" ":"";n+=a===z?i+k:c>=0?(s.push(r),i.slice(0,c)+y+i.slice(c)+$+h):i+$+(-2===c?(s.push(void 0),e):h)}return[L(t,n+(t[i]||"<?>")+(2===e?"</svg>":"")),s]};class D{constructor({strings:t,_$litType$:e},i){let s;this.parts=[];let o=0,n=0;const a=t.length-1,r=this.parts,[l,c]=W(t,e);if(this.el=D.createElement(l,i),H.currentNode=this.el.content,2===e){const t=this.el.content,e=t.firstChild;e.remove(),t.append(...e.childNodes)}for(;null!==(s=H.nextNode())&&r.length<a;){if(1===s.nodeType){if(s.hasAttributes()){const t=[];for(const e of s.getAttributeNames())if(e.endsWith(y)||e.startsWith($)){const i=c[n++];if(t.push(e),void 0!==i){const t=s.getAttribute(i.toLowerCase()+y).split($),e=/([.?@])?(.*)/.exec(i);r.push({type:1,index:o,name:e[2],strings:t,ctor:"."===e[1]?G:"?"===e[1]?Z:"@"===e[1]?X:Y})}else r.push({type:6,index:o})}for(const e of t)s.removeAttribute(e)}if(I.test(s.tagName)){const t=s.textContent.split($),e=t.length-1;if(e>0){s.textContent=v?v.emptyScript:"";for(let i=0;i<e;i++)s.append(t[i],C()),H.nextNode(),r.push({type:2,index:++o});s.append(t[e],C())}}}else if(8===s.nodeType)if(s.data===w)r.push({type:2,index:o});else{let t=-1;for(;-1!==(t=s.data.indexOf($,t+1));)r.push({type:7,index:o}),t+=$.length-1}o++}}static createElement(t,e){const i=A.createElement("template");return i.innerHTML=t,i}}function V(t,e,i=t,s){var o,n,a,r;if(e===U)return e;let l=void 0!==s?null===(o=i._$Co)||void 0===o?void 0:o[s]:i._$Cl;const c=S(e)?void 0:e._$litDirective$;return(null==l?void 0:l.constructor)!==c&&(null===(n=null==l?void 0:l._$AO)||void 0===n||n.call(l,!1),void 0===c?l=void 0:(l=new c(t),l._$AT(t,i,s)),void 0!==s?(null!==(a=(r=i)._$Co)&&void 0!==a?a:r._$Co=[])[s]=l:i._$Cl=l),void 0!==l&&(e=V(t,l._$AS(t,e.values),l,s)),e}class q{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){var e;const{el:{content:i},parts:s}=this._$AD,o=(null!==(e=null==t?void 0:t.creationScope)&&void 0!==e?e:A).importNode(i,!0);H.currentNode=o;let n=H.nextNode(),a=0,r=0,l=s[0];for(;void 0!==l;){if(a===l.index){let e;2===l.type?e=new J(n,n.nextSibling,this,t):1===l.type?e=new l.ctor(n,l.name,l.strings,this,t):6===l.type&&(e=new Q(n,this,t)),this._$AV.push(e),l=s[++r]}a!==(null==l?void 0:l.index)&&(n=H.nextNode(),a++)}return H.currentNode=A,o}v(t){let e=0;for(const i of this._$AV)void 0!==i&&(void 0!==i.strings?(i._$AI(t,i,e),e+=i.strings.length-2):i._$AI(t[e])),e++}}class J{constructor(t,e,i,s){var o;this.type=2,this._$AH=N,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=i,this.options=s,this._$Cp=null===(o=null==s?void 0:s.isConnected)||void 0===o||o}get _$AU(){var t,e;return null!==(e=null===(t=this._$AM)||void 0===t?void 0:t._$AU)&&void 0!==e?e:this._$Cp}get parentNode(){let t=this._$AA.parentNode;const e=this._$AM;return void 0!==e&&11===(null==t?void 0:t.nodeType)&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=V(this,t,e),S(t)?t===N||null==t||""===t?(this._$AH!==N&&this._$AR(),this._$AH=N):t!==this._$AH&&t!==U&&this._(t):void 0!==t._$litType$?this.g(t):void 0!==t.nodeType?this.$(t):(t=>E(t)||"function"==typeof(null==t?void 0:t[Symbol.iterator]))(t)?this.T(t):this._(t)}k(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}$(t){this._$AH!==t&&(this._$AR(),this._$AH=this.k(t))}_(t){this._$AH!==N&&S(this._$AH)?this._$AA.nextSibling.data=t:this.$(A.createTextNode(t)),this._$AH=t}g(t){var e;const{values:i,_$litType$:s}=t,o="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=D.createElement(L(s.h,s.h[0]),this.options)),s);if((null===(e=this._$AH)||void 0===e?void 0:e._$AD)===o)this._$AH.v(i);else{const t=new q(o,this),e=t.u(this.options);t.v(i),this.$(e),this._$AH=t}}_$AC(t){let e=B.get(t.strings);return void 0===e&&B.set(t.strings,e=new D(t)),e}T(t){E(this._$AH)||(this._$AH=[],this._$AR());const e=this._$AH;let i,s=0;for(const o of t)s===e.length?e.push(i=new J(this.k(C()),this.k(C()),this,this.options)):i=e[s],i._$AI(o),s++;s<e.length&&(this._$AR(i&&i._$AB.nextSibling,s),e.length=s)}_$AR(t=this._$AA.nextSibling,e){var i;for(null===(i=this._$AP)||void 0===i||i.call(this,!1,!0,e);t&&t!==this._$AB;){const e=t.nextSibling;t.remove(),t=e}}setConnected(t){var e;void 0===this._$AM&&(this._$Cp=t,null===(e=this._$AP)||void 0===e||e.call(this,t))}}class Y{constructor(t,e,i,s,o){this.type=1,this._$AH=N,this._$AN=void 0,this.element=t,this.name=e,this._$AM=s,this.options=o,i.length>2||""!==i[0]||""!==i[1]?(this._$AH=Array(i.length-1).fill(new String),this.strings=i):this._$AH=N}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(t,e=this,i,s){const o=this.strings;let n=!1;if(void 0===o)t=V(this,t,e,0),n=!S(t)||t!==this._$AH&&t!==U,n&&(this._$AH=t);else{const s=t;let a,r;for(t=o[0],a=0;a<o.length-1;a++)r=V(this,s[i+a],e,a),r===U&&(r=this._$AH[a]),n||(n=!S(r)||r!==this._$AH[a]),r===N?t=N:t!==N&&(t+=(null!=r?r:"")+o[a+1]),this._$AH[a]=r}n&&!s&&this.j(t)}j(t){t===N?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=t?t:"")}}class G extends Y{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===N?void 0:t}}const K=v?v.emptyScript:"";class Z extends Y{constructor(){super(...arguments),this.type=4}j(t){t&&t!==N?this.element.setAttribute(this.name,K):this.element.removeAttribute(this.name)}}class X extends Y{constructor(t,e,i,s,o){super(t,e,i,s,o),this.type=5}_$AI(t,e=this){var i;if((t=null!==(i=V(this,t,e,0))&&void 0!==i?i:N)===U)return;const s=this._$AH,o=t===N&&s!==N||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,n=t!==N&&(s===N||o);o&&this.element.removeEventListener(this.name,this,s),n&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){var e,i;"function"==typeof this._$AH?this._$AH.call(null!==(i=null===(e=this.options)||void 0===e?void 0:e.host)&&void 0!==i?i:this.element,t):this._$AH.handleEvent(t)}}class Q{constructor(t,e,i){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=i}get _$AU(){return this._$AM._$AU}_$AI(t){V(this,t)}}const tt=_.litHtmlPolyfillSupport;null==tt||tt(D,J),(null!==(f=_.litHtmlVersions)&&void 0!==f?f:_.litHtmlVersions=[]).push("2.8.0");
+var f;m[b]=!0,m.elementProperties=new Map,m.elementStyles=[],m.shadowRootOptions={mode:"open"},null==h||h({ReactiveElement:m}),(null!==(r=l.reactiveElementVersions)&&void 0!==r?r:l.reactiveElementVersions=[]).push("1.6.3");const _=window,v=_.trustedTypes,x=v?v.createPolicy("lit-html",{createHTML:t=>t}):void 0,y="$lit$",$=`lit$${(Math.random()+"").slice(9)}$`,w="?"+$,k=`<${w}>`,A=document,C=()=>A.createComment(""),S=t=>null===t||"object"!=typeof t&&"function"!=typeof t,E=Array.isArray,P="[ \t\n\f\r]",z=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,O=/-->/g,j=/>/g,M=RegExp(`>|${P}(?:([^\\s"'>=/]+)(${P}*=${P}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),R=/'/g,T=/"/g,F=/^(?:script|style|textarea|title)$/i,I=(t=>(e,...i)=>({_$litType$:t,strings:e,values:i}))(1),U=Symbol.for("lit-noChange"),N=Symbol.for("lit-nothing"),B=new WeakMap,H=A.createTreeWalker(A,129,null,!1);function L(t,e){if(!Array.isArray(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==x?x.createHTML(e):e}const W=(t,e)=>{const i=t.length-1,s=[];let o,n=2===e?"<svg>":"",a=z;for(let e=0;e<i;e++){const i=t[e];let r,l,c=-1,d=0;for(;d<i.length&&(a.lastIndex=d,l=a.exec(i),null!==l);)d=a.lastIndex,a===z?"!--"===l[1]?a=O:void 0!==l[1]?a=j:void 0!==l[2]?(F.test(l[2])&&(o=RegExp("</"+l[2],"g")),a=M):void 0!==l[3]&&(a=M):a===M?">"===l[0]?(a=null!=o?o:z,c=-1):void 0===l[1]?c=-2:(c=a.lastIndex-l[2].length,r=l[1],a=void 0===l[3]?M:'"'===l[3]?T:R):a===T||a===R?a=M:a===O||a===j?a=z:(a=M,o=void 0);const h=a===M&&t[e+1].startsWith("/>")?" ":"";n+=a===z?i+k:c>=0?(s.push(r),i.slice(0,c)+y+i.slice(c)+$+h):i+$+(-2===c?(s.push(void 0),e):h)}return[L(t,n+(t[i]||"<?>")+(2===e?"</svg>":"")),s]};class D{constructor({strings:t,_$litType$:e},i){let s;this.parts=[];let o=0,n=0;const a=t.length-1,r=this.parts,[l,c]=W(t,e);if(this.el=D.createElement(l,i),H.currentNode=this.el.content,2===e){const t=this.el.content,e=t.firstChild;e.remove(),t.append(...e.childNodes)}for(;null!==(s=H.nextNode())&&r.length<a;){if(1===s.nodeType){if(s.hasAttributes()){const t=[];for(const e of s.getAttributeNames())if(e.endsWith(y)||e.startsWith($)){const i=c[n++];if(t.push(e),void 0!==i){const t=s.getAttribute(i.toLowerCase()+y).split($),e=/([.?@])?(.*)/.exec(i);r.push({type:1,index:o,name:e[2],strings:t,ctor:"."===e[1]?G:"?"===e[1]?Z:"@"===e[1]?X:Y})}else r.push({type:6,index:o})}for(const e of t)s.removeAttribute(e)}if(F.test(s.tagName)){const t=s.textContent.split($),e=t.length-1;if(e>0){s.textContent=v?v.emptyScript:"";for(let i=0;i<e;i++)s.append(t[i],C()),H.nextNode(),r.push({type:2,index:++o});s.append(t[e],C())}}}else if(8===s.nodeType)if(s.data===w)r.push({type:2,index:o});else{let t=-1;for(;-1!==(t=s.data.indexOf($,t+1));)r.push({type:7,index:o}),t+=$.length-1}o++}}static createElement(t,e){const i=A.createElement("template");return i.innerHTML=t,i}}function V(t,e,i=t,s){var o,n,a,r;if(e===U)return e;let l=void 0!==s?null===(o=i._$Co)||void 0===o?void 0:o[s]:i._$Cl;const c=S(e)?void 0:e._$litDirective$;return(null==l?void 0:l.constructor)!==c&&(null===(n=null==l?void 0:l._$AO)||void 0===n||n.call(l,!1),void 0===c?l=void 0:(l=new c(t),l._$AT(t,i,s)),void 0!==s?(null!==(a=(r=i)._$Co)&&void 0!==a?a:r._$Co=[])[s]=l:i._$Cl=l),void 0!==l&&(e=V(t,l._$AS(t,e.values),l,s)),e}class q{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){var e;const{el:{content:i},parts:s}=this._$AD,o=(null!==(e=null==t?void 0:t.creationScope)&&void 0!==e?e:A).importNode(i,!0);H.currentNode=o;let n=H.nextNode(),a=0,r=0,l=s[0];for(;void 0!==l;){if(a===l.index){let e;2===l.type?e=new J(n,n.nextSibling,this,t):1===l.type?e=new l.ctor(n,l.name,l.strings,this,t):6===l.type&&(e=new Q(n,this,t)),this._$AV.push(e),l=s[++r]}a!==(null==l?void 0:l.index)&&(n=H.nextNode(),a++)}return H.currentNode=A,o}v(t){let e=0;for(const i of this._$AV)void 0!==i&&(void 0!==i.strings?(i._$AI(t,i,e),e+=i.strings.length-2):i._$AI(t[e])),e++}}class J{constructor(t,e,i,s){var o;this.type=2,this._$AH=N,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=i,this.options=s,this._$Cp=null===(o=null==s?void 0:s.isConnected)||void 0===o||o}get _$AU(){var t,e;return null!==(e=null===(t=this._$AM)||void 0===t?void 0:t._$AU)&&void 0!==e?e:this._$Cp}get parentNode(){let t=this._$AA.parentNode;const e=this._$AM;return void 0!==e&&11===(null==t?void 0:t.nodeType)&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=V(this,t,e),S(t)?t===N||null==t||""===t?(this._$AH!==N&&this._$AR(),this._$AH=N):t!==this._$AH&&t!==U&&this._(t):void 0!==t._$litType$?this.g(t):void 0!==t.nodeType?this.$(t):(t=>E(t)||"function"==typeof(null==t?void 0:t[Symbol.iterator]))(t)?this.T(t):this._(t)}k(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}$(t){this._$AH!==t&&(this._$AR(),this._$AH=this.k(t))}_(t){this._$AH!==N&&S(this._$AH)?this._$AA.nextSibling.data=t:this.$(A.createTextNode(t)),this._$AH=t}g(t){var e;const{values:i,_$litType$:s}=t,o="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=D.createElement(L(s.h,s.h[0]),this.options)),s);if((null===(e=this._$AH)||void 0===e?void 0:e._$AD)===o)this._$AH.v(i);else{const t=new q(o,this),e=t.u(this.options);t.v(i),this.$(e),this._$AH=t}}_$AC(t){let e=B.get(t.strings);return void 0===e&&B.set(t.strings,e=new D(t)),e}T(t){E(this._$AH)||(this._$AH=[],this._$AR());const e=this._$AH;let i,s=0;for(const o of t)s===e.length?e.push(i=new J(this.k(C()),this.k(C()),this,this.options)):i=e[s],i._$AI(o),s++;s<e.length&&(this._$AR(i&&i._$AB.nextSibling,s),e.length=s)}_$AR(t=this._$AA.nextSibling,e){var i;for(null===(i=this._$AP)||void 0===i||i.call(this,!1,!0,e);t&&t!==this._$AB;){const e=t.nextSibling;t.remove(),t=e}}setConnected(t){var e;void 0===this._$AM&&(this._$Cp=t,null===(e=this._$AP)||void 0===e||e.call(this,t))}}class Y{constructor(t,e,i,s,o){this.type=1,this._$AH=N,this._$AN=void 0,this.element=t,this.name=e,this._$AM=s,this.options=o,i.length>2||""!==i[0]||""!==i[1]?(this._$AH=Array(i.length-1).fill(new String),this.strings=i):this._$AH=N}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(t,e=this,i,s){const o=this.strings;let n=!1;if(void 0===o)t=V(this,t,e,0),n=!S(t)||t!==this._$AH&&t!==U,n&&(this._$AH=t);else{const s=t;let a,r;for(t=o[0],a=0;a<o.length-1;a++)r=V(this,s[i+a],e,a),r===U&&(r=this._$AH[a]),n||(n=!S(r)||r!==this._$AH[a]),r===N?t=N:t!==N&&(t+=(null!=r?r:"")+o[a+1]),this._$AH[a]=r}n&&!s&&this.j(t)}j(t){t===N?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=t?t:"")}}class G extends Y{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===N?void 0:t}}const K=v?v.emptyScript:"";class Z extends Y{constructor(){super(...arguments),this.type=4}j(t){t&&t!==N?this.element.setAttribute(this.name,K):this.element.removeAttribute(this.name)}}class X extends Y{constructor(t,e,i,s,o){super(t,e,i,s,o),this.type=5}_$AI(t,e=this){var i;if((t=null!==(i=V(this,t,e,0))&&void 0!==i?i:N)===U)return;const s=this._$AH,o=t===N&&s!==N||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,n=t!==N&&(s===N||o);o&&this.element.removeEventListener(this.name,this,s),n&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){var e,i;"function"==typeof this._$AH?this._$AH.call(null!==(i=null===(e=this.options)||void 0===e?void 0:e.host)&&void 0!==i?i:this.element,t):this._$AH.handleEvent(t)}}class Q{constructor(t,e,i){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=i}get _$AU(){return this._$AM._$AU}_$AI(t){V(this,t)}}const tt=_.litHtmlPolyfillSupport;null==tt||tt(D,J),(null!==(f=_.litHtmlVersions)&&void 0!==f?f:_.litHtmlVersions=[]).push("2.8.0");
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-var et,it;class st extends m{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){var t,e;const i=super.createRenderRoot();return null!==(t=(e=this.renderOptions).renderBefore)&&void 0!==t||(e.renderBefore=i.firstChild),i}update(t){const e=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=((t,e,i)=>{var s,o;const n=null!==(s=null==i?void 0:i.renderBefore)&&void 0!==s?s:e;let a=n._$litPart$;if(void 0===a){const t=null!==(o=null==i?void 0:i.renderBefore)&&void 0!==o?o:null;n._$litPart$=a=new J(e.insertBefore(C(),t),t,void 0,null!=i?i:{})}return a._$AI(t),a})(e,this.renderRoot,this.renderOptions)}connectedCallback(){var t;super.connectedCallback(),null===(t=this._$Do)||void 0===t||t.setConnected(!0)}disconnectedCallback(){var t;super.disconnectedCallback(),null===(t=this._$Do)||void 0===t||t.setConnected(!1)}render(){return U}}st.finalized=!0,st._$litElement$=!0,null===(et=globalThis.litElementHydrateSupport)||void 0===et||et.call(globalThis,{LitElement:st});const ot=globalThis.litElementPolyfillSupport;null==ot||ot({LitElement:st}),(null!==(it=globalThis.litElementVersions)&&void 0!==it?it:globalThis.litElementVersions=[]).push("3.3.3");const nt={alarm_control_panel:"Allarmi",binary_sensor:"Sensori Binari",camera:"Telecamere",climate:"Clima",cover:"Tapparelle",fan:"Ventola",light:"Luce",lock:"Serratura",media_player:"Media Player",scene:"Scene",script:"Script",siren:"Sirena",vacuum:"Aspirapolvere",motion:"Movimento",occupancy:"Occupazione",presence:"Presenza",switch:"Pulsante"},at=["alarm_control_panel","binary_sensor","camera","climate","cover","fan","light","lock","media_player","scene","script","siren","switch","vacuum"],rt=(t=[])=>({includeDomains:at,entityFilter:(e,i)=>{if(!t.length)return!1;const[s]=e.split(".");if("binary_sensor"===s){const s=i.states[e]?.attributes?.device_class??"";return t.includes(s)}return t.includes(s)}}),lt=(t=[])=>({includeDomains:["sensor"],entityFilter:(e,i)=>{if(!t.length)return!0;const s=i.states[e]?.attributes?.device_class??"";return t.includes(s)}}),ct=(t=[])=>({includeDomains:at,entityFilter:(e,i)=>{if(!t.length)return"binary_sensor"===e.split(".")[0];const[s]=e.split(".");if("binary_sensor"===s){const s=i.states[e]?.attributes?.device_class??"";return t.includes(s)}return t.includes(s)}}),dt=(t=[])=>({includeDomains:at,entityFilter:(e,i)=>{if(!t.length)return at.includes(e.split(".")[0]);const[s]=e.split(".");if("binary_sensor"===s){const s=i.states[e]?.attributes?.device_class??"";return t.includes(s)}return t.includes(s)}}),ht=(t=[])=>({includeDomains:["camera"],entityFilter:(e,i)=>{if(!t.length)return!0;const s=i.states[e]?.attributes?.device_class??"";return t.includes(s)}});function pt(t,e,i,s=[]){if(!t?.states)return[];let o;if("presence"===i?o=rt(s):"sensor"===i?o=lt(s):"mushroom"===i?o=ct(s):"subbutton"===i?o=dt(s):"camera"===i&&(o=ht(s)),!o)return[];const n=Object.keys(t.states).filter(t=>o.includeDomains.includes(t.split(".")[0])).filter(e=>o.entityFilter(e,t));if((e?.auto_discovery_sections?.[i]??!1)&&e?.area){const i=function(t,e){if(!t?.states||!e)return[];const i=t.entities??{},s=t.devices??{};return Object.keys(t.states).filter(o=>{const n=i[o];if(n?.area_id===e)return!0;const a=n?.device_id;if(a&&s[a]?.area_id===e)return!0;const r=t.states[o]?.attributes??{};return r.area_id===e||r.area===e})}(t,e.area);return n.filter(t=>i.includes(t))}return n}const ut=!!window.__BUBBLE_DEBUG__;function bt(t,e){const i=Array.isArray(e?.area)?e.area[0]:e?.area,s="string"!=typeof i||i.startsWith("area_")?"":i;let o="string"==typeof i&&i.startsWith("area_")?i:"";const n=Array.isArray(t?.areas)?t.areas:[];if(!o&&n.length&&s){const t=n.find(t=>(t.name||"").toLowerCase()===String(s).toLowerCase());t?.area_id&&(o=t.area_id)}return{areaId:o,areaName:s}}function gt(t,e,i,s){if(!i&&!s)return!0;const o=t?.entities,n=t?.devices,a=o?.[e];if(a?.area_id&&i)return a.area_id===i;if(a?.device_id&&Array.isArray(n)){const t=n.find(t=>t.id===a.device_id||t.device_id===a.device_id);if(t?.area_id&&i)return t.area_id===i}const r=t?.states?.[e];if(r){const t=r.attributes?.area_id,e=r.attributes?.area;if(i&&t)return t===i;if(s&&e)return String(e).toLowerCase()===String(s).toLowerCase()}return!0}function mt(t,e,i){let s=pt(t,e,i)||[];return!s.length&&t?.states&&(s=Object.keys(t.states)),s}function ft(t,e,i,s){const o={...e.entities||{}},n=o[s]||(o[s]={});if(n.entity)return{...e,entities:o};let a=mt(t,e,i);a.length||(a=mt(t,e,"mushroom")),a=(a||[]).filter(t=>t.startsWith(`${i}.`));const r=bt(t,e),l=function(t,e,i,s){const{areaId:o,areaName:n}=i,a=(e||[]).filter(e=>gt(t,e,o,n));return s&&!a.includes(s)&&a.unshift(s),Array.from(new Set(a))}(t,a,r,n.entity),c=l[0]||a[0]||"";return c&&(n.entity=c),ut&&console.info(`[AutoDiscovery][${s}]`,{domain:i,chosen:n.entity,areaRef:r,pool:a.length,filtered:l.length}),{...e,entities:o}}const _t=(t,e)=>t.find(t=>!e.has(t))||null;function vt(t,e){const i={...e.entities||{}},s=i.presence||(i.presence={});if(!s.entity){const i=function(t,e){if(!t||!t.states)return[];const i=new Set(["person","device_tracker","binary_sensor","light","switch","media_player","fan","humidifier","lock","input_boolean","scene"]);let s=Object.keys(t.states).filter(t=>i.has(t.split(".")[0]));s=s.filter(e=>{if("binary_sensor"!==e.split(".")[0])return!0;const i=t.states[e]?.attributes?.device_class;return["motion","occupancy","presence"].includes(i||"")});const{areaId:o,areaName:n}=bt(t,e);if(o||n){const e=s.filter(e=>gt(t,e,o,n));e.length&&(s=e)}const a=e?.entities?.presence?.entity||e?.presence_entity;return a&&!s.includes(a)&&s.unshift(a),ut&&console.info("[AutoDiscovery][presence candidates]",{areaId:o,areaName:n,count:s.length,sample:s.slice(0,8)}),s}(t,e);i.length&&(s.entity=i[0])}return{...e,entities:i}}function xt(t,e,i,s=!1){if(!t||!e)return e;const o=e.auto_discovery_sections||{},n="area"===i,a=i&&String(i).startsWith("auto_discovery_sections.");if(!n&&!a)return e;let r=e;return o.sensor&&(r=function(t,e){const i=["sensor1","sensor2","sensor3","sensor4","sensor5","sensor6","sensor7","sensor8"],s={...e.entities||{}},o=new Set(i.map(t=>s[t]?.entity||s[t]?.entity_id).filter(Boolean));for(const n of i){const i=s[n]||(s[n]={});if(i.entity||i.entity_id)continue;const a=pt(t,e,{section:"sensor",type:i.type||""})||[],r=_t(a,o);r&&(i.entity=r,delete i.entity_id,o.add(r))}return{...e,entities:s}}(t,r)),o.mushroom&&(r=function(t,e){const i={...e.entities||{}},s=new Set(["climate","camera","mushroom1","mushroom2","mushroom3","mushroom4","mushroom5"].map(t=>i[t]?.entity).filter(Boolean));let o=mt(t,e,"mushroom");const n=i.climate||(i.climate={});if(!n.entity){const t=o.find(t=>t.startsWith("climate.")&&!s.has(t));t&&(n.entity=t,s.add(t))}const a=i.camera||(i.camera={});if(!a.entity){const t=o.find(t=>t.startsWith("camera.")&&!s.has(t));t&&(a.entity=t,s.add(t))}for(let t=1;t<=5;t++){const e=`mushroom${t}`,n=i[e]||(i[e]={});if(n.entity)continue;const a=_t(o,s);a&&(n.entity=a,s.add(a))}return{...e,entities:i}}(t,r)),o.subbutton&&(r=function(t,e){const i=["sub-button1","sub-button2","sub-button3","sub-button4","sub-button5","sub-button6"],s={...e.entities||{}},o=new Set(i.map(t=>s[t]?.entity).filter(Boolean)),n=pt(t,e,"subbutton")||[];for(const t of i){const e=s[t]||(s[t]={});if(e.entity)continue;const i=_t(n,o);i&&(e.entity=i,o.add(i))}return{...e,entities:s}}(t,r)),o.presence&&(r=vt(t,r)),o.climate&&(r=function(t,e){return ft(t,e,"climate","climate")}(t,r)),o.camera&&(r=function(t,e){return ft(t,e,"camera","camera")}(t,r)),(s||ut)&&"undefined"!=typeof window&&console.info("[AutoDiscovery] applied after",i,{sections:o}),r}const yt={door:{on:"mdi:door-open",off:"mdi:door-closed"},window:{on:"mdi:window-open",off:"mdi:window-closed"},motion:{on:"mdi:motion-sensor",off:"mdi:motion-sensor-off"},moisture:{on:"mdi:water-alert",off:"mdi:water-off"},smoke:{on:"mdi:smoke",off:"mdi:smoke-detector-off"},gas:{on:"mdi:gas-cylinder",off:"mdi:gas-off"},lock:{on:"mdi:lock-open-variant",off:"mdi:lock"},garage:{on:"mdi:garage-open",off:"mdi:garage"},light:{on:"mdi:lightbulb-on",off:"mdi:lightbulb-off"},plug:{on:"mdi:power-plug",off:"mdi:power-plug-off"},presence:{on:"mdi:account",off:"mdi:account-off"},vibration:{on:"mdi:vibrate",off:"mdi:vibrate-off"},opening:{on:"mdi:door-open",off:"mdi:door-closed"},battery:{on:"mdi:battery",off:"mdi:battery-outline"},connectivity:{on:"mdi:wifi",off:"mdi:wifi-off"},safety:{on:"mdi:shield-check",off:"mdi:shield-off"},cold:{on:"mdi:snowflake",off:"mdi:snowflake-off"}},$t={light:"mdi:lightbulb",switch:"mdi:toggle-switch",fan:"mdi:fan",climate:"mdi:thermostat",cover:"mdi:window-shutter",media_player:"mdi:play-circle",script:"mdi:script-text",scene:"mdi:palette",lock:"mdi:lock",camera:"mdi:video",binary_sensor:"mdi:checkbox-marked-circle-outline",sensor:"mdi:eye",alarm_control_panel:"mdi:shield-home",vacuum:"mdi:robot-vacuum",siren:"mdi:bullhorn"};function wt(t,e){const i=e.states?.[t],s=i?.attributes||{},o=s.device_class,n=t?.split(".")?.[0]??"",a=i?.state,r=o&&yt[o]?yt[o]["on"===a?"on":"off"]:null;return s.icon||r||$t[n]||"mdi:bookmark"}const kt=["presence","motion","occupancy","light","switch","fan"];class At extends st{static properties={hass:{type:Object},config:{type:Object},_expanded:{type:Boolean,state:!0},activeFilters:{type:Array,state:!0},layout:{type:String}};static styles=n`
+var et,it;class st extends m{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){var t,e;const i=super.createRenderRoot();return null!==(t=(e=this.renderOptions).renderBefore)&&void 0!==t||(e.renderBefore=i.firstChild),i}update(t){const e=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=((t,e,i)=>{var s,o;const n=null!==(s=null==i?void 0:i.renderBefore)&&void 0!==s?s:e;let a=n._$litPart$;if(void 0===a){const t=null!==(o=null==i?void 0:i.renderBefore)&&void 0!==o?o:null;n._$litPart$=a=new J(e.insertBefore(C(),t),t,void 0,null!=i?i:{})}return a._$AI(t),a})(e,this.renderRoot,this.renderOptions)}connectedCallback(){var t;super.connectedCallback(),null===(t=this._$Do)||void 0===t||t.setConnected(!0)}disconnectedCallback(){var t;super.disconnectedCallback(),null===(t=this._$Do)||void 0===t||t.setConnected(!1)}render(){return U}}st.finalized=!0,st._$litElement$=!0,null===(et=globalThis.litElementHydrateSupport)||void 0===et||et.call(globalThis,{LitElement:st});const ot=globalThis.litElementPolyfillSupport;null==ot||ot({LitElement:st}),(null!==(it=globalThis.litElementVersions)&&void 0!==it?it:globalThis.litElementVersions=[]).push("3.3.3");const nt={alarm_control_panel:"Allarmi",binary_sensor:"Sensori Binari",camera:"Telecamere",climate:"Clima",cover:"Tapparelle",fan:"Ventola",light:"Luce",lock:"Serratura",media_player:"Media Player",scene:"Scene",script:"Script",siren:"Sirena",vacuum:"Aspirapolvere",motion:"Movimento",occupancy:"Occupazione",presence:"Presenza",switch:"Pulsante"},at=["alarm_control_panel","binary_sensor","camera","climate","cover","fan","light","lock","media_player","scene","script","siren","switch","vacuum"],rt=(t=[])=>({includeDomains:at,entityFilter:(e,i)=>{if(!t.length)return!1;const[s]=e.split(".");if("binary_sensor"===s){const s=i.states[e]?.attributes?.device_class??"";return t.includes(s)}return t.includes(s)}}),lt=(t=[])=>({includeDomains:["sensor"],entityFilter:(e,i)=>{if(!t.length)return!0;const s=i.states[e]?.attributes?.device_class??"";return t.includes(s)}}),ct=(t=[])=>({includeDomains:at,entityFilter:(e,i)=>{if(!t.length)return"binary_sensor"===e.split(".")[0];const[s]=e.split(".");if("binary_sensor"===s){const s=i.states[e]?.attributes?.device_class??"";return t.includes(s)}return t.includes(s)}}),dt=(t=[])=>({includeDomains:at,entityFilter:(e,i)=>{if(!t.length)return at.includes(e.split(".")[0]);const[s]=e.split(".");if("binary_sensor"===s){const s=i.states[e]?.attributes?.device_class??"";return t.includes(s)}return t.includes(s)}}),ht=(t=[])=>({includeDomains:["camera"],entityFilter:(e,i)=>{if(!t.length)return!0;const s=i.states[e]?.attributes?.device_class??"";return t.includes(s)}});function pt(t,e,i,s=[]){if(!t?.states)return[];let o;if("presence"===i?o=rt(s):"sensor"===i?o=lt(s):"mushroom"===i?o=ct(s):"subbutton"===i?o=dt(s):"camera"===i&&(o=ht(s)),!o)return[];const n=Object.keys(t.states).filter(t=>o.includeDomains.includes(t.split(".")[0])).filter(e=>o.entityFilter(e,t));if((e?.auto_discovery_sections?.[i]??!1)&&e?.area){const i=function(t,e){if(!t?.states||!e)return[];const i=t.entities??{},s=t.devices??{};return Object.keys(t.states).filter(o=>{const n=i[o];if(n?.area_id===e)return!0;const a=n?.device_id;if(a&&s[a]?.area_id===e)return!0;const r=t.states[o]?.attributes??{};return r.area_id===e||r.area===e})}(t,e.area);return n.filter(t=>i.includes(t))}return n}const ut=!!window.__BUBBLE_DEBUG__;function gt(t,e){const i=Array.isArray(e?.area)?e.area[0]:e?.area,s="string"!=typeof i||i.startsWith("area_")?"":i;let o="string"==typeof i&&i.startsWith("area_")?i:"";const n=Array.isArray(t?.areas)?t.areas:[];if(!o&&n.length&&s){const t=n.find(t=>(t.name||"").toLowerCase()===String(s).toLowerCase());t?.area_id&&(o=t.area_id)}return{areaId:o,areaName:s}}function bt(t,e,i,s){if(!i&&!s)return!0;const o=t?.entities,n=t?.devices,a=o?.[e];if(a?.area_id&&i)return a.area_id===i;if(a?.device_id&&Array.isArray(n)){const t=n.find(t=>t.id===a.device_id||t.device_id===a.device_id);if(t?.area_id&&i)return t.area_id===i}const r=t?.states?.[e];if(r){const t=r.attributes?.area_id,e=r.attributes?.area;if(i&&t)return t===i;if(s&&e)return String(e).toLowerCase()===String(s).toLowerCase()}return!0}function mt(t,e,i){let s=pt(t,e,i)||[];return!s.length&&t?.states&&(s=Object.keys(t.states)),s}function ft(t,e,i,s){const o={...e.entities||{}},n=o[s]||(o[s]={});if(n.entity)return{...e,entities:o};let a=mt(t,e,i);a.length||(a=mt(t,e,"mushroom")),a=(a||[]).filter(t=>t.startsWith(`${i}.`));const r=gt(t,e),l=function(t,e,i,s){const{areaId:o,areaName:n}=i,a=(e||[]).filter(e=>bt(t,e,o,n));return s&&!a.includes(s)&&a.unshift(s),Array.from(new Set(a))}(t,a,r,n.entity),c=l[0]||a[0]||"";return c&&(n.entity=c),ut&&console.info(`[AutoDiscovery][${s}]`,{domain:i,chosen:n.entity,areaRef:r,pool:a.length,filtered:l.length}),{...e,entities:o}}const _t=(t,e)=>t.find(t=>!e.has(t))||null;function vt(t,e){const i={...e.entities||{}},s=i.presence||(i.presence={});if(!s.entity){const i=function(t,e){if(!t||!t.states)return[];const i=new Set(["person","device_tracker","binary_sensor","light","switch","media_player","fan","humidifier","lock","input_boolean","scene"]);let s=Object.keys(t.states).filter(t=>i.has(t.split(".")[0]));s=s.filter(e=>{if("binary_sensor"!==e.split(".")[0])return!0;const i=t.states[e]?.attributes?.device_class;return["motion","occupancy","presence"].includes(i||"")});const{areaId:o,areaName:n}=gt(t,e);if(o||n){const e=s.filter(e=>bt(t,e,o,n));e.length&&(s=e)}const a=e?.entities?.presence?.entity||e?.presence_entity;return a&&!s.includes(a)&&s.unshift(a),ut&&console.info("[AutoDiscovery][presence candidates]",{areaId:o,areaName:n,count:s.length,sample:s.slice(0,8)}),s}(t,e);i.length&&(s.entity=i[0])}return{...e,entities:i}}function xt(t,e,i,s=!1){if(!t||!e)return e;const o=e.auto_discovery_sections||{},n="area"===i,a=i&&String(i).startsWith("auto_discovery_sections.");if(!n&&!a)return e;let r=e;return o.sensor&&(r=function(t,e){const i=["sensor1","sensor2","sensor3","sensor4","sensor5","sensor6","sensor7","sensor8"],s={...e.entities||{}},o=new Set(i.map(t=>s[t]?.entity||s[t]?.entity_id).filter(Boolean));for(const n of i){const i=s[n]||(s[n]={});if(i.entity||i.entity_id)continue;const a=pt(t,e,{section:"sensor",type:i.type||""})||[],r=_t(a,o);r&&(i.entity=r,delete i.entity_id,o.add(r))}return{...e,entities:s}}(t,r)),o.mushroom&&(r=function(t,e){const i={...e.entities||{}},s=new Set(["climate","camera","mushroom1","mushroom2","mushroom3","mushroom4","mushroom5"].map(t=>i[t]?.entity).filter(Boolean));let o=mt(t,e,"mushroom");const n=i.climate||(i.climate={});if(!n.entity){const t=o.find(t=>t.startsWith("climate.")&&!s.has(t));t&&(n.entity=t,s.add(t))}const a=i.camera||(i.camera={});if(!a.entity){const t=o.find(t=>t.startsWith("camera.")&&!s.has(t));t&&(a.entity=t,s.add(t))}for(let t=1;t<=5;t++){const e=`mushroom${t}`,n=i[e]||(i[e]={});if(n.entity)continue;const a=_t(o,s);a&&(n.entity=a,s.add(a))}return{...e,entities:i}}(t,r)),o.subbutton&&(r=function(t,e){const i=["sub-button1","sub-button2","sub-button3","sub-button4","sub-button5","sub-button6"],s={...e.entities||{}},o=new Set(i.map(t=>s[t]?.entity).filter(Boolean)),n=pt(t,e,"subbutton")||[];for(const t of i){const e=s[t]||(s[t]={});if(e.entity)continue;const i=_t(n,o);i&&(e.entity=i,o.add(i))}return{...e,entities:s}}(t,r)),o.presence&&(r=vt(t,r)),o.climate&&(r=function(t,e){return ft(t,e,"climate","climate")}(t,r)),o.camera&&(r=function(t,e){return ft(t,e,"camera","camera")}(t,r)),(s||ut)&&"undefined"!=typeof window&&console.info("[AutoDiscovery] applied after",i,{sections:o}),r}const yt={door:{on:"mdi:door-open",off:"mdi:door-closed"},window:{on:"mdi:window-open",off:"mdi:window-closed"},motion:{on:"mdi:motion-sensor",off:"mdi:motion-sensor-off"},moisture:{on:"mdi:water-alert",off:"mdi:water-off"},smoke:{on:"mdi:smoke",off:"mdi:smoke-detector-off"},gas:{on:"mdi:gas-cylinder",off:"mdi:gas-off"},lock:{on:"mdi:lock-open-variant",off:"mdi:lock"},garage:{on:"mdi:garage-open",off:"mdi:garage"},light:{on:"mdi:lightbulb-on",off:"mdi:lightbulb-off"},plug:{on:"mdi:power-plug",off:"mdi:power-plug-off"},presence:{on:"mdi:account",off:"mdi:account-off"},vibration:{on:"mdi:vibrate",off:"mdi:vibrate-off"},opening:{on:"mdi:door-open",off:"mdi:door-closed"},battery:{on:"mdi:battery",off:"mdi:battery-outline"},connectivity:{on:"mdi:wifi",off:"mdi:wifi-off"},safety:{on:"mdi:shield-check",off:"mdi:shield-off"},cold:{on:"mdi:snowflake",off:"mdi:snowflake-off"}},$t={light:"mdi:lightbulb",switch:"mdi:toggle-switch",fan:"mdi:fan",climate:"mdi:thermostat",cover:"mdi:window-shutter",media_player:"mdi:play-circle",script:"mdi:script-text",scene:"mdi:palette",lock:"mdi:lock",camera:"mdi:video",binary_sensor:"mdi:checkbox-marked-circle-outline",sensor:"mdi:eye",alarm_control_panel:"mdi:shield-home",vacuum:"mdi:robot-vacuum",siren:"mdi:bullhorn"};function wt(t,e){const i=e.states?.[t],s=i?.attributes||{},o=s.device_class,n=t?.split(".")?.[0]??"",a=i?.state,r=o&&yt[o]?yt[o]["on"===a?"on":"off"]:null;return s.icon||r||$t[n]||"mdi:bookmark"}const kt=["presence","motion","occupancy","light","switch","fan"];class At extends st{static properties={hass:{type:Object},config:{type:Object},_expanded:{type:Boolean,state:!0},activeFilters:{type:Array,state:!0},layout:{type:String}};static styles=n`
     :host { display: block; }
 
     .glass-panel {
@@ -187,7 +187,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       font-weight: 700;
       font-size: 1.13rem;
     }
-  `;constructor(){super(),this.hass={},this.config={},this._expanded=!1,this.activeFilters=[],this.layout="wide",this._syncingFromConfig=!1}updated(t){if(t.has("config")||t.has("hass")){this._syncingFromConfig=!0,xt(this.hass,this.config,"area"),xt(this.hass,this.config,"auto_discovery_sections.presence"),t.has("config")&&Array.isArray(this.config.presence_filters)&&(this.activeFilters=[...this.config.presence_filters]);const e=this.config.layout;e&&e!==this.layout&&(this.layout=e),this._syncingFromConfig=!1}}_onLayoutClick(t){this.layout=t,this._fire("layout",t);const e="tall"===t?{columns:6,rows:4}:{columns:12,rows:4};this._fire("grid_options",e)}_fire(t,e){this._syncingFromConfig||this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}_onPresenceEntityChange=t=>{this._fire("entities.presence.entity",t);const e=this.config?.icon||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon||wt(t,this.hass);i&&this._fire("icon",i)}};render(){const t=this.config,e=t.auto_discovery_sections?.presence??!1,i=t.area??"",s=t.name??"",o=t.icon??"",n=t.entities?.presence?.entity??"",a=this.activeFilters.length?this.activeFilters:t.presence_filters??[...kt],r=kt.map(t=>({value:t,label:t.charAt(0).toUpperCase()+t.slice(1)})),l=pt(this.hass,this.config,"presence",a),c=["toggle","more-info","navigate","call-service","none"],d=this.config?.tap_action||{},h=this.config?.hold_action||{};return M`
+  `;constructor(){super(),this.hass={},this.config={},this._expanded=!1,this.activeFilters=[],this.layout="wide",this._syncingFromConfig=!1}updated(t){if(t.has("config")||t.has("hass")){this._syncingFromConfig=!0,xt(this.hass,this.config,"area"),xt(this.hass,this.config,"auto_discovery_sections.presence"),t.has("config")&&Array.isArray(this.config.presence_filters)&&(this.activeFilters=[...this.config.presence_filters]);const e=this.config.layout;e&&e!==this.layout&&(this.layout=e),this._syncingFromConfig=!1}}_onLayoutClick(t){this.layout=t,this._fire("layout",t);const e="tall"===t?{columns:6,rows:4}:{columns:12,rows:4};this._fire("grid_options",e)}_fire(t,e){this._syncingFromConfig||this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}_onPresenceEntityChange=t=>{this._fire("entities.presence.entity",t);const e=this.config?.icon||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon||wt(t,this.hass);i&&this._fire("icon",i)}};render(){const t=this.config,e=t.auto_discovery_sections?.presence??!1,i=t.area??"",s=t.name??"",o=t.icon??"",n=t.entities?.presence?.entity??"",a=this.activeFilters.length?this.activeFilters:t.presence_filters??[...kt],r=kt.map(t=>({value:t,label:t.charAt(0).toUpperCase()+t.slice(1)})),l=pt(this.hass,this.config,"presence",a),c=["toggle","more-info","navigate","call-service","none"],d=this.config?.tap_action||{},h=this.config?.hold_action||{};return I`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
@@ -268,20 +268,20 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             <div class="input-group">
               <label>Tap Action</label>
               <div class="pill-group">
-                ${c.map(t=>M`
+                ${c.map(t=>I`
                   <button
                     class="pill-button ${d.action===t?"active":""}"
                     @click=${()=>this._fire("tap_action.action",t)}
                   >${t}</button>
                 `)}
               </div>
-              ${"navigate"===d.action?M`
+              ${"navigate"===d.action?I`
                 <input type="text" placeholder="Path"
                   .value=${d.navigation_path||""}
                   @input=${t=>this._fire("tap_action.navigation_path",t.target.value)}
                 />
               `:""}
-              ${"call-service"===d.action?M`
+              ${"call-service"===d.action?I`
                 <input type="text" placeholder="service (es. light.turn_on)"
                   .value=${d.service||""}
                   @input=${t=>this._fire("tap_action.service",t.target.value)}
@@ -296,20 +296,20 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             <div class="input-group">
               <label>Hold Action</label>
               <div class="pill-group">
-                ${c.map(t=>M`
+                ${c.map(t=>I`
                   <button
                     class="pill-button ${h.action===t?"active":""}"
                     @click=${()=>this._fire("hold_action.action",t)}
                   >${t}</button>
                 `)}
               </div>
-              ${"navigate"===h.action?M`
+              ${"navigate"===h.action?I`
                 <input type="text" placeholder="Path"
                   .value=${h.navigation_path||""}
                   @input=${t=>this._fire("hold_action.navigation_path",t.target.value)}
                 />
               `:""}
-              ${"call-service"===h.action?M`
+              ${"call-service"===h.action?I`
                 <input type="text" placeholder="service (es. light.turn_on)"
                   .value=${h.service||""}
                   @input=${t=>this._fire("hold_action.service",t.target.value)}
@@ -471,7 +471,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       color: #fff;
       box-shadow: 0 6px 32px #ff4c6abf;
     }
-  `;render(){const t=this.config.auto_discovery_sections?.sensor??!1,e=Object.entries(Ct).filter(([t])=>"_fallback"!==t).map(([t,e])=>{const i=e.label||t.replace(/_/g," ").replace(/\b\w/g,t=>t.toUpperCase());return{value:t,label:`${e.emoji||""} ${i}`.trim()}});return M`
+  `;render(){const t=this.config.auto_discovery_sections?.sensor??!1,e=Object.entries(Ct).filter(([t])=>"_fallback"!==t).map(([t,e])=>{const i=e.label||t.replace(/_/g," ").replace(/\b\w/g,t=>t.toUpperCase());return{value:t,label:`${e.emoji||""} ${i}`.trim()}});return I`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
@@ -497,13 +497,13 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           🧹 Reset Sensors
         </button>
       </ha-expansion-panel>
-    `}_renderSensor(t,e,i){const s=this._filters[t],o=this._entities[t],n=pt(this.hass,this.config,"sensor",s);return M`
+    `}_renderSensor(t,e,i){const s=this._filters[t],o=this._entities[t],n=pt(this.hass,this.config,"sensor",s);return I`
       <div class="mini-pill ${e?"expanded":""}">
         <div class="mini-pill-header" @click=${()=>this._togglePill(t)}>
           Sensor ${t+1}
           <span class="chevron">${e?"▼":"▶"}</span>
         </div>
-        ${e?M`
+        ${e?I`
           <div class="mini-pill-content">
             <!-- Filter category (multi‐select pill) -->
             <div class="input-group">
@@ -529,7 +529,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             </div>
 
             <!-- Preview basata su device_class -->
-            ${o?(()=>{const t=this.hass.states[o],e=t?.attributes?.device_class,i=Ct[e]||{},s=i.emoji||"❓",n=t?.attributes?.unit_of_measurement||(i.units?.[0]??"");return M`
+            ${o?(()=>{const t=this.hass.states[o],e=t?.attributes?.device_class,i=Ct[e]||{},s=i.emoji||"❓",n=t?.attributes?.unit_of_measurement||(i.units?.[0]??"");return I`
                 <div class="preview">
                   <span class="emoji">${s}</span>
                   <div class="state">${t?.state??"-"} ${n}</div>
@@ -656,7 +656,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       background: rgba(255,76,106,0.18);
       color: #fff; box-shadow: 0 6px 32px #ff4c6abf;
     }
-  `;render(){const t=this.config.auto_discovery_sections?.mushroom??!1,e=at.map(t=>({value:t,label:nt[t]||t.charAt(0).toUpperCase()+t.slice(1)}));return M`
+  `;render(){const t=this.config.auto_discovery_sections?.mushroom??!1,e=at.map(t=>({value:t,label:nt[t]||t.charAt(0).toUpperCase()+t.slice(1)}));return I`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
@@ -679,14 +679,14 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           🧹 Reset Mushrooms
         </button>
       </ha-expansion-panel>
-    `}_renderMushroom(t,e,i){const s=`mushroom${t+1}`,o=this._filters[t],n=this._entities[t],a=this._icons[t],r=this.config.entities&&this.config.entities[s]?this.config.entities[s]:{},l=pt(this.hass,this.config,"mushroom",o),c=["toggle","more-info","navigate","call-service","none"];return M`
+    `}_renderMushroom(t,e,i){const s=`mushroom${t+1}`,o=this._filters[t],n=this._entities[t],a=this._icons[t],r=this.config.entities&&this.config.entities[s]?this.config.entities[s]:{},l=pt(this.hass,this.config,"mushroom",o),c=["toggle","more-info","navigate","call-service","none"];return I`
       <div class="mini-pill ${e?"expanded":""}">
         <div class="mini-pill-header" @click=${()=>this._togglePill(t)}>
           Mushroom ${t+1}
           <span class="chevron">${e?"▼":"▶"}</span>
         </div>
 
-        ${e?M`
+        ${e?I`
           <div class="mini-pill-content">
             <!-- Filter categories -->
             <div class="input-group">
@@ -726,7 +726,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             <div class="input-group">
               <label>Tap Action:</label>
               <div class="pill-group">
-                ${c.map(e=>M`
+                ${c.map(e=>I`
                   <button
                     class="pill-button ${r.tap_action?.action===e?"active":""}"
                     @click=${()=>this._onAction(t,"tap","action",e)}
@@ -740,7 +740,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             <div class="input-group">
               <label>Hold Action:</label>
               <div class="pill-group">
-                ${c.map(e=>M`
+                ${c.map(e=>I`
                   <button
                     class="pill-button ${r.hold_action?.action===e?"active":""}"
                     @click=${()=>this._onAction(t,"hold","action",e)}
@@ -752,12 +752,12 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           </div>
         `:""}
       </div>
-    `}_extraFields(t,e,i){const s=i?.[`${e}_action`]?.action;return"navigate"===s?M`
+    `}_extraFields(t,e,i){const s=i?.[`${e}_action`]?.action;return"navigate"===s?I`
         <input type="text" placeholder="Path"
           .value=${i[`${e}_action`]?.navigation_path||""}
           @input=${i=>this._onAction(t,e,"navigation_path",i.target.value)}
         />
-      `:"call-service"===s?M`
+      `:"call-service"===s?I`
         <input type="text" placeholder="Service (es. light.turn_on)"
           .value=${i[`${e}_action`]?.service||""}
           @input=${i=>this._onAction(t,e,"service",i.target.value)}
@@ -895,7 +895,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       color: #fff;
       box-shadow: 0 6px 32px #ff4c6abf;
     }
-  `;render(){const t=this.config.auto_discovery_sections?.subbutton??!1,e=at.map(t=>({value:t,label:nt[t]||t.charAt(0).toUpperCase()+t.slice(1)}));return M`
+  `;render(){const t=this.config.auto_discovery_sections?.subbutton??!1,e=at.map(t=>({value:t,label:nt[t]||t.charAt(0).toUpperCase()+t.slice(1)}));return I`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
@@ -913,12 +913,12 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
 
         <button class="reset-button" @click=${()=>this._reset()}>🧹 Reset Sub-buttons</button>
       </ha-expansion-panel>
-    `}_renderSubButton(t,e,i){const s=this._filters[t],o=this._entities[t],n=pt(this.hass,this.config,"subbutton",s),a=this.config.subbuttons?.[t]||{},r=["toggle","more-info","navigate","call-service","none"];return M`
+    `}_renderSubButton(t,e,i){const s=this._filters[t],o=this._entities[t],n=pt(this.hass,this.config,"subbutton",s),a=this.config.subbuttons?.[t]||{},r=["toggle","more-info","navigate","call-service","none"];return I`
       <div class="mini-pill ${e?"expanded":""}">
         <div class="mini-pill-header" @click=${()=>this._togglePill(t)}>
           Sub-button ${t+1}  <span class="chevron">${e?"▼":"▶"}</span>
         </div>
-        ${e?M`
+        ${e?I`
           <div class="mini-pill-content">
             <div class="input-group">
               <label>Filter categories:</label>
@@ -945,11 +945,11 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
               ></ha-icon-picker>
             </div>
 
-            ${["tap","hold"].map(e=>M`
+            ${["tap","hold"].map(e=>I`
               <div class="input-group">
                 <label>${"tap"===e?"Tap Action":"Hold Action"}:</label>
                 <div class="pill-group">
-                  ${r.map(i=>M`
+                  ${r.map(i=>I`
                     <button
                       class="pill-button ${a[`${e}_action`]?.action===i?"active":""}"
                       @click=${()=>this._onAction(t,e,"action",i)}
@@ -962,12 +962,12 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           </div>
         `:""}
       </div>
-    `}_extraFields(t,e,i){const s=i[`${e}_action`]?.action;return"navigate"===s?M`
+    `}_extraFields(t,e,i){const s=i[`${e}_action`]?.action;return"navigate"===s?I`
         <input type="text" placeholder="Path"
           .value=${i[`${e}_action`]?.navigation_path||""}
           @input=${i=>this._onAction(t,e,"navigation_path",i.target.value)}
         />
-      `:"call-service"===s?M`
+      `:"call-service"===s?I`
         <input type="text" placeholder="Service"
           .value=${i[`${e}_action`]?.service||""}
           @input=${i=>this._onAction(t,e,"service",i.target.value)}
@@ -976,316 +976,170 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           .value=${i[`${e}_action`]?.service_data?JSON.stringify(i[`${e}_action`].service_data):""}
           @input=${i=>this._onAction(t,e,"service_data",this._safeJson(i.target.value))}
         />
-      `:""}_safeJson(t){try{return JSON.parse(t)}catch{return{}}}_toggleAuto(t){this._emit("auto_discovery_sections.subbutton",t)}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e)}_onFilter(t,e){this._filters[t]=[...e],this._emit("subbutton_filters",this._filters)}_onEntity(t,e){if(this._entities[t]=e,this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t].entity_id=e,!this.config.subbuttons[t].icon&&this.hass){const i=this.hass.states?.[e],s=i?.attributes?.icon,o=s||wt(e,this.hass);o&&(this.config.subbuttons[t].icon=o)}this._emit("subbuttons",this.config.subbuttons)}_onIcon(t,e){this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t].icon=e,this._emit("subbuttons",this.config.subbuttons)}_onAction(t,e,i,s){this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t][`${e}_action`]={...this.config.subbuttons[t][`${e}_action`],[i]:s},this._emit("subbuttons",this.config.subbuttons)}_reset(){this._expanded=Array(4).fill(!1),this._filters=Array(4).fill().map(()=>[...at]),this._entities=Array(4).fill(""),this.config.subbuttons=Array(4).fill().map(()=>({})),this._emit("subbutton_filters",this._filters),this._emit("subbuttons",this.config.subbuttons)}_emit(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("sub-button-panel",Pt);class zt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expandedColors:{type:Array,state:!0},_selectedPreset:{type:String,state:!0},_applyRoom:{type:Boolean,state:!0},_applySub:{type:Boolean,state:!0},_applyText:{type:Boolean,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expandedColors=[!1,!1],this._selectedPreset="green",this._applyRoom=!0,this._applySub=!0,this._applyText=!0}get PRESETS(){return{green:{label:"Green",room:{background_active:"rgba( 85, 175, 135, 0.22)",background_inactive:"rgba( 85, 175, 135, 0.10)",icon_active:"rgba( 85, 235, 175, 1.00)",icon_inactive:"rgba( 85, 235, 175, 0.45)",text_active:"rgba( 85, 235, 175, 1.00)",text_inactive:"rgba( 200, 220, 210, 0.80)"},sub:{background_on:"rgba( 85, 175, 135, 0.22)",background_off:"rgba( 85, 175, 135, 0.08)",icon_on:"rgba( 85, 235, 175, 1.00)",icon_off:"rgba( 85, 235, 175, 0.45)"}},blue:{label:"Blue",room:{background_active:"rgba( 90, 140, 220, 0.22)",background_inactive:"rgba( 90, 140, 220, 0.10)",icon_active:"rgba(120, 170, 255, 1.00)",icon_inactive:"rgba(120, 170, 255, 0.45)",text_active:"rgba(180, 205, 255, 1.00)",text_inactive:"rgba(210, 220, 240, 0.80)"},sub:{background_on:"rgba( 90, 140, 220, 0.22)",background_off:"rgba( 90, 140, 220, 0.08)",icon_on:"rgba(120, 170, 255, 1.00)",icon_off:"rgba(120, 170, 255, 0.45)"}},amber:{label:"Amber",room:{background_active:"rgba(220, 165,  80, 0.22)",background_inactive:"rgba(220, 165,  80, 0.10)",icon_active:"rgba(255, 210, 120, 1.00)",icon_inactive:"rgba(255, 210, 120, 0.50)",text_active:"rgba(255, 220, 170, 1.00)",text_inactive:"rgba(245, 235, 210, 0.85)"},sub:{background_on:"rgba(220, 165,  80, 0.22)",background_off:"rgba(220, 165,  80, 0.08)",icon_on:"rgba(255, 210, 120, 1.00)",icon_off:"rgba(255, 210, 120, 0.50)"}},purple:{label:"Purple",room:{background_active:"rgba(155, 120, 220, 0.22)",background_inactive:"rgba(155, 120, 220, 0.10)",icon_active:"rgba(200, 170, 255, 1.00)",icon_inactive:"rgba(200, 170, 255, 0.45)",text_active:"rgba(220, 200, 255, 1.00)",text_inactive:"rgba(225, 215, 240, 0.85)"},sub:{background_on:"rgba(155, 120, 220, 0.22)",background_off:"rgba(155, 120, 220, 0.08)",icon_on:"rgba(200, 170, 255, 1.00)",icon_off:"rgba(200, 170, 255, 0.45)"}},red:{label:"Red",room:{background_active:"rgba(220,  95, 100, 0.22)",background_inactive:"rgba(220,  95, 100, 0.10)",icon_active:"rgba(255, 140, 150, 1.00)",icon_inactive:"rgba(255, 140, 150, 0.50)",text_active:"rgba(255, 190, 195, 1.00)",text_inactive:"rgba(245, 225, 228, 0.85)"},sub:{background_on:"rgba(220,  95, 100, 0.22)",background_off:"rgba(220,  95, 100, 0.08)",icon_on:"rgba(255, 140, 150, 1.00)",icon_off:"rgba(255, 140, 150, 0.50)"}},gray:{label:"Gray",room:{background_active:"rgba(120, 130, 140, 0.22)",background_inactive:"rgba(120, 130, 140, 0.10)",icon_active:"rgba(210, 220, 230, 1.00)",icon_inactive:"rgba(210, 220, 230, 0.50)",text_active:"rgba(230, 235, 240, 1.00)",text_inactive:"rgba(210, 215, 220, 0.85)"},sub:{background_on:"rgba(120, 130, 140, 0.22)",background_off:"rgba(120, 130, 140, 0.08)",icon_on:"rgba(210, 220, 230, 1.00)",icon_off:"rgba(210, 220, 230, 0.50)"}}}}updated(t){t.has("config")||t.has("hass")}static styles=n`
+      `:""}_safeJson(t){try{return JSON.parse(t)}catch{return{}}}_toggleAuto(t){this._emit("auto_discovery_sections.subbutton",t)}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e)}_onFilter(t,e){this._filters[t]=[...e],this._emit("subbutton_filters",this._filters)}_onEntity(t,e){if(this._entities[t]=e,this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t].entity_id=e,!this.config.subbuttons[t].icon&&this.hass){const i=this.hass.states?.[e],s=i?.attributes?.icon,o=s||wt(e,this.hass);o&&(this.config.subbuttons[t].icon=o)}this._emit("subbuttons",this.config.subbuttons)}_onIcon(t,e){this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t].icon=e,this._emit("subbuttons",this.config.subbuttons)}_onAction(t,e,i,s){this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t][`${e}_action`]={...this.config.subbuttons[t][`${e}_action`],[i]:s},this._emit("subbuttons",this.config.subbuttons)}_reset(){this._expanded=Array(4).fill(!1),this._filters=Array(4).fill().map(()=>[...at]),this._entities=Array(4).fill(""),this.config.subbuttons=Array(4).fill().map(()=>({})),this._emit("subbutton_filters",this._filters),this._emit("subbuttons",this.config.subbuttons)}_emit(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("sub-button-panel",Pt);const zt={green:{label:"Green",active:{bg:"#1f3a2e",icon:"#7de2a8"},inactive:{bg:"#162a22",icon:"#4fb684"}},blue:{label:"Blue",active:{bg:"#18293d",icon:"#8fd0ff"},inactive:{bg:"#122031",icon:"#6fb7ef"}},amber:{label:"Amber",active:{bg:"#3a2d18",icon:"#ffd37a"},inactive:{bg:"#2b2112",icon:"#efbf62"}},red:{label:"Red",active:{bg:"#3a2224",icon:"#ff9aa4"},inactive:{bg:"#2b191b",icon:"#e67c87"}},gray:{label:"Gray",active:{bg:"#2c2f36",icon:"#cfd6e4"},inactive:{bg:"#24262c",icon:"#aeb7c7"}}};class Ot extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_preset:{type:String,state:!0},_applyRoom:{type:Boolean,state:!0},_applySub:{type:Boolean,state:!0},_applyMushroom:{type:Boolean,state:!0},_applySensors:{type:Boolean,state:!0},_includeText:{type:Boolean,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._preset="green",this._applyRoom=!0,this._applySub=!0,this._applyMushroom=!0,this._applySensors=!0,this._includeText=!0}static styles=n`
     :host { display: block; }
     .glass-panel {
-      margin: 0 !important;
-      width: 100%;
-      box-sizing: border-box;
-      border-radius: 40px;
-      position: relative;
-      background: var(--glass-bg, rgba(95,255,235,0.26));
-      box-shadow: var(--glass-shadow, 0 2px 24px rgba(95,255,235,0.13));
-      overflow: hidden;
+      margin: 0 !important; width: 100%; box-sizing: border-box;
+      border-radius: 40px; position: relative; overflow: hidden;
+      background: var(--glass-bg, rgba(110,160,170,0.25));
+      box-shadow: var(--glass-shadow, 0 2px 24px rgba(110,160,170,0.18));
     }
     .glass-panel::after {
-      content: '';
-      position: absolute; inset: 0;
-      border-radius: inherit;
-      background: var(--glass-sheen,
-        linear-gradient(120deg, rgba(255,255,255,0.14),
-        rgba(255,255,255,0.08) 70%, transparent 100%));
-      pointer-events: none;
+      content:''; position:absolute; inset:0; border-radius:inherit;
+      background: linear-gradient(120deg, rgba(255,255,255,0.16),
+        rgba(255,255,255,0.08) 70%, transparent 100%);
+      pointer-events:none;
     }
     .glass-header {
-      padding: 22px 0;
-      text-align: center;
-      font-size: 1.11rem;
-      font-weight: 700;
-      color: #fff;
+      padding: 22px 0; text-align: center; font-size: 1.12rem;
+      font-weight: 700; color: #fff;
     }
 
-    .preset-bar {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 10px;
-      padding: 8px 16px 2px 16px;
-      box-sizing: border-box;
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 720px) { .row { grid-template-columns: 1fr; } }
+
+    .group {
+      margin: 10px 16px; padding: 14px; border-radius: 18px;
+      background: rgba(20,30,40,0.28);
+      border: 1px solid rgba(255,255,255,0.12);
     }
+    .group h4 {
+      margin: 0 0 10px; font-weight: 800; color: #bfe7ff;
+      letter-spacing: .2px;
+    }
+
     .preset-card {
-      position: relative;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(24,32,40,0.45);
-      padding: 10px 10px 12px;
-      cursor: pointer;
-      user-select: none;
-      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
-      outline: none;
+      border: 2px solid rgba(255,255,255,0.18);
+      border-radius: 16px; padding: 10px; cursor: pointer;
+      background: rgba(255,255,255,0.04);
+      transition: transform .15s, border-color .15s, background .15s;
     }
-    .preset-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-      border-color: rgba(255,255,255,0.28);
+    .preset-card.active {
+      border-color: #67e8f9;
+      background: rgba(103,232,249,0.10);
+      transform: translateY(-1px);
     }
-    .preset-card.selected {
-      border-color: #73f6e5;
-      box-shadow: 0 0 0 2px inset rgba(115,246,229,0.35);
-    }
-    .preset-name {
-      font-weight: 700;
-      color: #e9f8ff;
-      font-size: .95rem;
-      margin-bottom: 6px;
-      text-align: left;
-    }
-    .swatches {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
+    .preset-title { color:#fff; font-weight:700; margin-bottom:8px; }
+    .swatches { display:flex; gap:12px; }
     .swatch {
-      border-radius: 10px;
-      padding: 8px;
-      border: 1px solid rgba(255,255,255,0.10);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      flex:1; display:flex; align-items:center; gap:8px;
+      padding:10px; border-radius:12px;
+      border:1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.2);
     }
-    .dot {
-      width: 14px; height: 14px; border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.75);
-      flex: 0 0 auto;
-    }
-    .swatch-label {
-      color: #f0f6ff; font-size: .85rem; opacity: .9;
-    }
+    .dot { width:20px; height:20px; border-radius:50%; border:2px solid #fff3; }
+    .lbl { color:#fff; font-weight:600; }
 
-    .apply-row {
-      display: flex; flex-wrap: wrap; gap: 10px;
-      align-items: center; padding: 10px 16px 2px 16px;
-    }
-    .apply-row .checks { display: flex; gap: 14px; align-items: center; }
-    .apply-row label { color: #dfefff; font-weight: 600; font-size: .95rem; }
+    .toggles { display:flex; flex-wrap:wrap; gap:16px; margin: 10px 16px; }
+    .toggle { display:flex; align-items:center; gap:8px; color:#d4efff; font-weight:700; }
+    .actions { display:flex; gap:12px; margin: 14px 16px 6px; }
     .apply-btn {
-      margin-left: auto;
-      border: 2.5px solid #73f6e5;
-      color: #073a34;
-      background: #73f6e5;
-      border-radius: 12px;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-weight: 800;
-      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+      flex:1; padding:12px 16px; border-radius:14px;
+      border:0; cursor:pointer; font-weight:800; font-size:1rem;
+      background:#7af8d0; color:#05302a;
+      box-shadow: 0 8px 24px rgba(122,248,208,0.24);
     }
-    .apply-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
 
-    .mini-pill {
-      background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.12);
-      box-shadow: 0 3px 22px rgba(70,120,220,0.13);
-      backdrop-filter: blur(10px) saturate(1.2);
-      border-radius: 24px;
-      margin: 8px 16px;
-      overflow: hidden;
-      transition: background 0.18s, box-shadow 0.18s, border 0.18s;
-    }
-    .mini-pill-header {
-      display: flex;
-      align-items: center;
-      padding: 15px 22px;
-      font-weight: 800;
-      color: var(--section-accent, #73f6e5);
-      cursor: pointer;
-      user-select: none;
-    }
-    .mini-pill-header .chevron {
-      margin-left: auto;
-      font-size: 1.2em;
-      transition: transform 0.18s;
-    }
-    .mini-pill.expanded .mini-pill-header .chevron {
-      transform: rotate(90deg);
-    }
-    .mini-pill-content {
-      padding: 15px 22px 16px;
-      animation: pill-expand 0.22s cubic-bezier(.5,1.2,.6,1) both;
-      position: relative;
-      z-index: 1;
-    }
-    @keyframes pill-expand {
-      from { opacity: 0; transform: translateY(-12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .input-group {
-      background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.13);
-      box-shadow: 0 2px 14px rgba(70,120,220,0.10);
-      border-radius: 18px;
-      margin-bottom: 13px;
-      padding: 14px 18px 10px;
-    }
-    .input-group label {
-      display: block;
-      font-size: 1.13rem;
-      font-weight: 700;
-      color: var(--section-accent, #73f6e5);
-      margin-bottom: 6px;
-    }
-    input[type="color"] {
-      width: 56px; height: 32px;
-      border: 2px solid #fff4;
-      border-radius: 9px;
-      cursor: pointer;
-    }
-    input[type="range"] { width: 100%; }
-    input[type="text"] {
-      width: 100%;
-      border: 1px solid #444;
-      border-radius: 6px;
-      padding: 8px;
-      background-color: #202020;
-      color: #f1f1f1;
-      font-size: 0.97rem;
-    }
-    .reset-button {
-      border: 3.5px solid #ff4c6a !important;
-      color: #ff4c6a !important;
-      font-size: 1.15rem;
-      font-weight: 700;
+    .reset {
+      display:block; margin: 20px auto; padding:12px 30px;
+      border-radius:24px; border:3px solid #ff4c6a; background:transparent;
+      color:#ff9cab; font-weight:800; cursor:pointer;
       box-shadow: 0 2px 24px #ff4c6a44;
-      padding: 12px 38px !important;
-      margin: 20px auto 0 auto !important;
-      display: block;
-      background: transparent;
-      border-radius: 24px !important;
-      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
     }
-    .reset-button:hover {
-      background: rgba(255,76,106,0.18) !important;
-      color: #fff !important;
-      box-shadow: 0 6px 32px #ff4c6abf;
+
+    details { margin: 0 16px 12px; }
+    summary {
+      list-style: none; cursor: pointer; padding: 12px 14px;
+      border-radius: 14px; background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12); color:#c9e3ff; font-weight:800;
+      display:flex; align-items:center; gap:10px;
     }
-  `;render(){return M`
+    summary::-webkit-details-marker { display:none; }
+    .kbd {
+      margin-left:auto; background:#0b2233; border:1px solid #193245;
+      padding: 4px 8px; border-radius:8px; color:#7ec8ff; font-weight:800;
+    }
+    .hint { color:#9ccaf0; font-size:.93rem; padding:12px 2px 0; }
+  `;render(){return I`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
-        @expanded-changed=${t=>{this.expanded=t.detail.expanded,this.expanded&&(this._expandedColors=[!1,!1])}}
+        @expanded-changed=${t=>this.expanded=t.detail.expanded}
       >
-        <div slot="header" class="glass-header">🎨 Colors & Presets</div>
+        <div slot="header" class="glass-header">🎨 Color Presets</div>
 
-        <!-- Preset chooser -->
-        ${this._renderPresetChooser()}
-
-        <!-- Room colors pill -->
-        <div class="mini-pill ${this._expandedColors[0]?"expanded":""}">
-          <div
-            class="mini-pill-header"
-            style="--section-accent: #55afff;"
-            @click=${()=>this._toggleColor(0)}
-          >
-            Room Colors
-            <span class="chevron">${this._expandedColors[0]?"▼":"▶"}</span>
-          </div>
-          ${this._expandedColors[0]?M`
-            <div class="mini-pill-content">
-              ${this._renderColorField("room","background_active","Background Active")}
-              ${this._renderColorField("room","background_inactive","Background Inactive")}
-              ${this._renderColorField("room","icon_active","Icon Active")}
-              ${this._renderColorField("room","icon_inactive","Icon Inactive")}
-              ${this._renderColorField("room","text_active","Text Active")}
-              ${this._renderColorField("room","text_inactive","Text Inactive")}
+        <!-- Preset picker -->
+        <div class="row">
+          ${Object.entries(zt).map(([t,e])=>I`
+            <div
+              class="preset-card ${this._preset===t?"active":""}"
+              @click=${()=>this._preset=t}
+            >
+              <div class="preset-title">${e.label}</div>
+              <div class="swatches">
+                <div class="swatch">
+                  <div class="dot" style="background:${e.active.bg}"></div>
+                  <div class="lbl">Active</div>
+                </div>
+                <div class="swatch">
+                  <div class="dot" style="background:${e.inactive.bg}"></div>
+                  <div class="lbl">Inactive</div>
+                </div>
+              </div>
             </div>
-          `:""}
+          `)}
         </div>
 
-        <!-- Subbutton colors pill -->
-        <div class="mini-pill ${this._expandedColors[1]?"expanded":""}">
-          <div
-            class="mini-pill-header"
-            style="--section-accent: #b28fff;"
-            @click=${()=>this._toggleColor(1)}
-          >
-            Subbutton Colors
-            <span class="chevron">${this._expandedColors[1]?"▼":"▶"}</span>
-          </div>
-          ${this._expandedColors[1]?M`
-            <div class="mini-pill-content">
-              ${this._renderColorField("subbutton","background_on","Background On")}
-              ${this._renderColorField("subbutton","background_off","Background Off")}
-              ${this._renderColorField("subbutton","icon_on","Icon On")}
-              ${this._renderColorField("subbutton","icon_off","Icon Off")}
-            </div>
-          `:""}
-        </div>
-
-        <!-- Reset -->
-        <button class="reset-button" @click=${()=>this._resetColors()}>
-          🧹 Reset Colors
-        </button>
-      </ha-expansion-panel>
-    `}_renderPresetChooser(){const t=Object.keys(this.PRESETS);return M`
-      <div class="preset-bar">
-        ${t.map(t=>this._renderPresetCard(t,this.PRESETS[t]))}
-      </div>
-      <div class="apply-row">
-        <div class="checks">
-          <label>
+        <!-- Target toggles -->
+        <div class="toggles">
+          <label class="toggle">
             <input type="checkbox" .checked=${this._applyRoom}
               @change=${t=>this._applyRoom=t.target.checked} />
             Applica a Room
           </label>
-          <label>
+          <label class="toggle">
             <input type="checkbox" .checked=${this._applySub}
               @change=${t=>this._applySub=t.target.checked} />
             Applica a Subbutton
           </label>
-          <label title="Solo per Room">
-            <input type="checkbox" .checked=${this._applyText}
-              @change=${t=>this._applyText=t.target.checked} />
+          <label class="toggle">
+            <input type="checkbox" .checked=${this._applyMushroom}
+              @change=${t=>this._applyMushroom=t.target.checked} />
+            Applica ai Mushroom (incl. Camera & Climate)
+          </label>
+          <label class="toggle">
+            <input type="checkbox" .checked=${this._applySensors}
+              @change=${t=>this._applySensors=t.target.checked} />
+            Applica ai Sensori
+          </label>
+          <label class="toggle">
+            <input type="checkbox" .checked=${this._includeText}
+              @change=${t=>this._includeText=t.target.checked} />
             Includi testo (Room)
           </label>
         </div>
-        <button class="apply-btn" @click=${this._applySelectedPreset}>
-          Applica preset
-        </button>
-      </div>
-    `}_renderPresetCard(t,e){const i=this._selectedPreset===t?"selected":"",s=e.room.background_active,o=e.room.background_inactive,n=e.room.icon_active,a=e.room.icon_inactive;return M`
-      <div class="preset-card ${i}" @click=${()=>this._selectedPreset=t}>
-        <div class="preset-name">${e.label}</div>
-        <div class="swatches">
-          <div class="swatch" style="background:${s}">
-            <span class="dot" style="background:${n}"></span>
-            <span class="swatch-label">Active</span>
-          </div>
-          <div class="swatch" style="background:${o}">
-            <span class="dot" style="background:${a}"></span>
-            <span class="swatch-label">Inactive</span>
-          </div>
+
+        <div class="actions">
+          <button class="apply-btn" @click=${this._applyPreset}>Applica preset</button>
         </div>
-      </div>
-    `}_toggleColor(t){this._expandedColors=this._expandedColors.map((e,i)=>i===t&&!e)}_renderColorField(t,e,i){const s=this.config.colors?.[t]?.[e]||"",[o,n,a,r]=this._parseRGBA(s),l=`#${[o,n,a].map(t=>t.toString(16).padStart(2,"0")).join("")}`;return M`
-      <div class="input-group">
-        <label>${i}</label>
-        <input
-          type="color"
-          .value=${l}
-          @input=${i=>this._updateColor(t,e,i.target.value,r)}
-        />
-        <input
-          type="range"
-          min="0" max="1" step="0.01"
-          .value=${r}
-          @input=${i=>this._updateColor(t,e,l,i.target.value)}
-        />
-        <input
-          type="text"
-          .value=${s}
-          @input=${i=>this._updateColorRaw(t,e,i.target.value)}
-        />
-      </div>
-    `}_applySelectedPreset=()=>{const t=this._selectedPreset,e=this.PRESETS[t];if(!e)return;const i=[];this._applyRoom&&(i.push(["colors.room.background_active",e.room.background_active]),i.push(["colors.room.background_inactive",e.room.background_inactive]),i.push(["colors.room.icon_active",e.room.icon_active]),i.push(["colors.room.icon_inactive",e.room.icon_inactive]),this._applyText&&(i.push(["colors.room.text_active",e.room.text_active]),i.push(["colors.room.text_inactive",e.room.text_inactive]))),this._applySub&&(i.push(["colors.subbutton.background_on",e.sub.background_on]),i.push(["colors.subbutton.background_off",e.sub.background_off]),i.push(["colors.subbutton.icon_on",e.sub.icon_on]),i.push(["colors.subbutton.icon_off",e.sub.icon_off]));for(const[t,e]of i)this._emit(t,e)};_resetColors(){this._expandedColors=[!1,!1];const t={room:["background_active","background_inactive","icon_active","icon_inactive","text_active","text_inactive"],subbutton:["background_on","background_off","icon_on","icon_off"]};["room","subbutton"].forEach(e=>{t[e].forEach(t=>this._emit(`colors.${e}.${t}`,""))})}_parseRGBA(t){if(!t)return[0,0,0,1];const e=/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(t);return e?[+e[1],+e[2],+e[3],+(e[4]??1)]:[0,0,0,1]}_updateColor(t,e,i,s){const o=parseInt(i.slice(1,3),16),n=parseInt(i.slice(3,5),16),a=parseInt(i.slice(5,7),16),r=Number(s),l=`rgba(${o},${n},${a},${isNaN(r)?1:r})`;this._emit(`colors.${t}.${e}`,l)}_updateColorRaw(t,e,i){this._emit(`colors.${t}.${e}`,i)}_emit(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("color-panel",zt);class Ot extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_entity:{type:String,state:!0},_icon:{type:String,state:!0},_cameraCandidates:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._entity="",this._icon="",this._cameraCandidates=[]}_resolveAreaRef(){const t=Array.isArray(this.config?.area)?this.config.area[0]:this.config?.area,e="string"!=typeof t||t.startsWith("area_")?"":t;let i="string"==typeof t&&t.startsWith("area_")?t:"";const s=Array.isArray(this.hass?.areas)?this.hass.areas:[];if(!i&&s.length&&e){const t=s.find(t=>(t.name||"").toLowerCase()===String(e).toLowerCase());t?.area_id&&(i=t.area_id)}if(!i){const t=this.config?.entities?.camera?.entity,e=this.hass?.entities;t&&e?.[t]?.area_id&&(i=e[t].area_id)}return{areaId:i,areaName:e}}_matchAreaForEntityId(t,e,i){const s=this.hass?.entities;if(e&&s?.[t]?.area_id)return s[t].area_id===e;const o=this.hass?.states?.[t];if(!o)return!(e||i);const n=o.attributes?.area_id,a=o.attributes?.area;return e&&n?n===e:i&&a?String(a).toLowerCase()===String(i).toLowerCase():!(e||i)}_filterByAreaIncludeSelected(t,e,i,s){const o=(t||[]).filter(t=>this._matchAreaForEntityId(t,e,i));return s&&!o.includes(s)&&o.unshift(s),Array.from(new Set(o))}updated(t){if(t.has("config")||t.has("hass")){const t=this.config?.entities?.camera?.entity||"",e=this.config?.entities?.camera?.icon||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon,s=i||wt(t,this.hass);s&&this._set("entities.camera.icon",s)}this._entity=t,this._icon=this.config?.entities?.camera?.icon||"";if(this.config?.auto_discovery_sections?.camera??!1){const{areaId:t,areaName:e}=this._resolveAreaRef();let i=pt(this.hass,this.config,"camera")||[];!i.length&&this.hass?.states&&(i=Object.keys(this.hass.states).filter(t=>t.startsWith("camera."))),this._cameraCandidates=this._filterByAreaIncludeSelected(i,t,e,this._entity)}else this._cameraCandidates=[]}}static styles=n`
+
+        <!-- (Facoltativo) Mostra i rami che andremo a toccare -->
+        <details>
+          <summary>
+            Room Colors & Subbutton Colors
+            <span class="kbd">preview</span>
+          </summary>
+          <div class="hint">
+            Applichiamo background/icon per Active/Inactive.
+            Se “Includi testo” è attivo, aggiorniamo anche
+            <code>colors.room.text_active</code> / <code>text_inactive</code>
+            (con alias <code>title_active</code> / <code>title_inactive</code>).
+          </div>
+        </details>
+
+        <button class="reset" @click=${this._resetAll}>🧹 Reset Colors</button>
+      </ha-expansion-panel>
+    `}_applyPreset=()=>{const t=zt[this._preset];if(!t)return;const e=t.active,i=t.inactive;if(this._applyRoom&&(this._set("colors.room.background_active",e.bg),this._set("colors.room.background_inactive",i.bg),this._set("colors.room.icon_active",e.icon),this._set("colors.room.icon_inactive",i.icon),this._includeText&&(this._set("colors.room.text_active",e.icon),this._set("colors.room.text_inactive",i.icon),this._set("colors.room.title_active",e.icon),this._set("colors.room.title_inactive",i.icon))),this._applySub&&(this._set("colors.subbutton.background_active",e.bg),this._set("colors.subbutton.background_inactive",i.bg),this._set("colors.subbutton.icon_active",e.icon),this._set("colors.subbutton.icon_inactive",i.icon)),this._applyMushroom){this._set("colors.mushroom.background_active",e.bg),this._set("colors.mushroom.background_inactive",i.bg),this._set("colors.mushroom.icon_active",e.icon),this._set("colors.mushroom.icon_inactive",i.icon);for(const t of["camera","climate"])this._set(`colors.${t}.background_active`,e.bg),this._set(`colors.${t}.background_inactive`,i.bg),this._set(`colors.${t}.icon_active`,e.icon),this._set(`colors.${t}.icon_inactive`,i.icon)}this._applySensors&&(this._set("colors.sensors.chip_bg_active",e.bg),this._set("colors.sensors.chip_bg_inactive",i.bg),this._set("colors.sensors.chip_icon_active",e.icon),this._set("colors.sensors.chip_icon_inactive",i.icon))};_resetAll=()=>{const t=["colors.room.background_active","colors.room.background_inactive","colors.room.icon_active","colors.room.icon_inactive","colors.room.text_active","colors.room.text_inactive","colors.room.title_active","colors.room.title_inactive","colors.subbutton.background_active","colors.subbutton.background_inactive","colors.subbutton.icon_active","colors.subbutton.icon_inactive","colors.mushroom.background_active","colors.mushroom.background_inactive","colors.mushroom.icon_active","colors.mushroom.icon_inactive","colors.camera.background_active","colors.camera.background_inactive","colors.camera.icon_active","colors.camera.icon_inactive","colors.climate.background_active","colors.climate.background_inactive","colors.climate.icon_active","colors.climate.icon_inactive","colors.sensors.chip_bg_active","colors.sensors.chip_bg_inactive","colors.sensors.chip_icon_active","colors.sensors.chip_icon_inactive"];for(const e of t)this._set(e,"")};_set(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("color-panel",Ot);class jt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_entity:{type:String,state:!0},_icon:{type:String,state:!0},_cameraCandidates:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._entity="",this._icon="",this._cameraCandidates=[]}_resolveAreaRef(){const t=Array.isArray(this.config?.area)?this.config.area[0]:this.config?.area,e="string"!=typeof t||t.startsWith("area_")?"":t;let i="string"==typeof t&&t.startsWith("area_")?t:"";const s=Array.isArray(this.hass?.areas)?this.hass.areas:[];if(!i&&s.length&&e){const t=s.find(t=>(t.name||"").toLowerCase()===String(e).toLowerCase());t?.area_id&&(i=t.area_id)}if(!i){const t=this.config?.entities?.camera?.entity,e=this.hass?.entities;t&&e?.[t]?.area_id&&(i=e[t].area_id)}return{areaId:i,areaName:e}}_matchAreaForEntityId(t,e,i){const s=this.hass?.entities;if(e&&s?.[t]?.area_id)return s[t].area_id===e;const o=this.hass?.states?.[t];if(!o)return!(e||i);const n=o.attributes?.area_id,a=o.attributes?.area;return e&&n?n===e:i&&a?String(a).toLowerCase()===String(i).toLowerCase():!(e||i)}_filterByAreaIncludeSelected(t,e,i,s){const o=(t||[]).filter(t=>this._matchAreaForEntityId(t,e,i));return s&&!o.includes(s)&&o.unshift(s),Array.from(new Set(o))}updated(t){if(t.has("config")||t.has("hass")){const t=this.config?.entities?.camera?.entity||"",e=this.config?.entities?.camera?.icon||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon,s=i||wt(t,this.hass);s&&this._set("entities.camera.icon",s)}this._entity=t,this._icon=this.config?.entities?.camera?.icon||"";if(this.config?.auto_discovery_sections?.camera??!1){const{areaId:t,areaName:e}=this._resolveAreaRef();let i=pt(this.hass,this.config,"camera")||[];!i.length&&this.hass?.states&&(i=Object.keys(this.hass.states).filter(t=>t.startsWith("camera."))),this._cameraCandidates=this._filterByAreaIncludeSelected(i,t,e,this._entity)}else this._cameraCandidates=[]}}static styles=n`
     :host { display: block; }
     .glass-panel {
       margin: 0 !important; width: 100%; box-sizing: border-box;
@@ -1323,7 +1177,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       display:block; margin: 20px auto; font-size:1.15rem; font-weight:700;
       box-shadow: 0 2px 24px #ff4c6a44;
     }
-  `;render(){const t=this.config?.auto_discovery_sections?.camera??!1;return M`
+  `;render(){const t=this.config?.auto_discovery_sections?.camera??!1;return I`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
@@ -1366,7 +1220,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           @click=${()=>this.dispatchEvent(new CustomEvent("__panel_cmd__",{detail:{cmd:"reset",section:"camera"},bubbles:!0,composed:!0}))}
         >🧹 Reset Camera</button>
       </ha-expansion-panel>
-    `}_toggleAuto(t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.camera",val:t},bubbles:!0,composed:!0}))}_set(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("camera-panel",Ot);class jt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_entity:{type:String,state:!0},_icon:{type:String,state:!0},_climateCandidates:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._entity="",this._icon="",this._climateCandidates=[]}_resolveAreaRef(){const t=Array.isArray(this.config?.area)?this.config.area[0]:this.config?.area,e="string"!=typeof t||t.startsWith("area_")?"":t;let i="string"==typeof t&&t.startsWith("area_")?t:"";const s=Array.isArray(this.hass?.areas)?this.hass.areas:[];if(!i&&s.length&&e){const t=s.find(t=>(t.name||"").toLowerCase()===String(e).toLowerCase());t?.area_id&&(i=t.area_id)}if(!i){const t=this.config?.entities?.climate?.entity,e=this.hass?.entities;t&&e?.[t]?.area_id&&(i=e[t].area_id)}return{areaId:i,areaName:e}}_matchAreaForEntityId(t,e,i){const s=this.hass?.entities;if(e&&s?.[t]?.area_id)return s[t].area_id===e;const o=this.hass?.states?.[t];if(!o)return!(e||i);const n=o.attributes?.area_id,a=o.attributes?.area;return e&&n?n===e:i&&a?String(a).toLowerCase()===String(i).toLowerCase():!(e||i)}_filterByAreaIncludeSelected(t,e,i,s){const o=(t||[]).filter(t=>this._matchAreaForEntityId(t,e,i));return s&&!o.includes(s)&&o.unshift(s),Array.from(new Set(o))}updated(t){if(t.has("config")||t.has("hass")){const t=this.config?.entities?.climate?.entity||"",e=this.config?.entities?.climate?.icon||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon,s=i||wt(t,this.hass);s&&this._set("entities.climate.icon",s)}this._entity=t,this._icon=this.config?.entities?.climate?.icon||"";if(this.config?.auto_discovery_sections?.climate??!1){const{areaId:t,areaName:e}=this._resolveAreaRef();let i=pt(this.hass,this.config,"climate")||[];!i.length&&this.hass?.states&&(i=Object.keys(this.hass.states).filter(t=>t.startsWith("climate."))),this._climateCandidates=this._filterByAreaIncludeSelected(i,t,e,this._entity)}else this._climateCandidates=[]}}static styles=n`
+    `}_toggleAuto(t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.camera",val:t},bubbles:!0,composed:!0}))}_set(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("camera-panel",jt);class Mt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_entity:{type:String,state:!0},_icon:{type:String,state:!0},_climateCandidates:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._entity="",this._icon="",this._climateCandidates=[]}_resolveAreaRef(){const t=Array.isArray(this.config?.area)?this.config.area[0]:this.config?.area,e="string"!=typeof t||t.startsWith("area_")?"":t;let i="string"==typeof t&&t.startsWith("area_")?t:"";const s=Array.isArray(this.hass?.areas)?this.hass.areas:[];if(!i&&s.length&&e){const t=s.find(t=>(t.name||"").toLowerCase()===String(e).toLowerCase());t?.area_id&&(i=t.area_id)}if(!i){const t=this.config?.entities?.climate?.entity,e=this.hass?.entities;t&&e?.[t]?.area_id&&(i=e[t].area_id)}return{areaId:i,areaName:e}}_matchAreaForEntityId(t,e,i){const s=this.hass?.entities;if(e&&s?.[t]?.area_id)return s[t].area_id===e;const o=this.hass?.states?.[t];if(!o)return!(e||i);const n=o.attributes?.area_id,a=o.attributes?.area;return e&&n?n===e:i&&a?String(a).toLowerCase()===String(i).toLowerCase():!(e||i)}_filterByAreaIncludeSelected(t,e,i,s){const o=(t||[]).filter(t=>this._matchAreaForEntityId(t,e,i));return s&&!o.includes(s)&&o.unshift(s),Array.from(new Set(o))}updated(t){if(t.has("config")||t.has("hass")){const t=this.config?.entities?.climate?.entity||"",e=this.config?.entities?.climate?.icon||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon,s=i||wt(t,this.hass);s&&this._set("entities.climate.icon",s)}this._entity=t,this._icon=this.config?.entities?.climate?.icon||"";if(this.config?.auto_discovery_sections?.climate??!1){const{areaId:t,areaName:e}=this._resolveAreaRef();let i=pt(this.hass,this.config,"climate")||[];!i.length&&this.hass?.states&&(i=Object.keys(this.hass.states).filter(t=>t.startsWith("climate."))),this._climateCandidates=this._filterByAreaIncludeSelected(i,t,e,this._entity)}else this._climateCandidates=[]}}static styles=n`
     :host { display: block; }
     .glass-panel {
       margin: 0 !important; width: 100%; box-sizing: border-box;
@@ -1404,7 +1258,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       display:block; margin: 20px auto; font-size:1.15rem; font-weight:700;
       box-shadow: 0 2px 24px #ff4c6a44;
     }
-  `;render(){const t=this.config?.auto_discovery_sections?.climate??!1;return M`
+  `;render(){const t=this.config?.auto_discovery_sections?.climate??!1;return I`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
@@ -1447,7 +1301,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           @click=${()=>this.dispatchEvent(new CustomEvent("__panel_cmd__",{detail:{cmd:"reset",section:"climate"},bubbles:!0,composed:!0}))}
         >🧹 Reset Climate</button>
       </ha-expansion-panel>
-    `}_toggleAuto(t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.climate",val:t},bubbles:!0,composed:!0}))}_set(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("climate-panel",jt);class Rt extends st{static properties={hass:{type:Object},config:{type:Object},openPanel:{type:String,state:!0}};constructor(){super(),this.hass=void 0,this.config={},this.openPanel="",this._onPanelChanged=this._onPanelChanged.bind(this),this._onPanelCmd=this._onPanelCmd.bind(this),this._togglePanel=this._togglePanel.bind(this),this._onConfigChanged=this._onConfigChanged.bind(this)}setConfig(t){this.config={type:t?.type||"custom:bubble-room",...t||{}},this.requestUpdate()}set value(t){this.config=t||{}}get value(){return this.config}connectedCallback(){super.connectedCallback(),this.addEventListener("panel-changed",this._onPanelChanged),this.addEventListener("__panel_cmd__",this._onPanelCmd)}disconnectedCallback(){this.removeEventListener("panel-changed",this._onPanelChanged),this.removeEventListener("__panel_cmd__",this._onPanelCmd),super.disconnectedCallback()}_emitConfig(t){const e={type:this.config?.type||"custom:bubble-room",...t||{}};this.config=e,this.dispatchEvent(new CustomEvent("config-changed",{detail:{config:this.config},bubbles:!0,composed:!0})),this.requestUpdate()}_setConfigValue(t,e){const i=String(t).split("."),s=structuredClone(this.config||{});let o=s;for(let t=0;t<i.length-1;t++){const e=i[t];"object"==typeof o[e]&&null!==o[e]||(o[e]={}),o=o[e]}o[i[i.length-1]]=e,this._emitConfig(s)}_onPanelChanged(t){t.stopPropagation();const{prop:e,val:i}=t.detail||{};if(!e)return;const s=this.config,o=structuredClone(s||{}),n=String(e).split(".");let a=o;for(let t=0;t<n.length-1;t++){const e=n[t];"object"==typeof a[e]&&null!==a[e]||(a[e]={}),a=a[e]}a[n[n.length-1]]=i;const r="area"===e,l=e.startsWith("auto_discovery_sections."),c=r||l?xt(this.hass,o,e,!1):o;this._emitConfig(c)}_onConfigChanged(t){t.stopPropagation();const{path:e,value:i}=t.detail||{};if(!e)return;const s=this.config,o=structuredClone(s||{}),n=String(e).split(".");let a=o;for(let t=0;t<n.length-1;t++){const e=n[t];"object"==typeof a[e]&&null!==a[e]||(a[e]={}),a=a[e]}a[n[n.length-1]]=i;const r="area"===e,l=e.startsWith("auto_discovery_sections."),c=r||l?xt(this.hass,o,e,!1):o;this._emitConfig(c)}_onPanelCmd(t){t.stopPropagation();const{cmd:e,section:i}=t.detail||{};if("reset"!==e)return;let s=this.config||{};switch(i){case"room":s=function(t){const e={...t.entities||{}};delete e.presence;const i={...t,entities:e};return delete i.name,delete i.icon,delete i.area,delete i.presence_entity,i}(s);break;case"sensors":s=function(t){const e={...t.entities||{}};return["sensor1","sensor2","sensor3","sensor4","sensor5","sensor6","sensor7","sensor8"].forEach(t=>delete e[t]),{...t,entities:e}}(s);break;case"mushrooms":s=function(t){const e={...t.entities||{}};return["mushroom1","mushroom2","mushroom3","mushroom4","mushroom5","climate","camera"].forEach(t=>delete e[t]),{...t,entities:e}}(s);break;case"subbuttons":s=function(t){const e={...t.entities||{}};return["sub-button1","sub-button2","sub-button3","sub-button4","sub-button5","sub-button6"].forEach(t=>delete e[t]),{...t,entities:e}}(s);break;case"climate":s=function(t){const e={...t.entities||{}};return delete e.climate,{...t,entities:e}}(s),s?.auto_discovery_sections?.climate&&(s=xt(this.hass,s,"auto_discovery_sections.climate",!1));break;case"camera":s=function(t){const e={...t.entities||{}};return delete e.camera,{...t,entities:e}}(s),s?.auto_discovery_sections?.camera&&(s=xt(this.hass,s,"auto_discovery_sections.camera",!1));break;default:return}this._emitConfig(s)}_togglePanel(t,e){const i=t?.detail?.expanded;this.openPanel=i?e:""}static styles=n`
+    `}_toggleAuto(t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.climate",val:t},bubbles:!0,composed:!0}))}_set(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("climate-panel",Mt);class Rt extends st{static properties={hass:{type:Object},config:{type:Object},openPanel:{type:String,state:!0}};constructor(){super(),this.hass=void 0,this.config={},this.openPanel="",this._onPanelChanged=this._onPanelChanged.bind(this),this._onPanelCmd=this._onPanelCmd.bind(this),this._togglePanel=this._togglePanel.bind(this),this._onConfigChanged=this._onConfigChanged.bind(this)}setConfig(t){this.config={type:t?.type||"custom:bubble-room",...t||{}},this.requestUpdate()}set value(t){this.config=t||{}}get value(){return this.config}connectedCallback(){super.connectedCallback(),this.addEventListener("panel-changed",this._onPanelChanged),this.addEventListener("__panel_cmd__",this._onPanelCmd)}disconnectedCallback(){this.removeEventListener("panel-changed",this._onPanelChanged),this.removeEventListener("__panel_cmd__",this._onPanelCmd),super.disconnectedCallback()}_emitConfig(t){const e={type:this.config?.type||"custom:bubble-room",...t||{}};this.config=e,this.dispatchEvent(new CustomEvent("config-changed",{detail:{config:this.config},bubbles:!0,composed:!0})),this.requestUpdate()}_setConfigValue(t,e){const i=String(t).split("."),s=structuredClone(this.config||{});let o=s;for(let t=0;t<i.length-1;t++){const e=i[t];"object"==typeof o[e]&&null!==o[e]||(o[e]={}),o=o[e]}o[i[i.length-1]]=e,this._emitConfig(s)}_onPanelChanged(t){t.stopPropagation();const{prop:e,val:i}=t.detail||{};if(!e)return;const s=this.config,o=structuredClone(s||{}),n=String(e).split(".");let a=o;for(let t=0;t<n.length-1;t++){const e=n[t];"object"==typeof a[e]&&null!==a[e]||(a[e]={}),a=a[e]}a[n[n.length-1]]=i;const r="area"===e,l=e.startsWith("auto_discovery_sections."),c=r||l?xt(this.hass,o,e,!1):o;this._emitConfig(c)}_onConfigChanged(t){t.stopPropagation();const{path:e,value:i}=t.detail||{};if(!e)return;const s=this.config,o=structuredClone(s||{}),n=String(e).split(".");let a=o;for(let t=0;t<n.length-1;t++){const e=n[t];"object"==typeof a[e]&&null!==a[e]||(a[e]={}),a=a[e]}a[n[n.length-1]]=i;const r="area"===e,l=e.startsWith("auto_discovery_sections."),c=r||l?xt(this.hass,o,e,!1):o;this._emitConfig(c)}_onPanelCmd(t){t.stopPropagation();const{cmd:e,section:i}=t.detail||{};if("reset"!==e)return;let s=this.config||{};switch(i){case"room":s=function(t){const e={...t.entities||{}};delete e.presence;const i={...t,entities:e};return delete i.name,delete i.icon,delete i.area,delete i.presence_entity,i}(s);break;case"sensors":s=function(t){const e={...t.entities||{}};return["sensor1","sensor2","sensor3","sensor4","sensor5","sensor6","sensor7","sensor8"].forEach(t=>delete e[t]),{...t,entities:e}}(s);break;case"mushrooms":s=function(t){const e={...t.entities||{}};return["mushroom1","mushroom2","mushroom3","mushroom4","mushroom5","climate","camera"].forEach(t=>delete e[t]),{...t,entities:e}}(s);break;case"subbuttons":s=function(t){const e={...t.entities||{}};return["sub-button1","sub-button2","sub-button3","sub-button4","sub-button5","sub-button6"].forEach(t=>delete e[t]),{...t,entities:e}}(s);break;case"climate":s=function(t){const e={...t.entities||{}};return delete e.climate,{...t,entities:e}}(s),s?.auto_discovery_sections?.climate&&(s=xt(this.hass,s,"auto_discovery_sections.climate",!1));break;case"camera":s=function(t){const e={...t.entities||{}};return delete e.camera,{...t,entities:e}}(s),s?.auto_discovery_sections?.camera&&(s=xt(this.hass,s,"auto_discovery_sections.camera",!1));break;default:return}this._emitConfig(s)}_togglePanel(t,e){const i=t?.detail?.expanded;this.openPanel=i?e:""}static styles=n`
     :host { display:block; }
     .editor-grid {
       display:grid; gap: 16px;
@@ -1457,7 +1311,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
     @media (min-width: 1100px) {
       .editor-grid { grid-template-columns: 1fr 1fr; }
     }
-  `;render(){const t=this.config||{};return M`
+  `;render(){const t=this.config||{};return I`
       <div class="editor-grid">
         <!-- ROOM -->
         <room-panel
@@ -1583,9 +1437,9 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       width: 100%;
       height: 100%;
     }
-  `;render(){return M`
+  `;render(){return I`
       <div class="container">
-        ${this.subbuttons.map((t,e)=>{const i=t.active?t.colorOn:t.colorOff,s=t.active?t.iconOn:t.iconOff;return M`
+        ${this.subbuttons.map((t,e)=>{const i=t.active?t.colorOn:t.colorOff,s=t.active?t.iconOn:t.iconOff;return I`
             <div
               class="sub-button"
               style="background:${i};color:${s};"
@@ -1598,7 +1452,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             </div>
           `})}
       </div>
-    `}_onDown(t){this._holdFired=!1,this._currentIndex=t,this._holdTimer=window.setTimeout(()=>{this._holdFired=!0,this._fireHassAction(t,"hold")},this._holdThreshold)}_onUp(t){this._clearHoldTimer(),this._holdFired||this._currentIndex!==t||this._fireHassAction(t,"tap")}_clearHoldTimer(){this._holdTimer&&(clearTimeout(this._holdTimer),this._holdTimer=null)}_fireHassAction(t,e){const i=this.subbuttons?.[t];if(!i||!i.entity_id)return;const s={entity:i.entity_id,tap_action:i.tap_action||{action:"toggle"},hold_action:i.hold_action||{action:"more-info"}},o=new Event("hass-action",{bubbles:!0,composed:!0});o.detail={config:s,action:e},this.dispatchEvent(o)}}customElements.define("bubble-subbutton",Ft);class It extends st{static properties={hass:{type:Object},name:{type:String},area:{type:String},config:{type:Object},container:{type:Object}};_raf=null;_resizeObs=null;constructor(){super(),this.name=""}firstUpdated(){this._scheduleScale(),this._resizeObs=new ResizeObserver(()=>this._scheduleScale()),this._resizeObs.observe(this),window.addEventListener("resize",this._scheduleScale,{passive:!0})}updated(t){(t.has("name")||t.has("config")||t.has("container"))&&this._scheduleScale()}disconnectedCallback(){super.disconnectedCallback(),this._resizeObs?.disconnect(),window.removeEventListener("resize",this._scheduleScale)}_scheduleScale=()=>{this._raf||(this._raf=requestAnimationFrame(()=>{this._raf=null,this._autoScaleFont()}))};_autoScaleFont(){const t=this.renderRoot.querySelector(".bubble-name"),e=this.container||this.parentElement||this;if(!t||!e)return;this._resizeObs.disconnect();let i=8,s=160;for(let o=0;o<8;o++){const o=i+s>>1;t.style.fontSize=`${o}px`,t.scrollWidth<=e.clientWidth&&t.scrollHeight<=e.clientHeight?i=o:s=o-1}t.style.fontSize=`${i}px`,this._resizeObs.observe(this)}_isRoomActive(){const t=this.config?.entities?.presence?.entity;if(!t)return!1;const e=this.hass?.states?.[t]?.state;return["on","home","occupied","motion","detected"].includes(e)}render(){return M`<div class="bubble-name">${this.name}</div>`}static styles=n`
+    `}_onDown(t){this._holdFired=!1,this._currentIndex=t,this._holdTimer=window.setTimeout(()=>{this._holdFired=!0,this._fireHassAction(t,"hold")},this._holdThreshold)}_onUp(t){this._clearHoldTimer(),this._holdFired||this._currentIndex!==t||this._fireHassAction(t,"tap")}_clearHoldTimer(){this._holdTimer&&(clearTimeout(this._holdTimer),this._holdTimer=null)}_fireHassAction(t,e){const i=this.subbuttons?.[t];if(!i||!i.entity_id)return;const s={entity:i.entity_id,tap_action:i.tap_action||{action:"toggle"},hold_action:i.hold_action||{action:"more-info"}},o=new Event("hass-action",{bubbles:!0,composed:!0});o.detail={config:s,action:e},this.dispatchEvent(o)}}customElements.define("bubble-subbutton",Ft);class It extends st{static properties={hass:{type:Object},name:{type:String},area:{type:String},config:{type:Object},container:{type:Object}};_raf=null;_resizeObs=null;constructor(){super(),this.name=""}firstUpdated(){this._scheduleScale(),this._resizeObs=new ResizeObserver(()=>this._scheduleScale()),this._resizeObs.observe(this),window.addEventListener("resize",this._scheduleScale,{passive:!0})}updated(t){(t.has("name")||t.has("config")||t.has("container"))&&this._scheduleScale()}disconnectedCallback(){super.disconnectedCallback(),this._resizeObs?.disconnect(),window.removeEventListener("resize",this._scheduleScale)}_scheduleScale=()=>{this._raf||(this._raf=requestAnimationFrame(()=>{this._raf=null,this._autoScaleFont()}))};_autoScaleFont(){const t=this.renderRoot.querySelector(".bubble-name"),e=this.container||this.parentElement||this;if(!t||!e)return;this._resizeObs.disconnect();let i=8,s=160;for(let o=0;o<8;o++){const o=i+s>>1;t.style.fontSize=`${o}px`,t.scrollWidth<=e.clientWidth&&t.scrollHeight<=e.clientHeight?i=o:s=o-1}t.style.fontSize=`${i}px`,this._resizeObs.observe(this)}_isRoomActive(){const t=this.config?.entities?.presence?.entity;if(!t)return!1;const e=this.hass?.states?.[t]?.state;return["on","home","occupied","motion","detected"].includes(e)}render(){return I`<div class="bubble-name">${this.name}</div>`}static styles=n`
     .bubble-name {
       display: block;
       width: 100%;
@@ -1613,7 +1467,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       text-transform: uppercase;
       color: var(--bubble-room-name-color, white);
     }
-  `}customElements.define("bubble-name",It);class Mt extends st{static properties={sensors:{type:Array}};constructor(){super(),this.sensors=[],this.rows=1,this.columns=1,this._resizeObserver=null,this._resizeScheduled=!1}connectedCallback(){super.connectedCallback(),this._updateLayout(),this._resizeObserver=new ResizeObserver(()=>{this._resizeScheduled||(this._resizeScheduled=!0,requestAnimationFrame(()=>{this._autoScaleValues(),this._resizeScheduled=!1}))}),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver?.disconnect()}updated(t){t.has("sensors")&&(this._updateLayout(),this._autoScaleValues())}_updateLayout(){const t=this.sensors?.length||0;this.rows=t>4?2:1,this.columns=t>4?4:t||1}_autoScaleValues(){const t=this.renderRoot?.querySelectorAll(".sensor-pill");t?.length&&t.forEach(t=>this._fitValueAndUnit(t))}_fitValueAndUnit(t){const e=t.querySelector(".sensor-value"),i=t.querySelector(".sensor-unit");if(!e)return;const s=.52*t.clientWidth,o=.78*t.clientHeight;if(s<=0||o<=0)return;e.style.fontSize="",i&&(i.style.fontSize="");let n=10,a=44,r=n;for(let t=0;t<16;t++){const t=Math.floor((n+a)/2);if(e.style.fontSize=`${t}px`,i){const e=Math.max(10,Math.round(.75*t));i.style.fontSize=`${e}px`}const l=e.getBoundingClientRect(),c=i?i.getBoundingClientRect():{width:0,height:0},d=l.width+c.width+6,h=Math.max(l.height,c.height);d<=s&&h<=o?(r=t,n=t+1):a=t-1}e.style.fontSize=`${r}px`,i&&(i.style.fontSize=`${Math.max(10,Math.round(.75*r))}px`)}_openMoreInfo(t){if(!t||"string"!=typeof t)return;const e=new CustomEvent("hass-more-info",{bubbles:!0,composed:!0,detail:{entityId:t}});(document.querySelector("home-assistant")||this).dispatchEvent(e)}static styles=n`
+  `}customElements.define("bubble-name",It);class Ut extends st{static properties={sensors:{type:Array}};constructor(){super(),this.sensors=[],this.rows=1,this.columns=1,this._resizeObserver=null,this._resizeScheduled=!1}connectedCallback(){super.connectedCallback(),this._updateLayout(),this._resizeObserver=new ResizeObserver(()=>{this._resizeScheduled||(this._resizeScheduled=!0,requestAnimationFrame(()=>{this._autoScaleValues(),this._resizeScheduled=!1}))}),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver?.disconnect()}updated(t){t.has("sensors")&&(this._updateLayout(),this._autoScaleValues())}_updateLayout(){const t=this.sensors?.length||0;this.rows=t>4?2:1,this.columns=t>4?4:t||1}_autoScaleValues(){const t=this.renderRoot?.querySelectorAll(".sensor-pill");t?.length&&t.forEach(t=>this._fitValueAndUnit(t))}_fitValueAndUnit(t){const e=t.querySelector(".sensor-value"),i=t.querySelector(".sensor-unit");if(!e)return;const s=.52*t.clientWidth,o=.78*t.clientHeight;if(s<=0||o<=0)return;e.style.fontSize="",i&&(i.style.fontSize="");let n=10,a=44,r=n;for(let t=0;t<16;t++){const t=Math.floor((n+a)/2);if(e.style.fontSize=`${t}px`,i){const e=Math.max(10,Math.round(.75*t));i.style.fontSize=`${e}px`}const l=e.getBoundingClientRect(),c=i?i.getBoundingClientRect():{width:0,height:0},d=l.width+c.width+6,h=Math.max(l.height,c.height);d<=s&&h<=o?(r=t,n=t+1):a=t-1}e.style.fontSize=`${r}px`,i&&(i.style.fontSize=`${Math.max(10,Math.round(.75*r))}px`)}_openMoreInfo(t){if(!t||"string"!=typeof t)return;const e=new CustomEvent("hass-more-info",{bubbles:!0,composed:!0,detail:{entityId:t}});(document.querySelector("home-assistant")||this).dispatchEvent(e)}static styles=n`
     :host {
       display: block;
       height: 100%;
@@ -1685,7 +1539,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       margin-left: 4px;
       flex: 0 0 auto;
     }
-  `;render(){const t=(this.sensors||[]).map(t=>{const e=t.device_class,i=Ct[e]||{},s=i.emoji||"❓",o=t.unit||i.units?.[0]||"";return{...t,label:s,unit:o}});return M`
+  `;render(){const t=(this.sensors||[]).map(t=>{const e=t.device_class,i=Ct[e]||{},s=i.emoji||"❓",o=t.unit||i.units?.[0]||"";return{...t,label:s,unit:o}});return I`
       <div
         class="sensor-grid"
         style="
@@ -1693,7 +1547,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           grid-template-rows: repeat(${this.rows}, 1fr);
         "
       >
-        ${t.map(t=>{const e=t.entity||t.entity_id||"",i=e?`Mostra grafico storico: ${e}`:"Mostra grafico storico";return M`
+        ${t.map(t=>{const e=t.entity||t.entity_id||"",i=e?`Mostra grafico storico: ${e}`:"Mostra grafico storico";return I`
             <div
               class="sensor-pill"
               style="color: ${t.color||"#e3f6ff"}"
@@ -1710,7 +1564,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             </div>
           `})}
       </div>
-    `}}customElements.define("bubble-sensor",Mt);class Ut extends st{static properties={entities:{type:Array}};constructor(){super(),this.entities=[],this._containerSize={width:0,height:0},this._rafSize=null,this._ro=new ResizeObserver(t=>{const e=t[0]?.contentRect;e&&(this._rafSize&&cancelAnimationFrame(this._rafSize),this._rafSize=requestAnimationFrame(()=>{const t=Math.round(e.width),i=Math.round(e.height);t===this._containerSize.width&&i===this._containerSize.height||(this._containerSize={width:t,height:i},this.requestUpdate())}))}),this._holdThreshold=500,this._holdTimer=null,this._holdFired=!1,this._lastTapTs=0}connectedCallback(){super.connectedCallback(),this._ro.observe(this)}disconnectedCallback(){this._ro.disconnect(),super.disconnectedCallback()}_updateSize(){const t=this.getBoundingClientRect();this._containerSize={width:t.width,height:t.height},this.requestUpdate()}_handleClick(t){this.dispatchEvent(new CustomEvent("hass-action",{detail:{config:{entity:t.entity_id,tap_action:t.tap_action||{action:"toggle"},hold_action:t.hold_action||{action:"more-info"}},action:"tap"},bubbles:!0,composed:!0}))}_dispatchAction(t,e){const i={entity:t.entity_id||t.entity||t,tap_action:t.tap_action||{action:"toggle"},hold_action:t.hold_action||{action:"more-info"},double_tap_action:t.double_tap_action};this.dispatchEvent(new CustomEvent("hass-action",{detail:{config:i,action:e},bubbles:!0,composed:!0}))}_onPointerDown(t,e){t.preventDefault(),this._holdFired=!1,clearTimeout(this._holdTimer),this._holdTimer=setTimeout(()=>{this._holdFired=!0,this._dispatchAction(e,"hold")},this._holdThreshold)}_onPointerUp(t,e){if(t.preventDefault(),clearTimeout(this._holdTimer),this._holdFired)return void(this._holdFired=!1);const i=Date.now();if(e?.double_tap_action&&i-this._lastTapTs<300)return this._lastTapTs=0,void this._dispatchAction(e,"double_tap");this._lastTapTs=i,setTimeout(()=>{Date.now()-this._lastTapTs>=280&&this._dispatchAction(e,"tap")},280)}_onPointerCancel(){clearTimeout(this._holdTimer),this._holdFired=!1}static styles=n`
+    `}}customElements.define("bubble-sensor",Ut);class Nt extends st{static properties={entities:{type:Array}};constructor(){super(),this.entities=[],this._containerSize={width:0,height:0},this._rafSize=null,this._ro=new ResizeObserver(t=>{const e=t[0]?.contentRect;e&&(this._rafSize&&cancelAnimationFrame(this._rafSize),this._rafSize=requestAnimationFrame(()=>{const t=Math.round(e.width),i=Math.round(e.height);t===this._containerSize.width&&i===this._containerSize.height||(this._containerSize={width:t,height:i},this.requestUpdate())}))}),this._holdThreshold=500,this._holdTimer=null,this._holdFired=!1,this._lastTapTs=0}connectedCallback(){super.connectedCallback(),this._ro.observe(this)}disconnectedCallback(){this._ro.disconnect(),super.disconnectedCallback()}_updateSize(){const t=this.getBoundingClientRect();this._containerSize={width:t.width,height:t.height},this.requestUpdate()}_handleClick(t){this.dispatchEvent(new CustomEvent("hass-action",{detail:{config:{entity:t.entity_id,tap_action:t.tap_action||{action:"toggle"},hold_action:t.hold_action||{action:"more-info"}},action:"tap"},bubbles:!0,composed:!0}))}_dispatchAction(t,e){const i={entity:t.entity_id||t.entity||t,tap_action:t.tap_action||{action:"toggle"},hold_action:t.hold_action||{action:"more-info"},double_tap_action:t.double_tap_action};this.dispatchEvent(new CustomEvent("hass-action",{detail:{config:i,action:e},bubbles:!0,composed:!0}))}_onPointerDown(t,e){t.preventDefault(),this._holdFired=!1,clearTimeout(this._holdTimer),this._holdTimer=setTimeout(()=>{this._holdFired=!0,this._dispatchAction(e,"hold")},this._holdThreshold)}_onPointerUp(t,e){if(t.preventDefault(),clearTimeout(this._holdTimer),this._holdFired)return void(this._holdFired=!1);const i=Date.now();if(e?.double_tap_action&&i-this._lastTapTs<300)return this._lastTapTs=0,void this._dispatchAction(e,"double_tap");this._lastTapTs=i,setTimeout(()=>{Date.now()-this._lastTapTs>=280&&this._dispatchAction(e,"tap")},280)}_onPointerCancel(){clearTimeout(this._holdTimer),this._holdFired=!1}static styles=n`
     :host {
       display: block;
       width: 100%;
@@ -1729,13 +1583,13 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       pointer-events: auto;
     }
     .mushroom-entity ha-icon { display: block; }
-  `;render(){const{width:t,height:e}=this._containerSize;if(!t||!e)return M``;const i=window.innerWidth||t,s=.55;let o;if(i<=100)o=s;else if(i>=200)o=.25;else{o=s+(.25-s)*((i-100)/100)}const n=Math.min(t,1.6*e),a=.5*(e+n)*o,r=.6*t,l=.6*e,c=r*Math.min(1,t/(2*r)),d=l*Math.min(1,e/(2*l)),h=t-c,p=.5*e,u=Math.max(0,c-a/2-1),b=Math.max(0,d-a/2-1),g=t=>Math.PI*t/180,m=g(30),f=g(85),_=.75*a,v=.75*a,x=[{x:a/2+1,y:a/2+1},{x:h+u*Math.cos(-f),y:p+b*Math.sin(-f)},{x:h+u*Math.cos(-m),y:p+b*Math.sin(-m)},{x:h+u*Math.cos(+m),y:p+b*Math.sin(+m)},{x:h+u*Math.cos(+f),y:p+b*Math.sin(+f)}];let y=0;return M`
-      ${this.entities.map(i=>{const s="camera"===i?.kind,o="climate"===i?.kind,n=s?_:o?v:a,r=.95*n;let l;s?l={x:t-n/2,y:n/2}:o?l={x:n/2+1,y:e-n/2-1}:(l=x[Math.min(y,x.length-1)]??{x:h,y:p},y++);const c=s||o?0:i.dx??0,d=s||o?0:i.dy??0,u=l.x+c,b=l.y+d;return M`
+  `;render(){const{width:t,height:e}=this._containerSize;if(!t||!e)return I``;const i=window.innerWidth||t,s=.55;let o;if(i<=100)o=s;else if(i>=200)o=.25;else{o=s+(.25-s)*((i-100)/100)}const n=Math.min(t,1.6*e),a=.5*(e+n)*o,r=.6*t,l=.6*e,c=r*Math.min(1,t/(2*r)),d=l*Math.min(1,e/(2*l)),h=t-c,p=.5*e,u=Math.max(0,c-a/2-1),g=Math.max(0,d-a/2-1),b=t=>Math.PI*t/180,m=b(30),f=b(85),_=.75*a,v=.75*a,x=[{x:a/2+1,y:a/2+1},{x:h+u*Math.cos(-f),y:p+g*Math.sin(-f)},{x:h+u*Math.cos(-m),y:p+g*Math.sin(-m)},{x:h+u*Math.cos(+m),y:p+g*Math.sin(+m)},{x:h+u*Math.cos(+f),y:p+g*Math.sin(+f)}];let y=0;return I`
+      ${this.entities.map(i=>{const s="camera"===i?.kind,o="climate"===i?.kind,n=s?_:o?v:a,r=.95*n;let l;s?l={x:t-n/2,y:n/2}:o?l={x:n/2+1,y:e-n/2-1}:(l=x[Math.min(y,x.length-1)]??{x:h,y:p},y++);const c=s||o?0:i.dx??0,d=s||o?0:i.dy??0,u=l.x+c,g=l.y+d;return I`
           <div
             class="mushroom-entity"
             style="
               left:${u}px;
-              top:${b}px;
+              top:${g}px;
               width:${n}px;
               height:${n}px;
               color:${i.color};
@@ -1749,7 +1603,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             <ha-icon icon="${i.icon}" style="--mdc-icon-size:${r}px;"></ha-icon>
           </div>
         `})}
-    `}}customElements.define("bubble-mushroom",Ut);class Nt extends st{static properties={icon:{type:String},active:{type:Boolean},colorActive:{type:String},colorInactive:{type:String},backgroundActive:{type:String},backgroundInactive:{type:String}};constructor(){super(),this.icon="",this.active=!1,this.colorActive="#21df73",this.colorInactive="#173c16",this.backgroundActive="rgba(33,223,115,0.12)",this.backgroundInactive="rgba(23,60,22,0.08)"}static styles=n`
+    `}}customElements.define("bubble-mushroom",Nt);class Bt extends st{static properties={icon:{type:String},active:{type:Boolean},colorActive:{type:String},colorInactive:{type:String},backgroundActive:{type:String},backgroundInactive:{type:String}};constructor(){super(),this.icon="",this.active=!1,this.colorActive="#21df73",this.colorInactive="#173c16",this.backgroundActive="rgba(33,223,115,0.12)",this.backgroundInactive="rgba(23,60,22,0.08)"}static styles=n`
     :host {
       position: absolute;   /* prende come riferimento .icon-mushroom-area */
       inset: 0;
@@ -1772,7 +1626,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       height: var(--mdc-icon-size);
       transform: translateX(var(--icon-shift-x, -20%));
     }
-  `;render(){const t=this.active?this.colorActive:this.colorInactive,e=this.active?this.backgroundActive:this.backgroundInactive;return M`
+  `;render(){const t=this.active?this.colorActive:this.colorInactive,e=this.active?this.backgroundActive:this.backgroundInactive;return I`
       <div class="main-icon-container" style="background:${e}">
         <ha-icon
           class="main-icon"
@@ -1781,7 +1635,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           @click="${()=>this.dispatchEvent(new CustomEvent("main-icon-click"))}"
         ></ha-icon>
       </div>
-    `}}customElements.define("bubble-icon",Nt);class Bt extends st{static properties={config:{type:Object},hass:{type:Object}};_entities={};constructor(){super(),this.config={},this.hass={}}setConfig(t){this.config={layout:"wide",...t},this._entities=structuredClone(this.config.entities||{}),this._entities.camera=this._entities.camera||{entity:"",icon:""},this._entities.camera.presence||(this._entities.camera.presence={entity:""}),this._entities.climate=this._entities.climate||{entity:"",icon:""}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:[],area:[],sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return Tt}),document.createElement("bubble-room-editor")}connectedCallback(){super.connectedCallback(),this._resizeObs=new ResizeObserver(()=>this.requestUpdate())}firstUpdated(){const t=this.shadowRoot?.querySelector(".icon-mushroom-area");t&&this._resizeObs.observe(t)}disconnectedCallback(){this._resizeObs?.disconnect(),super.disconnectedCallback()}updated(t){t.has("config")&&(this._entities=structuredClone(this.config.entities||{}))}_getSubButtons(){const t=this.config.colors?.subbutton?.background_on??"#00d46d",e=this.config.colors?.subbutton?.background_off??"#999",i=this.config.colors?.subbutton?.icon_on??"yellow",s=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(o=>{const n=this.hass.states?.[o.entity_id];return{icon:o.icon||wt(o.entity_id,this.hass),active:"on"===n?.state,colorOn:t,colorOff:e,iconOn:i,iconOff:s,entity_id:o.entity_id,tap_action:o.tap_action,hold_action:o.hold_action}})}_isRoomActive(){const t=this.config?.entities?.presence?.entity;if(!t)return!1;const e=this.hass?.states?.[t]?.state;return["on","home","occupied","motion","detected"].includes(e)}_getMainIconSize(){const t=this.shadowRoot?.querySelector(".icon-mushroom-area");return t?Math.round(.6*Math.min(t.clientWidth,t.clientHeight)):64}_getSensors(){const t=this._entities||{},e=this.config.colors?.room?.sensor_active??this.config.colors?.room?.text_active??"#21df73",i=this.config.colors?.room?.sensor_inactive??this.config.colors?.room?.text_inactive??"#173c16",s=this._isRoomActive()?e:i,o=[];for(let e=1;e<=6;e++){const i=t[`sensor${e}`]?.entity,n=this.hass?.states?.[i];i&&n&&o.push({icon:n.attributes.icon||"",value:n.state,unit:n.attributes.unit_of_measurement,device_class:n.attributes.device_class,color:s,entity:i})}return o}_getMushrooms(){const t=this._entities||{},e=this.config.colors?.mushroom?.active??"#00e676",i=this.config.colors?.mushroom?.inactive??"#888",s=[];for(let o=1;o<=5;o++){const n=t[`mushroom${o}`]||{},a=n.entity,r=this.hass?.states?.[a];a&&r&&s.push({icon:n.icon||r.attributes.icon||wt(a,this.hass)||"mdi:flash",state:r.state,color:"on"===r.state?e:i,dx:n.dx??0,dy:n.dy??0,angle_deg:n.angle_deg,radius_factor:n.radius_factor,entity_id:a,tap_action:n.tap_action,hold_action:n.hold_action})}const o=t.camera||{},n=o.entity;if(n&&this.hass.states?.[n]){const t=this.hass.states[n],a=o.presence?.entity,r=a?this.hass?.states?.[a]?.state:void 0,l=!a||["on","home","occupied","motion","detected"].includes(r);s.push({icon:o.icon||t.attributes.icon||wt(n,this.hass)||"mdi:cctv",state:t.state,color:l?e:i,left:"calc(100% - 12px - 36px)",top:12,dx:0,dy:0,kind:"camera",angle_deg:o.angle_deg,radius_factor:o.radius_factor,entity_id:n,tap_action:{action:"more-info"},hold_action:{action:"none"}})}const a=this._entities?.climate||{},r=a.entity;if(r&&this.hass.states?.[r]){const t=this.hass.states[r],o=t.state&&"off"!==t.state&&"idle"!==t.state||t.attributes?.hvac_action&&"off"!==t.attributes.hvac_action;s.push({icon:a.icon||t.attributes.icon||wt(r,this.hass)||"mdi:thermostat",state:t.state,color:o?e:i,dx:0,dy:0,angle_deg:a.angle_deg,radius_factor:a.radius_factor,kind:"climate",entity_id:r})}return s}_onMushroomClick(t){}render(){const t=this.config.layout||"wide",e=this._getMainIconSize(),i=this._getSubButtons(),s=this._isRoomActive(),o=this.config.colors?.room?.icon_active??"#21df73",n=this.config.colors?.room?.icon_inactive??"#173c16",a=this.config.colors?.room?.background_active??"rgba(33,223,115,0.12)",r=this.config.colors?.room?.background_inactive??"rgba(23,60,22,0.12)",l=this.config.colors?.room?.text_active??"#ffffff",c=this.config.colors?.room?.text_inactive??"rgba(255,255,255,0.5)";return M`
+    `}}customElements.define("bubble-icon",Bt);class Ht extends st{static properties={config:{type:Object},hass:{type:Object}};_entities={};constructor(){super(),this.config={},this.hass={}}setConfig(t){this.config={layout:"wide",...t},this._entities=structuredClone(this.config.entities||{}),this._entities.camera=this._entities.camera||{entity:"",icon:""},this._entities.camera.presence||(this._entities.camera.presence={entity:""}),this._entities.climate=this._entities.climate||{entity:"",icon:""}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:[],area:[],sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return Tt}),document.createElement("bubble-room-editor")}connectedCallback(){super.connectedCallback(),this._resizeObs=new ResizeObserver(()=>this.requestUpdate())}firstUpdated(){const t=this.shadowRoot?.querySelector(".icon-mushroom-area");t&&this._resizeObs.observe(t)}disconnectedCallback(){this._resizeObs?.disconnect(),super.disconnectedCallback()}updated(t){t.has("config")&&(this._entities=structuredClone(this.config.entities||{}))}_getSubButtons(){const t=this.config.colors?.subbutton?.background_on??"#00d46d",e=this.config.colors?.subbutton?.background_off??"#999",i=this.config.colors?.subbutton?.icon_on??"yellow",s=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(o=>{const n=this.hass.states?.[o.entity_id];return{icon:o.icon||wt(o.entity_id,this.hass),active:"on"===n?.state,colorOn:t,colorOff:e,iconOn:i,iconOff:s,entity_id:o.entity_id,tap_action:o.tap_action,hold_action:o.hold_action}})}_isRoomActive(){const t=this.config?.entities?.presence?.entity;if(!t)return!1;const e=this.hass?.states?.[t]?.state;return["on","home","occupied","motion","detected"].includes(e)}_getMainIconSize(){const t=this.shadowRoot?.querySelector(".icon-mushroom-area");return t?Math.round(.6*Math.min(t.clientWidth,t.clientHeight)):64}_getSensors(){const t=this._entities||{},e=this.config.colors?.room?.sensor_active??this.config.colors?.room?.text_active??"#21df73",i=this.config.colors?.room?.sensor_inactive??this.config.colors?.room?.text_inactive??"#173c16",s=this._isRoomActive()?e:i,o=[];for(let e=1;e<=6;e++){const i=t[`sensor${e}`]?.entity,n=this.hass?.states?.[i];i&&n&&o.push({icon:n.attributes.icon||"",value:n.state,unit:n.attributes.unit_of_measurement,device_class:n.attributes.device_class,color:s,entity:i})}return o}_getMushrooms(){const t=this._entities||{},e=this.config.colors?.mushroom?.active??"#00e676",i=this.config.colors?.mushroom?.inactive??"#888",s=[];for(let o=1;o<=5;o++){const n=t[`mushroom${o}`]||{},a=n.entity,r=this.hass?.states?.[a];a&&r&&s.push({icon:n.icon||r.attributes.icon||wt(a,this.hass)||"mdi:flash",state:r.state,color:"on"===r.state?e:i,dx:n.dx??0,dy:n.dy??0,angle_deg:n.angle_deg,radius_factor:n.radius_factor,entity_id:a,tap_action:n.tap_action,hold_action:n.hold_action})}const o=t.camera||{},n=o.entity;if(n&&this.hass.states?.[n]){const t=this.hass.states[n],a=o.presence?.entity,r=a?this.hass?.states?.[a]?.state:void 0,l=!a||["on","home","occupied","motion","detected"].includes(r);s.push({icon:o.icon||t.attributes.icon||wt(n,this.hass)||"mdi:cctv",state:t.state,color:l?e:i,left:"calc(100% - 12px - 36px)",top:12,dx:0,dy:0,kind:"camera",angle_deg:o.angle_deg,radius_factor:o.radius_factor,entity_id:n,tap_action:{action:"more-info"},hold_action:{action:"none"}})}const a=this._entities?.climate||{},r=a.entity;if(r&&this.hass.states?.[r]){const t=this.hass.states[r],o=t.state&&"off"!==t.state&&"idle"!==t.state||t.attributes?.hvac_action&&"off"!==t.attributes.hvac_action;s.push({icon:a.icon||t.attributes.icon||wt(r,this.hass)||"mdi:thermostat",state:t.state,color:o?e:i,dx:0,dy:0,angle_deg:a.angle_deg,radius_factor:a.radius_factor,kind:"climate",entity_id:r})}return s}_onMushroomClick(t){}render(){const t=this.config.layout||"wide",e=this._getMainIconSize(),i=this._getSubButtons(),s=this._isRoomActive(),o=this.config.colors?.room?.icon_active??"#21df73",n=this.config.colors?.room?.icon_inactive??"#173c16",a=this.config.colors?.room?.background_active??"rgba(33,223,115,0.12)",r=this.config.colors?.room?.background_inactive??"rgba(23,60,22,0.12)",l=this.config.colors?.room?.text_active??"#ffffff",c=this.config.colors?.room?.text_inactive??"rgba(255,255,255,0.5)";return I`
       <div class="bubble-room-grid ${t}">
         <div class="main-area">
           <div class="row1">
@@ -1854,5 +1708,5 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
     .bubble-room-grid.wide .main-area { grid-template-rows:1fr 2fr; }
     .bubble-room-grid.wide .row1      { grid-template-rows:1fr 2fr; }
     .bubble-room-grid.wide .row2      { grid-template-columns:2fr 1fr; }
-  `}customElements.define("bubble-room",Bt),window.customCards.push({type:"bubble-room",name:"Bubble Room",description:"A stylish room control card with environmental sensors",preview:!0,documentationURL:"https://github.com/mon3y78/Lovelace-Bubble-room"});export{Bt as BubbleRoom};
+  `}customElements.define("bubble-room",Ht),window.customCards.push({type:"bubble-room",name:"Bubble Room",description:"A stylish room control card with environmental sensors",preview:!0,documentationURL:"https://github.com/mon3y78/Lovelace-Bubble-room"});export{Ht as BubbleRoom};
 //# sourceMappingURL=lovelace-bubble-room.js.map
