@@ -18,28 +18,43 @@ function resolveAreaRef(hass, config) {
     const hit = areas.find((a) => (a.name || '').toLowerCase() === String(areaName).toLowerCase());
     if (hit?.area_id) areaId = hit.area_id;
   }
+
   return { areaId, areaName };
 }
 
-/** Confronta l’entity id con l’area: prima registry (hass.entities), poi attributes su state (area_id/area), poi nome. */
+/** Prova a determinare l'area di un entity id usando registry (entity→area_id o device→area_id) o gli attributi di stato. */
 function matchArea(hass, id, areaId, areaName) {
+  if (!(areaId || areaName)) return true;
+
   const reg = hass?.entities;
-  if (areaId && reg?.[id]?.area_id) return reg[id].area_id === areaId;
+  const devices = hass?.devices;
 
-  const st = hass?.states?.[id];
-  if (!st) return !(areaId || areaName); // se non so nulla, non escludere
+  // 1) entity registry → area_id diretto
+  const regEnt = reg?.[id];
+  if (regEnt?.area_id && areaId) return regEnt.area_id === areaId;
 
-  const attrAreaId   = st.attributes?.area_id;
-  const attrAreaName = st.attributes?.area;
-
-  if (areaId && attrAreaId)   return attrAreaId === areaId;
-  if (areaName && attrAreaName) {
-    return String(attrAreaName).toLowerCase() === String(areaName).toLowerCase();
+  // 2) entity registry → device_id → device.area_id
+  if (regEnt?.device_id && Array.isArray(devices)) {
+    const dev = devices.find((d) => d.id === regEnt.device_id || d.device_id === regEnt.device_id);
+    if (dev?.area_id && areaId) return dev.area_id === areaId;
   }
-  return !(areaId || areaName);
+
+  // 3) stato → attributes.area_id / attributes.area (nome)
+  const st = hass?.states?.[id];
+  if (st) {
+    const attrAreaId   = st.attributes?.area_id;
+    const attrAreaName = st.attributes?.area;
+    if (areaId && attrAreaId)   return attrAreaId === areaId;
+    if (areaName && attrAreaName) {
+      return String(attrAreaName).toLowerCase() === String(areaName).toLowerCase();
+    }
+  }
+
+  // se non trovo nulla di determinante, non escludo
+  return true;
 }
 
-/** Filtra la lista per area e garantisce che l’eventuale entità già selezionata resti in lista. */
+/** Filtra la lista per area e garantisce che l’eventuale entità già selezionata resti in lista (prima posizione). */
 function filterByAreaKeepSelected(hass, list, areaRef, selected) {
   const { areaId, areaName } = areaRef;
   const filtered = (list || []).filter((id) => matchArea(hass, id, areaId, areaName));
@@ -56,88 +71,111 @@ function gatherCandidates(hass, config, sectionOrDomain) {
   return list;
 }
 
-/** Trova il primo elemento non usato in “list”. */
-const pickFirstFree = (list, used) => list.find((id) => !used.has(id)) || null;
-
-/** Generico “autofill” per dominio (es.: climate, camera) */
+/** Generico “autofill” per dominio (es.: climate, camera) con filtro per area. */
 function autoFillByDomain(hass, config, domain, key) {
   const entities = { ...(config.entities || {}) };
   const slot = entities[key] || (entities[key] = {});
   if (slot.entity) return { ...config, entities }; // già valorizzato
 
-  // prendiamo candidati generici (mushroom) come pool base, poi filtriamo per dominio
-  let pool = gatherCandidates(hass, config, 'mushroom');
-  pool = pool.filter((id) => id.startsWith(domain + '.'));
+  // 1) prova col canale specifico del dominio (se esiste nel filtro custom)
+  let pool = gatherCandidates(hass, config, domain);
+  if (!pool.length) {
+    // 2) fallback: usa i candidati "mushroom" e poi filtra per dominio
+    pool = gatherCandidates(hass, config, 'mushroom');
+  }
+  pool = (pool || []).filter((id) => id.startsWith(`${domain}.`));
 
+  // 3) filtro per area robusto
   const areaRef = resolveAreaRef(hass, config);
   const filtered = filterByAreaKeepSelected(hass, pool, areaRef, slot.entity);
 
+  // 4) prendo il primo utile
   const pick = (filtered[0] || pool[0] || '');
   if (pick) slot.entity = pick;
 
-  if (DEBUG) console.info(`[AutoDiscovery][${key}]`, {
-    domain, chosen: slot.entity, areaRef, pool: pool.length, filtered: filtered.length,
-  });
+  if (DEBUG) {
+    console.info(`[AutoDiscovery][${key}]`, {
+      domain, chosen: slot.entity, areaRef, pool: pool.length, filtered: filtered.length,
+    });
+  }
 
   return { ...config, entities };
 }
+
+/** Trova il primo elemento non usato in “list”. */
+const pickFirstFree = (list, used) => list.find((id) => !used.has(id)) || null;
 
 /* =========================
  *   AUTO-FILL (per sezione)
  * ========================= */
 
+/** Sensori: riempi sensor1..sensor8 (chiave .entity_id in alcune versioni, restiamo compatibili) */
 export function autoFillSensors(hass, config) {
   const keys = [
     'sensor1','sensor2','sensor3','sensor4',
     'sensor5','sensor6','sensor7','sensor8'
   ];
   const entities = { ...(config.entities || {}) };
-  const used = new Set(keys.map((k) => entities[k]?.entity_id).filter(Boolean));
+
+  // supporta sia .entity che .entity_id (compat retro)
+  const used = new Set(
+    keys.map((k) => entities[k]?.entity || entities[k]?.entity_id).filter(Boolean)
+  );
 
   for (const k of keys) {
     const ent = entities[k] || (entities[k] = {});
-    if (ent.entity_id) continue;
+    const already = ent.entity || ent.entity_id;
+    if (already) continue;
 
     const type = ent.type || '';
     const list = candidatesFor(hass, config, { section: 'sensor', type }) || [];
     const pick = pickFirstFree(list, used);
-    if (pick) { ent.entity_id = pick; used.add(pick); }
+    if (pick) {
+      // preferisci .entity se nel resto del progetto usi quello
+      ent.entity = pick;
+      delete ent.entity_id;
+      used.add(pick);
+    }
   }
   return { ...config, entities };
 }
 
+/** Mushroom (5 slot + climate + camera) */
 export function autoFillMushrooms(hass, config) {
-  const order = ['climate','camera','entities1','entities2','entities3','entities4','entities5'];
+  const order = ['climate','camera','mushroom1','mushroom2','mushroom3','mushroom4','mushroom5'];
   const entities = { ...(config.entities || {}) };
   const used = new Set(order.map((k) => entities[k]?.entity).filter(Boolean));
 
-  // base candidati generici
+  // base candidati generici (poi filtriamo)
   let all = gatherCandidates(hass, config, 'mushroom');
 
   // climate
-  const climate = entities.climate || (entities.climate = {});
-  if (!climate.entity) {
+  const cli = entities.climate || (entities.climate = {});
+  if (!cli.entity) {
     const pick = all.find((id) => id.startsWith('climate.') && !used.has(id));
-    if (pick) { climate.entity = pick; used.add(pick); }
+    if (pick) { cli.entity = pick; used.add(pick); }
   }
 
   // camera
-  const camera = entities.camera || (entities.camera = {});
-  if (!camera.entity) {
+  const cam = entities.camera || (entities.camera = {});
+  if (!cam.entity) {
     const pick = all.find((id) => id.startsWith('camera.') && !used.has(id));
-    if (pick) { camera.entity = pick; used.add(pick); }
+    if (pick) { cam.entity = pick; used.add(pick); }
   }
 
   // altri 1..5
-  for (const k of ['entities1','entities2','entities3','entities4','entities5']) {
-    const ent = entities[k] || (entities[k] = {});
-    if (ent.entity) continue;
+  for (let i = 1; i <= 5; i++) {
+    const key = `mushroom${i}`;
+    const rec = entities[key] || (entities[key] = {});
+    if (rec.entity) continue;
     const pick = pickFirstFree(all, used);
-    if (pick) { ent.entity = pick; used.add(pick); }
+    if (pick) { rec.entity = pick; used.add(pick); }
   }
+
   return { ...config, entities };
 }
 
+/** SubButtons (6 slot) */
 export function autoFillSubButtons(hass, config) {
   const keys = ['sub-button1','sub-button2','sub-button3','sub-button4','sub-button5','sub-button6'];
   const entities = { ...(config.entities || {}) };
@@ -153,7 +191,7 @@ export function autoFillSubButtons(hass, config) {
   return { ...config, entities };
 }
 
-/* ===== presenza (locale) ===== */
+/* ===== Presenza (locale, con filtro area) ===== */
 function presenceCandidatesLocal(hass, config) {
   if (!hass || !hass.states) return [];
   const allowed = new Set([
@@ -177,7 +215,7 @@ function presenceCandidatesLocal(hass, config) {
   }
 
   const selected = config?.entities?.presence?.entity || config?.presence_entity;
-  if (selected && !ids.includes(selected)) ids.push(selected);
+  if (selected && !ids.includes(selected)) ids.unshift(selected);
 
   if (DEBUG) console.info('[AutoDiscovery][presence candidates]', {
     areaId, areaName, count: ids.length, sample: ids.slice(0, 8)
@@ -195,7 +233,7 @@ export function autoFillPresence(hass, config) {
   return { ...config, entities };
 }
 
-/* ===== Climate & Camera — allineate alla pipeline generica ===== */
+/* ===== Climate & Camera — allineate e con filtro area ===== */
 export function autoFillClimate(hass, config) {
   return autoFillByDomain(hass, config, 'climate', 'climate');
 }
@@ -213,18 +251,21 @@ export function resetSensors(config) {
     .forEach((k) => delete entities[k]);
   return { ...config, entities };
 }
+
 export function resetMushrooms(config) {
   const entities = { ...(config.entities || {}) };
-  ['entities1','entities2','entities3','entities4','entities5','climate','camera']
+  ['mushroom1','mushroom2','mushroom3','mushroom4','mushroom5','climate','camera']
     .forEach((k) => delete entities[k]);
   return { ...config, entities };
 }
+
 export function resetSubButtons(config) {
   const entities = { ...(config.entities || {}) };
   ['sub-button1','sub-button2','sub-button3','sub-button4','sub-button5','sub-button6']
     .forEach((k) => delete entities[k]);
   return { ...config, entities };
 }
+
 export function resetRoom(config) {
   const entities = { ...(config.entities || {}) };
   delete entities.presence;
@@ -235,12 +276,14 @@ export function resetRoom(config) {
   delete next.presence_entity;
   return next;
 }
+
 // --- RESET DEDICATI ---
 export function resetClimate(config) {
   const entities = { ...(config.entities || {}) };
   delete entities.climate;
   return { ...config, entities };
 }
+
 export function resetCamera(config) {
   const entities = { ...(config.entities || {}) };
   delete entities.camera;
@@ -251,12 +294,16 @@ export function resetCamera(config) {
  *   TRIGGER CENTRALE
  * ========================= */
 export function maybeAutoDiscover(hass, config, changedProp, debug = false) {
+  // Se non ho hass o config coerenti, non fare nulla
+  if (!hass || !config) return config;
+
   const ad = config.auto_discovery_sections || {};
   const isAreaChange = changedProp === 'area';
-  const isADChange   = changedProp && changedProp.startsWith('auto_discovery_sections.');
+  const isADChange   = changedProp && String(changedProp).startsWith('auto_discovery_sections.');
   if (!isAreaChange && !isADChange) return config;
 
   let next = config;
+
   if (ad.sensor)    next = autoFillSensors(hass, next);
   if (ad.mushroom)  next = autoFillMushrooms(hass, next);
   if (ad.subbutton) next = autoFillSubButtons(hass, next);
@@ -264,8 +311,8 @@ export function maybeAutoDiscover(hass, config, changedProp, debug = false) {
   if (ad.climate)   next = autoFillClimate(hass, next);
   if (ad.camera)    next = autoFillCamera(hass, next);
 
-  if (debug && typeof window !== 'undefined' && window.__BUBBLE_DEBUG__) {
-    console.info('[AutoDiscovery] applied after', changedProp, { sections: ad, config: next });
+  if ((debug || DEBUG) && typeof window !== 'undefined') {
+    console.info('[AutoDiscovery] applied after', changedProp, { sections: ad });
   }
   return next;
 }
