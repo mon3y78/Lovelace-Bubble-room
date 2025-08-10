@@ -1618,7 +1618,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
     }
     .mushroom-entity ha-icon { display: block; }
   `;render(){const{width:t,height:e}=this._containerSize;if(!t||!e)return I``;const i=window.innerWidth||t,s=.55;let n;if(i<=100)n=s;else if(i>=200)n=.25;else{n=s+(.25-s)*((i-100)/100)}const o=Math.min(t,1.6*e),a=.5*(e+o)*n,r=.6*t,l=.6*e,c=r*Math.min(1,t/(2*r)),d=l*Math.min(1,e/(2*l)),h=t-c,p=.5*e,u=Math.max(0,c-a/2-1),g=Math.max(0,d-a/2-1),b=t=>Math.PI*t/180,m=b(30),f=b(85),_=.75*a,v=.75*a,x=[{x:a/2+1,y:a/2+1},{x:h+u*Math.cos(-f),y:p+g*Math.sin(-f)},{x:h+u*Math.cos(-m),y:p+g*Math.sin(-m)},{x:h+u*Math.cos(+m),y:p+g*Math.sin(+m)},{x:h+u*Math.cos(+f),y:p+g*Math.sin(+f)}];let y=0;return I`
-      ${this.entities.map(i=>{const s="camera"===i?.kind,n="climate"===i?.kind,o=s?_:n?v:a,r=.95*o;let l;s?l={x:t-o/2-12,y:o/2+12}:n?l={x:o/2+12,y:e-o/2-12}:(l=x[Math.min(y,x.length-1)]??{x:h,y:p},y++);const c=s||n?0:i.dx??0,d=s||n?0:i.dy??0,u=l.x+c,g=l.y+d;return I`
+      ${this.entities.map(i=>{const s="camera"===i?.kind,n="climate"===i?.kind,o=s?_:n?v:a,r=.95*o;let l;s?l={x:t-o/2,y:o/2}:n?l={x:o/2+1,y:e-o/2-1}:(l=x[Math.min(y,x.length-1)]??{x:h,y:p},y++);const c=s||n?0:i.dx??0,d=s||n?0:i.dy??0,u=l.x+c,g=l.y+d;return I`
           <div
             class="mushroom-entity"
             style="
