@@ -356,7 +356,7 @@ export class RoomPanel extends LitElement {
               <ha-selector
                 .hass=${this.hass}
                 .value=${presEntity}
-                .selector={{ entity: { include_entities: presCandidates, multiple: false } }}
+                .selector=${{ entity: { include_entities: presCandidates, multiple: false } }}
                 allow-custom-entity
                 @value-changed=${e => this._onPresenceEntityChange(e.detail.value)}
               ></ha-selector>
