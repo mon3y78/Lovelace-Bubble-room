@@ -89,9 +89,11 @@ export class ClimatePanel extends LitElement {
       if (autoDisc) {
         const { areaId, areaName } = this._resolveAreaRef();
 
-        let all = candidatesFor(this.hass, this.config, 'mushroom') || [];
-        all = all.length ? all : Object.keys(this.hass?.states || {}); // fallback
-        const climatesAll = all.filter(id => id.startsWith('climate.'));
+        // PATCH: uso candidati del dominio corretto
+        let climatesAll = candidatesFor(this.hass, this.config, 'climate') || [];
+        if (!climatesAll.length && this.hass?.states) {
+          climatesAll = Object.keys(this.hass.states).filter(id => id.startsWith('climate.'));
+        }
 
         this._climateCandidates = this._filterByAreaIncludeSelected(
           climatesAll, areaId, areaName, this._entity
@@ -107,8 +109,8 @@ export class ClimatePanel extends LitElement {
     .glass-panel {
       margin: 0 !important; width: 100%; box-sizing: border-box;
       border-radius: 40px; position: relative;
-      background: var(--glass-bg, rgba(150,120,60,0.28));
-      box-shadow: var(--glass-shadow, 0 2px 24px rgba(120,90,40,0.18));
+      background: var(--glass-bg, rgba(200,120,80,0.28));
+      box-shadow: var(--glass-shadow, 0 2px 24px rgba(200,120,80,0.18));
       overflow: hidden;
     }
     .glass-panel::after {
@@ -124,14 +126,14 @@ export class ClimatePanel extends LitElement {
     }
     .input-group.autodiscover {
       margin: 0 16px 13px; padding: 14px 18px 10px;
-      background: rgba(44,40,20,0.23);
+      background: rgba(20,40,70,0.23);
       border: 1.5px solid rgba(255,255,255,0.13);
-      box-shadow: 0 2px 14px rgba(120,90,40,0.10);
+      box-shadow: 0 2px 14px rgba(40,120,180,0.10);
       border-radius: 18px; display:flex; align-items:center; gap:8px;
     }
     .input-group { margin: 12px 16px; }
     .input-group label {
-      display:block; font-weight:700; margin-bottom:6px; color:#ffd27a;
+      display:block; font-weight:700; margin-bottom:6px; color:#ffb07e;
     }
     ha-selector { width:100%; box-sizing:border-box; }
     .reset-button {
@@ -150,7 +152,7 @@ export class ClimatePanel extends LitElement {
         .expanded=${this.expanded}
         @expanded-changed=${e => (this.expanded = e.detail.expanded)}
       >
-        <div slot="header" class="glass-header">🌡️ Climate</div>
+        <div slot="header" class="glass-header">🌡 Climate</div>
 
         <div class="input-group autodiscover">
           <input

@@ -89,9 +89,11 @@ export class CameraPanel extends LitElement {
       if (autoDisc) {
         const { areaId, areaName } = this._resolveAreaRef();
 
-        let all = candidatesFor(this.hass, this.config, 'mushroom') || [];
-        all = all.length ? all : Object.keys(this.hass?.states || {}); // fallback
-        const camerasAll = all.filter(id => id.startsWith('camera.'));
+        // PATCH: uso candidati del dominio corretto
+        let camerasAll = candidatesFor(this.hass, this.config, 'camera') || [];
+        if (!camerasAll.length && this.hass?.states) {
+          camerasAll = Object.keys(this.hass.states).filter(id => id.startsWith('camera.'));
+        }
 
         this._cameraCandidates = this._filterByAreaIncludeSelected(
           camerasAll, areaId, areaName, this._entity

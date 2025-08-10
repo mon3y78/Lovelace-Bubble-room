@@ -37,6 +37,12 @@ export class BubbleRoomEditor extends LitElement {
     this._onConfigChanged = this._onConfigChanged.bind(this);
   }
 
+  // Lovelace chiama setConfig sull’editor: qui garantiamo sempre il type
+  setConfig(cfg) {
+    this.config = { type: cfg?.type || 'custom:bubble-room', ...(cfg || {}) };
+    this.requestUpdate();
+  }
+
   set value(v) { this.config = v || {}; }
   get value()  { return this.config; }
 
@@ -53,7 +59,9 @@ export class BubbleRoomEditor extends LitElement {
 
   /* ============ utils config & dispatch ============ */
   _emitConfig(next) {
-    this.config = next;
+    // preserva/forza sempre il type della card (fix “Nessun tipo fornito”)
+    const withType = { type: this.config?.type || 'custom:bubble-room', ...(next || {}) };
+    this.config = withType;
     this.dispatchEvent(new CustomEvent('config-changed', {
       detail: { config: this.config },
       bubbles: true, composed: true,
