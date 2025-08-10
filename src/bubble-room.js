@@ -207,6 +207,8 @@ export class BubbleRoom extends LitElement {
         state: st.state,
         color: presActive ? activeCol : inactiveCol,                // schema a piacere
         dx: camCfg.dx ?? 0,
+        left: camCfg.left, 
+        top: camCfg.top,
         dy: camCfg.dy ?? 0,
         angle_deg: camCfg.angle_deg,
         radius_factor: camCfg.radius_factor,
@@ -233,6 +235,8 @@ export class BubbleRoom extends LitElement {
         state: st.state,
         color: isActive ? activeCol : inactiveCol,
         dx: entities.climate.dx ?? 0,
+        left: entities.climate.left,
+        top: entities.climate.top,
         dy: entities.climate.dy ?? 0,
         angle_deg: entities.climate.angle_deg,
         radius_factor: entities.climate.radius_factor,

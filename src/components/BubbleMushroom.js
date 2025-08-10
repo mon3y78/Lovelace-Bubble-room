@@ -233,16 +233,23 @@ export class BubbleMushroom extends LitElement {
         const iconSize = d * 0.95;
 
         const base = positions[i] ?? { x: cX, y: cY };
-        // micro-shift da YAML
-        const left = base.x + (e.dx ?? 0);
-        const top  = base.y + (e.dy ?? 0);
+
+        // Se e.left/e.top sono definiti → posizione fissa.
+        // Accetta numeri (px) o stringhe (es. "20%").
+        const hasFixed = (e.left !== undefined) && (e.top !== undefined);
+        const leftVal = hasFixed
+          ? (typeof e.left === 'string' ? e.left : `${e.left}px`)
+          : `${(base.x + (e.dx ?? 0))}px`;
+        const topVal = hasFixed
+          ? (typeof e.top === 'string' ? e.top : `${e.top}px`)
+          : `${(base.y + (e.dy ?? 0))}px`;
 
         return html`
           <div
             class="mushroom-entity"
             style="
-              left:${left}px;
-              top:${top}px;
+              left:${leftVal};
+              top:${topVal};
               width:${d}px;
               height:${d}px;
               color:${e.color};
