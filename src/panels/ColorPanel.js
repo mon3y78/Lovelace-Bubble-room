@@ -3,7 +3,7 @@ import { LitElement, html, css } from 'lit';
 
 /**
  * Questo pannello:
- * - Mostra una libreria di preset colore con anteprima (Active/Inactive)
+ * - Mostra una libreria di preset colore con anteprima
  * - Quando applichi un preset viene aggiornato TUTTO:
  *   - colors.room:  icon_[active|inactive], background_[active|inactive], text_[active|inactive]
  *   - colors.subbutton: background_[on|off], icon_[on|off]
@@ -43,7 +43,7 @@ export class ColorPanel extends LitElement {
   updated(changed) {
     if (changed.has('config')) {
       const c = this.config?.colors || {};
-      // Sync in → stato locale (senza rompere gli override già esistenti)
+      // Sync in → stato locale
       this._room = {
         icon_active:        c.room?.icon_active        ?? '',
         icon_inactive:      c.room?.icon_inactive      ?? '',
@@ -71,9 +71,7 @@ export class ColorPanel extends LitElement {
 
   /* ───────────────────── PRESET ───────────────────── */
 
-  // Palette compatte, ben contrastate
   get _presets() {
-    // Nota: puoi ritoccare i valori come preferisci
     return [
       {
         key: 'green',
@@ -229,7 +227,6 @@ export class ColorPanel extends LitElement {
   /* ───────────────────── HELPERS ───────────────────── */
 
   _applyPreset(map) {
-    // Applica tutti i path→val come eventi separati (compatibile con l’editor)
     Object.entries(map).forEach(([prop, val]) => {
       this._fire(prop, val);
     });
@@ -244,16 +241,13 @@ export class ColorPanel extends LitElement {
   }
 
   _onColorInput(section, key, val) {
-    // aggiorna stato locale
     const next = { ...(this[`_${section}`] || {}) };
     next[key] = val;
     this[`_${section}`] = next;
-    // scrive nella config
     this._fire(`colors.${section}.${key}`, val);
   }
 
   _resetAll() {
-    // Svuota tutte le sezioni colore
     const blank = {
       room: ['icon_active','icon_inactive','background_active','background_inactive','text_active','text_inactive'],
       subbutton: ['background_on','background_off','icon_on','icon_off'],
@@ -286,6 +280,7 @@ export class ColorPanel extends LitElement {
       font-size: 1.12rem; font-weight: 700; color: #fff;
     }
 
+    /* Preset grid */
     .preset-grid {
       display: grid; gap: 12px; padding: 0 16px 8px;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -295,25 +290,48 @@ export class ColorPanel extends LitElement {
       border-radius: 16px; padding: 12px; background: rgba(255,255,255,0.06);
     }
     .preset-title {
-      font-weight: 700; color: #fff; margin-bottom: 8px;
-      display:flex; align-items:center; justify-content:space-between;
+      font-weight: 700; color: #fff; margin-bottom: 10px;
+      text-align: center;
     }
-    .swatch-row { display: flex; gap: 8px; margin-bottom: 8px; }
-    .swatch {
-      flex: 1; border-radius: 10px; height: 24px; border: 1px solid rgba(0,0,0,0.15);
-      display:flex; align-items:center; justify-content:center; color:#000; font-weight:700; font-size:0.8rem;
-      background: repeating-linear-gradient(
-        45deg, rgba(255,255,255,0.18), rgba(255,255,255,0.18) 6px, transparent 6px, transparent 12px
-      );
-    }
-    .swatch .label { background: rgba(255,255,255,0.86); padding: 0 8px; border-radius: 8px; }
-    .apply-btn {
-      width: 100%; margin-top: 4px; border-radius: 10px; padding: 8px 10px;
-      border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.12);
-      cursor: pointer; color: #fff; font-weight: 700;
-    }
-    .apply-btn:hover { background: rgba(255,255,255,0.18); }
 
+    /* Nuovo layout: box colore + etichetta sotto */
+    .swatch-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .swatch-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .swatch-box {
+      width: 100%;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.18);
+    }
+    .swatch-label {
+      color: #e6eef9;
+      font-weight: 700;
+      font-size: 0.85rem;
+      opacity: 0.95;
+    }
+
+    .apply-btn {
+      display: inline-block;
+      margin: 4px auto 0 auto;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.14);
+      color: #fff; font-weight: 800; cursor: pointer;
+    }
+    .apply-btn:hover { background: rgba(255,255,255,0.2); }
+
+    /* Sezioni editing manuale */
     .section {
       margin: 14px 16px; padding: 14px;
       border: 1px solid rgba(255,255,255,0.12);
@@ -360,18 +378,24 @@ export class ColorPanel extends LitElement {
         <div class="preset-grid">
           ${this._presets.map(p => html`
             <div class="preset-card">
-              <div class="preset-title">
-                <span>${p.name}</span>
-              </div>
-              <div class="swatch-row">
-                <div class="swatch" style="background:${p.preview.active}">
-                  <span class="label">Active</span>
+              <div class="preset-title">${p.name}</div>
+
+              <div class="swatch-grid">
+                <div class="swatch-col">
+                  <div class="swatch-box" style="background:${p.preview.active}"></div>
+                  <div class="swatch-label">Active</div>
                 </div>
-                <div class="swatch" style="background:${p.preview.inactive}">
-                  <span class="label">Inactive</span>
+                <div class="swatch-col">
+                  <div class="swatch-box" style="background:${p.preview.inactive}"></div>
+                  <div class="swatch-label">Inactive</div>
                 </div>
               </div>
-              <button class="apply-btn" @click=${() => this._applyPreset(p.map)}>Applica preset</button>
+
+              <div style="text-align:center;">
+                <button class="apply-btn" @click=${() => this._applyPreset(p.map)}>
+                  Applica preset
+                </button>
+              </div>
             </div>
           `)}
         </div>
@@ -443,7 +467,6 @@ export class ColorPanel extends LitElement {
   }
 
   _colorRow(label, section, key, val) {
-    // prova a derivare un hex se val è rgba/altro: altrimenti lascia text
     const hexGuess = this._guessHex(val);
     return html`
       <div class="row">
@@ -476,11 +499,9 @@ export class ColorPanel extends LitElement {
         return '#' + [r,g,b].map(n => n.toString(16).padStart(2,'0')).join('');
       } catch { return '#000000'; }
     }
-    // fallback: non è un colore parsabile → restituisco un valore safe per il color picker
     return '#000000';
-    }
+  }
   _expandShorthandHex(h) {
-    // #abc → #aabbcc
     if (!h || h.length !== 4) return '#000000';
     return '#' + h.slice(1).split('').map(c => c + c).join('');
   }
