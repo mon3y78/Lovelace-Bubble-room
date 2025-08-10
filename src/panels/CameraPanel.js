@@ -1,6 +1,5 @@
 // src/panels/CameraPanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
 
@@ -68,8 +67,6 @@ export class CameraPanel extends LitElement {
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.camera');
-
       const ent = this.config?.entities?.camera?.entity || '';
       const ico = this.config?.entities?.camera?.icon   || '';
 
@@ -84,12 +81,12 @@ export class CameraPanel extends LitElement {
       this._entity = ent;
       this._icon   = this.config?.entities?.camera?.icon || '';
 
-      // candidati con filtro area robusto
+      // candidati con filtro area robusto (solo se auto-discovery attivo)
       const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
       if (autoDisc) {
         const { areaId, areaName } = this._resolveAreaRef();
 
-        // PATCH: uso candidati del dominio corretto
+        // dominio corretto + fallback
         let camerasAll = candidatesFor(this.hass, this.config, 'camera') || [];
         if (!camerasAll.length && this.hass?.states) {
           camerasAll = Object.keys(this.hass.states).filter(id => id.startsWith('camera.'));

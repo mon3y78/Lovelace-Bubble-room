@@ -216,7 +216,7 @@ export class BubbleRoomEditor extends LitElement {
         <!-- ROOM -->
         <room-panel
           .hass=${this.hass}
-          .data=${cfg}            <!-- room-panel usa .data -->
+          .config =${cfg}
           .expanded=${this.openPanel === 'room'}
           @expanded-changed=${e => this._togglePanel(e, 'room')}
           @panel-changed=${this._onPanelChanged}

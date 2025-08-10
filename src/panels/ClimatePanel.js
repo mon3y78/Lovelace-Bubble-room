@@ -1,6 +1,5 @@
 // src/panels/ClimatePanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
 
@@ -68,8 +67,6 @@ export class ClimatePanel extends LitElement {
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.climate');
-
       const ent = this.config?.entities?.climate?.entity || '';
       const ico = this.config?.entities?.climate?.icon   || '';
 
@@ -84,12 +81,12 @@ export class ClimatePanel extends LitElement {
       this._entity = ent;
       this._icon   = this.config?.entities?.climate?.icon || '';
 
-      // candidati con filtro area robusto
+      // candidati con filtro area robusto (solo se auto-discovery attivo)
       const autoDisc = this.config?.auto_discovery_sections?.climate ?? false;
       if (autoDisc) {
         const { areaId, areaName } = this._resolveAreaRef();
 
-        // PATCH: uso candidati del dominio corretto
+        // dominio corretto + fallback
         let climatesAll = candidatesFor(this.hass, this.config, 'climate') || [];
         if (!climatesAll.length && this.hass?.states) {
           climatesAll = Object.keys(this.hass.states).filter(id => id.startsWith('climate.'));
