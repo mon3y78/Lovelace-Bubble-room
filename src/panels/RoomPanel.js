@@ -117,15 +117,19 @@ export class RoomPanel extends LitElement {
     .pill-button.active { border-color: #55afff; color: #55afff; }
     .pill-button:hover:not(.active) { background: rgba(85,175,255,0.12); }
 
+    /* RESET — allineato a CameraPanel */
     .reset-button {
-      display: block;
-      margin: 20px auto;
-      border: 2px solid #ff4c6a;
+      border: 3.5px solid #ff4c6a;
       color: #ff4c6a;
-      border-radius: 12px;
-      padding: 8px 16px;
+      border-radius: 24px;
+      padding: 12px 38px;
       background: transparent;
       cursor: pointer;
+      display: block;
+      margin: 20px auto;
+      font-size: 1.15rem;
+      font-weight: 700;
+      box-shadow: 0 2px 24px #ff4c6a44;
     }
 
     /* Layout chooser */
@@ -166,6 +170,25 @@ export class RoomPanel extends LitElement {
       color: white;
     }
     .toggle-btn:hover { background: rgba(255,255,255,0.18); }
+
+    /* AUTODISCOVER — pill orizzontale identica a CameraPanel */
+    .input-group.autodiscover {
+      margin: 0 16px 13px;
+      padding: 14px 18px 10px;
+      background: rgba(44, 70, 100, 0.23);
+      border: 1.5px solid rgba(255, 255, 255, 0.13);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .input-group.autodiscover label {
+      margin: 0;               /* niente margine bottom, è inline con la checkbox */
+      display: inline-block;   /* stessa resa di CameraPanel */
+      color: #55afff;
+      font-weight: 700;
+      font-size: 1.13rem;
+    }
   `;
 
   constructor() {
@@ -263,14 +286,14 @@ export class RoomPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
       
-        <!-- 🔍 Auto-discover -->
-        <div class="input-group">
-          <label>🔍 Auto-discover Presence:</label>
+        <!-- Auto‑discover (identico a CameraPanel: checkbox + label in linea) -->
+        <div class="input-group autodiscover">
           <input
             type="checkbox"
             .checked=${autoDisc}
             @change=${e => this._fire('auto_discovery_sections.presence', e.target.checked)}
           />
+          <label>🪄 Auto‑discover Presence</label>
         </div>
       
         <!-- 🏷️ Area -->
@@ -333,7 +356,7 @@ export class RoomPanel extends LitElement {
               <ha-selector
                 .hass=${this.hass}
                 .value=${presEntity}
-                .selector=${{ entity: { include_entities: presCandidates, multiple: false } }}
+                .selector={{ entity: { include_entities: presCandidates, multiple: false } }}
                 allow-custom-entity
                 @value-changed=${e => this._onPresenceEntityChange(e.detail.value)}
               ></ha-selector>
@@ -427,7 +450,7 @@ export class RoomPanel extends LitElement {
           </div>
         </div>
       
-        <!-- 🧹 Reset -->
+        <!-- Reset (identico a CameraPanel) -->
         <button class="reset-button"
           @click=${() => this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' })}>
           🧹 Reset Room
