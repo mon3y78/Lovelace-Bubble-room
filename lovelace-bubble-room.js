@@ -187,7 +187,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       font-weight: 700;
       font-size: 1.13rem;
     }
-  `;constructor(){super(),this.hass={},this.config={},this._expanded=!1,this.activeFilters=[],this.layout="wide",this._syncingFromConfig=!1}updated(t){if(t.has("config")||t.has("hass")){this._syncingFromConfig=!0,mt(this.hass,this.config,"area"),mt(this.hass,this.config,"auto_discovery_sections.presence"),t.has("config")&&Array.isArray(this.config.presence_filters)&&(this.activeFilters=[...this.config.presence_filters]);const e=this.config.layout;e&&e!==this.layout&&(this.layout=e),this._syncingFromConfig=!1}}_onLayoutClick(t){this.layout=t,this._fire("layout",t);const e="tall"===t?{columns:6,rows:4}:{columns:12,rows:4};this._fire("grid_options",e)}_fire(t,e){this._syncingFromConfig||this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}_onPresenceEntityChange=t=>{this._fire("entities.presence.entity",t);const e=this.config?.icon||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon||vt(t,this.hass);i&&this._fire("icon",i)}};render(){const t=this.config,e=t.auto_discovery_sections?.presence??!1,i=t.area??"",s=t.name??"",n=t.icon??"",o=t.entities?.presence?.entity??"",a=this.activeFilters.length?this.activeFilters:t.presence_filters??[...xt],r=xt.map(t=>({value:t,label:t.charAt(0).toUpperCase()+t.slice(1)}));pt(this.hass,this.config,"presence",a);const l=["toggle","more-info","navigate","call-service","none"],c=this.config?.tap_action||{},d=this.config?.hold_action||{};return I`
+  `;constructor(){super(),this.hass={},this.config={},this._expanded=!1,this.activeFilters=[],this.layout="wide",this._syncingFromConfig=!1}updated(t){if(t.has("config")||t.has("hass")){this._syncingFromConfig=!0,mt(this.hass,this.config,"area"),mt(this.hass,this.config,"auto_discovery_sections.presence"),t.has("config")&&Array.isArray(this.config.presence_filters)&&(this.activeFilters=[...this.config.presence_filters]);const e=this.config.layout;e&&e!==this.layout&&(this.layout=e),this._syncingFromConfig=!1}}_onLayoutClick(t){this.layout=t,this._fire("layout",t);const e="tall"===t?{columns:6,rows:4}:{columns:12,rows:4};this._fire("grid_options",e)}_fire(t,e){this._syncingFromConfig||this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}_onPresenceEntityChange=t=>{this._fire("entities.presence.entity",t);const e=this.config?.icon||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon||vt(t,this.hass);i&&this._fire("icon",i)}};render(){const t=this.config,e=t.auto_discovery_sections?.presence??!1,i=t.area??"",s=t.name??"",n=t.icon??"",o=t.entities?.presence?.entity??"",a=this.activeFilters.length?this.activeFilters:t.presence_filters??[...xt],r=xt.map(t=>({value:t,label:t.charAt(0).toUpperCase()+t.slice(1)})),l=pt(this.hass,this.config,"presence",a),c=["toggle","more-info","navigate","call-service","none"],d=this.config?.tap_action||{},h=this.config?.hold_action||{};return I`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
@@ -258,7 +258,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
               <ha-selector
                 .hass=${this.hass}
                 .value=${o}
-                .selector={{ entity: { include_entities: presCandidates, multiple: false } }}
+                .selector=${{entity:{include_entities:l,multiple:!1}}}
                 allow-custom-entity
                 @value-changed=${t=>this._onPresenceEntityChange(t.detail.value)}
               ></ha-selector>
@@ -268,26 +268,26 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             <div class="input-group">
               <label>Tap Action</label>
               <div class="pill-group">
-                ${l.map(t=>I`
+                ${c.map(t=>I`
                   <button
-                    class="pill-button ${c.action===t?"active":""}"
+                    class="pill-button ${d.action===t?"active":""}"
                     @click=${()=>this._fire("tap_action.action",t)}
                   >${t}</button>
                 `)}
               </div>
-              ${"navigate"===c.action?I`
+              ${"navigate"===d.action?I`
                 <input type="text" placeholder="Path"
-                  .value=${c.navigation_path||""}
+                  .value=${d.navigation_path||""}
                   @input=${t=>this._fire("tap_action.navigation_path",t.target.value)}
                 />
               `:""}
-              ${"call-service"===c.action?I`
+              ${"call-service"===d.action?I`
                 <input type="text" placeholder="service (es. light.turn_on)"
-                  .value=${c.service||""}
+                  .value=${d.service||""}
                   @input=${t=>this._fire("tap_action.service",t.target.value)}
                 />
                 <input type="text" placeholder='service_data (JSON)'
-                  .value=${c.service_data?JSON.stringify(c.service_data):""}
+                  .value=${d.service_data?JSON.stringify(d.service_data):""}
                   @input=${t=>{let e=t.target.value;try{e=e?JSON.parse(e):void 0}catch{e=void 0}this._fire("tap_action.service_data",e)}}
                 />
               `:""}
@@ -296,26 +296,26 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             <div class="input-group">
               <label>Hold Action</label>
               <div class="pill-group">
-                ${l.map(t=>I`
+                ${c.map(t=>I`
                   <button
-                    class="pill-button ${d.action===t?"active":""}"
+                    class="pill-button ${h.action===t?"active":""}"
                     @click=${()=>this._fire("hold_action.action",t)}
                   >${t}</button>
                 `)}
               </div>
-              ${"navigate"===d.action?I`
+              ${"navigate"===h.action?I`
                 <input type="text" placeholder="Path"
-                  .value=${d.navigation_path||""}
+                  .value=${h.navigation_path||""}
                   @input=${t=>this._fire("hold_action.navigation_path",t.target.value)}
                 />
               `:""}
-              ${"call-service"===d.action?I`
+              ${"call-service"===h.action?I`
                 <input type="text" placeholder="service (es. light.turn_on)"
-                  .value=${d.service||""}
+                  .value=${h.service||""}
                   @input=${t=>this._fire("hold_action.service",t.target.value)}
                 />
                 <input type="text" placeholder='service_data (JSON)'
-                  .value=${d.service_data?JSON.stringify(d.service_data):""}
+                  .value=${h.service_data?JSON.stringify(h.service_data):""}
                   @input=${t=>{let e=t.target.value;try{e=e?JSON.parse(e):void 0}catch{e=void 0}this._fire("hold_action.service_data",e)}}
                 />
               `:""}
