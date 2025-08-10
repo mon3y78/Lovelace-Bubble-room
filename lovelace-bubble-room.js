@@ -331,14 +331,14 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
               class="toggle-btn ${"wide"===this.layout?"active":""}"
               @click=${()=>this._onLayoutClick("wide")}
             >
-              <ha-icon icon="mdi:tablet-landscape"></ha-icon>
+              <ha-icon icon="mdi:tablet"></ha-icon>
               <span>Largo</span>
             </button>
             <button
               class="toggle-btn ${"tall"===this.layout?"active":""}"
               @click=${()=>this._onLayoutClick("tall")}
             >
-              <ha-icon icon="mdi:tablet-portrait"></ha-icon>
+              <ha-icon icon="mdi:cellphone"></ha-icon>
               <span>Stretto</span>
             </button>
           </div>
