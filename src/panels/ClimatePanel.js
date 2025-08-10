@@ -1,8 +1,8 @@
 // src/panels/ClimatePanel.js
 import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
-import { candidatesFor } from '../helpers/entity-filters.js'; // 👈 per autodiscovery area
-import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // 👈 auto-icona
+import { candidatesFor } from '../helpers/entity-filters.js';
+import { resolveEntityIcon } from '../helpers/icon-mapping.js';
 
 export class ClimatePanel extends LitElement {
   static properties = {
@@ -24,24 +24,43 @@ export class ClimatePanel extends LitElement {
     this._climateCandidates = [];
   }
 
-  // --- helpers area/registry (come CameraPanel) ------------------------------
-  _resolveAreaId() {
+  // --- helpers area/registry -------------------------------------------------
+  _resolveAreaRef() {
     const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
-    if (typeof raw === 'string' && raw.startsWith('area_')) return raw;
+    const areaName = typeof raw === 'string' && !raw.startsWith('area_') ? raw : '';
+    let areaId = typeof raw === 'string' && raw.startsWith('area_') ? raw : '';
     const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
-    if (areas.length && raw) {
-      const hit = areas.find(a => (a.name || '').toLowerCase() === String(raw).toLowerCase());
-      if (hit?.area_id) return hit.area_id;
+    if (!areaId && areas.length && areaName) {
+      const hit = areas.find(a => (a.name || '').toLowerCase() === String(areaName).toLowerCase());
+      if (hit?.area_id) areaId = hit.area_id;
     }
-    // fallback: area dell'entità climate già selezionata
-    const ent = this.config?.entities?.climate?.entity;
-    const reg = this.hass?.entities;
-    return ent && reg ? (reg[ent]?.area_id || '') : '';
+    if (!areaId) {
+      const ent = this.config?.entities?.climate?.entity;
+      const reg = this.hass?.entities;
+      if (ent && reg?.[ent]?.area_id) areaId = reg[ent].area_id;
+    }
+    return { areaId, areaName };
   }
 
-  _filterByAreaIncludeSelected(list, areaId, selected) {
-    const reg = this.hass?.entities || {};
-    const filtered = (list || []).filter(id => !areaId || reg[id]?.area_id === areaId);
+  _matchAreaForEntityId(id, areaId, areaName) {
+    const reg = this.hass?.entities;
+    if (areaId && reg?.[id]?.area_id) return reg[id].area_id === areaId;
+
+    const st = this.hass?.states?.[id];
+    if (!st) return !(areaId || areaName);
+
+    const attrAreaId   = st.attributes?.area_id;
+    const attrAreaName = st.attributes?.area;
+
+    if (areaId && attrAreaId)   return attrAreaId === areaId;
+    if (areaName && attrAreaName) {
+      return String(attrAreaName).toLowerCase() === String(areaName).toLowerCase();
+    }
+    return !(areaId || areaName);
+  }
+
+  _filterByAreaIncludeSelected(list, areaId, areaName, selected) {
+    const filtered = (list || []).filter(id => this._matchAreaForEntityId(id, areaId, areaName));
     if (selected && !filtered.includes(selected)) filtered.unshift(selected);
     return Array.from(new Set(filtered));
   }
@@ -49,36 +68,33 @@ export class ClimatePanel extends LitElement {
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // sync flag di autodiscovery
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.climate');
 
       const ent = this.config?.entities?.climate?.entity || '';
       const ico = this.config?.entities?.climate?.icon   || '';
 
-      // auto-icona: se ho un'entità e l'icona è vuota → prova a impostarla
+      // auto-icona se vuota
       if (ent && !ico) {
         const st = this.hass?.states?.[ent];
         const iconFromState = st?.attributes?.icon;
         const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
-        if (autoIcon) {
-          this._set('entities.climate.icon', autoIcon);
-        }
+        if (autoIcon) this._set('entities.climate.icon', autoIcon);
       }
 
       this._entity = ent;
       this._icon   = this.config?.entities?.climate?.icon || '';
 
-      // candidati con filtro area (come Camera)
+      // candidati con filtro area robusto
       const autoDisc = this.config?.auto_discovery_sections?.climate ?? false;
       if (autoDisc) {
-        const areaId = this._resolveAreaId();
+        const { areaId, areaName } = this._resolveAreaRef();
 
-        // prendi candidati "mushroom" e filtra solo climate.*
-        const all = candidatesFor(this.hass, this.config, 'mushroom') || [];
+        let all = candidatesFor(this.hass, this.config, 'mushroom') || [];
+        all = all.length ? all : Object.keys(this.hass?.states || {}); // fallback
         const climatesAll = all.filter(id => id.startsWith('climate.'));
 
         this._climateCandidates = this._filterByAreaIncludeSelected(
-          climatesAll, areaId, this._entity
+          climatesAll, areaId, areaName, this._entity
         );
       } else {
         this._climateCandidates = [];
@@ -170,7 +186,15 @@ export class ClimatePanel extends LitElement {
           ></ha-selector>
         </div>
 
-        <button class="reset-button" @click=${this._reset}>🧹 Reset Climate</button>
+        <button
+          class="reset-button"
+          @click=${() =>
+            this.dispatchEvent(new CustomEvent('__panel_cmd__', {
+              detail: { cmd: 'reset', section: 'climate' },
+              bubbles: true, composed: true,
+            }))
+          }
+        >🧹 Reset Climate</button>
       </ha-expansion-panel>
     `;
   }
@@ -188,11 +212,6 @@ export class ClimatePanel extends LitElement {
       bubbles: true, composed: true,
     }));
   }
-
-  _reset = () => {
-    this._set('entities.climate.entity', '');
-    this._set('entities.climate.icon',   '');
-  };
 }
 
 customElements.define('climate-panel', ClimatePanel);
