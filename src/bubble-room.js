@@ -203,22 +203,18 @@ export class BubbleRoom extends LitElement {
       const presState = presId ? this.hass?.states?.[presId]?.state : undefined;
       const presActive = presId ? ['on', 'home', 'occupied', 'motion', 'detected'].includes(presState) : true;
       list.push({
-        icon:  camCfg.icon || st.attributes.icon || resolveEntityIcon(camId, this.hass) || 'mdi:cctv',
+        icon: camCfg.icon || st.attributes.icon || resolveEntityIcon(camId, this.hass) || 'mdi:cctv',
         state: st.state,
-        color: presActive ? activeCol : inactiveCol,                // schema a piacere
-        dx: camCfg.dx ?? 0,
-        left: camCfg.left, 
-        top: camCfg.top,
-        dy: camCfg.dy ?? 0,
+        color: presActive ? activeCol : inactiveCol,
+        left: 'calc(100% - 12px - 36px)', // fisso in alto-destra
+        top: 12,
+        dx: 0,
+        dy: 0,
         angle_deg: camCfg.angle_deg,
         radius_factor: camCfg.radius_factor,
-
-        // >>> aggiunte per far funzionare le azioni impostate nel CameraPanel
         entity_id: camId,
-        tap_action:  { action: 'more-info' },
+        tap_action: { action: 'more-info' },
         hold_action: { action: 'none' },
-
-        kind: 'camera',
       });
     }
   
@@ -231,15 +227,15 @@ export class BubbleRoom extends LitElement {
         (st.attributes?.hvac_action && st.attributes.hvac_action !== 'off');
   
       list.push({
-        icon:  entities.climate.icon || st.attributes.icon || 'mdi:thermometer',
+        icon: cliCfg.icon || st.attributes.icon || resolveEntityIcon(cliId, this.hass) || 'mdi:thermostat',
         state: st.state,
         color: isActive ? activeCol : inactiveCol,
-        dx: entities.climate.dx ?? 0,
-        left: entities.climate.left,
-        top: entities.climate.top,
-        dy: entities.climate.dy ?? 0,
-        angle_deg: entities.climate.angle_deg,
-        radius_factor: entities.climate.radius_factor,
+        left: 12, // fisso in basso-sinistra
+        top: 'calc(100% - 12px - 36px)',
+        dx: 0,
+        dy: 0,
+        angle_deg: cliCfg.angle_deg,
+        radius_factor: cliCfg.radius_factor,
         kind: 'climate',
       });
     }
