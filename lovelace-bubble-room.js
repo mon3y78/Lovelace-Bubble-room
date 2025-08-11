@@ -1073,22 +1073,28 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       opacity: .95;
       line-height: 1;
     }
-
+    /* tasto apply preset */
     .apply-row {
-      display: flex; gap: 10px; justify-content: flex-end;
-      align-items: center; padding: 10px 16px 2px 16px;
+      display: flex;
+      justify-content: center;
+      padding: 16px 0;
     }
+
     .apply-btn {
+      font-size: 1.1rem;
+      padding: 12px 24px;
       border: 2.5px solid #73f6e5;
       color: #073a34;
       background: #73f6e5;
-      border-radius: 12px;
-      padding: 8px 16px;
+      border-radius: 14px;
       cursor: pointer;
       font-weight: 800;
       transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
     }
-    .apply-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .apply-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
 
     /* Sezioni manuali */
     .mini-pill {
@@ -1259,7 +1265,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       </div>
       <div class="apply-row">
         <button class="apply-btn" @click=${this._applySelectedPreset}>
-          Applica preset
+          Apply Preset
         </button>
       </div>
     `}_renderPresetCard(t,e){const i=this._selectedPreset===t?"selected":"",s=e.room.background_active,o=e.room.background_inactive,n=e.room.icon_active,a=e.room.icon_inactive;return M`
