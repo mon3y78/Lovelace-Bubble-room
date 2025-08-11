@@ -34,7 +34,11 @@ export class BubbleRoom extends LitElement {
     this._entities.climate = this._entities.climate || { entity: '', icon: '' };
   }
   
-
+  set hass(hass) {
+    this._hass = hass;
+    // Richiede update del rendering
+    this.requestUpdate?.();
+  }
   static getStubConfig() {
     return {
       type: 'custom:bubble-room',
