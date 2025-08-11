@@ -187,7 +187,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       font-weight: 700;
       font-size: 1.13rem;
     }
-  `;constructor(){super(),this.hass={},this.config={},this._expanded=!1,this.activeFilters=[],this.layout="wide",this._syncingFromConfig=!1}updated(t){if(t.has("config")||t.has("hass")){this._syncingFromConfig=!0,xt(this.hass,this.config,"area"),xt(this.hass,this.config,"auto_discovery_sections.presence"),t.has("config")&&Array.isArray(this.config.presence_filters)&&(this.activeFilters=[...this.config.presence_filters]);const e=this.config.layout;e&&e!==this.layout&&(this.layout=e),this._syncingFromConfig=!1}}_onLayoutClick(t){this.layout=t,this._fire("layout",t);const e="tall"===t?{columns:6,rows:4}:{columns:12,rows:4};this._fire("grid_options",e)}_fire(t,e){this._syncingFromConfig||this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}_onPresenceEntityChange=t=>{this._fire("entities.presence.entity",t);const e=this.config?.icon||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon||wt(t,this.hass);i&&this._fire("icon",i)}};render(){const t=this.config,e=t.auto_discovery_sections?.presence??!1,i=t.area??"",s=t.name??"",o=t.icon??"",n=t.entities?.presence?.entity??"",a=this.activeFilters.length?this.activeFilters:t.presence_filters??[...kt],r=kt.map(t=>({value:t,label:t.charAt(0).toUpperCase()+t.slice(1)})),l=pt(this.hass,this.config,"presence",a),c=["toggle","more-info","navigate","call-service","none"],d=this.config?.tap_action||{},h=this.config?.hold_action||{};return T`
+  `;constructor(){super(),this.hass={},this.config={},this._expanded=!1,this.activeFilters=[],this.layout="wide",this._syncingFromConfig=!1}updated(t){if(t.has("config")||t.has("hass")){this._syncingFromConfig=!0,xt(this.hass,this.config,"area"),xt(this.hass,this.config,"auto_discovery_sections.presence"),t.has("config")&&Array.isArray(this.config.presence_filters)&&(this.activeFilters=[...this.config.presence_filters]);const e=this.config.layout;e&&e!==this.layout&&(this.layout=e),this._syncingFromConfig=!1}}_onLayoutClick(t){this.layout=t,this._fire("layout",t);const e="tall"===t?{columns:6,rows:4}:{columns:12,rows:4};this._fire("grid_options",e)}_fire(t,e){this._syncingFromConfig||this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}_onPresenceEntityChange=t=>{this._fire("entities.presence.entity",t);const e=this.config?.icon||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon||wt(t,this.hass);i&&this._fire("icon",i)}};_onAreaChange(t){const e=this.config||{},i={...e.auto_discovery_sections||{}};i.camera=!0,i.climate=!0,i.sensor=!0,i.mushroom=!0,i.subbutton=!0,i.presence=!0;const s={...e,area:t,auto_discovery_sections:i};t&&(s.name=t.toUpperCase()),this.dispatchEvent(new CustomEvent("config-changed",{detail:{config:s},bubbles:!0,composed:!0}))}render(){const t=this.config,e=t.auto_discovery_sections?.presence??!1,i=t.area??"",s=t.name??"",o=t.icon??"",n=t.entities?.presence?.entity??"",a=this.activeFilters.length?this.activeFilters:t.presence_filters??[...kt],r=kt.map(t=>({value:t,label:t.charAt(0).toUpperCase()+t.slice(1)})),l=pt(this.hass,this.config,"presence",a),c=["toggle","more-info","navigate","call-service","none"],d=this.config?.tap_action||{},h=this.config?.hold_action||{};return T`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
@@ -195,28 +195,25 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
       
-        <!-- Auto‑discover (identico a CameraPanel: checkbox + label in linea) -->
         <div class="input-group autodiscover">
           <input
             type="checkbox"
             .checked=${e}
             @change=${t=>this._fire("auto_discovery_sections.presence",t.target.checked)}
           />
-          <label>🪄 Auto‑discover Presence</label>
+          <label>🪄 Auto-discover Presence</label>
         </div>
       
-        <!-- 🏷️ Area -->
         <div class="input-group">
           <label>🏷️ Area:</label>
           <ha-selector
             .hass=${this.hass}
             .value=${i}
             .selector=${{area:{}}}
-            @value-changed=${t=>{const e=t.detail.value;this._fire("area",e),e&&(this._fire("name",e.toUpperCase()),this._fire("auto_discovery_sections.presence",!0))}}
+            @value-changed=${t=>this._onAreaChange(t.detail.value)}
           ></ha-selector>
         </div>
       
-        <!-- 🏠 Room name -->
         <div class="input-group">
           <label>🏠 Room name:</label>
           <input
