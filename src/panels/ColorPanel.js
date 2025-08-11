@@ -15,10 +15,6 @@ export class ColorPanel extends LitElement {
 
     _selectedPreset:  { type: String,  state: true },
     _expandedColors:  { type: Array,   state: true }, // [room, subbutton, mushroom]
-    _applyRoom:       { type: Boolean, state: true },
-    _applySub:        { type: Boolean, state: true },
-    _applyText:       { type: Boolean, state: true },
-    _applyMushroom:   { type: Boolean, state: true },
   };
 
   constructor() {
@@ -36,10 +32,6 @@ export class ColorPanel extends LitElement {
     // UI state
     this._selectedPreset = 'green';
     this._expandedColors = [false, false, false];
-    this._applyRoom = true;
-    this._applySub = true;
-    this._applyText = true;
-    this._applyMushroom = true;
   }
 
   updated(changed) {
@@ -224,7 +216,7 @@ export class ColorPanel extends LitElement {
     .preset-bar {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 10px;
+      gap: 12px;
       padding: 8px 16px 2px 16px;
       box-sizing: border-box;
     }
@@ -233,11 +225,14 @@ export class ColorPanel extends LitElement {
       border-radius: 14px;
       border: 1px solid rgba(255,255,255,0.14);
       background: rgba(24,32,40,0.45);
-      padding: 10px 10px 12px;
+      padding: 12px 12px 10px;
       cursor: pointer;
       user-select: none;
       transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
       outline: none;
+      display: grid;
+      grid-template-rows: auto auto; /* nome sopra, swatches sotto */
+      gap: 8px;
     }
     .preset-card:hover {
       transform: translateY(-2px);
@@ -249,44 +244,48 @@ export class ColorPanel extends LitElement {
       box-shadow: 0 0 0 2px inset rgba(115,246,229,0.35);
     }
     .preset-name {
-      font-weight: 700;
+      order: 1;
+      font-weight: 800;
       color: #e9f8ff;
       font-size: .95rem;
-      margin-bottom: 6px;
-      text-align: left;
+      text-align: center;
+      margin-bottom: 2px;
     }
+
+    /* swatches: etichetta SOTTO al pallino */
     .swatches {
+      order: 2;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
     }
     .swatch {
       border-radius: 10px;
-      padding: 8px;
+      padding: 8px 6px;
       border: 1px solid rgba(255,255,255,0.10);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
+      flex-direction: column;   /* testo sotto */
     }
     .dot {
-      width: 14px; height: 14px; border-radius: 50%;
+      width: 16px; height: 16px; border-radius: 50%;
       border: 2px solid rgba(255,255,255,0.75);
       flex: 0 0 auto;
     }
     .swatch-label {
-      color: #f0f6ff; font-size: .85rem; opacity: .9;
+      color: #f0f6ff;
+      font-size: .8rem;
+      opacity: .95;
+      line-height: 1;
     }
 
-    /* Riga applica preset + checkbox */
     .apply-row {
-      display: flex; flex-wrap: wrap; gap: 10px;
+      display: flex; gap: 10px; justify-content: flex-end;
       align-items: center; padding: 10px 16px 2px 16px;
     }
-    .apply-row .checks { display: flex; gap: 14px; align-items: center; }
-    .apply-row label { color: #dfefff; font-weight: 600; font-size: .95rem; }
     .apply-btn {
-      margin-left: auto;
       border: 2.5px solid #73f6e5;
       color: #073a34;
       background: #73f6e5;
@@ -479,28 +478,6 @@ export class ColorPanel extends LitElement {
         ${keys.map(k => this._renderPresetCard(k, this.PRESETS[k]))}
       </div>
       <div class="apply-row">
-        <div class="checks">
-          <label>
-            <input type="checkbox" .checked=${this._applyRoom}
-              @change=${e => this._applyRoom = e.target.checked} />
-            Applica a Room
-          </label>
-          <label>
-            <input type="checkbox" .checked=${this._applySub}
-              @change=${e => this._applySub = e.target.checked} />
-            Applica a Subbutton
-          </label>
-          <label title="Solo per Room">
-            <input type="checkbox" .checked=${this._applyText}
-              @change=${e => this._applyText = e.target.checked} />
-            Includi testo (Room)
-          </label>
-          <label>
-            <input type="checkbox" .checked=${this._applyMushroom}
-              @change=${e => this._applyMushroom = e.target.checked} />
-            Applica a Mushroom
-          </label>
-        </div>
         <button class="apply-btn" @click=${this._applySelectedPreset}>
           Applica preset
         </button>
@@ -520,11 +497,11 @@ export class ColorPanel extends LitElement {
         <div class="swatches">
           <div class="swatch" style="background:${roomA}">
             <span class="dot" style="background:${iconA}"></span>
-            <span class="swatch-label">Active</span>
+            <span class="swatch-label">On</span>
           </div>
           <div class="swatch" style="background:${roomI}">
             <span class="dot" style="background:${iconI}"></span>
-            <span class="swatch-label">Inactive</span>
+            <span class="swatch-label">Off</span>
           </div>
         </div>
       </div>
@@ -568,30 +545,29 @@ export class ColorPanel extends LitElement {
     const preset = this.PRESETS[key];
     if (!preset) return;
 
-    const ops = [];
+    const ops = [
+      // Room
+      ['colors.room.background_active',   preset.room.background_active],
+      ['colors.room.background_inactive', preset.room.background_inactive],
+      ['colors.room.icon_active',         preset.room.icon_active],
+      ['colors.room.icon_inactive',       preset.room.icon_inactive],
+      ['colors.room.text_active',         preset.room.text_active],
+      ['colors.room.text_inactive',       preset.room.text_inactive],
 
-    if (this._applyRoom) {
-      ops.push(['colors.room.background_active',   preset.room.background_active]);
-      ops.push(['colors.room.background_inactive', preset.room.background_inactive]);
-      ops.push(['colors.room.icon_active',         preset.room.icon_active]);
-      ops.push(['colors.room.icon_inactive',       preset.room.icon_inactive]);
-      if (this._applyText) {
-        ops.push(['colors.room.text_active',       preset.room.text_active]);
-        ops.push(['colors.room.text_inactive',     preset.room.text_inactive]);
-      }
-    }
+      // Subbutton
+      ['colors.subbutton.background_on',  preset.sub.background_on],
+      ['colors.subbutton.background_off', preset.sub.background_off],
+      ['colors.subbutton.icon_on',        preset.sub.icon_on],
+      ['colors.subbutton.icon_off',       preset.sub.icon_off],
 
-    if (this._applySub) {
-      ops.push(['colors.subbutton.background_on',  preset.sub.background_on]);
-      ops.push(['colors.subbutton.background_off', preset.sub.background_off]);
-      ops.push(['colors.subbutton.icon_on',        preset.sub.icon_on]);
-      ops.push(['colors.subbutton.icon_off',       preset.sub.icon_off]);
-    }
+      // Mushroom
+      ['colors.mushroom.active',          preset.mushroom.active],
+      ['colors.mushroom.inactive',        preset.mushroom.inactive],
 
-    if (this._applyMushroom) {
-      ops.push(['colors.mushroom.active',   preset.mushroom.active]);
-      ops.push(['colors.mushroom.inactive', preset.mushroom.inactive]);
-    }
+      // Sensor
+      ['colors.sensor.sensor_active',     preset.sensor.sensor_active],
+      ['colors.sensor.sensor_inactive',   preset.sensor.sensor_inactive],
+    ];
 
     for (const [prop, val] of ops) {
       this._emit(prop, val);
@@ -600,11 +576,12 @@ export class ColorPanel extends LitElement {
 
   _resetColors() {
     this._expandedColors = [false, false, false];
-    const sections = ['room','subbutton','mushroom'];
+    const sections = ['room','subbutton','mushroom','sensor'];
     const keys = {
       room:      ['background_active','background_inactive','icon_active','icon_inactive','text_active','text_inactive'],
       subbutton: ['background_on','background_off','icon_on','icon_off'],
-      mushroom:  ['active','inactive']
+      mushroom:  ['active','inactive'],
+      sensor:    ['sensor_active','sensor_inactive'],
     };
     sections.forEach(sec => {
       keys[sec].forEach(k => this._emit(`colors.${sec}.${k}`, ''));
