@@ -70,8 +70,8 @@ export class ColorPanel extends LitElement {
         room: {
           icon_active: '#21df73',
           icon_inactive: '#173c16',
-          background_active: 'rgba(33,223,115,0.12)',
-          background_inactive: 'rgba(23,60,22,0.12)',
+          background_active: 'rgba(33,223,115,1)',
+          background_inactive: 'rgba(23,60,22,1)',
           text_active: '#ffffff',
           text_inactive: 'rgba(255,255,255,0.55)',
         },
