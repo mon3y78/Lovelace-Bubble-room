@@ -214,9 +214,6 @@ export class BubbleRoomEditor extends LitElement {
       grid-template-columns: 1fr;
       align-items: start;
     }
-    @media (min-width: 1100px) {
-      .editor-grid { grid-template-columns: 1fr 1fr; }
-    }
   `;
 
   render() {
