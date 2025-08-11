@@ -17,6 +17,7 @@ export class BubbleSensor extends LitElement {
     this._autoscaleScheduled = false;
     this._lastBox = { w: 0, h: 0 };
     this._pillCache = new WeakMap();
+    this._pendingChanged = null;
   }
 
   connectedCallback() {
@@ -54,8 +55,13 @@ export class BubbleSensor extends LitElement {
 
   updated(changedProperties) {
     if (changedProperties.has('sensors')) {
+      const prev = changedProperties.get('sensors') || [];
       this._updateLayout();
-      this._scheduleAutoscale();
+
+      const changedIdx = this._diffChangedSensorIndices(prev, this.sensors);
+      if (changedIdx.size === 0) return;
+
+      this._scheduleAutoscale(changedIdx);
     }
   }
 
@@ -65,19 +71,41 @@ export class BubbleSensor extends LitElement {
     this.columns = count > 4 ? 4 : count || 1;
   }
 
-  _scheduleAutoscale() {
-    if (this._autoscaleScheduled) return;
+  _scheduleAutoscale(changedIndices = null) {
+    if (this._autoscaleScheduled) {
+      this._pendingChanged = this._mergeChanged(this._pendingChanged, changedIndices);
+      return;
+    }
+    this._pendingChanged = this._mergeChanged(this._pendingChanged, changedIndices);
     this._autoscaleScheduled = true;
     requestAnimationFrame(() => {
       this._autoscaleScheduled = false;
-      this._autoScaleValues();
+      const payload = this._pendingChanged;
+      this._pendingChanged = null;
+      this._autoScaleValues(payload);
     });
   }
 
-  _autoScaleValues() {
+  _mergeChanged(a, b) {
+    if (!a && !b) return null;
+    if (!a) return b instanceof Set ? new Set(b) : null;
+    if (!b) return a instanceof Set ? new Set(a) : null;
+    const out = new Set(a);
+    for (const v of b) out.add(v);
+    return out;
+  }
+
+  _autoScaleValues(changedIndices = null) {
     const pills = this.renderRoot?.querySelectorAll('.sensor-pill');
     if (!pills?.length) return;
-    pills.forEach((pill) => this._fitValueAndUnit(pill));
+
+    const targetPills = changedIndices
+      ? Array.from(changedIndices).map(i => pills[i]).filter(Boolean)
+      : Array.from(pills);
+
+    if (!targetPills.length) return;
+
+    targetPills.forEach((pill) => this._fitValueAndUnit(pill));
   }
 
   _fitValueAndUnit(pill) {
@@ -127,8 +155,7 @@ export class BubbleSensor extends LitElement {
       const totalWidth  = vW + uW + 6;
       const totalHeight = vH > uH ? vH : uH;
 
-      const fits = totalWidth <= maxWidth && totalHeight <= maxHeight;
-      if (fits) {
+      if (totalWidth <= maxWidth && totalHeight <= maxHeight) {
         best = mid;
         lo = mid + 1;
       } else {
@@ -142,6 +169,72 @@ export class BubbleSensor extends LitElement {
     }
 
     this._pillCache.set(pill, { text, unitText, boxW, boxH, best });
+  }
+
+  /** Helpers per confronto sensori */
+  _formatValueForCompare(value) {
+    if (value === null || value === undefined) return '--';
+    if (typeof value === 'number') {
+      const isInt = Number.isInteger(value);
+      return isInt ? String(value) : value.toFixed(1);
+    }
+    return String(value).trim().replace(/\s+/g, ' ');
+  }
+
+  _getSensorKey(sensor, index) {
+    return sensor?.entity || sensor?.entity_id || `idx:${index}`;
+  }
+
+  _diffChangedSensorIndices(prev = [], next = []) {
+    const changed = new Set();
+
+    if ((prev?.length || 0) !== (next?.length || 0)) {
+      for (let i = 0; i < (next?.length || 0); i++) changed.add(i);
+      return changed;
+    }
+
+    const nextIndexByKey = new Map(next.map((s, i) => [this._getSensorKey(s, i), i]));
+
+    prev.forEach((prevSensor, prevIndex) => {
+      const key = this._getSensorKey(prevSensor, prevIndex);
+      const i = nextIndexByKey.get(key);
+      if (i === undefined) {
+        if (prevIndex < next.length) changed.add(prevIndex);
+        return;
+      }
+
+      const cur = next[i];
+
+      const prevText = [
+        prevSensor?.label ?? '',
+        this._formatValueForCompare(prevSensor?.value),
+        prevSensor?.unit ?? ''
+      ].join('|');
+
+      const nextText = [
+        cur?.label ?? '',
+        this._formatValueForCompare(cur?.value),
+        cur?.unit ?? ''
+      ].join('|');
+
+      const prevIcon  = prevSensor?.icon ?? '';
+      const nextIcon  = cur?.icon ?? '';
+      const prevDev   = prevSensor?.device_class ?? '';
+      const nextDev   = cur?.device_class ?? '';
+      const prevColor = prevSensor?.color ?? '';
+      const nextColor = cur?.color ?? '';
+
+      const textChanged  = prevText !== nextText;
+      const iconChanged  = prevIcon !== nextIcon;
+      const devChanged   = prevDev !== nextDev;
+      const colorChanged = prevColor !== nextColor;
+
+      if (textChanged || iconChanged || devChanged || colorChanged) {
+        changed.add(i);
+      }
+    });
+
+    return changed;
   }
 
   _openMoreInfo(entityId) {
