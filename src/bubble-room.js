@@ -34,10 +34,16 @@ export class BubbleRoom extends LitElement {
     this._entities.climate = this._entities.climate || { entity: '', icon: '' };
   }
   
+  get hass() {
+    return this._hass;
+  }
+  
   set hass(hass) {
     this._hass = hass;
-    // Richiede update del rendering
-    this.requestUpdate?.();
+    // aggiorna il render solo quando arrivano davvero gli stati
+    if (hass?.states) {
+      this.requestUpdate?.();
+    }
   }
   static getStubConfig() {
     return {
@@ -164,7 +170,9 @@ export class BubbleRoom extends LitElement {
     }
     return result;
   }
-
+  _getState(entityId) {
+    return entityId ? this.hass?.states?.[entityId] : undefined;
+  }
   /* ───────────── mushroom ───────────── */
   _getMushrooms() {
     const entities = this._entities || {};
@@ -202,7 +210,7 @@ export class BubbleRoom extends LitElement {
     const camCfg = entities.camera || {};
     const camId  = camCfg.entity;
     if (camId && this.hass.states?.[camId]) {
-      const st = this.hass.states[camId];
+      const st = this.hass?.states?.[camId];
       const presId = camCfg.presence?.entity;
       const presState = presId ? this.hass?.states?.[presId]?.state : undefined;
       const presActive = presId ? ['on', 'home', 'occupied', 'motion', 'detected'].includes(presState) : true;
@@ -228,7 +236,7 @@ export class BubbleRoom extends LitElement {
     const cliCfg = this._entities?.climate || {};
     const cliId = cliCfg.entity;
     if (cliId && this.hass.states?.[cliId]) {
-      const st = this.hass.states[cliId];
+      const st = this.hass?.states?.[cliId];
       const isActive =
         (st.state && st.state !== 'off' && st.state !== 'idle') ||
         (st.attributes?.hvac_action && st.attributes.hvac_action !== 'off');
