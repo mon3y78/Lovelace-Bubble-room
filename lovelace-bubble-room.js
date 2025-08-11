@@ -988,7 +988,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       box-shadow: var(--glass-shadow, 0 2px 24px rgba(95,255,235,0.13));
       overflow: hidden;
     }
-    .glass-panel::after {
+    / *.glass-panel::after {
       content: '';
       position: absolute; inset: 0;
       border-radius: inherit;
@@ -996,7 +996,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
         linear-gradient(120deg, rgba(255,255,255,0.14),
         rgba(255,255,255,0.08) 70%, transparent 100%));
       pointer-events: none;
-    }
+    } */
     .glass-header {
       padding: 22px 0;
       text-align: center;
