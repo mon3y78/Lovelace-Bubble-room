@@ -27,7 +27,6 @@ export class BubbleIcon extends LitElement {
       box-sizing: border-box;
     }
     .main-icon-container {
-      opacity: 0.30;
       box-sizing: border-box;
       background: var(--main-icon-bg, rgba(33,223,115,0.12));
       border-radius: 0 70% 70% 0;

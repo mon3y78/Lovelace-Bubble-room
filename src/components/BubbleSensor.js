@@ -165,12 +165,10 @@ export class BubbleSensor extends LitElement {
 
     .sensor-icon {
       font-size: 1.4em; /* leggermente più grande dell'originale */
-      opacity: 0.81;
       flex: 0 0 auto;
     }
 
     .sensor-label {
-      opacity: 0.85;
       font-weight: 600;
       font-size: clamp(14px, 1.5vw, 20px); /* emoji più grande */
       transform: scale(0.95);
@@ -188,7 +186,6 @@ export class BubbleSensor extends LitElement {
     }
 
     .sensor-unit {
-      opacity: 0.8;
       font-weight: 600;
       /* la size viene impostata dinamicamente via JS */
       white-space: nowrap;
