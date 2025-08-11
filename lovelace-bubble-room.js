@@ -14,7 +14,7 @@ const t=window,e=t.ShadowRoot&&(void 0===t.ShadyCSS||t.ShadyCSS.nativeShadow)&&"
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-var f;m[g]=!0,m.elementProperties=new Map,m.elementStyles=[],m.shadowRootOptions={mode:"open"},null==h||h({ReactiveElement:m}),(null!==(r=c.reactiveElementVersions)&&void 0!==r?r:c.reactiveElementVersions=[]).push("1.6.3");const _=window,v=_.trustedTypes,x=v?v.createPolicy("lit-html",{createHTML:t=>t}):void 0,y="$lit$",$=`lit$${(Math.random()+"").slice(9)}$`,w="?"+$,k=`<${w}>`,A=document,C=()=>A.createComment(""),S=t=>null===t||"object"!=typeof t&&"function"!=typeof t,E=Array.isArray,P="[ \t\n\f\r]",z=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,O=/-->/g,j=/>/g,R=RegExp(`>|${P}(?:([^\\s"'>=/]+)(${P}*=${P}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),M=/'/g,T=/"/g,I=/^(?:script|style|textarea|title)$/i,F=(t=>(e,...i)=>({_$litType$:t,strings:e,values:i}))(1),U=Symbol.for("lit-noChange"),N=Symbol.for("lit-nothing"),B=new WeakMap,H=A.createTreeWalker(A,129,null,!1);function L(t,e){if(!Array.isArray(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==x?x.createHTML(e):e}const W=(t,e)=>{const i=t.length-1,s=[];let o,n=2===e?"<svg>":"",a=z;for(let e=0;e<i;e++){const i=t[e];let r,c,l=-1,d=0;for(;d<i.length&&(a.lastIndex=d,c=a.exec(i),null!==c);)d=a.lastIndex,a===z?"!--"===c[1]?a=O:void 0!==c[1]?a=j:void 0!==c[2]?(I.test(c[2])&&(o=RegExp("</"+c[2],"g")),a=R):void 0!==c[3]&&(a=R):a===R?">"===c[0]?(a=null!=o?o:z,l=-1):void 0===c[1]?l=-2:(l=a.lastIndex-c[2].length,r=c[1],a=void 0===c[3]?R:'"'===c[3]?T:M):a===T||a===M?a=R:a===O||a===j?a=z:(a=R,o=void 0);const h=a===R&&t[e+1].startsWith("/>")?" ":"";n+=a===z?i+k:l>=0?(s.push(r),i.slice(0,l)+y+i.slice(l)+$+h):i+$+(-2===l?(s.push(void 0),e):h)}return[L(t,n+(t[i]||"<?>")+(2===e?"</svg>":"")),s]};class D{constructor({strings:t,_$litType$:e},i){let s;this.parts=[];let o=0,n=0;const a=t.length-1,r=this.parts,[c,l]=W(t,e);if(this.el=D.createElement(c,i),H.currentNode=this.el.content,2===e){const t=this.el.content,e=t.firstChild;e.remove(),t.append(...e.childNodes)}for(;null!==(s=H.nextNode())&&r.length<a;){if(1===s.nodeType){if(s.hasAttributes()){const t=[];for(const e of s.getAttributeNames())if(e.endsWith(y)||e.startsWith($)){const i=l[n++];if(t.push(e),void 0!==i){const t=s.getAttribute(i.toLowerCase()+y).split($),e=/([.?@])?(.*)/.exec(i);r.push({type:1,index:o,name:e[2],strings:t,ctor:"."===e[1]?K:"?"===e[1]?Z:"@"===e[1]?X:G})}else r.push({type:6,index:o})}for(const e of t)s.removeAttribute(e)}if(I.test(s.tagName)){const t=s.textContent.split($),e=t.length-1;if(e>0){s.textContent=v?v.emptyScript:"";for(let i=0;i<e;i++)s.append(t[i],C()),H.nextNode(),r.push({type:2,index:++o});s.append(t[e],C())}}}else if(8===s.nodeType)if(s.data===w)r.push({type:2,index:o});else{let t=-1;for(;-1!==(t=s.data.indexOf($,t+1));)r.push({type:7,index:o}),t+=$.length-1}o++}}static createElement(t,e){const i=A.createElement("template");return i.innerHTML=t,i}}function V(t,e,i=t,s){var o,n,a,r;if(e===U)return e;let c=void 0!==s?null===(o=i._$Co)||void 0===o?void 0:o[s]:i._$Cl;const l=S(e)?void 0:e._$litDirective$;return(null==c?void 0:c.constructor)!==l&&(null===(n=null==c?void 0:c._$AO)||void 0===n||n.call(c,!1),void 0===l?c=void 0:(c=new l(t),c._$AT(t,i,s)),void 0!==s?(null!==(a=(r=i)._$Co)&&void 0!==a?a:r._$Co=[])[s]=c:i._$Cl=c),void 0!==c&&(e=V(t,c._$AS(t,e.values),c,s)),e}class q{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){var e;const{el:{content:i},parts:s}=this._$AD,o=(null!==(e=null==t?void 0:t.creationScope)&&void 0!==e?e:A).importNode(i,!0);H.currentNode=o;let n=H.nextNode(),a=0,r=0,c=s[0];for(;void 0!==c;){if(a===c.index){let e;2===c.type?e=new J(n,n.nextSibling,this,t):1===c.type?e=new c.ctor(n,c.name,c.strings,this,t):6===c.type&&(e=new Q(n,this,t)),this._$AV.push(e),c=s[++r]}a!==(null==c?void 0:c.index)&&(n=H.nextNode(),a++)}return H.currentNode=A,o}v(t){let e=0;for(const i of this._$AV)void 0!==i&&(void 0!==i.strings?(i._$AI(t,i,e),e+=i.strings.length-2):i._$AI(t[e])),e++}}class J{constructor(t,e,i,s){var o;this.type=2,this._$AH=N,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=i,this.options=s,this._$Cp=null===(o=null==s?void 0:s.isConnected)||void 0===o||o}get _$AU(){var t,e;return null!==(e=null===(t=this._$AM)||void 0===t?void 0:t._$AU)&&void 0!==e?e:this._$Cp}get parentNode(){let t=this._$AA.parentNode;const e=this._$AM;return void 0!==e&&11===(null==t?void 0:t.nodeType)&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=V(this,t,e),S(t)?t===N||null==t||""===t?(this._$AH!==N&&this._$AR(),this._$AH=N):t!==this._$AH&&t!==U&&this._(t):void 0!==t._$litType$?this.g(t):void 0!==t.nodeType?this.$(t):(t=>E(t)||"function"==typeof(null==t?void 0:t[Symbol.iterator]))(t)?this.T(t):this._(t)}k(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}$(t){this._$AH!==t&&(this._$AR(),this._$AH=this.k(t))}_(t){this._$AH!==N&&S(this._$AH)?this._$AA.nextSibling.data=t:this.$(A.createTextNode(t)),this._$AH=t}g(t){var e;const{values:i,_$litType$:s}=t,o="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=D.createElement(L(s.h,s.h[0]),this.options)),s);if((null===(e=this._$AH)||void 0===e?void 0:e._$AD)===o)this._$AH.v(i);else{const t=new q(o,this),e=t.u(this.options);t.v(i),this.$(e),this._$AH=t}}_$AC(t){let e=B.get(t.strings);return void 0===e&&B.set(t.strings,e=new D(t)),e}T(t){E(this._$AH)||(this._$AH=[],this._$AR());const e=this._$AH;let i,s=0;for(const o of t)s===e.length?e.push(i=new J(this.k(C()),this.k(C()),this,this.options)):i=e[s],i._$AI(o),s++;s<e.length&&(this._$AR(i&&i._$AB.nextSibling,s),e.length=s)}_$AR(t=this._$AA.nextSibling,e){var i;for(null===(i=this._$AP)||void 0===i||i.call(this,!1,!0,e);t&&t!==this._$AB;){const e=t.nextSibling;t.remove(),t=e}}setConnected(t){var e;void 0===this._$AM&&(this._$Cp=t,null===(e=this._$AP)||void 0===e||e.call(this,t))}}class G{constructor(t,e,i,s,o){this.type=1,this._$AH=N,this._$AN=void 0,this.element=t,this.name=e,this._$AM=s,this.options=o,i.length>2||""!==i[0]||""!==i[1]?(this._$AH=Array(i.length-1).fill(new String),this.strings=i):this._$AH=N}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(t,e=this,i,s){const o=this.strings;let n=!1;if(void 0===o)t=V(this,t,e,0),n=!S(t)||t!==this._$AH&&t!==U,n&&(this._$AH=t);else{const s=t;let a,r;for(t=o[0],a=0;a<o.length-1;a++)r=V(this,s[i+a],e,a),r===U&&(r=this._$AH[a]),n||(n=!S(r)||r!==this._$AH[a]),r===N?t=N:t!==N&&(t+=(null!=r?r:"")+o[a+1]),this._$AH[a]=r}n&&!s&&this.j(t)}j(t){t===N?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=t?t:"")}}class K extends G{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===N?void 0:t}}const Y=v?v.emptyScript:"";class Z extends G{constructor(){super(...arguments),this.type=4}j(t){t&&t!==N?this.element.setAttribute(this.name,Y):this.element.removeAttribute(this.name)}}class X extends G{constructor(t,e,i,s,o){super(t,e,i,s,o),this.type=5}_$AI(t,e=this){var i;if((t=null!==(i=V(this,t,e,0))&&void 0!==i?i:N)===U)return;const s=this._$AH,o=t===N&&s!==N||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,n=t!==N&&(s===N||o);o&&this.element.removeEventListener(this.name,this,s),n&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){var e,i;"function"==typeof this._$AH?this._$AH.call(null!==(i=null===(e=this.options)||void 0===e?void 0:e.host)&&void 0!==i?i:this.element,t):this._$AH.handleEvent(t)}}class Q{constructor(t,e,i){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=i}get _$AU(){return this._$AM._$AU}_$AI(t){V(this,t)}}const tt=_.litHtmlPolyfillSupport;null==tt||tt(D,J),(null!==(f=_.litHtmlVersions)&&void 0!==f?f:_.litHtmlVersions=[]).push("2.8.0");
+var f;m[g]=!0,m.elementProperties=new Map,m.elementStyles=[],m.shadowRootOptions={mode:"open"},null==h||h({ReactiveElement:m}),(null!==(r=c.reactiveElementVersions)&&void 0!==r?r:c.reactiveElementVersions=[]).push("1.6.3");const _=window,v=_.trustedTypes,x=v?v.createPolicy("lit-html",{createHTML:t=>t}):void 0,y="$lit$",$=`lit$${(Math.random()+"").slice(9)}$`,w="?"+$,k=`<${w}>`,A=document,C=()=>A.createComment(""),S=t=>null===t||"object"!=typeof t&&"function"!=typeof t,E=Array.isArray,P="[ \t\n\f\r]",z=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,O=/-->/g,j=/>/g,R=RegExp(`>|${P}(?:([^\\s"'>=/]+)(${P}*=${P}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),T=/'/g,F=/"/g,I=/^(?:script|style|textarea|title)$/i,M=(t=>(e,...i)=>({_$litType$:t,strings:e,values:i}))(1),U=Symbol.for("lit-noChange"),N=Symbol.for("lit-nothing"),B=new WeakMap,H=A.createTreeWalker(A,129,null,!1);function L(t,e){if(!Array.isArray(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==x?x.createHTML(e):e}const W=(t,e)=>{const i=t.length-1,s=[];let o,n=2===e?"<svg>":"",a=z;for(let e=0;e<i;e++){const i=t[e];let r,c,l=-1,d=0;for(;d<i.length&&(a.lastIndex=d,c=a.exec(i),null!==c);)d=a.lastIndex,a===z?"!--"===c[1]?a=O:void 0!==c[1]?a=j:void 0!==c[2]?(I.test(c[2])&&(o=RegExp("</"+c[2],"g")),a=R):void 0!==c[3]&&(a=R):a===R?">"===c[0]?(a=null!=o?o:z,l=-1):void 0===c[1]?l=-2:(l=a.lastIndex-c[2].length,r=c[1],a=void 0===c[3]?R:'"'===c[3]?F:T):a===F||a===T?a=R:a===O||a===j?a=z:(a=R,o=void 0);const h=a===R&&t[e+1].startsWith("/>")?" ":"";n+=a===z?i+k:l>=0?(s.push(r),i.slice(0,l)+y+i.slice(l)+$+h):i+$+(-2===l?(s.push(void 0),e):h)}return[L(t,n+(t[i]||"<?>")+(2===e?"</svg>":"")),s]};class D{constructor({strings:t,_$litType$:e},i){let s;this.parts=[];let o=0,n=0;const a=t.length-1,r=this.parts,[c,l]=W(t,e);if(this.el=D.createElement(c,i),H.currentNode=this.el.content,2===e){const t=this.el.content,e=t.firstChild;e.remove(),t.append(...e.childNodes)}for(;null!==(s=H.nextNode())&&r.length<a;){if(1===s.nodeType){if(s.hasAttributes()){const t=[];for(const e of s.getAttributeNames())if(e.endsWith(y)||e.startsWith($)){const i=l[n++];if(t.push(e),void 0!==i){const t=s.getAttribute(i.toLowerCase()+y).split($),e=/([.?@])?(.*)/.exec(i);r.push({type:1,index:o,name:e[2],strings:t,ctor:"."===e[1]?G:"?"===e[1]?Z:"@"===e[1]?X:Y})}else r.push({type:6,index:o})}for(const e of t)s.removeAttribute(e)}if(I.test(s.tagName)){const t=s.textContent.split($),e=t.length-1;if(e>0){s.textContent=v?v.emptyScript:"";for(let i=0;i<e;i++)s.append(t[i],C()),H.nextNode(),r.push({type:2,index:++o});s.append(t[e],C())}}}else if(8===s.nodeType)if(s.data===w)r.push({type:2,index:o});else{let t=-1;for(;-1!==(t=s.data.indexOf($,t+1));)r.push({type:7,index:o}),t+=$.length-1}o++}}static createElement(t,e){const i=A.createElement("template");return i.innerHTML=t,i}}function V(t,e,i=t,s){var o,n,a,r;if(e===U)return e;let c=void 0!==s?null===(o=i._$Co)||void 0===o?void 0:o[s]:i._$Cl;const l=S(e)?void 0:e._$litDirective$;return(null==c?void 0:c.constructor)!==l&&(null===(n=null==c?void 0:c._$AO)||void 0===n||n.call(c,!1),void 0===l?c=void 0:(c=new l(t),c._$AT(t,i,s)),void 0!==s?(null!==(a=(r=i)._$Co)&&void 0!==a?a:r._$Co=[])[s]=c:i._$Cl=c),void 0!==c&&(e=V(t,c._$AS(t,e.values),c,s)),e}class q{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){var e;const{el:{content:i},parts:s}=this._$AD,o=(null!==(e=null==t?void 0:t.creationScope)&&void 0!==e?e:A).importNode(i,!0);H.currentNode=o;let n=H.nextNode(),a=0,r=0,c=s[0];for(;void 0!==c;){if(a===c.index){let e;2===c.type?e=new J(n,n.nextSibling,this,t):1===c.type?e=new c.ctor(n,c.name,c.strings,this,t):6===c.type&&(e=new Q(n,this,t)),this._$AV.push(e),c=s[++r]}a!==(null==c?void 0:c.index)&&(n=H.nextNode(),a++)}return H.currentNode=A,o}v(t){let e=0;for(const i of this._$AV)void 0!==i&&(void 0!==i.strings?(i._$AI(t,i,e),e+=i.strings.length-2):i._$AI(t[e])),e++}}class J{constructor(t,e,i,s){var o;this.type=2,this._$AH=N,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=i,this.options=s,this._$Cp=null===(o=null==s?void 0:s.isConnected)||void 0===o||o}get _$AU(){var t,e;return null!==(e=null===(t=this._$AM)||void 0===t?void 0:t._$AU)&&void 0!==e?e:this._$Cp}get parentNode(){let t=this._$AA.parentNode;const e=this._$AM;return void 0!==e&&11===(null==t?void 0:t.nodeType)&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=V(this,t,e),S(t)?t===N||null==t||""===t?(this._$AH!==N&&this._$AR(),this._$AH=N):t!==this._$AH&&t!==U&&this._(t):void 0!==t._$litType$?this.g(t):void 0!==t.nodeType?this.$(t):(t=>E(t)||"function"==typeof(null==t?void 0:t[Symbol.iterator]))(t)?this.T(t):this._(t)}k(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}$(t){this._$AH!==t&&(this._$AR(),this._$AH=this.k(t))}_(t){this._$AH!==N&&S(this._$AH)?this._$AA.nextSibling.data=t:this.$(A.createTextNode(t)),this._$AH=t}g(t){var e;const{values:i,_$litType$:s}=t,o="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=D.createElement(L(s.h,s.h[0]),this.options)),s);if((null===(e=this._$AH)||void 0===e?void 0:e._$AD)===o)this._$AH.v(i);else{const t=new q(o,this),e=t.u(this.options);t.v(i),this.$(e),this._$AH=t}}_$AC(t){let e=B.get(t.strings);return void 0===e&&B.set(t.strings,e=new D(t)),e}T(t){E(this._$AH)||(this._$AH=[],this._$AR());const e=this._$AH;let i,s=0;for(const o of t)s===e.length?e.push(i=new J(this.k(C()),this.k(C()),this,this.options)):i=e[s],i._$AI(o),s++;s<e.length&&(this._$AR(i&&i._$AB.nextSibling,s),e.length=s)}_$AR(t=this._$AA.nextSibling,e){var i;for(null===(i=this._$AP)||void 0===i||i.call(this,!1,!0,e);t&&t!==this._$AB;){const e=t.nextSibling;t.remove(),t=e}}setConnected(t){var e;void 0===this._$AM&&(this._$Cp=t,null===(e=this._$AP)||void 0===e||e.call(this,t))}}class Y{constructor(t,e,i,s,o){this.type=1,this._$AH=N,this._$AN=void 0,this.element=t,this.name=e,this._$AM=s,this.options=o,i.length>2||""!==i[0]||""!==i[1]?(this._$AH=Array(i.length-1).fill(new String),this.strings=i):this._$AH=N}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(t,e=this,i,s){const o=this.strings;let n=!1;if(void 0===o)t=V(this,t,e,0),n=!S(t)||t!==this._$AH&&t!==U,n&&(this._$AH=t);else{const s=t;let a,r;for(t=o[0],a=0;a<o.length-1;a++)r=V(this,s[i+a],e,a),r===U&&(r=this._$AH[a]),n||(n=!S(r)||r!==this._$AH[a]),r===N?t=N:t!==N&&(t+=(null!=r?r:"")+o[a+1]),this._$AH[a]=r}n&&!s&&this.j(t)}j(t){t===N?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=t?t:"")}}class G extends Y{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===N?void 0:t}}const K=v?v.emptyScript:"";class Z extends Y{constructor(){super(...arguments),this.type=4}j(t){t&&t!==N?this.element.setAttribute(this.name,K):this.element.removeAttribute(this.name)}}class X extends Y{constructor(t,e,i,s,o){super(t,e,i,s,o),this.type=5}_$AI(t,e=this){var i;if((t=null!==(i=V(this,t,e,0))&&void 0!==i?i:N)===U)return;const s=this._$AH,o=t===N&&s!==N||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,n=t!==N&&(s===N||o);o&&this.element.removeEventListener(this.name,this,s),n&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){var e,i;"function"==typeof this._$AH?this._$AH.call(null!==(i=null===(e=this.options)||void 0===e?void 0:e.host)&&void 0!==i?i:this.element,t):this._$AH.handleEvent(t)}}class Q{constructor(t,e,i){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=i}get _$AU(){return this._$AM._$AU}_$AI(t){V(this,t)}}const tt=_.litHtmlPolyfillSupport;null==tt||tt(D,J),(null!==(f=_.litHtmlVersions)&&void 0!==f?f:_.litHtmlVersions=[]).push("2.8.0");
 /**
  * @license
  * Copyright 2017 Google LLC
@@ -187,7 +187,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       font-weight: 700;
       font-size: 1.13rem;
     }
-  `;constructor(){super(),this.hass={},this.config={},this._expanded=!1,this.activeFilters=[],this.layout="wide",this._syncingFromConfig=!1}updated(t){if(t.has("config")||t.has("hass")){this._syncingFromConfig=!0,xt(this.hass,this.config,"area"),xt(this.hass,this.config,"auto_discovery_sections.presence"),t.has("config")&&Array.isArray(this.config.presence_filters)&&(this.activeFilters=[...this.config.presence_filters]);const e=this.config.layout;e&&e!==this.layout&&(this.layout=e),this._syncingFromConfig=!1}}_onLayoutClick(t){this.layout=t,this._fire("layout",t);const e="tall"===t?{columns:6,rows:4}:{columns:12,rows:4};this._fire("grid_options",e)}_fire(t,e){this._syncingFromConfig||this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}_onPresenceEntityChange=t=>{this._fire("entities.presence.entity",t);const e=this.config?.icon||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon||wt(t,this.hass);i&&this._fire("icon",i)}};render(){const t=this.config,e=t.auto_discovery_sections?.presence??!1,i=t.area??"",s=t.name??"",o=t.icon??"",n=t.entities?.presence?.entity??"",a=this.activeFilters.length?this.activeFilters:t.presence_filters??[...kt],r=kt.map(t=>({value:t,label:t.charAt(0).toUpperCase()+t.slice(1)})),c=pt(this.hass,this.config,"presence",a),l=["toggle","more-info","navigate","call-service","none"],d=this.config?.tap_action||{},h=this.config?.hold_action||{};return F`
+  `;constructor(){super(),this.hass={},this.config={},this._expanded=!1,this.activeFilters=[],this.layout="wide",this._syncingFromConfig=!1}updated(t){if(t.has("config")||t.has("hass")){this._syncingFromConfig=!0,xt(this.hass,this.config,"area"),xt(this.hass,this.config,"auto_discovery_sections.presence"),t.has("config")&&Array.isArray(this.config.presence_filters)&&(this.activeFilters=[...this.config.presence_filters]);const e=this.config.layout;e&&e!==this.layout&&(this.layout=e),this._syncingFromConfig=!1}}_onLayoutClick(t){this.layout=t,this._fire("layout",t);const e="tall"===t?{columns:6,rows:4}:{columns:12,rows:4};this._fire("grid_options",e)}_fire(t,e){this._syncingFromConfig||this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}_onPresenceEntityChange=t=>{this._fire("entities.presence.entity",t);const e=this.config?.icon||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon||wt(t,this.hass);i&&this._fire("icon",i)}};render(){const t=this.config,e=t.auto_discovery_sections?.presence??!1,i=t.area??"",s=t.name??"",o=t.icon??"",n=t.entities?.presence?.entity??"",a=this.activeFilters.length?this.activeFilters:t.presence_filters??[...kt],r=kt.map(t=>({value:t,label:t.charAt(0).toUpperCase()+t.slice(1)})),c=pt(this.hass,this.config,"presence",a),l=["toggle","more-info","navigate","call-service","none"],d=this.config?.tap_action||{},h=this.config?.hold_action||{};return M`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this._expanded}
@@ -268,20 +268,20 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             <div class="input-group">
               <label>Tap Action</label>
               <div class="pill-group">
-                ${l.map(t=>F`
+                ${l.map(t=>M`
                   <button
                     class="pill-button ${d.action===t?"active":""}"
                     @click=${()=>this._fire("tap_action.action",t)}
                   >${t}</button>
                 `)}
               </div>
-              ${"navigate"===d.action?F`
+              ${"navigate"===d.action?M`
                 <input type="text" placeholder="Path"
                   .value=${d.navigation_path||""}
                   @input=${t=>this._fire("tap_action.navigation_path",t.target.value)}
                 />
               `:""}
-              ${"call-service"===d.action?F`
+              ${"call-service"===d.action?M`
                 <input type="text" placeholder="service (es. light.turn_on)"
                   .value=${d.service||""}
                   @input=${t=>this._fire("tap_action.service",t.target.value)}
@@ -296,20 +296,20 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             <div class="input-group">
               <label>Hold Action</label>
               <div class="pill-group">
-                ${l.map(t=>F`
+                ${l.map(t=>M`
                   <button
                     class="pill-button ${h.action===t?"active":""}"
                     @click=${()=>this._fire("hold_action.action",t)}
                   >${t}</button>
                 `)}
               </div>
-              ${"navigate"===h.action?F`
+              ${"navigate"===h.action?M`
                 <input type="text" placeholder="Path"
                   .value=${h.navigation_path||""}
                   @input=${t=>this._fire("hold_action.navigation_path",t.target.value)}
                 />
               `:""}
-              ${"call-service"===h.action?F`
+              ${"call-service"===h.action?M`
                 <input type="text" placeholder="service (es. light.turn_on)"
                   .value=${h.service||""}
                   @input=${t=>this._fire("hold_action.service",t.target.value)}
@@ -471,7 +471,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       color: #fff;
       box-shadow: 0 6px 32px #ff4c6abf;
     }
-  `;render(){const t=this.config.auto_discovery_sections?.sensor??!1,e=Object.entries(Ct).filter(([t])=>"_fallback"!==t).map(([t,e])=>{const i=e.label||t.replace(/_/g," ").replace(/\b\w/g,t=>t.toUpperCase());return{value:t,label:`${e.emoji||""} ${i}`.trim()}});return F`
+  `;render(){const t=this.config.auto_discovery_sections?.sensor??!1,e=Object.entries(Ct).filter(([t])=>"_fallback"!==t).map(([t,e])=>{const i=e.label||t.replace(/_/g," ").replace(/\b\w/g,t=>t.toUpperCase());return{value:t,label:`${e.emoji||""} ${i}`.trim()}});return M`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
@@ -497,13 +497,13 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           🧹 Reset Sensors
         </button>
       </ha-expansion-panel>
-    `}_renderSensor(t,e,i){const s=this._filters[t],o=this._entities[t],n=pt(this.hass,this.config,"sensor",s);return F`
+    `}_renderSensor(t,e,i){const s=this._filters[t],o=this._entities[t],n=pt(this.hass,this.config,"sensor",s);return M`
       <div class="mini-pill ${e?"expanded":""}">
         <div class="mini-pill-header" @click=${()=>this._togglePill(t)}>
           Sensor ${t+1}
           <span class="chevron">${e?"▼":"▶"}</span>
         </div>
-        ${e?F`
+        ${e?M`
           <div class="mini-pill-content">
             <!-- Filter category (multi‐select pill) -->
             <div class="input-group">
@@ -529,7 +529,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             </div>
 
             <!-- Preview basata su device_class -->
-            ${o?(()=>{const t=this.hass.states[o],e=t?.attributes?.device_class,i=Ct[e]||{},s=i.emoji||"❓",n=t?.attributes?.unit_of_measurement||(i.units?.[0]??"");return F`
+            ${o?(()=>{const t=this.hass.states[o],e=t?.attributes?.device_class,i=Ct[e]||{},s=i.emoji||"❓",n=t?.attributes?.unit_of_measurement||(i.units?.[0]??"");return M`
                 <div class="preview">
                   <span class="emoji">${s}</span>
                   <div class="state">${t?.state??"-"} ${n}</div>
@@ -656,7 +656,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       background: rgba(255,76,106,0.18);
       color: #fff; box-shadow: 0 6px 32px #ff4c6abf;
     }
-  `;render(){const t=this.config.auto_discovery_sections?.mushroom??!1,e=at.map(t=>({value:t,label:nt[t]||t.charAt(0).toUpperCase()+t.slice(1)}));return F`
+  `;render(){const t=this.config.auto_discovery_sections?.mushroom??!1,e=at.map(t=>({value:t,label:nt[t]||t.charAt(0).toUpperCase()+t.slice(1)}));return M`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
@@ -679,14 +679,14 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           🧹 Reset Mushrooms
         </button>
       </ha-expansion-panel>
-    `}_renderMushroom(t,e,i){const s=`mushroom${t+1}`,o=this._filters[t],n=this._entities[t],a=this._icons[t],r=this.config.entities&&this.config.entities[s]?this.config.entities[s]:{},c=pt(this.hass,this.config,"mushroom",o),l=["toggle","more-info","navigate","call-service","none"];return F`
+    `}_renderMushroom(t,e,i){const s=`mushroom${t+1}`,o=this._filters[t],n=this._entities[t],a=this._icons[t],r=this.config.entities&&this.config.entities[s]?this.config.entities[s]:{},c=pt(this.hass,this.config,"mushroom",o),l=["toggle","more-info","navigate","call-service","none"];return M`
       <div class="mini-pill ${e?"expanded":""}">
         <div class="mini-pill-header" @click=${()=>this._togglePill(t)}>
           Mushroom ${t+1}
           <span class="chevron">${e?"▼":"▶"}</span>
         </div>
 
-        ${e?F`
+        ${e?M`
           <div class="mini-pill-content">
             <!-- Filter categories -->
             <div class="input-group">
@@ -726,7 +726,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             <div class="input-group">
               <label>Tap Action:</label>
               <div class="pill-group">
-                ${l.map(e=>F`
+                ${l.map(e=>M`
                   <button
                     class="pill-button ${r.tap_action?.action===e?"active":""}"
                     @click=${()=>this._onAction(t,"tap","action",e)}
@@ -740,7 +740,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             <div class="input-group">
               <label>Hold Action:</label>
               <div class="pill-group">
-                ${l.map(e=>F`
+                ${l.map(e=>M`
                   <button
                     class="pill-button ${r.hold_action?.action===e?"active":""}"
                     @click=${()=>this._onAction(t,"hold","action",e)}
@@ -752,12 +752,12 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           </div>
         `:""}
       </div>
-    `}_extraFields(t,e,i){const s=i?.[`${e}_action`]?.action;return"navigate"===s?F`
+    `}_extraFields(t,e,i){const s=i?.[`${e}_action`]?.action;return"navigate"===s?M`
         <input type="text" placeholder="Path"
           .value=${i[`${e}_action`]?.navigation_path||""}
           @input=${i=>this._onAction(t,e,"navigation_path",i.target.value)}
         />
-      `:"call-service"===s?F`
+      `:"call-service"===s?M`
         <input type="text" placeholder="Service (es. light.turn_on)"
           .value=${i[`${e}_action`]?.service||""}
           @input=${i=>this._onAction(t,e,"service",i.target.value)}
@@ -895,7 +895,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       color: #fff;
       box-shadow: 0 6px 32px #ff4c6abf;
     }
-  `;render(){const t=this.config.auto_discovery_sections?.subbutton??!1,e=at.map(t=>({value:t,label:nt[t]||t.charAt(0).toUpperCase()+t.slice(1)}));return F`
+  `;render(){const t=this.config.auto_discovery_sections?.subbutton??!1,e=at.map(t=>({value:t,label:nt[t]||t.charAt(0).toUpperCase()+t.slice(1)}));return M`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
@@ -913,12 +913,12 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
 
         <button class="reset-button" @click=${()=>this._reset()}>🧹 Reset Sub-buttons</button>
       </ha-expansion-panel>
-    `}_renderSubButton(t,e,i){const s=this._filters[t],o=this._entities[t],n=pt(this.hass,this.config,"subbutton",s),a=this.config.subbuttons?.[t]||{},r=["toggle","more-info","navigate","call-service","none"];return F`
+    `}_renderSubButton(t,e,i){const s=this._filters[t],o=this._entities[t],n=pt(this.hass,this.config,"subbutton",s),a=this.config.subbuttons?.[t]||{},r=["toggle","more-info","navigate","call-service","none"];return M`
       <div class="mini-pill ${e?"expanded":""}">
         <div class="mini-pill-header" @click=${()=>this._togglePill(t)}>
           Sub-button ${t+1}  <span class="chevron">${e?"▼":"▶"}</span>
         </div>
-        ${e?F`
+        ${e?M`
           <div class="mini-pill-content">
             <div class="input-group">
               <label>Filter categories:</label>
@@ -945,11 +945,11 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
               ></ha-icon-picker>
             </div>
 
-            ${["tap","hold"].map(e=>F`
+            ${["tap","hold"].map(e=>M`
               <div class="input-group">
                 <label>${"tap"===e?"Tap Action":"Hold Action"}:</label>
                 <div class="pill-group">
-                  ${r.map(i=>F`
+                  ${r.map(i=>M`
                     <button
                       class="pill-button ${a[`${e}_action`]?.action===i?"active":""}"
                       @click=${()=>this._onAction(t,e,"action",i)}
@@ -962,12 +962,12 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           </div>
         `:""}
       </div>
-    `}_extraFields(t,e,i){const s=i[`${e}_action`]?.action;return"navigate"===s?F`
+    `}_extraFields(t,e,i){const s=i[`${e}_action`]?.action;return"navigate"===s?M`
         <input type="text" placeholder="Path"
           .value=${i[`${e}_action`]?.navigation_path||""}
           @input=${i=>this._onAction(t,e,"navigation_path",i.target.value)}
         />
-      `:"call-service"===s?F`
+      `:"call-service"===s?M`
         <input type="text" placeholder="Service"
           .value=${i[`${e}_action`]?.service||""}
           @input=${i=>this._onAction(t,e,"service",i.target.value)}
@@ -979,204 +979,320 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       `:""}_safeJson(t){try{return JSON.parse(t)}catch{return{}}}_toggleAuto(t){this._emit("auto_discovery_sections.subbutton",t)}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e)}_onFilter(t,e){this._filters[t]=[...e],this._emit("subbutton_filters",this._filters)}_onEntity(t,e){if(this._entities[t]=e,this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t].entity_id=e,!this.config.subbuttons[t].icon&&this.hass){const i=this.hass.states?.[e],s=i?.attributes?.icon,o=s||wt(e,this.hass);o&&(this.config.subbuttons[t].icon=o)}this._emit("subbuttons",this.config.subbuttons)}_onIcon(t,e){this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t].icon=e,this._emit("subbuttons",this.config.subbuttons)}_onAction(t,e,i,s){this.config.subbuttons[t]||(this.config.subbuttons[t]={}),this.config.subbuttons[t][`${e}_action`]={...this.config.subbuttons[t][`${e}_action`],[i]:s},this._emit("subbuttons",this.config.subbuttons)}_reset(){this._expanded=Array(4).fill(!1),this._filters=Array(4).fill().map(()=>[...at]),this._entities=Array(4).fill(""),this.config.subbuttons=Array(4).fill().map(()=>({})),this._emit("subbutton_filters",this._filters),this._emit("subbuttons",this.config.subbuttons)}_emit(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("sub-button-panel",Pt);class zt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_room:{type:Object,state:!0},_subbutton:{type:Object,state:!0},_mushroom:{type:Object,state:!0},_sensor:{type:Object,state:!0},_selectedKey:{type:String,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._room={},this._subbutton={},this._mushroom={},this._sensor={},this._selectedKey=""}updated(t){if(t.has("config")){const t=this.config?.colors||{};this._room={icon_active:t.room?.icon_active??"",icon_inactive:t.room?.icon_inactive??"",background_active:t.room?.background_active??"",background_inactive:t.room?.background_inactive??"",text_active:t.room?.text_active??"",text_inactive:t.room?.text_inactive??""},this._subbutton={background_on:t.subbutton?.background_on??"",background_off:t.subbutton?.background_off??"",icon_on:t.subbutton?.icon_on??"",icon_off:t.subbutton?.icon_off??""},this._mushroom={active:t.mushroom?.active??"",inactive:t.mushroom?.inactive??""},this._sensor={sensor_active:t.sensor?.sensor_active??"",sensor_inactive:t.sensor?.sensor_inactive??""}}}get _presets(){return[{key:"green",name:"Green",preview:{active:"#21df73",inactive:"#173c16"},map:{"colors.room.icon_active":"#21df73","colors.room.icon_inactive":"#173c16","colors.room.background_active":"rgba(33,223,115,0.12)","colors.room.background_inactive":"rgba(23,60,22,0.12)","colors.room.text_active":"#ffffff","colors.room.text_inactive":"rgba(255,255,255,0.55)","colors.subbutton.background_on":"rgba(33,223,115,1)","colors.subbutton.background_off":"rgba(33,223,115,0.28)","colors.subbutton.icon_on":"#fff","colors.subbutton.icon_off":"#667a6a","colors.mushroom.active":"#00e676","colors.mushroom.inactive":"#7a8b7a","colors.sensor.sensor_active":"#21df73","colors.sensor.sensor_inactive":"#173c16"}},{key:"blue",name:"Blue",preview:{active:"#55afff",inactive:"#0f2a4a"},map:{"colors.room.icon_active":"#55afff","colors.room.icon_inactive":"#0f2a4a","colors.room.background_active":"rgba(85,175,255,0.14)","colors.room.background_inactive":"rgba(15,42,74,0.14)","colors.room.text_active":"#ffffff","colors.room.text_inactive":"rgba(255,255,255,0.55)","colors.subbutton.background_on":"rgba(85,175,255,1)","colors.subbutton.background_off":"rgba(85,175,255,0.28)","colors.subbutton.icon_on":"#fff","colors.subbutton.icon_off":"#5c6b7a","colors.mushroom.active":"#59c3ff","colors.mushroom.inactive":"#7a8793","colors.sensor.sensor_active":"#55afff","colors.sensor.sensor_inactive":"#0f2a4a"}},{key:"orange",name:"Amber",preview:{active:"#ff9b3d",inactive:"#4a2a0f"},map:{"colors.room.icon_active":"#ff9b3d","colors.room.icon_inactive":"#4a2a0f","colors.room.background_active":"rgba(255,155,61,0.16)","colors.room.background_inactive":"rgba(74,42,15,0.12)","colors.room.text_active":"#ffffff","colors.room.text_inactive":"rgba(255,255,255,0.55)","colors.subbutton.background_on":"rgba(255,155,61,1)","colors.subbutton.background_off":"rgba(255,155,61,0.28)","colors.subbutton.icon_on":"#1f140a","colors.subbutton.icon_off":"#6b5c52","colors.mushroom.active":"#ffb067","colors.mushroom.inactive":"#8b7a6e","colors.sensor.sensor_active":"#ff9b3d","colors.sensor.sensor_inactive":"#4a2a0f"}},{key:"purple",name:"Purple",preview:{active:"#bd64ff",inactive:"#2c0f4a"},map:{"colors.room.icon_active":"#bd64ff","colors.room.icon_inactive":"#2c0f4a","colors.room.background_active":"rgba(189,100,255,0.16)","colors.room.background_inactive":"rgba(44,15,74,0.12)","colors.room.text_active":"#ffffff","colors.room.text_inactive":"rgba(255,255,255,0.55)","colors.subbutton.background_on":"rgba(189,100,255,1)","colors.subbutton.background_off":"rgba(189,100,255,0.28)","colors.subbutton.icon_on":"#160a1f","colors.subbutton.icon_off":"#6b5c7a","colors.mushroom.active":"#c785ff","colors.mushroom.inactive":"#837a8b","colors.sensor.sensor_active":"#bd64ff","colors.sensor.sensor_inactive":"#2c0f4a"}},{key:"red",name:"Red",preview:{active:"#ff5c6a",inactive:"#4a0f1a"},map:{"colors.room.icon_active":"#ff5c6a","colors.room.icon_inactive":"#4a0f1a","colors.room.background_active":"rgba(255,92,106,0.16)","colors.room.background_inactive":"rgba(74,15,26,0.12)","colors.room.text_active":"#ffffff","colors.room.text_inactive":"rgba(255,255,255,0.55)","colors.subbutton.background_on":"rgba(255,92,106,1)","colors.subbutton.background_off":"rgba(255,92,106,0.28)","colors.subbutton.icon_on":"#1f0a10","colors.subbutton.icon_off":"#7a5c65","colors.mushroom.active":"#ff7884","colors.mushroom.inactive":"#8b7a7f","colors.sensor.sensor_active":"#ff5c6a","colors.sensor.sensor_inactive":"#4a0f1a"}},{key:"gray",name:"Gray",preview:{active:"#c5c8ce",inactive:"#3b4048"},map:{"colors.room.icon_active":"#c5c8ce","colors.room.icon_inactive":"#3b4048","colors.room.background_active":"rgba(197,200,206,0.14)","colors.room.background_inactive":"rgba(59,64,72,0.12)","colors.room.text_active":"#ffffff","colors.room.text_inactive":"rgba(255,255,255,0.55)","colors.subbutton.background_on":"rgba(197,200,206,1)","colors.subbutton.background_off":"rgba(197,200,206,0.28)","colors.subbutton.icon_on":"#1a1b1d","colors.subbutton.icon_off":"#6b707a","colors.mushroom.active":"#d7d9de","colors.mushroom.inactive":"#83878f","colors.sensor.sensor_active":"#c5c8ce","colors.sensor.sensor_inactive":"#3b4048"}}]}_fire(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}_applyPreset(t){Object.entries(t).forEach(([t,e])=>this._fire(t,e))}_applySelected=()=>{const t=this._presets.find(t=>t.key===this._selectedKey);t&&this._applyPreset(t.map)};_onColorInput(t,e,i){const s={...this[`_${t}`]||{}};s[e]=i,this[`_${t}`]=s,this._fire(`colors.${t}.${e}`,i)}_resetAll(){Object.entries({room:["icon_active","icon_inactive","background_active","background_inactive","text_active","text_inactive"],subbutton:["background_on","background_off","icon_on","icon_off"],mushroom:["active","inactive"],sensor:["sensor_active","sensor_inactive"]}).forEach(([t,e])=>e.forEach(e=>this._fire(`colors.${t}.${e}`,"")))}static styles=n`
     :host { display:block; }
     .glass-panel {
-      margin:0 !important; width:100%; box-sizing:border-box;
-      border-radius:40px; position:relative; overflow:hidden;
+      margin: 0 !important;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 40px;
+      position: relative;
       background: var(--glass-bg, rgba(95,255,235,0.26));
       box-shadow: var(--glass-shadow, 0 2px 24px rgba(95,255,235,0.13));
+      overflow: hidden;
     }
-    .glass-panel::after{
-      content:''; position:absolute; inset:0; border-radius:inherit;
+    .glass-panel::after {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
       background: var(--glass-sheen,
         linear-gradient(120deg, rgba(255,255,255,0.14),
         rgba(255,255,255,0.08) 70%, transparent 100%));
-      pointer-events:none;
+      pointer-events: none;
     }
-    .glass-header{
-      padding:22px 0; text-align:center; font-size:1.11rem;
-      font-weight:700; color:#fff;
+    .glass-header {
+      padding: 22px 0;
+      text-align: center;
+      font-size: 1.11rem;
+      font-weight: 700;
+      color: #fff;
     }
 
     /* === Cards preset in griglia === */
-    .preset-bar{
-      display:grid; gap:14px; padding: 6px 16px 0 16px;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    .preset-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      padding: 8px 16px 2px 16px;
+      box-sizing: border-box;
     }
-    .preset-card{
-      position:relative; border-radius:26px;
-      border:1px solid rgba(255,255,255,0.12);
+    .preset-card {
+      position: relative;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
       background: rgba(24,32,40,0.45);
-      padding:16px 18px 18px;
-      cursor:pointer; user-select:none;
+      padding: 10px 10px 12px;
+      cursor: pointer;
+      user-select: none;
       transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
-      outline:none;
+      outline: none;
     }
-    .preset-card:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 6px 22px rgba(0,0,0,0.22);
-      border-color: rgba(255,255,255,0.24);
+    .preset-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      border-color: rgba(255,255,255,0.28);
     }
-    /* ✅ Cornice evidenziata (doppio bordo + glow) */
-    .preset-card.selected{
-      border-color:#73f6e5;
-      box-shadow:
-        0 0 0 2px inset rgba(115,246,229,0.40),
-        0 0 0 3px rgba(115,246,229,0.22);
+    .preset-card.selected {
+      border-color: #73f6e5;
+      box-shadow: 0 0 0 2px inset rgba(115,246,229,0.35);
     }
-    .preset-name{
-      font-weight:800; color:#e9f8ff; font-size:1.05rem; margin-bottom:10px;
+    .preset-name {
+      font-weight: 700;
+      color: #e9f8ff;
+      font-size: .95rem;
+      margin-bottom: 6px;
+      text-align: left;
     }
 
     /* Pallini con etichetta SOTTO (come richiesto) */
-    .swatches{
-      display:grid; grid-template-columns: 1fr 1fr; gap:12px;
+    .swatches {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
-    .swatch-col{
-      display:flex; flex-direction:column; align-items:flex-start; gap:6px;
+    .swatch {
+      border-radius: 10px;
+      padding: 8px;
+      border: 1px solid rgba(255,255,255,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
-    .swatch-pill{
-      width:64px; height:36px; border-radius:12px;
-      border:1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.06);
-      display:flex; align-items:center; justify-content:center; gap:10px;
-      padding:0 10px;
+    .dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.75);
+      flex: 0 0 auto;
     }
-    .dot{
-      width:16px; height:16px; border-radius:50%;
-      border:2px solid rgba(255,255,255,0.75);
-      flex:0 0 auto;
-    }
-    .swatch-label{
-      color:#f0f6ff; font-size:.86rem; opacity:.95;
+    .swatch-label {
+      color: #f0f6ff; font-size: .85rem; opacity: .9;
     }
 
     /* Bottone “Applica preset” unico e centrato */
-    .apply-center{
-      display:flex; justify-content:center; padding: 10px 16px 6px;
+    .apply-row {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: center; padding: 10px 16px 2px 16px;
     }
-    .apply-btn{
-      border:2.5px solid #73f6e5; color:#073a34; background:#73f6e5;
-      border-radius:14px; padding:10px 18px; font-weight:900; cursor:pointer;
-      transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+    .apply-row .checks { display: flex; gap: 14px; align-items: center; }
+    .apply-row label { color: #dfefff; font-weight: 600; font-size: .95rem; }
+    .apply-btn {
+      margin-left: auto;
+      border: 2.5px solid #73f6e5;
+      color: #073a34;
+      background: #73f6e5;
+      border-radius: 12px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
     }
-    .apply-btn:hover{ transform: translateY(-1px); filter:brightness(1.05); }
-    .apply-btn:disabled{
-      opacity:.45; cursor:not-allowed; filter:none; transform:none;
-      border-color:#73f6e588; background:#73f6e588; color:#083f38aa;
-    }
+    .apply-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
 
     /* Sezioni manuali (come prima) */
-    .section{ margin:14px 16px; padding:14px;
-      border:1px solid rgba(255,255,255,0.12);
-      border-radius:16px; background:rgba(255,255,255,0.05);
+    .mini-pill {
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      box-shadow: 0 3px 22px rgba(70,120,220,0.13);
+      backdrop-filter: blur(10px) saturate(1.2);
+      border-radius: 24px;
+      margin: 8px 16px;
+      overflow: hidden;
+      transition: background 0.18s, box-shadow 0.18s, border 0.18s;
     }
-    .section h3{ margin:0 0 10px; color:#fff; font-size:1rem; }
-    .row{ display:grid; grid-template-columns: 1fr 140px; align-items:center; gap:10px; margin-bottom:8px; }
-    .row label{ color:#dfe7f2; font-weight:600; }
-    .color-input{ display:flex; gap:8px; align-items:center; justify-content:flex-end; }
-    input[type="color"]{ width:40px; height:32px; border:none; background:transparent; padding:0; }
-    input[type="text"]{
-      width:90px; height:32px; box-sizing:border-box; border-radius:8px;
-      border:1px solid rgba(255,255,255,0.2); background:rgba(0,0,0,0.25);
-      color:#fff; padding:0 8px; font-family:monospace;
+    .mini-pill-header {
+      display: flex;
+      align-items: center;
+      padding: 15px 22px;
+      font-weight: 800;
+      color: var(--section-accent, #73f6e5);
+      cursor: pointer;
+      user-select: none;
+    }
+    .mini-pill-header .chevron {
+      margin-left: auto;
+      font-size: 1.2em;
+      transition: transform 0.18s;
+    }
+    .mini-pill.expanded .mini-pill-header .chevron {
+      transform: rotate(90deg);
+    }
+    .mini-pill-content {
+      padding: 15px 22px 16px;
+      animation: pill-expand 0.22s cubic-bezier(.5,1.2,.6,1) both;
+      position: relative;
+      z-index: 1;
     }
 
-    .reset-button{
-      border:3.5px solid #ff4c6a; color:#ff4c6a; border-radius:24px;
-      padding:12px 38px; background:transparent; cursor:pointer;
-      display:block; margin:20px auto; font-size:1.15rem; font-weight:700;
-      box-shadow:0 2px 24px #ff4c6a44;
+    @keyframes pill-expand {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-    .reset-button:hover{ background:rgba(255,76,106,0.18); color:#fff; box-shadow:0 6px 32px #ff4c6abf; }
-  `;render(){return F`
+    .input-group {
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.13);
+      box-shadow: 0 2px 14px rgba(70,120,220,0.10);
+      border-radius: 18px;
+      margin-bottom: 13px;
+      padding: 14px 18px 10px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 1.13rem;
+      font-weight: 700;
+      color: var(--section-accent, #73f6e5);
+      margin-bottom: 6px;
+    }
+    input[type="color"] {
+      width: 56px; height: 32px;
+      border: 2px solid #fff4;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+    input[type="range"] { width: 100%; }
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 8px;
+      background-color: #202020;
+      color: #f1f1f1;
+      font-size: 0.97rem;
+    }
+    .reset-button {
+      border: 3.5px solid #ff4c6a !important;
+      color: #ff4c6a !important;
+      font-size: 1.15rem;
+      font-weight: 700;
+      box-shadow: 0 2px 24px #ff4c6a44;
+      padding: 12px 38px !important;
+      margin: 20px auto 0 auto !important;
+      display: block;
+      background: transparent;
+      border-radius: 24px !important;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    }
+    .reset-button:hover {
+      background: rgba(255,76,106,0.18) !important;
+      color: #fff !important;
+      box-shadow: 0 6px 32px #ff4c6abf;
+    }
+  `;render(){return M`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
-        @expanded-changed=${t=>this.expanded=t.detail.expanded}
+        @expanded-changed=${t=>{this.expanded=t.detail.expanded,this.expanded&&(this._expandedColors=[!1,!1])}}
       >
-        <div slot="header" class="glass-header">🎨 Color Presets & Theme</div>
+        <div slot="header" class="glass-header">🎨 Colors & Presets</div>
 
-        <!-- Griglia presets con selezione -->
-        <div class="preset-bar">
-          ${this._presets.map(t=>{const e=this._selectedKey===t.key;return F`
-              <div
-                class="preset-card ${e?"selected":""}"
-                role="button" tabindex="0" aria-pressed="${e}"
-                @click=${()=>this._selectedKey=t.key}
-                @keydown=${e=>{"Enter"!==e.key&&" "!==e.key||(e.preventDefault(),this._selectedKey=t.key)}}
-              >
-                <div class="preset-name">${t.name}</div>
+        <!-- Preset chooser -->
+        ${this._renderPresetChooser()}
 
-                <div class="swatches">
-                  <div class="swatch-col">
-                    <div class="swatch-pill">
-                      <div class="dot" style="background:${t.preview.active}"></div>
-                    </div>
-                    <div class="swatch-label">Active</div>
-                  </div>
-                  <div class="swatch-col">
-                    <div class="swatch-pill">
-                      <div class="dot" style="background:${t.preview.inactive}"></div>
-                    </div>
-                    <div class="swatch-label">Inactive</div>
-                  </div>
-                </div>
-              </div>
-            `})}
+        <!-- Room colors pill -->
+        <div class="mini-pill ${this._expandedColors[0]?"expanded":""}">
+          <div
+            class="mini-pill-header"
+            style="--section-accent: #55afff;"
+            @click=${()=>this._toggleColor(0)}
+          >
+            Room Colors
+            <span class="chevron">${this._expandedColors[0]?"▼":"▶"}</span>
+          </div>
+          ${this._expandedColors[0]?M`
+            <div class="mini-pill-content">
+              ${this._renderColorField("room","background_active","Background Active")}
+              ${this._renderColorField("room","background_inactive","Background Inactive")}
+              ${this._renderColorField("room","icon_active","Icon Active")}
+              ${this._renderColorField("room","icon_inactive","Icon Inactive")}
+              ${this._renderColorField("room","text_active","Text Active")}
+              ${this._renderColorField("room","text_inactive","Text Inactive")}
+            </div>
+          `:""}
         </div>
 
-        <!-- Bottone unico centrato -->
-        <div class="apply-center">
-          <button class="apply-btn" ?disabled=${!this._selectedKey} @click=${this._applySelected}>
-            Applica preset
-          </button>
+        <!-- Subbutton colors pill -->
+        <div class="mini-pill ${this._expandedColors[1]?"expanded":""}">
+          <div
+            class="mini-pill-header"
+            style="--section-accent: #b28fff;"
+            @click=${()=>this._toggleColor(1)}
+          >
+            Subbutton Colors
+            <span class="chevron">${this._expandedColors[1]?"▼":"▶"}</span>
+          </div>
+          ${this._expandedColors[1]?M`
+            <div class="mini-pill-content">
+              ${this._renderColorField("subbutton","background_on","Background On")}
+              ${this._renderColorField("subbutton","background_off","Background Off")}
+              ${this._renderColorField("subbutton","icon_on","Icon On")}
+              ${this._renderColorField("subbutton","icon_off","Icon Off")}
+            </div>
+          `:""}
         </div>
 
-        ${this._renderSectionRoom()}
-        ${this._renderSectionSubButtons()}
-        ${this._renderSectionMushroom()}
-        ${this._renderSectionSensor()}
-
-        <button class="reset-button" @click=${this._resetAll}>🧹 Reset colori</button>
+        <!-- Reset -->
+        <button class="reset-button" @click=${()=>this._resetColors()}>
+          🧹 Reset Colors
+        </button>
       </ha-expansion-panel>
-    `}_renderSectionRoom(){const t=this._room;return F`
-      <div class="section">
-        <h3>Room</h3>
-        ${this._colorRow("Icon (active)","room","icon_active",t.icon_active)}
-        ${this._colorRow("Icon (inactive)","room","icon_inactive",t.icon_inactive)}
-        ${this._colorRow("Background (active)","room","background_active",t.background_active)}
-        ${this._colorRow("Background (inactive)","room","background_inactive",t.background_inactive)}
-        ${this._colorRow("Text (active)","room","text_active",t.text_active)}
-        ${this._colorRow("Text (inactive)","room","text_inactive",t.text_inactive)}
+    `}_renderPresetChooser(){const t=Object.keys(this.PRESETS);return M`
+      <div class="preset-bar">
+        ${t.map(t=>this._renderPresetCard(t,this.PRESETS[t]))}
       </div>
-    `}_renderSectionSubButtons(){const t=this._subbutton;return F`
-      <div class="section">
-        <h3>Subbutton</h3>
-        ${this._colorRow("Background ON","subbutton","background_on",t.background_on)}
-        ${this._colorRow("Background OFF","subbutton","background_off",t.background_off)}
-        ${this._colorRow("Icon ON","subbutton","icon_on",t.icon_on)}
-        ${this._colorRow("Icon OFF","subbutton","icon_off",t.icon_off)}
+      <div class="apply-row">
+        <div class="checks">
+          <label>
+            <input type="checkbox" .checked=${this._applyRoom}
+              @change=${t=>this._applyRoom=t.target.checked} />
+            Applica a Room
+          </label>
+          <label>
+            <input type="checkbox" .checked=${this._applySub}
+              @change=${t=>this._applySub=t.target.checked} />
+            Applica a Subbutton
+          </label>
+          <label title="Solo per Room">
+            <input type="checkbox" .checked=${this._applyText}
+              @change=${t=>this._applyText=t.target.checked} />
+            Includi testo (Room)
+          </label>
+        </div>
+        <button class="apply-btn" @click=${this._applySelectedPreset}>
+          Applica preset
+        </button>
       </div>
-    `}_renderSectionMushroom(){const t=this._mushroom;return F`
-      <div class="section">
-        <h3>Mushroom (incl. Camera & Climate)</h3>
-        ${this._colorRow("Active","mushroom","active",t.active)}
-        ${this._colorRow("Inactive","mushroom","inactive",t.inactive)}
-      </div>
-    `}_renderSectionSensor(){const t=this._sensor;return F`
-      <div class="section">
-        <h3>Sensori</h3>
-        ${this._colorRow("Sensor Active","sensor","sensor_active",t.sensor_active)}
-        ${this._colorRow("Sensor Inactive","sensor","sensor_inactive",t.sensor_inactive)}
-      </div>
-    `}_colorRow(t,e,i,s){const o=this._guessHex(s);return F`
-      <div class="row">
-        <label>${t}</label>
-        <div class="color-input">
-          <input type="color" .value=${o} @input=${t=>this._onColorInput(e,i,t.target.value)}/>
-          <input type="text" placeholder="#RRGGBB oppure rgba(...)" .value=${s||""} @change=${t=>this._onColorInput(e,i,t.target.value)}/>
+    `}_renderPresetCard(t,e){const i=this._selectedPreset===t?"selected":"",s=e.room.background_active,o=e.room.background_inactive,n=e.room.icon_active,a=e.room.icon_inactive;return M`
+      <div class="preset-card ${i}" @click=${()=>this._selectedPreset=t}>
+        <div class="preset-name">${e.label}</div>
+        <div class="swatches">
+          <div class="swatch" style="background:${s}">
+            <span class="dot" style="background:${n}"></span>
+            <span class="swatch-label">Active</span>
+          </div>
+          <div class="swatch" style="background:${o}">
+            <span class="dot" style="background:${a}"></span>
+            <span class="swatch-label">Inactive</span>
+          </div>
         </div>
       </div>
-    `}_guessHex(t){if(!t)return"#000000";const e=String(t).trim();if(e.startsWith("#")&&(7===e.length||4===e.length))return 4===e.length?this._expandShorthandHex(e):e;if(e.startsWith("rgba")||e.startsWith("rgb"))try{const[t,i,s]=e.replace(/rgba?\(|\)|\s/g,"").split(",").map(t=>0|Number(t));return"#"+[t,i,s].map(t=>t.toString(16).padStart(2,"0")).join("")}catch{return"#000000"}return"#000000"}_expandShorthandHex(t){return"#"+t.slice(1).split("").map(t=>t+t).join("")}}customElements.define("color-panel",zt);class Ot extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_entity:{type:String,state:!0},_icon:{type:String,state:!0},_cameraCandidates:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._entity="",this._icon="",this._cameraCandidates=[]}_resolveAreaRef(){const t=Array.isArray(this.config?.area)?this.config.area[0]:this.config?.area,e="string"!=typeof t||t.startsWith("area_")?"":t;let i="string"==typeof t&&t.startsWith("area_")?t:"";const s=Array.isArray(this.hass?.areas)?this.hass.areas:[];if(!i&&s.length&&e){const t=s.find(t=>(t.name||"").toLowerCase()===String(e).toLowerCase());t?.area_id&&(i=t.area_id)}if(!i){const t=this.config?.entities?.camera?.entity,e=this.hass?.entities;t&&e?.[t]?.area_id&&(i=e[t].area_id)}return{areaId:i,areaName:e}}_matchAreaForEntityId(t,e,i){const s=this.hass?.entities;if(e&&s?.[t]?.area_id)return s[t].area_id===e;const o=this.hass?.states?.[t];if(!o)return!(e||i);const n=o.attributes?.area_id,a=o.attributes?.area;return e&&n?n===e:i&&a?String(a).toLowerCase()===String(i).toLowerCase():!(e||i)}_filterByAreaIncludeSelected(t,e,i,s){const o=(t||[]).filter(t=>this._matchAreaForEntityId(t,e,i));return s&&!o.includes(s)&&o.unshift(s),Array.from(new Set(o))}updated(t){if(t.has("config")||t.has("hass")){const t=this.config?.entities?.camera?.entity||"",e=this.config?.entities?.camera?.icon||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon,s=i||wt(t,this.hass);s&&this._set("entities.camera.icon",s)}this._entity=t,this._icon=this.config?.entities?.camera?.icon||"";if(this.config?.auto_discovery_sections?.camera??!1){const{areaId:t,areaName:e}=this._resolveAreaRef();let i=pt(this.hass,this.config,"camera")||[];!i.length&&this.hass?.states&&(i=Object.keys(this.hass.states).filter(t=>t.startsWith("camera."))),this._cameraCandidates=this._filterByAreaIncludeSelected(i,t,e,this._entity)}else this._cameraCandidates=[]}}static styles=n`
+    `}_toggleColor(t){this._expandedColors=this._expandedColors.map((e,i)=>i===t&&!e)}_renderColorField(t,e,i){const s=this.config.colors?.[t]?.[e]||"",[o,n,a,r]=this._parseRGBA(s),c=`#${[o,n,a].map(t=>t.toString(16).padStart(2,"0")).join("")}`;return M`
+      <div class="input-group">
+        <label>${i}</label>
+        <input
+          type="color"
+          .value=${c}
+          @input=${i=>this._updateColor(t,e,i.target.value,r)}
+        />
+        <input
+          type="range"
+          min="0" max="1" step="0.01"
+          .value=${r}
+          @input=${i=>this._updateColor(t,e,c,i.target.value)}
+        />
+        <input
+          type="text"
+          .value=${s}
+          @input=${i=>this._updateColorRaw(t,e,i.target.value)}
+        />
+      </div>
+    `}_applySelectedPreset=()=>{const t=this._selectedPreset,e=this.PRESETS[t];if(!e)return;const i=[];this._applyRoom&&(i.push(["colors.room.background_active",e.room.background_active]),i.push(["colors.room.background_inactive",e.room.background_inactive]),i.push(["colors.room.icon_active",e.room.icon_active]),i.push(["colors.room.icon_inactive",e.room.icon_inactive]),this._applyText&&(i.push(["colors.room.text_active",e.room.text_active]),i.push(["colors.room.text_inactive",e.room.text_inactive]))),this._applySub&&(i.push(["colors.subbutton.background_on",e.sub.background_on]),i.push(["colors.subbutton.background_off",e.sub.background_off]),i.push(["colors.subbutton.icon_on",e.sub.icon_on]),i.push(["colors.subbutton.icon_off",e.sub.icon_off]));for(const[t,e]of i)this._emit(t,e)};_resetColors(){this._expandedColors=[!1,!1];const t={room:["background_active","background_inactive","icon_active","icon_inactive","text_active","text_inactive"],subbutton:["background_on","background_off","icon_on","icon_off"]};["room","subbutton"].forEach(e=>{t[e].forEach(t=>this._emit(`colors.${e}.${t}`,""))})}_parseRGBA(t){if(!t)return[0,0,0,1];const e=/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(t);return e?[+e[1],+e[2],+e[3],+(e[4]??1)]:[0,0,0,1]}_updateColor(t,e,i,s){const o=parseInt(i.slice(1,3),16),n=parseInt(i.slice(3,5),16),a=parseInt(i.slice(5,7),16),r=Number(s),c=`rgba(${o},${n},${a},${isNaN(r)?1:r})`;this._emit(`colors.${t}.${e}`,c)}_updateColorRaw(t,e,i){this._emit(`colors.${t}.${e}`,i)}_emit(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("color-panel",zt);class Ot extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_entity:{type:String,state:!0},_icon:{type:String,state:!0},_cameraCandidates:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._entity="",this._icon="",this._cameraCandidates=[]}_resolveAreaRef(){const t=Array.isArray(this.config?.area)?this.config.area[0]:this.config?.area,e="string"!=typeof t||t.startsWith("area_")?"":t;let i="string"==typeof t&&t.startsWith("area_")?t:"";const s=Array.isArray(this.hass?.areas)?this.hass.areas:[];if(!i&&s.length&&e){const t=s.find(t=>(t.name||"").toLowerCase()===String(e).toLowerCase());t?.area_id&&(i=t.area_id)}if(!i){const t=this.config?.entities?.camera?.entity,e=this.hass?.entities;t&&e?.[t]?.area_id&&(i=e[t].area_id)}return{areaId:i,areaName:e}}_matchAreaForEntityId(t,e,i){const s=this.hass?.entities;if(e&&s?.[t]?.area_id)return s[t].area_id===e;const o=this.hass?.states?.[t];if(!o)return!(e||i);const n=o.attributes?.area_id,a=o.attributes?.area;return e&&n?n===e:i&&a?String(a).toLowerCase()===String(i).toLowerCase():!(e||i)}_filterByAreaIncludeSelected(t,e,i,s){const o=(t||[]).filter(t=>this._matchAreaForEntityId(t,e,i));return s&&!o.includes(s)&&o.unshift(s),Array.from(new Set(o))}updated(t){if(t.has("config")||t.has("hass")){const t=this.config?.entities?.camera?.entity||"",e=this.config?.entities?.camera?.icon||"";if(t&&!e){const e=this.hass?.states?.[t],i=e?.attributes?.icon,s=i||wt(t,this.hass);s&&this._set("entities.camera.icon",s)}this._entity=t,this._icon=this.config?.entities?.camera?.icon||"";if(this.config?.auto_discovery_sections?.camera??!1){const{areaId:t,areaName:e}=this._resolveAreaRef();let i=pt(this.hass,this.config,"camera")||[];!i.length&&this.hass?.states&&(i=Object.keys(this.hass.states).filter(t=>t.startsWith("camera."))),this._cameraCandidates=this._filterByAreaIncludeSelected(i,t,e,this._entity)}else this._cameraCandidates=[]}}static styles=n`
     :host { display: block; }
     .glass-panel {
       margin: 0 !important; width: 100%; box-sizing: border-box;
@@ -1214,7 +1330,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       display:block; margin: 20px auto; font-size:1.15rem; font-weight:700;
       box-shadow: 0 2px 24px #ff4c6a44;
     }
-  `;render(){const t=this.config?.auto_discovery_sections?.camera??!1;return F`
+  `;render(){const t=this.config?.auto_discovery_sections?.camera??!1;return M`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
@@ -1295,7 +1411,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       display:block; margin: 20px auto; font-size:1.15rem; font-weight:700;
       box-shadow: 0 2px 24px #ff4c6a44;
     }
-  `;render(){const t=this.config?.auto_discovery_sections?.climate??!1;return F`
+  `;render(){const t=this.config?.auto_discovery_sections?.climate??!1;return M`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
@@ -1348,7 +1464,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
     @media (min-width: 1100px) {
       .editor-grid { grid-template-columns: 1fr 1fr; }
     }
-  `;render(){const t=this.config||{};return F`
+  `;render(){const t=this.config||{};return M`
       <div class="editor-grid">
         <!-- ROOM -->
         <room-panel
@@ -1417,7 +1533,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           @config-changed=${this._onConfigChanged}
         ></color-panel>
       </div>
-    `}}customElements.define("bubble-room-editor",Rt);var Mt=Object.freeze({__proto__:null,BubbleRoomEditor:Rt});class Tt extends st{static properties={subbuttons:{type:Array}};constructor(){super(),this.subbuttons=[],this._holdThreshold=500,this._holdTimer=null,this._holdFired=!1,this._currentIndex=-1}static styles=n`
+    `}}customElements.define("bubble-room-editor",Rt);var Tt=Object.freeze({__proto__:null,BubbleRoomEditor:Rt});class Ft extends st{static properties={subbuttons:{type:Array}};constructor(){super(),this.subbuttons=[],this._holdThreshold=500,this._holdTimer=null,this._holdFired=!1,this._currentIndex=-1}static styles=n`
     :host {
       display: block;
       height: 100%;
@@ -1474,9 +1590,9 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       width: 100%;
       height: 100%;
     }
-  `;render(){return F`
+  `;render(){return M`
       <div class="container">
-        ${this.subbuttons.map((t,e)=>{const i=t.active?t.colorOn:t.colorOff,s=t.active?t.iconOn:t.iconOff;return F`
+        ${this.subbuttons.map((t,e)=>{const i=t.active?t.colorOn:t.colorOff,s=t.active?t.iconOn:t.iconOff;return M`
             <div
               class="sub-button"
               style="background:${i};color:${s};"
@@ -1489,7 +1605,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             </div>
           `})}
       </div>
-    `}_onDown(t){this._holdFired=!1,this._currentIndex=t,this._holdTimer=window.setTimeout(()=>{this._holdFired=!0,this._fireHassAction(t,"hold")},this._holdThreshold)}_onUp(t){this._clearHoldTimer(),this._holdFired||this._currentIndex!==t||this._fireHassAction(t,"tap")}_clearHoldTimer(){this._holdTimer&&(clearTimeout(this._holdTimer),this._holdTimer=null)}_fireHassAction(t,e){const i=this.subbuttons?.[t];if(!i||!i.entity_id)return;const s={entity:i.entity_id,tap_action:i.tap_action||{action:"toggle"},hold_action:i.hold_action||{action:"more-info"}},o=new Event("hass-action",{bubbles:!0,composed:!0});o.detail={config:s,action:e},this.dispatchEvent(o)}}customElements.define("bubble-subbutton",Tt);class It extends st{static properties={hass:{type:Object},name:{type:String},area:{type:String},config:{type:Object},container:{type:Object}};_raf=null;_resizeObs=null;constructor(){super(),this.name=""}firstUpdated(){this._scheduleScale(),this._resizeObs=new ResizeObserver(()=>this._scheduleScale()),this._resizeObs.observe(this),window.addEventListener("resize",this._scheduleScale,{passive:!0})}updated(t){(t.has("name")||t.has("config")||t.has("container"))&&this._scheduleScale()}disconnectedCallback(){super.disconnectedCallback(),this._resizeObs?.disconnect(),window.removeEventListener("resize",this._scheduleScale)}_scheduleScale=()=>{this._raf||(this._raf=requestAnimationFrame(()=>{this._raf=null,this._autoScaleFont()}))};_autoScaleFont(){const t=this.renderRoot.querySelector(".bubble-name"),e=this.container||this.parentElement||this;if(!t||!e)return;this._resizeObs.disconnect();let i=8,s=160;for(let o=0;o<8;o++){const o=i+s>>1;t.style.fontSize=`${o}px`,t.scrollWidth<=e.clientWidth&&t.scrollHeight<=e.clientHeight?i=o:s=o-1}t.style.fontSize=`${i}px`,this._resizeObs.observe(this)}_isRoomActive(){const t=this.config?.entities?.presence?.entity;if(!t)return!1;const e=this.hass?.states?.[t]?.state;return["on","home","occupied","motion","detected"].includes(e)}render(){return F`<div class="bubble-name">${this.name}</div>`}static styles=n`
+    `}_onDown(t){this._holdFired=!1,this._currentIndex=t,this._holdTimer=window.setTimeout(()=>{this._holdFired=!0,this._fireHassAction(t,"hold")},this._holdThreshold)}_onUp(t){this._clearHoldTimer(),this._holdFired||this._currentIndex!==t||this._fireHassAction(t,"tap")}_clearHoldTimer(){this._holdTimer&&(clearTimeout(this._holdTimer),this._holdTimer=null)}_fireHassAction(t,e){const i=this.subbuttons?.[t];if(!i||!i.entity_id)return;const s={entity:i.entity_id,tap_action:i.tap_action||{action:"toggle"},hold_action:i.hold_action||{action:"more-info"}},o=new Event("hass-action",{bubbles:!0,composed:!0});o.detail={config:s,action:e},this.dispatchEvent(o)}}customElements.define("bubble-subbutton",Ft);class It extends st{static properties={hass:{type:Object},name:{type:String},area:{type:String},config:{type:Object},container:{type:Object}};_raf=null;_resizeObs=null;constructor(){super(),this.name=""}firstUpdated(){this._scheduleScale(),this._resizeObs=new ResizeObserver(()=>this._scheduleScale()),this._resizeObs.observe(this),window.addEventListener("resize",this._scheduleScale,{passive:!0})}updated(t){(t.has("name")||t.has("config")||t.has("container"))&&this._scheduleScale()}disconnectedCallback(){super.disconnectedCallback(),this._resizeObs?.disconnect(),window.removeEventListener("resize",this._scheduleScale)}_scheduleScale=()=>{this._raf||(this._raf=requestAnimationFrame(()=>{this._raf=null,this._autoScaleFont()}))};_autoScaleFont(){const t=this.renderRoot.querySelector(".bubble-name"),e=this.container||this.parentElement||this;if(!t||!e)return;this._resizeObs.disconnect();let i=8,s=160;for(let o=0;o<8;o++){const o=i+s>>1;t.style.fontSize=`${o}px`,t.scrollWidth<=e.clientWidth&&t.scrollHeight<=e.clientHeight?i=o:s=o-1}t.style.fontSize=`${i}px`,this._resizeObs.observe(this)}_isRoomActive(){const t=this.config?.entities?.presence?.entity;if(!t)return!1;const e=this.hass?.states?.[t]?.state;return["on","home","occupied","motion","detected"].includes(e)}render(){return M`<div class="bubble-name">${this.name}</div>`}static styles=n`
     .bubble-name {
       display: block;
       width: 100%;
@@ -1504,7 +1620,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       text-transform: uppercase;
       color: var(--bubble-room-name-color, white);
     }
-  `}customElements.define("bubble-name",It);class Ft extends st{static properties={sensors:{type:Array}};constructor(){super(),this.sensors=[],this.rows=1,this.columns=1,this._resizeObserver=null,this._resizeScheduled=!1}connectedCallback(){super.connectedCallback(),this._updateLayout(),this._resizeObserver=new ResizeObserver(()=>{this._resizeScheduled||(this._resizeScheduled=!0,requestAnimationFrame(()=>{this._autoScaleValues(),this._resizeScheduled=!1}))}),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver?.disconnect()}updated(t){t.has("sensors")&&(this._updateLayout(),this._autoScaleValues())}_updateLayout(){const t=this.sensors?.length||0;this.rows=t>4?2:1,this.columns=t>4?4:t||1}_autoScaleValues(){const t=this.renderRoot?.querySelectorAll(".sensor-pill");t?.length&&t.forEach(t=>this._fitValueAndUnit(t))}_fitValueAndUnit(t){const e=t.querySelector(".sensor-value"),i=t.querySelector(".sensor-unit");if(!e)return;const s=.52*t.clientWidth,o=.78*t.clientHeight;if(s<=0||o<=0)return;e.style.fontSize="",i&&(i.style.fontSize="");let n=10,a=44,r=n;for(let t=0;t<16;t++){const t=Math.floor((n+a)/2);if(e.style.fontSize=`${t}px`,i){const e=Math.max(10,Math.round(.75*t));i.style.fontSize=`${e}px`}const c=e.getBoundingClientRect(),l=i?i.getBoundingClientRect():{width:0,height:0},d=c.width+l.width+6,h=Math.max(c.height,l.height);d<=s&&h<=o?(r=t,n=t+1):a=t-1}e.style.fontSize=`${r}px`,i&&(i.style.fontSize=`${Math.max(10,Math.round(.75*r))}px`)}_openMoreInfo(t){if(!t||"string"!=typeof t)return;const e=new CustomEvent("hass-more-info",{bubbles:!0,composed:!0,detail:{entityId:t}});(document.querySelector("home-assistant")||this).dispatchEvent(e)}static styles=n`
+  `}customElements.define("bubble-name",It);class Mt extends st{static properties={sensors:{type:Array}};constructor(){super(),this.sensors=[],this.rows=1,this.columns=1,this._resizeObserver=null,this._resizeScheduled=!1}connectedCallback(){super.connectedCallback(),this._updateLayout(),this._resizeObserver=new ResizeObserver(()=>{this._resizeScheduled||(this._resizeScheduled=!0,requestAnimationFrame(()=>{this._autoScaleValues(),this._resizeScheduled=!1}))}),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver?.disconnect()}updated(t){t.has("sensors")&&(this._updateLayout(),this._autoScaleValues())}_updateLayout(){const t=this.sensors?.length||0;this.rows=t>4?2:1,this.columns=t>4?4:t||1}_autoScaleValues(){const t=this.renderRoot?.querySelectorAll(".sensor-pill");t?.length&&t.forEach(t=>this._fitValueAndUnit(t))}_fitValueAndUnit(t){const e=t.querySelector(".sensor-value"),i=t.querySelector(".sensor-unit");if(!e)return;const s=.52*t.clientWidth,o=.78*t.clientHeight;if(s<=0||o<=0)return;e.style.fontSize="",i&&(i.style.fontSize="");let n=10,a=44,r=n;for(let t=0;t<16;t++){const t=Math.floor((n+a)/2);if(e.style.fontSize=`${t}px`,i){const e=Math.max(10,Math.round(.75*t));i.style.fontSize=`${e}px`}const c=e.getBoundingClientRect(),l=i?i.getBoundingClientRect():{width:0,height:0},d=c.width+l.width+6,h=Math.max(c.height,l.height);d<=s&&h<=o?(r=t,n=t+1):a=t-1}e.style.fontSize=`${r}px`,i&&(i.style.fontSize=`${Math.max(10,Math.round(.75*r))}px`)}_openMoreInfo(t){if(!t||"string"!=typeof t)return;const e=new CustomEvent("hass-more-info",{bubbles:!0,composed:!0,detail:{entityId:t}});(document.querySelector("home-assistant")||this).dispatchEvent(e)}static styles=n`
     :host {
       display: block;
       height: 100%;
@@ -1576,7 +1692,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       margin-left: 4px;
       flex: 0 0 auto;
     }
-  `;render(){const t=(this.sensors||[]).map(t=>{const e=t.device_class,i=Ct[e]||{},s=i.emoji||"❓",o=t.unit||i.units?.[0]||"";return{...t,label:s,unit:o}});return F`
+  `;render(){const t=(this.sensors||[]).map(t=>{const e=t.device_class,i=Ct[e]||{},s=i.emoji||"❓",o=t.unit||i.units?.[0]||"";return{...t,label:s,unit:o}});return M`
       <div
         class="sensor-grid"
         style="
@@ -1584,7 +1700,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           grid-template-rows: repeat(${this.rows}, 1fr);
         "
       >
-        ${t.map(t=>{const e=t.entity||t.entity_id||"",i=e?`Mostra grafico storico: ${e}`:"Mostra grafico storico";return F`
+        ${t.map(t=>{const e=t.entity||t.entity_id||"",i=e?`Mostra grafico storico: ${e}`:"Mostra grafico storico";return M`
             <div
               class="sensor-pill"
               style="color: ${t.color||"#e3f6ff"}"
@@ -1601,7 +1717,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
             </div>
           `})}
       </div>
-    `}}customElements.define("bubble-sensor",Ft);class Ut extends st{static properties={entities:{type:Array}};constructor(){super(),this.entities=[],this._containerSize={width:0,height:0},this._rafSize=null,this._ro=new ResizeObserver(t=>{const e=t[0]?.contentRect;e&&(this._rafSize&&cancelAnimationFrame(this._rafSize),this._rafSize=requestAnimationFrame(()=>{const t=Math.round(e.width),i=Math.round(e.height);t===this._containerSize.width&&i===this._containerSize.height||(this._containerSize={width:t,height:i},this.requestUpdate())}))}),this._holdThreshold=500,this._holdTimer=null,this._holdFired=!1,this._lastTapTs=0}connectedCallback(){super.connectedCallback(),this._ro.observe(this)}disconnectedCallback(){this._ro.disconnect(),super.disconnectedCallback()}_updateSize(){const t=this.getBoundingClientRect();this._containerSize={width:t.width,height:t.height},this.requestUpdate()}_handleClick(t){this.dispatchEvent(new CustomEvent("hass-action",{detail:{config:{entity:t.entity_id,tap_action:t.tap_action||{action:"toggle"},hold_action:t.hold_action||{action:"more-info"}},action:"tap"},bubbles:!0,composed:!0}))}_dispatchAction(t,e){const i={entity:t.entity_id||t.entity||t,tap_action:t.tap_action||{action:"toggle"},hold_action:t.hold_action||{action:"more-info"},double_tap_action:t.double_tap_action};this.dispatchEvent(new CustomEvent("hass-action",{detail:{config:i,action:e},bubbles:!0,composed:!0}))}_onPointerDown(t,e){t.preventDefault(),this._holdFired=!1,clearTimeout(this._holdTimer),this._holdTimer=setTimeout(()=>{this._holdFired=!0,this._dispatchAction(e,"hold")},this._holdThreshold)}_onPointerUp(t,e){if(t.preventDefault(),clearTimeout(this._holdTimer),this._holdFired)return void(this._holdFired=!1);const i=Date.now();if(e?.double_tap_action&&i-this._lastTapTs<300)return this._lastTapTs=0,void this._dispatchAction(e,"double_tap");this._lastTapTs=i,setTimeout(()=>{Date.now()-this._lastTapTs>=280&&this._dispatchAction(e,"tap")},280)}_onPointerCancel(){clearTimeout(this._holdTimer),this._holdFired=!1}static styles=n`
+    `}}customElements.define("bubble-sensor",Mt);class Ut extends st{static properties={entities:{type:Array}};constructor(){super(),this.entities=[],this._containerSize={width:0,height:0},this._rafSize=null,this._ro=new ResizeObserver(t=>{const e=t[0]?.contentRect;e&&(this._rafSize&&cancelAnimationFrame(this._rafSize),this._rafSize=requestAnimationFrame(()=>{const t=Math.round(e.width),i=Math.round(e.height);t===this._containerSize.width&&i===this._containerSize.height||(this._containerSize={width:t,height:i},this.requestUpdate())}))}),this._holdThreshold=500,this._holdTimer=null,this._holdFired=!1,this._lastTapTs=0}connectedCallback(){super.connectedCallback(),this._ro.observe(this)}disconnectedCallback(){this._ro.disconnect(),super.disconnectedCallback()}_updateSize(){const t=this.getBoundingClientRect();this._containerSize={width:t.width,height:t.height},this.requestUpdate()}_handleClick(t){this.dispatchEvent(new CustomEvent("hass-action",{detail:{config:{entity:t.entity_id,tap_action:t.tap_action||{action:"toggle"},hold_action:t.hold_action||{action:"more-info"}},action:"tap"},bubbles:!0,composed:!0}))}_dispatchAction(t,e){const i={entity:t.entity_id||t.entity||t,tap_action:t.tap_action||{action:"toggle"},hold_action:t.hold_action||{action:"more-info"},double_tap_action:t.double_tap_action};this.dispatchEvent(new CustomEvent("hass-action",{detail:{config:i,action:e},bubbles:!0,composed:!0}))}_onPointerDown(t,e){t.preventDefault(),this._holdFired=!1,clearTimeout(this._holdTimer),this._holdTimer=setTimeout(()=>{this._holdFired=!0,this._dispatchAction(e,"hold")},this._holdThreshold)}_onPointerUp(t,e){if(t.preventDefault(),clearTimeout(this._holdTimer),this._holdFired)return void(this._holdFired=!1);const i=Date.now();if(e?.double_tap_action&&i-this._lastTapTs<300)return this._lastTapTs=0,void this._dispatchAction(e,"double_tap");this._lastTapTs=i,setTimeout(()=>{Date.now()-this._lastTapTs>=280&&this._dispatchAction(e,"tap")},280)}_onPointerCancel(){clearTimeout(this._holdTimer),this._holdFired=!1}static styles=n`
     :host {
       display: block;
       width: 100%;
@@ -1620,8 +1736,8 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       pointer-events: auto;
     }
     .mushroom-entity ha-icon { display: block; }
-  `;render(){const{width:t,height:e}=this._containerSize;if(!t||!e)return F``;const i=window.innerWidth||t,s=.55;let o;if(i<=100)o=s;else if(i>=200)o=.25;else{o=s+(.25-s)*((i-100)/100)}const n=Math.min(t,1.6*e),a=.5*(e+n)*o,r=.6*t,c=.6*e,l=r*Math.min(1,t/(2*r)),d=c*Math.min(1,e/(2*c)),h=t-l,p=.5*e,u=Math.max(0,l-a/2-1),b=Math.max(0,d-a/2-1),g=t=>Math.PI*t/180,m=g(30),f=g(85),_=.75*a,v=.75*a,x=[{x:a/2+1,y:a/2+1},{x:h+u*Math.cos(-f),y:p+b*Math.sin(-f)},{x:h+u*Math.cos(-m),y:p+b*Math.sin(-m)},{x:h+u*Math.cos(+m),y:p+b*Math.sin(+m)},{x:h+u*Math.cos(+f),y:p+b*Math.sin(+f)}];let y=0;return F`
-      ${this.entities.map(i=>{const s="camera"===i?.kind,o="climate"===i?.kind,n=s?_:o?v:a,r=.95*n;let c;s?c={x:t-n/2,y:n/2}:o?c={x:n/2+1,y:e-n/2-1}:(c=x[Math.min(y,x.length-1)]??{x:h,y:p},y++);const l=s||o?0:i.dx??0,d=s||o?0:i.dy??0,u=c.x+l,b=c.y+d;return F`
+  `;render(){const{width:t,height:e}=this._containerSize;if(!t||!e)return M``;const i=window.innerWidth||t,s=.55;let o;if(i<=100)o=s;else if(i>=200)o=.25;else{o=s+(.25-s)*((i-100)/100)}const n=Math.min(t,1.6*e),a=.5*(e+n)*o,r=.6*t,c=.6*e,l=r*Math.min(1,t/(2*r)),d=c*Math.min(1,e/(2*c)),h=t-l,p=.5*e,u=Math.max(0,l-a/2-1),b=Math.max(0,d-a/2-1),g=t=>Math.PI*t/180,m=g(30),f=g(85),_=.75*a,v=.75*a,x=[{x:a/2+1,y:a/2+1},{x:h+u*Math.cos(-f),y:p+b*Math.sin(-f)},{x:h+u*Math.cos(-m),y:p+b*Math.sin(-m)},{x:h+u*Math.cos(+m),y:p+b*Math.sin(+m)},{x:h+u*Math.cos(+f),y:p+b*Math.sin(+f)}];let y=0;return M`
+      ${this.entities.map(i=>{const s="camera"===i?.kind,o="climate"===i?.kind,n=s?_:o?v:a,r=.95*n;let c;s?c={x:t-n/2,y:n/2}:o?c={x:n/2+1,y:e-n/2-1}:(c=x[Math.min(y,x.length-1)]??{x:h,y:p},y++);const l=s||o?0:i.dx??0,d=s||o?0:i.dy??0,u=c.x+l,b=c.y+d;return M`
           <div
             class="mushroom-entity"
             style="
@@ -1663,7 +1779,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
       height: var(--mdc-icon-size);
       transform: translateX(var(--icon-shift-x, -20%));
     }
-  `;render(){const t=this.active?this.colorActive:this.colorInactive,e=this.active?this.backgroundActive:this.backgroundInactive;return F`
+  `;render(){const t=this.active?this.colorActive:this.colorInactive,e=this.active?this.backgroundActive:this.backgroundInactive;return M`
       <div class="main-icon-container" style="background:${e}">
         <ha-icon
           class="main-icon"
@@ -1672,7 +1788,7 @@ var et,it;class st extends m{constructor(){super(...arguments),this.renderOption
           @click="${()=>this.dispatchEvent(new CustomEvent("main-icon-click"))}"
         ></ha-icon>
       </div>
-    `}}customElements.define("bubble-icon",Nt);class Bt extends st{static properties={config:{type:Object},hass:{type:Object}};_entities={};constructor(){super(),this.config={},this.hass={}}setConfig(t){this.config={layout:"wide",...t},this._entities=structuredClone(this.config.entities||{}),this._entities.camera=this._entities.camera||{entity:"",icon:""},this._entities.camera.presence||(this._entities.camera.presence={entity:""}),this._entities.climate=this._entities.climate||{entity:"",icon:""}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:[],area:[],sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return Mt}),document.createElement("bubble-room-editor")}connectedCallback(){super.connectedCallback(),this._resizeObs=new ResizeObserver(()=>this.requestUpdate())}firstUpdated(){const t=this.shadowRoot?.querySelector(".icon-mushroom-area");t&&this._resizeObs.observe(t)}disconnectedCallback(){this._resizeObs?.disconnect(),super.disconnectedCallback()}updated(t){t.has("config")&&(this._entities=structuredClone(this.config.entities||{}))}_getSubButtons(){const t=this.config.colors?.subbutton?.background_on??"#00d46d",e=this.config.colors?.subbutton?.background_off??"#999",i=this.config.colors?.subbutton?.icon_on??"yellow",s=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(o=>{const n=this.hass.states?.[o.entity_id];return{icon:o.icon||wt(o.entity_id,this.hass),active:"on"===n?.state,colorOn:t,colorOff:e,iconOn:i,iconOff:s,entity_id:o.entity_id,tap_action:o.tap_action,hold_action:o.hold_action}})}_isRoomActive(){const t=this.config?.entities?.presence?.entity;if(!t)return!1;const e=this.hass?.states?.[t]?.state;return["on","home","occupied","motion","detected"].includes(e)}_getMainIconSize(){const t=this.shadowRoot?.querySelector(".icon-mushroom-area");return t?Math.round(.6*Math.min(t.clientWidth,t.clientHeight)):64}_getSensors(){const t=this._entities||{},e=this.config.colors?.room?.sensor_active??this.config.colors?.room?.text_active??"#21df73",i=this.config.colors?.room?.sensor_inactive??this.config.colors?.room?.text_inactive??"#173c16",s=this._isRoomActive()?e:i,o=[];for(let e=1;e<=6;e++){const i=t[`sensor${e}`]?.entity,n=this.hass?.states?.[i];i&&n&&o.push({icon:n.attributes.icon||"",value:n.state,unit:n.attributes.unit_of_measurement,device_class:n.attributes.device_class,color:s,entity:i})}return o}_getMushrooms(){const t=this._entities||{},e=this.config.colors?.mushroom?.active??"#00e676",i=this.config.colors?.mushroom?.inactive??"#888",s=[];for(let o=1;o<=5;o++){const n=t[`mushroom${o}`]||{},a=n.entity,r=this.hass?.states?.[a];a&&r&&s.push({icon:n.icon||r.attributes.icon||wt(a,this.hass)||"mdi:flash",state:r.state,color:"on"===r.state?e:i,dx:n.dx??0,dy:n.dy??0,angle_deg:n.angle_deg,radius_factor:n.radius_factor,entity_id:a,tap_action:n.tap_action,hold_action:n.hold_action})}const o=t.camera||{},n=o.entity;if(n&&this.hass.states?.[n]){const t=this.hass.states[n],a=o.presence?.entity,r=a?this.hass?.states?.[a]?.state:void 0,c=!a||["on","home","occupied","motion","detected"].includes(r);s.push({icon:o.icon||t.attributes.icon||wt(n,this.hass)||"mdi:cctv",state:t.state,color:c?e:i,left:"calc(100% - 12px - 36px)",top:12,dx:0,dy:0,kind:"camera",angle_deg:o.angle_deg,radius_factor:o.radius_factor,entity_id:n,tap_action:{action:"more-info"},hold_action:{action:"none"}})}const a=this._entities?.climate||{},r=a.entity;if(r&&this.hass.states?.[r]){const t=this.hass.states[r],o=t.state&&"off"!==t.state&&"idle"!==t.state||t.attributes?.hvac_action&&"off"!==t.attributes.hvac_action;s.push({icon:a.icon||t.attributes.icon||wt(r,this.hass)||"mdi:thermostat",state:t.state,color:o?e:i,dx:0,dy:0,angle_deg:a.angle_deg,radius_factor:a.radius_factor,kind:"climate",entity_id:r})}return s}_onMushroomClick(t){}render(){const t=this.config.layout||"wide",e=this._getMainIconSize(),i=this._getSubButtons(),s=this._isRoomActive(),o=this.config.colors?.room?.icon_active??"#21df73",n=this.config.colors?.room?.icon_inactive??"#173c16",a=this.config.colors?.room?.background_active??"rgba(33,223,115,0.12)",r=this.config.colors?.room?.background_inactive??"rgba(23,60,22,0.12)",c=this.config.colors?.room?.text_active??"#ffffff",l=this.config.colors?.room?.text_inactive??"rgba(255,255,255,0.5)";return F`
+    `}}customElements.define("bubble-icon",Nt);class Bt extends st{static properties={config:{type:Object},hass:{type:Object}};_entities={};constructor(){super(),this.config={},this.hass={}}setConfig(t){this.config={layout:"wide",...t},this._entities=structuredClone(this.config.entities||{}),this._entities.camera=this._entities.camera||{entity:"",icon:""},this._entities.camera.presence||(this._entities.camera.presence={entity:""}),this._entities.climate=this._entities.climate||{entity:"",icon:""}}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:[],area:[],sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return Tt}),document.createElement("bubble-room-editor")}connectedCallback(){super.connectedCallback(),this._resizeObs=new ResizeObserver(()=>this.requestUpdate())}firstUpdated(){const t=this.shadowRoot?.querySelector(".icon-mushroom-area");t&&this._resizeObs.observe(t)}disconnectedCallback(){this._resizeObs?.disconnect(),super.disconnectedCallback()}updated(t){t.has("config")&&(this._entities=structuredClone(this.config.entities||{}))}_getSubButtons(){const t=this.config.colors?.subbutton?.background_on??"#00d46d",e=this.config.colors?.subbutton?.background_off??"#999",i=this.config.colors?.subbutton?.icon_on??"yellow",s=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(o=>{const n=this.hass.states?.[o.entity_id];return{icon:o.icon||wt(o.entity_id,this.hass),active:"on"===n?.state,colorOn:t,colorOff:e,iconOn:i,iconOff:s,entity_id:o.entity_id,tap_action:o.tap_action,hold_action:o.hold_action}})}_isRoomActive(){const t=this.config?.entities?.presence?.entity;if(!t)return!1;const e=this.hass?.states?.[t]?.state;return["on","home","occupied","motion","detected"].includes(e)}_getMainIconSize(){const t=this.shadowRoot?.querySelector(".icon-mushroom-area");return t?Math.round(.6*Math.min(t.clientWidth,t.clientHeight)):64}_getSensors(){const t=this._entities||{},e=this.config.colors?.room?.sensor_active??this.config.colors?.room?.text_active??"#21df73",i=this.config.colors?.room?.sensor_inactive??this.config.colors?.room?.text_inactive??"#173c16",s=this._isRoomActive()?e:i,o=[];for(let e=1;e<=6;e++){const i=t[`sensor${e}`]?.entity,n=this.hass?.states?.[i];i&&n&&o.push({icon:n.attributes.icon||"",value:n.state,unit:n.attributes.unit_of_measurement,device_class:n.attributes.device_class,color:s,entity:i})}return o}_getMushrooms(){const t=this._entities||{},e=this.config.colors?.mushroom?.active??"#00e676",i=this.config.colors?.mushroom?.inactive??"#888",s=[];for(let o=1;o<=5;o++){const n=t[`mushroom${o}`]||{},a=n.entity,r=this.hass?.states?.[a];a&&r&&s.push({icon:n.icon||r.attributes.icon||wt(a,this.hass)||"mdi:flash",state:r.state,color:"on"===r.state?e:i,dx:n.dx??0,dy:n.dy??0,angle_deg:n.angle_deg,radius_factor:n.radius_factor,entity_id:a,tap_action:n.tap_action,hold_action:n.hold_action})}const o=t.camera||{},n=o.entity;if(n&&this.hass.states?.[n]){const t=this.hass.states[n],a=o.presence?.entity,r=a?this.hass?.states?.[a]?.state:void 0,c=!a||["on","home","occupied","motion","detected"].includes(r);s.push({icon:o.icon||t.attributes.icon||wt(n,this.hass)||"mdi:cctv",state:t.state,color:c?e:i,left:"calc(100% - 12px - 36px)",top:12,dx:0,dy:0,kind:"camera",angle_deg:o.angle_deg,radius_factor:o.radius_factor,entity_id:n,tap_action:{action:"more-info"},hold_action:{action:"none"}})}const a=this._entities?.climate||{},r=a.entity;if(r&&this.hass.states?.[r]){const t=this.hass.states[r],o=t.state&&"off"!==t.state&&"idle"!==t.state||t.attributes?.hvac_action&&"off"!==t.attributes.hvac_action;s.push({icon:a.icon||t.attributes.icon||wt(r,this.hass)||"mdi:thermostat",state:t.state,color:o?e:i,dx:0,dy:0,angle_deg:a.angle_deg,radius_factor:a.radius_factor,kind:"climate",entity_id:r})}return s}_onMushroomClick(t){}render(){const t=this.config.layout||"wide",e=this._getMainIconSize(),i=this._getSubButtons(),s=this._isRoomActive(),o=this.config.colors?.room?.icon_active??"#21df73",n=this.config.colors?.room?.icon_inactive??"#173c16",a=this.config.colors?.room?.background_active??"rgba(33,223,115,0.12)",r=this.config.colors?.room?.background_inactive??"rgba(23,60,22,0.12)",c=this.config.colors?.room?.text_active??"#ffffff",l=this.config.colors?.room?.text_inactive??"rgba(255,255,255,0.5)";return M`
       <div class="bubble-room-grid ${t}">
         <div class="main-area">
           <div class="row1">
