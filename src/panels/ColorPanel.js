@@ -14,10 +14,11 @@ export class ColorPanel extends LitElement {
     _sensor:    { type: Object, state: true },
 
     _selectedPreset:  { type: String,  state: true },
-    _expandedColors:  { type: Array,   state: true }, // [room, subbutton]
+    _expandedColors:  { type: Array,   state: true }, // [room, subbutton, mushroom]
     _applyRoom:       { type: Boolean, state: true },
     _applySub:        { type: Boolean, state: true },
     _applyText:       { type: Boolean, state: true },
+    _applyMushroom:   { type: Boolean, state: true },
   };
 
   constructor() {
@@ -34,10 +35,11 @@ export class ColorPanel extends LitElement {
 
     // UI state
     this._selectedPreset = 'green';
-    this._expandedColors = [false, false];
+    this._expandedColors = [false, false, false];
     this._applyRoom = true;
     this._applySub = true;
     this._applyText = true;
+    this._applyMushroom = true;
   }
 
   updated(changed) {
@@ -393,7 +395,7 @@ export class ColorPanel extends LitElement {
         .expanded=${this.expanded}
         @expanded-changed=${e => {
           this.expanded = e.detail.expanded;
-          if (this.expanded) this._expandedColors = [false, false];
+          if (this.expanded) this._expandedColors = [false, false, false];
         }}
       >
         <div slot="header" class="glass-header">🎨 Colors & Presets</div>
@@ -443,6 +445,24 @@ export class ColorPanel extends LitElement {
           ` : ''}
         </div>
 
+        <!-- Mushroom colors -->
+        <div class="mini-pill ${this._expandedColors[2] ? 'expanded' : ''}">
+          <div
+            class="mini-pill-header"
+            style="--section-accent: #4bd1b4;"
+            @click=${() => this._toggleColor(2)}
+          >
+            Mushroom Colors
+            <span class="chevron">${this._expandedColors[2] ? '▼' : '▶'}</span>
+          </div>
+          ${this._expandedColors[2] ? html`
+            <div class="mini-pill-content">
+              ${this._renderColorField('mushroom', 'active',   'Active')}
+              ${this._renderColorField('mushroom', 'inactive', 'Inactive')}
+            </div>
+          ` : ''}
+        </div>
+
         <!-- Reset -->
         <button class="reset-button" @click=${() => this._resetColors()}>
           🧹 Reset Colors
@@ -474,6 +494,11 @@ export class ColorPanel extends LitElement {
             <input type="checkbox" .checked=${this._applyText}
               @change=${e => this._applyText = e.target.checked} />
             Includi testo (Room)
+          </label>
+          <label>
+            <input type="checkbox" .checked=${this._applyMushroom}
+              @change=${e => this._applyMushroom = e.target.checked} />
+            Applica a Mushroom
           </label>
         </div>
         <button class="apply-btn" @click=${this._applySelectedPreset}>
@@ -563,8 +588,10 @@ export class ColorPanel extends LitElement {
       ops.push(['colors.subbutton.icon_off',       preset.sub.icon_off]);
     }
 
-    // opzionale: se ti servono mushroom/sensor, puoi aggiungere altri toggle UI
-    // e relativi ops qui.
+    if (this._applyMushroom) {
+      ops.push(['colors.mushroom.active',   preset.mushroom.active]);
+      ops.push(['colors.mushroom.inactive', preset.mushroom.inactive]);
+    }
 
     for (const [prop, val] of ops) {
       this._emit(prop, val);
@@ -572,11 +599,12 @@ export class ColorPanel extends LitElement {
   };
 
   _resetColors() {
-    this._expandedColors = [false, false];
-    const sections = ['room','subbutton'];
+    this._expandedColors = [false, false, false];
+    const sections = ['room','subbutton','mushroom'];
     const keys = {
       room:      ['background_active','background_inactive','icon_active','icon_inactive','text_active','text_inactive'],
-      subbutton: ['background_on','background_off','icon_on','icon_off']
+      subbutton: ['background_on','background_off','icon_on','icon_off'],
+      mushroom:  ['active','inactive']
     };
     sections.forEach(sec => {
       keys[sec].forEach(k => this._emit(`colors.${sec}.${k}`, ''));
