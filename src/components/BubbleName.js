@@ -10,20 +10,41 @@ export class BubbleName extends LitElement {
     container: { type: Object },
   };
 
-  /* debounce */
   _raf = null;
   _resizeObs = null;
+  _lastScale = null;
+  _lastBox = null;
 
   constructor() {
     super();
     this.name = '';
   }
 
-  /* ───── ciclo vita ───── */
   firstUpdated() {
-    this._scheduleScale();                 // 1) al mount
-    this._resizeObs = new ResizeObserver(() => this._scheduleScale());
-    this._resizeObs.observe(this);         // host
+    this._scheduleScale();
+    this._resizeObs = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      let w = 0;
+      let h = 0;
+      if (entry && entry.contentBoxSize) {
+        const box = Array.isArray(entry.contentBoxSize)
+          ? entry.contentBoxSize[0]
+          : entry.contentBoxSize;
+        w = Math.round(box.inlineSize);
+        h = Math.round(box.blockSize);
+      } else {
+        const rect = this.getBoundingClientRect();
+        w = Math.round(rect.width);
+        h = Math.round(rect.height);
+      }
+      if (!this._lastBox ||
+          Math.abs(w - this._lastBox.w) > 2 ||
+          Math.abs(h - this._lastBox.h) > 2) {
+        this._lastBox = { w, h };
+        this._scheduleScale();
+      }
+    });
+    this._resizeObs.observe(this);
     window.addEventListener('resize', this._scheduleScale, { passive:true });
   }
 
@@ -43,7 +64,6 @@ export class BubbleName extends LitElement {
     window.removeEventListener('resize', this._scheduleScale);
   }
 
-  /* ───── debounce helper ───── */
   _scheduleScale = () => {
     if (this._raf) return;
     this._raf = requestAnimationFrame(() => {
@@ -52,32 +72,46 @@ export class BubbleName extends LitElement {
     });
   };
 
-  /* ───── autoscale binario ───── */
   _autoScaleFont() {
     const el  = this.renderRoot.querySelector('.bubble-name');
     const box = this.container || this.parentElement || this;
     if (!el || !box) return;
 
-    this._resizeObs.disconnect();          // evita trigger ricorsivo
+    const currentText = this.name;
+    const boxW = Math.round(box.clientWidth);
+    const boxH = Math.round(box.clientHeight);
 
-    const min = 8, max = 160;
-    let lo = min, hi = max;
+    if (this._lastScale &&
+        this._lastScale.text === currentText &&
+        this._lastScale.w === boxW &&
+        this._lastScale.h === boxH) {
+      return;
+    }
 
-    for (let i = 0; i < 8; i++) {
+    this._resizeObs.disconnect();
+
+    const min = 8;
+    const max = 160;
+    let lo = min;
+    let hi = max;
+
+    for (let i = 0; i < 8 && lo <= hi; i++) {
       const mid = (lo + hi) >> 1;
       el.style.fontSize = `${mid}px`;
-      if (el.scrollWidth <= box.clientWidth &&
-          el.scrollHeight <= box.clientHeight) {
-        lo = mid;
+      if (el.scrollWidth <= boxW && el.scrollHeight <= boxH) {
+        lo = mid + 1;
       } else {
         hi = mid - 1;
       }
     }
-    el.style.fontSize = `${lo}px`;
+
+    el.style.fontSize = `${hi}px`;
+
+    this._lastScale = { text: currentText, w: boxW, h: boxH };
+
     this._resizeObs.observe(this);
   }
 
-  /* ───── utilità (non modificata) ───── */
   _isRoomActive() {
     const entityId = this.config?.entities?.presence?.entity;
     if (!entityId) return false;
@@ -85,12 +119,10 @@ export class BubbleName extends LitElement {
     return ['on','home','occupied','motion','detected'].includes(state);
   }
 
-  /* ───── render ───── */
   render() {
     return html`<div class="bubble-name">${this.name}</div>`;
   }
 
-  /* ───── stile originale ───── */
   static styles = css`
     .bubble-name {
       display: block;

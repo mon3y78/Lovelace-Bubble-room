@@ -1,5 +1,4 @@
 // src/components/BubbleSensor.js
-// src/components/BubbleSensor.js
 import { LitElement, html, css } from 'lit';
 import { SENSOR_TYPE_MAP } from '../helpers/sensor-mapping.js';
 
@@ -13,24 +12,21 @@ export class BubbleSensor extends LitElement {
     this.sensors = [];
     this.rows = 1;
     this.columns = 1;
-
-    // Stato interno per ottimizzazioni
     this._resizeObserver = null;
     this._resizeScheduled = false;
     this._autoscaleScheduled = false;
-    this._lastBox = { w: 0, h: 0 };        // dimensione ultima osservata
-    this._pillCache = new WeakMap();       // cache risultati per singola pill
+    this._lastBox = { w: 0, h: 0 };
+    this._pillCache = new WeakMap();
   }
 
   connectedCallback() {
     super.connectedCallback();
     this._updateLayout();
-    this._scheduleAutoscale('connected');  // ➊ al primo attach
-
+    this._scheduleAutoscale();
     this._resizeObserver = new ResizeObserver((entries) => {
-      // Usa contentBoxSize quando disponibile; fallback a getBoundingClientRect
       const entry = entries[0];
-      let w = 0, h = 0;
+      let w = 0;
+      let h = 0;
       if (entry && entry.contentBoxSize) {
         const box = Array.isArray(entry.contentBoxSize)
           ? entry.contentBoxSize[0]
@@ -42,14 +38,11 @@ export class BubbleSensor extends LitElement {
         w = Math.round(rect.width);
         h = Math.round(rect.height);
       }
-
-      // ➋ Schedula solo se cambia davvero (soglia 2px per evitare jitter)
       if (Math.abs(w - this._lastBox.w) > 2 || Math.abs(h - this._lastBox.h) > 2) {
         this._lastBox = { w, h };
-        this._scheduleAutoscale('resize');
+        this._scheduleAutoscale();
       }
     });
-
     this._resizeObserver.observe(this);
   }
 
@@ -59,11 +52,10 @@ export class BubbleSensor extends LitElement {
     this._resizeObserver = null;
   }
 
-  // ➌ Triggera layout e (se serve) autoscale solo quando cambiano i sensori
   updated(changedProperties) {
     if (changedProperties.has('sensors')) {
       this._updateLayout();
-      this._scheduleAutoscale('sensors-changed');
+      this._scheduleAutoscale();
     }
   }
 
@@ -73,11 +65,7 @@ export class BubbleSensor extends LitElement {
     this.columns = count > 4 ? 4 : count || 1;
   }
 
-  // ————————————————————————————————————————————————————————————————
-  // Batching e debounce: un solo autoscale per frame, indipendentemente
-  // da quante volte viene richiesto (resize, sensors, first render, ecc.)
-  // ————————————————————————————————————————————————————————————————
-  _scheduleAutoscale(_reason) {
+  _scheduleAutoscale() {
     if (this._autoscaleScheduled) return;
     this._autoscaleScheduled = true;
     requestAnimationFrame(() => {
@@ -86,28 +74,17 @@ export class BubbleSensor extends LitElement {
     });
   }
 
-  /** Esegue lo scaling per ogni pill (valore + unità in coppia) */
   _autoScaleValues() {
     const pills = this.renderRoot?.querySelectorAll('.sensor-pill');
     if (!pills?.length) return;
-
     pills.forEach((pill) => this._fitValueAndUnit(pill));
   }
 
-  /**
-   * Calcola la dimensione del font del valore (con unità in proporzione)
-   * in modo che (valore + unità) stiano entro i limiti della pill.
-   * Ottimizzazioni:
-   *  - Limita le volte in cui forza il layout.
-   *  - Cache per evitare ricalcoli identici quando testo e box non cambiano.
-   *  - Meno iterazioni grazie a bounds dinamici.
-   */
   _fitValueAndUnit(pill) {
     const valueEl = pill.querySelector('.sensor-value');
     const unitEl  = pill.querySelector('.sensor-unit');
     if (!valueEl) return;
 
-    // Stato attuale (per cache)
     const text = valueEl.textContent ?? '';
     const unitText = unitEl ? unitEl.textContent ?? '' : '';
     const boxW = Math.round(pill.clientWidth);
@@ -115,47 +92,39 @@ export class BubbleSensor extends LitElement {
     if (boxW <= 0 || boxH <= 0) return;
 
     const cacheKey = this._pillCache.get(pill);
-    if (cacheKey
-      && cacheKey.text === text
-      && cacheKey.unitText === unitText
-      && cacheKey.boxW === boxW
-      && cacheKey.boxH === boxH) {
-      // Niente è cambiato: salta
+    if (cacheKey &&
+        cacheKey.text === text &&
+        cacheKey.unitText === unitText &&
+        cacheKey.boxW === boxW &&
+        cacheKey.boxH === boxH) {
       return;
     }
 
-    // Limiti di spazio disponibili
     const maxWidth  = Math.floor(boxW * 0.52);
     const maxHeight = Math.floor(boxH * 0.78);
     if (maxWidth <= 0 || maxHeight <= 0) return;
 
-    // Reset dimensioni per misurazioni coerenti
     valueEl.style.fontSize = '';
     if (unitEl) unitEl.style.fontSize = '';
 
-    // Stima upper-bound più stretta: non ha senso superare l’altezza disponibile
-    let lo = 10;                                 // px min
-    let hi = Math.min(44, maxHeight);            // px max dinamico
+    let lo = 10;
+    let hi = Math.min(44, maxHeight);
     let best = lo;
 
-    // Iterazioni ridotte: 8 bastano con bounds più stretti
     for (let i = 0; i < 8 && lo <= hi; i++) {
       const mid = (lo + hi) >> 1;
-
-      // Applica dimensione di prova
       valueEl.style.fontSize = `${mid}px`;
       if (unitEl) {
         const unitSize = Math.max(10, Math.round(mid * 0.75));
         unitEl.style.fontSize = `${unitSize}px`;
       }
 
-      // Misure: usa offsetWidth/Height per evitare più reflow costosi
       const vW = valueEl.offsetWidth;
       const vH = valueEl.offsetHeight;
       const uW = unitEl ? unitEl.offsetWidth : 0;
       const uH = unitEl ? unitEl.offsetHeight : 0;
 
-      const totalWidth  = vW + uW + 6; // piccolo gap
+      const totalWidth  = vW + uW + 6;
       const totalHeight = vH > uH ? vH : uH;
 
       const fits = totalWidth <= maxWidth && totalHeight <= maxHeight;
@@ -167,17 +136,14 @@ export class BubbleSensor extends LitElement {
       }
     }
 
-    // Applica la dimensione "migliore"
     valueEl.style.fontSize = `${best}px`;
     if (unitEl) {
       unitEl.style.fontSize = `${Math.max(10, Math.round(best * 0.75))}px`;
     }
 
-    // Aggiorna cache
     this._pillCache.set(pill, { text, unitText, boxW, boxH, best });
   }
 
-  /** Apre il more-info nativo (grafico history incluso) */
   _openMoreInfo(entityId) {
     if (!entityId || typeof entityId !== 'string') return;
     const ev = new CustomEvent('hass-more-info', {
@@ -188,7 +154,7 @@ export class BubbleSensor extends LitElement {
     const ha = document.querySelector('home-assistant');
     (ha || this).dispatchEvent(ev);
   }
-  
+
   static styles = css`
     :host {
       display: block;
@@ -197,7 +163,6 @@ export class BubbleSensor extends LitElement {
       box-sizing: border-box;
       contain: strict;
     }
-
     .sensor-grid {
       display: grid;
       width: 100%;
@@ -205,9 +170,7 @@ export class BubbleSensor extends LitElement {
       box-sizing: border-box;
       padding: 0;
       margin: 0;
-      /* layout determinato da rows/columns impostati in _updateLayout */
     }
-
     .sensor-pill {
       display: flex;
       align-items: center;
@@ -225,32 +188,26 @@ export class BubbleSensor extends LitElement {
       cursor: pointer;
       padding: 10px 12px;
     }
-
     .sensor-icon {
-      font-size: 1.4em; /* leggermente più grande dell'originale */
+      font-size: 1.4em;
       flex: 0 0 auto;
     }
-
     .sensor-label {
       font-weight: 600;
-      font-size: clamp(14px, 1.5vw, 20px); /* emoji più grande */
+      font-size: clamp(14px, 1.5vw, 20px);
       transform: scale(0.95);
       display: inline-block;
       line-height: 1;
       flex: 0 0 auto;
     }
-
     .sensor-value {
       font-weight: 700;
       font-variant-numeric: tabular-nums;
       letter-spacing: 0.01em;
       line-height: 1;
-      /* la size viene impostata dinamicamente via JS */
     }
-
     .sensor-unit {
       font-weight: 600;
-      /* la size viene impostata dinamicamente via JS */
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -259,7 +216,7 @@ export class BubbleSensor extends LitElement {
       flex: 0 0 auto;
     }
   `;
-  
+
   render() {
     const sensors = (this.sensors || []).map(sensor => {
       const devClass = sensor.device_class;
@@ -279,7 +236,9 @@ export class BubbleSensor extends LitElement {
       >
         ${sensors.map(sensor => {
           const entityId = sensor.entity || sensor.entity_id || '';
-          const title = entityId ? `Mostra grafico storico: ${entityId}` : 'Mostra grafico storico';
+          const title = entityId
+            ? `Mostra grafico storico: ${entityId}`
+            : 'Mostra grafico storico';
           return html`
             <div
               class="sensor-pill"
