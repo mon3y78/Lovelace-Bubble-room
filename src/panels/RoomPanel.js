@@ -198,8 +198,6 @@ export class RoomPanel extends LitElement {
     this._expanded     = false;
     this.activeFilters = [];
     this.layout        = 'wide';
-
-    // guardia anti-loop durante la sync da config/hass
     this._syncingFromConfig = false;
   }
 
@@ -219,23 +217,19 @@ export class RoomPanel extends LitElement {
         this.layout = cfgLayout;
       }
 
-      // ⛔️ NIENTE auto-icona qui: la gestiamo SOLO su scelta entità (vedi _onPresenceEntityChange)
-
       this._syncingFromConfig = false;
     }
   }
 
   _onLayoutClick(mode) {
     this.layout = mode;
-    // 1) aggiorna il layout
     this._fire('layout', mode);
-    // 2) invia i grid_options coerenti con la scelta
     const grid = mode === 'tall' ? { columns: 6, rows: 4 } : { columns: 12, rows: 4 };
     this._fire('grid_options', grid);
   }
-  
+
   _fire(prop, val) {
-    if (this._syncingFromConfig) return; // blocca eventi durante la sync
+    if (this._syncingFromConfig) return;
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop, val },
       bubbles: true,
@@ -243,11 +237,8 @@ export class RoomPanel extends LitElement {
     }));
   }
 
-  // auto-icona immediata quando cambi l’entità presence
   _onPresenceEntityChange = (ent) => {
     this._fire('entities.presence.entity', ent);
-
-    // imposta icona solo se vuota (rispetta eventuale scelta manuale)
     const currentIcon = this.config?.icon || '';
     if (ent && !currentIcon) {
       const st = this.hass?.states?.[ent];
@@ -255,6 +246,34 @@ export class RoomPanel extends LitElement {
       if (autoIcon) this._fire('icon', autoIcon);
     }
   };
+
+  // 🔹 Nuovo metodo per cambio area con auto-discovery su tutti i pannelli
+  _onAreaChange(v) {
+    const cfg = this.config || {};
+    const ad = { ...(cfg.auto_discovery_sections || {}) };
+    ad.camera = true;
+    ad.climate = true;
+    ad.sensor = true;
+    ad.mushroom = true;
+    ad.subbutton = true;
+    ad.presence = true;
+
+    const next = {
+      ...cfg,
+      area: v,
+      auto_discovery_sections: ad
+    };
+
+    if (v) {
+      next.name = v.toUpperCase();
+    }
+
+    this.dispatchEvent(new CustomEvent('config-changed', {
+      detail: { config: next },
+      bubbles: true,
+      composed: true
+    }));
+  }
 
   render() {
     const cfg      = this.config;
@@ -286,35 +305,25 @@ export class RoomPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🛋️ Room Settings</div>
       
-        <!-- Auto‑discover (identico a CameraPanel: checkbox + label in linea) -->
         <div class="input-group autodiscover">
           <input
             type="checkbox"
             .checked=${autoDisc}
             @change=${e => this._fire('auto_discovery_sections.presence', e.target.checked)}
           />
-          <label>🪄 Auto‑discover Presence</label>
+          <label>🪄 Auto-discover Presence</label>
         </div>
       
-        <!-- 🏷️ Area -->
         <div class="input-group">
           <label>🏷️ Area:</label>
           <ha-selector
             .hass=${this.hass}
             .value=${area}
             .selector=${{ area: {} }}
-            @value-changed=${e => {
-              const v = e.detail.value;
-              this._fire('area', v);
-              if (v) {
-                this._fire('name', v.toUpperCase());
-                this._fire('auto_discovery_sections.presence', true);
-              }
-            }}
+            @value-changed=${e => this._onAreaChange(e.detail.value)}
           ></ha-selector>
         </div>
       
-        <!-- 🏠 Room name -->
         <div class="input-group">
           <label>🏠 Room name:</label>
           <input
