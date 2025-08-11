@@ -6,13 +6,18 @@ export class ColorPanel extends LitElement {
     hass:     { type: Object },
     config:   { type: Object },
     expanded: { type: Boolean },
+
+    // stati derivati e UI
     _room:      { type: Object, state: true },
     _subbutton: { type: Object, state: true },
     _mushroom:  { type: Object, state: true },
     _sensor:    { type: Object, state: true },
 
-    // ✅ quale preset è selezionato (per la cornice stile screenshot)
-    _selectedKey: { type: String, state: true },
+    _selectedPreset:  { type: String,  state: true },
+    _expandedColors:  { type: Array,   state: true }, // [room, subbutton]
+    _applyRoom:       { type: Boolean, state: true },
+    _applySub:        { type: Boolean, state: true },
+    _applyText:       { type: Boolean, state: true },
   };
 
   constructor() {
@@ -21,11 +26,18 @@ export class ColorPanel extends LitElement {
     this.config = {};
     this.expanded = false;
 
+    // stati locali
     this._room = {};
     this._subbutton = {};
     this._mushroom = {};
     this._sensor = {};
-    this._selectedKey = ''; // nessuno selezionato di default
+
+    // UI state
+    this._selectedPreset = 'green';
+    this._expandedColors = [false, false];
+    this._applyRoom = true;
+    this._applySub = true;
+    this._applyText = true;
   }
 
   updated(changed) {
@@ -56,172 +68,127 @@ export class ColorPanel extends LitElement {
     }
   }
 
-  /* ─────────── Preset data ─────────── */
-  get _presets() {
-    return [
-      {
-        key: 'green',
-        name: 'Green',
-        preview: { active: '#21df73', inactive: '#173c16' },
-        map: {
-          'colors.room.icon_active':        '#21df73',
-          'colors.room.icon_inactive':      '#173c16',
-          'colors.room.background_active':  'rgba(33,223,115,0.12)',
-          'colors.room.background_inactive':'rgba(23,60,22,0.12)',
-          'colors.room.text_active':        '#ffffff',
-          'colors.room.text_inactive':      'rgba(255,255,255,0.55)',
-          'colors.subbutton.background_on':  'rgba(33,223,115,1)',
-          'colors.subbutton.background_off': 'rgba(33,223,115,0.28)',
-          'colors.subbutton.icon_on':        '#fff',
-          'colors.subbutton.icon_off':       '#667a6a',
-          'colors.mushroom.active':   '#00e676',
-          'colors.mushroom.inactive': '#7a8b7a',
-          'colors.sensor.sensor_active':   '#21df73',
-          'colors.sensor.sensor_inactive': '#173c16',
-        }
+  // ───────────────── Preset (schema NIDIFICATO usato dalla UI) ─────────────────
+  get PRESETS() {
+    return {
+      green: {
+        label: 'Green',
+        room: {
+          icon_active: '#21df73',
+          icon_inactive: '#173c16',
+          background_active: 'rgba(33,223,115,0.12)',
+          background_inactive: 'rgba(23,60,22,0.12)',
+          text_active: '#ffffff',
+          text_inactive: 'rgba(255,255,255,0.55)',
+        },
+        sub: {
+          background_on: 'rgba(33,223,115,1)',
+          background_off: 'rgba(33,223,115,0.28)',
+          icon_on: '#fff',
+          icon_off: '#667a6a',
+        },
+        mushroom: { active: '#00e676', inactive: '#7a8b7a' },
+        sensor: { sensor_active: '#21df73', sensor_inactive: '#173c16' },
       },
-      {
-        key: 'blue', name: 'Blue',
-        preview: { active: '#55afff', inactive: '#0f2a4a' },
-        map: {
-          'colors.room.icon_active':        '#55afff',
-          'colors.room.icon_inactive':      '#0f2a4a',
-          'colors.room.background_active':  'rgba(85,175,255,0.14)',
-          'colors.room.background_inactive':'rgba(15,42,74,0.14)',
-          'colors.room.text_active':        '#ffffff',
-          'colors.room.text_inactive':      'rgba(255,255,255,0.55)',
-          'colors.subbutton.background_on':  'rgba(85,175,255,1)',
-          'colors.subbutton.background_off': 'rgba(85,175,255,0.28)',
-          'colors.subbutton.icon_on':        '#fff',
-          'colors.subbutton.icon_off':       '#5c6b7a',
-          'colors.mushroom.active':   '#59c3ff',
-          'colors.mushroom.inactive': '#7a8793',
-          'colors.sensor.sensor_active':   '#55afff',
-          'colors.sensor.sensor_inactive': '#0f2a4a',
-        }
+      blue: {
+        label: 'Blue',
+        room: {
+          icon_active: '#55afff',
+          icon_inactive: '#0f2a4a',
+          background_active: 'rgba(85,175,255,0.14)',
+          background_inactive: 'rgba(15,42,74,0.14)',
+          text_active: '#ffffff',
+          text_inactive: 'rgba(255,255,255,0.55)',
+        },
+        sub: {
+          background_on: 'rgba(85,175,255,1)',
+          background_off: 'rgba(85,175,255,0.28)',
+          icon_on: '#fff',
+          icon_off: '#5c6b7a',
+        },
+        mushroom: { active: '#59c3ff', inactive: '#7a8793' },
+        sensor: { sensor_active: '#55afff', sensor_inactive: '#0f2a4a' },
       },
-      {
-        key: 'orange', name: 'Amber',
-        preview: { active: '#ff9b3d', inactive: '#4a2a0f' },
-        map: {
-          'colors.room.icon_active':        '#ff9b3d',
-          'colors.room.icon_inactive':      '#4a2a0f',
-          'colors.room.background_active':  'rgba(255,155,61,0.16)',
-          'colors.room.background_inactive':'rgba(74,42,15,0.12)',
-          'colors.room.text_active':        '#ffffff',
-          'colors.room.text_inactive':      'rgba(255,255,255,0.55)',
-          'colors.subbutton.background_on':  'rgba(255,155,61,1)',
-          'colors.subbutton.background_off': 'rgba(255,155,61,0.28)',
-          'colors.subbutton.icon_on':        '#1f140a',
-          'colors.subbutton.icon_off':       '#6b5c52',
-          'colors.mushroom.active':   '#ffb067',
-          'colors.mushroom.inactive': '#8b7a6e',
-          'colors.sensor.sensor_active':   '#ff9b3d',
-          'colors.sensor.sensor_inactive': '#4a2a0f',
-        }
+      amber: {
+        label: 'Amber',
+        room: {
+          icon_active: '#ff9b3d',
+          icon_inactive: '#4a2a0f',
+          background_active: 'rgba(255,155,61,0.16)',
+          background_inactive: 'rgba(74,42,15,0.12)',
+          text_active: '#ffffff',
+          text_inactive: 'rgba(255,255,255,0.55)',
+        },
+        sub: {
+          background_on: 'rgba(255,155,61,1)',
+          background_off: 'rgba(255,155,61,0.28)',
+          icon_on: '#1f140a',
+          icon_off: '#6b5c52',
+        },
+        mushroom: { active: '#ffb067', inactive: '#8b7a6e' },
+        sensor: { sensor_active: '#ff9b3d', sensor_inactive: '#4a2a0f' },
       },
-      {
-        key: 'purple', name: 'Purple',
-        preview: { active: '#bd64ff', inactive: '#2c0f4a' },
-        map: {
-          'colors.room.icon_active':        '#bd64ff',
-          'colors.room.icon_inactive':      '#2c0f4a',
-          'colors.room.background_active':  'rgba(189,100,255,0.16)',
-          'colors.room.background_inactive':'rgba(44,15,74,0.12)',
-          'colors.room.text_active':        '#ffffff',
-          'colors.room.text_inactive':      'rgba(255,255,255,0.55)',
-          'colors.subbutton.background_on':  'rgba(189,100,255,1)',
-          'colors.subbutton.background_off': 'rgba(189,100,255,0.28)',
-          'colors.subbutton.icon_on':        '#160a1f',
-          'colors.subbutton.icon_off':       '#6b5c7a',
-          'colors.mushroom.active':   '#c785ff',
-          'colors.mushroom.inactive': '#837a8b',
-          'colors.sensor.sensor_active':   '#bd64ff',
-          'colors.sensor.sensor_inactive': '#2c0f4a',
-        }
+      purple: {
+        label: 'Purple',
+        room: {
+          icon_active: '#bd64ff',
+          icon_inactive: '#2c0f4a',
+          background_active: 'rgba(189,100,255,0.16)',
+          background_inactive: 'rgba(44,15,74,0.12)',
+          text_active: '#ffffff',
+          text_inactive: 'rgba(255,255,255,0.55)',
+        },
+        sub: {
+          background_on: 'rgba(189,100,255,1)',
+          background_off: 'rgba(189,100,255,0.28)',
+          icon_on: '#160a1f',
+          icon_off: '#6b5c7a',
+        },
+        mushroom: { active: '#c785ff', inactive: '#837a8b' },
+        sensor: { sensor_active: '#bd64ff', sensor_inactive: '#2c0f4a' },
       },
-      {
-        key: 'red', name: 'Red',
-        preview: { active: '#ff5c6a', inactive: '#4a0f1a' },
-        map: {
-          'colors.room.icon_active':        '#ff5c6a',
-          'colors.room.icon_inactive':      '#4a0f1a',
-          'colors.room.background_active':  'rgba(255,92,106,0.16)',
-          'colors.room.background_inactive':'rgba(74,15,26,0.12)',
-          'colors.room.text_active':        '#ffffff',
-          'colors.room.text_inactive':      'rgba(255,255,255,0.55)',
-          'colors.subbutton.background_on':  'rgba(255,92,106,1)',
-          'colors.subbutton.background_off': 'rgba(255,92,106,0.28)',
-          'colors.subbutton.icon_on':        '#1f0a10',
-          'colors.subbutton.icon_off':       '#7a5c65',
-          'colors.mushroom.active':   '#ff7884',
-          'colors.mushroom.inactive': '#8b7a7f',
-          'colors.sensor.sensor_active':   '#ff5c6a',
-          'colors.sensor.sensor_inactive': '#4a0f1a',
-        }
+      red: {
+        label: 'Red',
+        room: {
+          icon_active: '#ff5c6a',
+          icon_inactive: '#4a0f1a',
+          background_active: 'rgba(255,92,106,0.16)',
+          background_inactive: 'rgba(74,15,26,0.12)',
+          text_active: '#ffffff',
+          text_inactive: 'rgba(255,255,255,0.55)',
+        },
+        sub: {
+          background_on: 'rgba(255,92,106,1)',
+          background_off: 'rgba(255,92,106,0.28)',
+          icon_on: '#1f0a10',
+          icon_off: '#7a5c65',
+        },
+        mushroom: { active: '#ff7884', inactive: '#8b7a7f' },
+        sensor: { sensor_active: '#ff5c6a', sensor_inactive: '#4a0f1a' },
       },
-      {
-        key: 'gray', name: 'Gray',
-        preview: { active: '#c5c8ce', inactive: '#3b4048' },
-        map: {
-          'colors.room.icon_active':        '#c5c8ce',
-          'colors.room.icon_inactive':      '#3b4048',
-          'colors.room.background_active':  'rgba(197,200,206,0.14)',
-          'colors.room.background_inactive':'rgba(59,64,72,0.12)',
-          'colors.room.text_active':        '#ffffff',
-          'colors.room.text_inactive':      'rgba(255,255,255,0.55)',
-          'colors.subbutton.background_on':  'rgba(197,200,206,1)',
-          'colors.subbutton.background_off': 'rgba(197,200,206,0.28)',
-          'colors.subbutton.icon_on':        '#1a1b1d',
-          'colors.subbutton.icon_off':       '#6b707a',
-          'colors.mushroom.active':   '#d7d9de',
-          'colors.mushroom.inactive': '#83878f',
-          'colors.sensor.sensor_active':   '#c5c8ce',
-          'colors.sensor.sensor_inactive': '#3b4048',
-        }
+      gray: {
+        label: 'Gray',
+        room: {
+          icon_active: '#c5c8ce',
+          icon_inactive: '#3b4048',
+          background_active: 'rgba(197,200,206,0.14)',
+          background_inactive: 'rgba(59,64,72,0.12)',
+          text_active: '#ffffff',
+          text_inactive: 'rgba(255,255,255,0.55)',
+        },
+        sub: {
+          background_on: 'rgba(197,200,206,1)',
+          background_off: 'rgba(197,200,206,0.28)',
+          icon_on: '#1a1b1d',
+          icon_off: '#6b707a',
+        },
+        mushroom: { active: '#d7d9de', inactive: '#83878f' },
+        sensor: { sensor_active: '#c5c8ce', sensor_inactive: '#3b4048' },
       },
-    ];
-  }
-
-  /* ─────────── Helpers ─────────── */
-  _fire(prop, val) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  _applyPreset(map) {
-    Object.entries(map).forEach(([prop, val]) => this._fire(prop, val));
-  }
-
-  // ✅ applica quello selezionato
-  _applySelected = () => {
-    const p = this._presets.find(x => x.key === this._selectedKey);
-    if (p) this._applyPreset(p.map);
-  };
-
-  _onColorInput(section, key, val) {
-    const next = { ...(this[`_${section}`] || {}) };
-    next[key] = val;
-    this[`_${section}`] = next;
-    this._fire(`colors.${section}.${key}`, val);
-  }
-
-  _resetAll() {
-    const blank = {
-      room: ['icon_active','icon_inactive','background_active','background_inactive','text_active','text_inactive'],
-      subbutton: ['background_on','background_off','icon_on','icon_off'],
-      mushroom: ['active','inactive'],
-      sensor: ['sensor_active','sensor_inactive'],
     };
-    Object.entries(blank).forEach(([sec, keys]) =>
-      keys.forEach(k => this._fire(`colors.${sec}.${k}`, ''))
-    );
   }
 
-  /* ─────────── STILI ─────────── */
+  // ─────────────────── STILI ───────────────────
   static styles = css`
     :host { display:block; }
     .glass-panel {
@@ -251,7 +218,7 @@ export class ColorPanel extends LitElement {
       color: #fff;
     }
 
-    /* === Cards preset in griglia === */
+    /* Grid delle card preset */
     .preset-bar {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -286,8 +253,6 @@ export class ColorPanel extends LitElement {
       margin-bottom: 6px;
       text-align: left;
     }
-
-    /* Pallini con etichetta SOTTO (come richiesto) */
     .swatches {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -311,7 +276,7 @@ export class ColorPanel extends LitElement {
       color: #f0f6ff; font-size: .85rem; opacity: .9;
     }
 
-    /* Bottone “Applica preset” unico e centrato */
+    /* Riga applica preset + checkbox */
     .apply-row {
       display: flex; flex-wrap: wrap; gap: 10px;
       align-items: center; padding: 10px 16px 2px 16px;
@@ -331,8 +296,7 @@ export class ColorPanel extends LitElement {
     }
     .apply-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
 
-
-    /* Sezioni manuali (come prima) */
+    /* Sezioni manuali */
     .mini-pill {
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.12);
@@ -366,7 +330,6 @@ export class ColorPanel extends LitElement {
       position: relative;
       z-index: 1;
     }
-
     @keyframes pill-expand {
       from { opacity: 0; transform: translateY(-12px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -422,7 +385,7 @@ export class ColorPanel extends LitElement {
     }
   `;
 
-  /* ─────────── UI ─────────── */
+  // ─────────────────── UI ───────────────────
   render() {
     return html`
       <ha-expansion-panel
@@ -438,7 +401,7 @@ export class ColorPanel extends LitElement {
         <!-- Preset chooser -->
         ${this._renderPresetChooser()}
 
-        <!-- Room colors pill -->
+        <!-- Room colors -->
         <div class="mini-pill ${this._expandedColors[0] ? 'expanded' : ''}">
           <div
             class="mini-pill-header"
@@ -460,7 +423,7 @@ export class ColorPanel extends LitElement {
           ` : ''}
         </div>
 
-        <!-- Subbutton colors pill -->
+        <!-- Subbutton colors -->
         <div class="mini-pill ${this._expandedColors[1] ? 'expanded' : ''}">
           <div
             class="mini-pill-header"
@@ -488,7 +451,7 @@ export class ColorPanel extends LitElement {
     `;
   }
 
-  // ===================== UI helpers =====================
+  // ─────────────────── UI helpers ───────────────────
   _renderPresetChooser() {
     const keys = Object.keys(this.PRESETS);
     return html`
@@ -548,7 +511,7 @@ export class ColorPanel extends LitElement {
   }
 
   _renderColorField(section, key, label) {
-    const rgba = this.config.colors?.[section]?.[key] || '';
+    const rgba = this.config?.colors?.[section]?.[key] || '';
     const [r, g, b, a] = this._parseRGBA(rgba);
     const hex = `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
     return html`
@@ -574,7 +537,7 @@ export class ColorPanel extends LitElement {
     `;
   }
 
-  // ===================== APPLY / RESET =====================
+  // ─────────────────── APPLY / RESET ───────────────────
   _applySelectedPreset = () => {
     const key = this._selectedPreset;
     const preset = this.PRESETS[key];
@@ -600,6 +563,9 @@ export class ColorPanel extends LitElement {
       ops.push(['colors.subbutton.icon_off',       preset.sub.icon_off]);
     }
 
+    // opzionale: se ti servono mushroom/sensor, puoi aggiungere altri toggle UI
+    // e relativi ops qui.
+
     for (const [prop, val] of ops) {
       this._emit(prop, val);
     }
@@ -617,11 +583,20 @@ export class ColorPanel extends LitElement {
     });
   }
 
-  // ===================== Low-level helpers =====================
+  // ─────────────────── Low-level helpers ───────────────────
   _parseRGBA(str) {
     if (!str) return [0,0,0,1];
     const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(str);
     if (m) return [ +m[1], +m[2], +m[3], +(m[4] ?? 1) ];
+    // supporta anche #rrggbb fallback
+    if (str.startsWith('#') && (str.length === 7 || str.length === 4)) {
+      const hex = str.length === 7 ? str.slice(1) :
+        str.slice(1).split('').map(c => c + c).join('');
+      const r = parseInt(hex.slice(0,2),16);
+      const g = parseInt(hex.slice(2,4),16);
+      const b = parseInt(hex.slice(4,6),16);
+      return [r,g,b,1];
+    }
     return [0,0,0,1];
   }
 
@@ -641,7 +616,8 @@ export class ColorPanel extends LitElement {
   _emit(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop, val },
-      bubbles: true, composed: true,
+      bubbles: true,
+      composed: true,
     }));
   }
 }
