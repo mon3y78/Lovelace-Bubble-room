@@ -225,114 +225,201 @@ export class ColorPanel extends LitElement {
   static styles = css`
     :host { display:block; }
     .glass-panel {
-      margin:0 !important; width:100%; box-sizing:border-box;
-      border-radius:40px; position:relative; overflow:hidden;
+      margin: 0 !important;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 40px;
+      position: relative;
       background: var(--glass-bg, rgba(95,255,235,0.26));
       box-shadow: var(--glass-shadow, 0 2px 24px rgba(95,255,235,0.13));
+      overflow: hidden;
     }
-    .glass-panel::after{
-      content:''; position:absolute; inset:0; border-radius:inherit;
+    .glass-panel::after {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
       background: var(--glass-sheen,
         linear-gradient(120deg, rgba(255,255,255,0.14),
         rgba(255,255,255,0.08) 70%, transparent 100%));
-      pointer-events:none;
+      pointer-events: none;
     }
-    .glass-header{
-      padding:22px 0; text-align:center; font-size:1.11rem;
-      font-weight:700; color:#fff;
+    .glass-header {
+      padding: 22px 0;
+      text-align: center;
+      font-size: 1.11rem;
+      font-weight: 700;
+      color: #fff;
     }
 
     /* === Cards preset in griglia === */
-    .preset-bar{
-      display:grid; gap:14px; padding: 6px 16px 0 16px;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    .preset-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      padding: 8px 16px 2px 16px;
+      box-sizing: border-box;
     }
-    .preset-card{
-      position:relative; border-radius:26px;
-      border:1px solid rgba(255,255,255,0.12);
+    .preset-card {
+      position: relative;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
       background: rgba(24,32,40,0.45);
-      padding:16px 18px 18px;
-      cursor:pointer; user-select:none;
+      padding: 10px 10px 12px;
+      cursor: pointer;
+      user-select: none;
       transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
-      outline:none;
+      outline: none;
     }
-    .preset-card:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 6px 22px rgba(0,0,0,0.22);
-      border-color: rgba(255,255,255,0.24);
+    .preset-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      border-color: rgba(255,255,255,0.28);
     }
-    /* ✅ Cornice evidenziata (doppio bordo + glow) */
-    .preset-card.selected{
-      border-color:#73f6e5;
-      box-shadow:
-        0 0 0 2px inset rgba(115,246,229,0.40),
-        0 0 0 3px rgba(115,246,229,0.22);
+    .preset-card.selected {
+      border-color: #73f6e5;
+      box-shadow: 0 0 0 2px inset rgba(115,246,229,0.35);
     }
-    .preset-name{
-      font-weight:800; color:#e9f8ff; font-size:1.05rem; margin-bottom:10px;
+    .preset-name {
+      font-weight: 700;
+      color: #e9f8ff;
+      font-size: .95rem;
+      margin-bottom: 6px;
+      text-align: left;
     }
 
     /* Pallini con etichetta SOTTO (come richiesto) */
-    .swatches{
-      display:grid; grid-template-columns: 1fr 1fr; gap:12px;
+    .swatches {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
-    .swatch-col{
-      display:flex; flex-direction:column; align-items:flex-start; gap:6px;
+    .swatch {
+      border-radius: 10px;
+      padding: 8px;
+      border: 1px solid rgba(255,255,255,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
-    .swatch-pill{
-      width:64px; height:36px; border-radius:12px;
-      border:1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.06);
-      display:flex; align-items:center; justify-content:center; gap:10px;
-      padding:0 10px;
+    .dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.75);
+      flex: 0 0 auto;
     }
-    .dot{
-      width:16px; height:16px; border-radius:50%;
-      border:2px solid rgba(255,255,255,0.75);
-      flex:0 0 auto;
-    }
-    .swatch-label{
-      color:#f0f6ff; font-size:.86rem; opacity:.95;
+    .swatch-label {
+      color: #f0f6ff; font-size: .85rem; opacity: .9;
     }
 
     /* Bottone “Applica preset” unico e centrato */
-    .apply-center{
-      display:flex; justify-content:center; padding: 10px 16px 6px;
+    .apply-row {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: center; padding: 10px 16px 2px 16px;
     }
-    .apply-btn{
-      border:2.5px solid #73f6e5; color:#073a34; background:#73f6e5;
-      border-radius:14px; padding:10px 18px; font-weight:900; cursor:pointer;
-      transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+    .apply-row .checks { display: flex; gap: 14px; align-items: center; }
+    .apply-row label { color: #dfefff; font-weight: 600; font-size: .95rem; }
+    .apply-btn {
+      margin-left: auto;
+      border: 2.5px solid #73f6e5;
+      color: #073a34;
+      background: #73f6e5;
+      border-radius: 12px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
     }
-    .apply-btn:hover{ transform: translateY(-1px); filter:brightness(1.05); }
-    .apply-btn:disabled{
-      opacity:.45; cursor:not-allowed; filter:none; transform:none;
-      border-color:#73f6e588; background:#73f6e588; color:#083f38aa;
-    }
+    .apply-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
 
     /* Sezioni manuali (come prima) */
-    .section{ margin:14px 16px; padding:14px;
-      border:1px solid rgba(255,255,255,0.12);
-      border-radius:16px; background:rgba(255,255,255,0.05);
+    .mini-pill {
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      box-shadow: 0 3px 22px rgba(70,120,220,0.13);
+      backdrop-filter: blur(10px) saturate(1.2);
+      border-radius: 24px;
+      margin: 8px 16px;
+      overflow: hidden;
+      transition: background 0.18s, box-shadow 0.18s, border 0.18s;
     }
-    .section h3{ margin:0 0 10px; color:#fff; font-size:1rem; }
-    .row{ display:grid; grid-template-columns: 1fr 140px; align-items:center; gap:10px; margin-bottom:8px; }
-    .row label{ color:#dfe7f2; font-weight:600; }
-    .color-input{ display:flex; gap:8px; align-items:center; justify-content:flex-end; }
-    input[type="color"]{ width:40px; height:32px; border:none; background:transparent; padding:0; }
-    input[type="text"]{
-      width:90px; height:32px; box-sizing:border-box; border-radius:8px;
-      border:1px solid rgba(255,255,255,0.2); background:rgba(0,0,0,0.25);
-      color:#fff; padding:0 8px; font-family:monospace;
+    .mini-pill-header {
+      display: flex;
+      align-items: center;
+      padding: 15px 22px;
+      font-weight: 800;
+      color: var(--section-accent, #73f6e5);
+      cursor: pointer;
+      user-select: none;
+    }
+    .mini-pill-header .chevron {
+      margin-left: auto;
+      font-size: 1.2em;
+      transition: transform 0.18s;
+    }
+    .mini-pill.expanded .mini-pill-header .chevron {
+      transform: rotate(90deg);
+    }
+    .mini-pill-content {
+      padding: 15px 22px 16px;
+      animation: pill-expand 0.22s cubic-bezier(.5,1.2,.6,1) both;
+      position: relative;
+      z-index: 1;
     }
 
-    .reset-button{
-      border:3.5px solid #ff4c6a; color:#ff4c6a; border-radius:24px;
-      padding:12px 38px; background:transparent; cursor:pointer;
-      display:block; margin:20px auto; font-size:1.15rem; font-weight:700;
-      box-shadow:0 2px 24px #ff4c6a44;
+    @keyframes pill-expand {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-    .reset-button:hover{ background:rgba(255,76,106,0.18); color:#fff; box-shadow:0 6px 32px #ff4c6abf; }
+    .input-group {
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.13);
+      box-shadow: 0 2px 14px rgba(70,120,220,0.10);
+      border-radius: 18px;
+      margin-bottom: 13px;
+      padding: 14px 18px 10px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 1.13rem;
+      font-weight: 700;
+      color: var(--section-accent, #73f6e5);
+      margin-bottom: 6px;
+    }
+    input[type="color"] {
+      width: 56px; height: 32px;
+      border: 2px solid #fff4;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+    input[type="range"] { width: 100%; }
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 8px;
+      background-color: #202020;
+      color: #f1f1f1;
+      font-size: 0.97rem;
+    }
+    .reset-button {
+      border: 3.5px solid #ff4c6a !important;
+      color: #ff4c6a !important;
+      font-size: 1.15rem;
+      font-weight: 700;
+      box-shadow: 0 2px 24px #ff4c6a44;
+      padding: 12px 38px !important;
+      margin: 20px auto 0 auto !important;
+      display: block;
+      background: transparent;
+      border-radius: 24px !important;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    }
+    .reset-button:hover {
+      background: rgba(255,76,106,0.18) !important;
+      color: #fff !important;
+      box-shadow: 0 6px 32px #ff4c6abf;
+    }
   `;
 
   /* ─────────── UI ─────────── */
@@ -341,132 +428,222 @@ export class ColorPanel extends LitElement {
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
-        @expanded-changed=${e => (this.expanded = e.detail.expanded)}
+        @expanded-changed=${e => {
+          this.expanded = e.detail.expanded;
+          if (this.expanded) this._expandedColors = [false, false];
+        }}
       >
-        <div slot="header" class="glass-header">🎨 Color Presets & Theme</div>
+        <div slot="header" class="glass-header">🎨 Colors & Presets</div>
 
-        <!-- Griglia presets con selezione -->
-        <div class="preset-bar">
-          ${this._presets.map(p => {
-            const sel = this._selectedKey === p.key;
-            return html`
-              <div
-                class="preset-card ${sel ? 'selected' : ''}"
-                role="button" tabindex="0" aria-pressed="${sel}"
-                @click=${() => (this._selectedKey = p.key)}
-                @keydown=${(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this._selectedKey = p.key; } }}
-              >
-                <div class="preset-name">${p.name}</div>
+        <!-- Preset chooser -->
+        ${this._renderPresetChooser()}
 
-                <div class="swatches">
-                  <div class="swatch-col">
-                    <div class="swatch-pill">
-                      <div class="dot" style="background:${p.preview.active}"></div>
-                    </div>
-                    <div class="swatch-label">Active</div>
-                  </div>
-                  <div class="swatch-col">
-                    <div class="swatch-pill">
-                      <div class="dot" style="background:${p.preview.inactive}"></div>
-                    </div>
-                    <div class="swatch-label">Inactive</div>
-                  </div>
-                </div>
-              </div>
-            `;
-          })}
+        <!-- Room colors pill -->
+        <div class="mini-pill ${this._expandedColors[0] ? 'expanded' : ''}">
+          <div
+            class="mini-pill-header"
+            style="--section-accent: #55afff;"
+            @click=${() => this._toggleColor(0)}
+          >
+            Room Colors
+            <span class="chevron">${this._expandedColors[0] ? '▼' : '▶'}</span>
+          </div>
+          ${this._expandedColors[0] ? html`
+            <div class="mini-pill-content">
+              ${this._renderColorField('room', 'background_active',   'Background Active')}
+              ${this._renderColorField('room', 'background_inactive', 'Background Inactive')}
+              ${this._renderColorField('room', 'icon_active',         'Icon Active')}
+              ${this._renderColorField('room', 'icon_inactive',       'Icon Inactive')}
+              ${this._renderColorField('room', 'text_active',         'Text Active')}
+              ${this._renderColorField('room', 'text_inactive',       'Text Inactive')}
+            </div>
+          ` : ''}
         </div>
 
-        <!-- Bottone unico centrato -->
-        <div class="apply-center">
-          <button class="apply-btn" ?disabled=${!this._selectedKey} @click=${this._applySelected}>
-            Applica preset
-          </button>
+        <!-- Subbutton colors pill -->
+        <div class="mini-pill ${this._expandedColors[1] ? 'expanded' : ''}">
+          <div
+            class="mini-pill-header"
+            style="--section-accent: #b28fff;"
+            @click=${() => this._toggleColor(1)}
+          >
+            Subbutton Colors
+            <span class="chevron">${this._expandedColors[1] ? '▼' : '▶'}</span>
+          </div>
+          ${this._expandedColors[1] ? html`
+            <div class="mini-pill-content">
+              ${this._renderColorField('subbutton', 'background_on',  'Background On')}
+              ${this._renderColorField('subbutton', 'background_off', 'Background Off')}
+              ${this._renderColorField('subbutton', 'icon_on',        'Icon On')}
+              ${this._renderColorField('subbutton', 'icon_off',       'Icon Off')}
+            </div>
+          ` : ''}
         </div>
 
-        ${this._renderSectionRoom()}
-        ${this._renderSectionSubButtons()}
-        ${this._renderSectionMushroom()}
-        ${this._renderSectionSensor()}
-
-        <button class="reset-button" @click=${this._resetAll}>🧹 Reset colori</button>
+        <!-- Reset -->
+        <button class="reset-button" @click=${() => this._resetColors()}>
+          🧹 Reset Colors
+        </button>
       </ha-expansion-panel>
     `;
   }
 
-  /* ─────────── sezioni manuali ─────────── */
-  _renderSectionRoom() {
-    const R = this._room;
+  // ===================== UI helpers =====================
+  _renderPresetChooser() {
+    const keys = Object.keys(this.PRESETS);
     return html`
-      <div class="section">
-        <h3>Room</h3>
-        ${this._colorRow('Icon (active)', 'room','icon_active', R.icon_active)}
-        ${this._colorRow('Icon (inactive)', 'room','icon_inactive', R.icon_inactive)}
-        ${this._colorRow('Background (active)', 'room','background_active', R.background_active)}
-        ${this._colorRow('Background (inactive)', 'room','background_inactive', R.background_inactive)}
-        ${this._colorRow('Text (active)', 'room','text_active', R.text_active)}
-        ${this._colorRow('Text (inactive)', 'room','text_inactive', R.text_inactive)}
+      <div class="preset-bar">
+        ${keys.map(k => this._renderPresetCard(k, this.PRESETS[k]))}
       </div>
-    `;
-  }
-  _renderSectionSubButtons() {
-    const S = this._subbutton;
-    return html`
-      <div class="section">
-        <h3>Subbutton</h3>
-        ${this._colorRow('Background ON','subbutton','background_on', S.background_on)}
-        ${this._colorRow('Background OFF','subbutton','background_off', S.background_off)}
-        ${this._colorRow('Icon ON','subbutton','icon_on', S.icon_on)}
-        ${this._colorRow('Icon OFF','subbutton','icon_off', S.icon_off)}
-      </div>
-    `;
-  }
-  _renderSectionMushroom() {
-    const M = this._mushroom;
-    return html`
-      <div class="section">
-        <h3>Mushroom (incl. Camera & Climate)</h3>
-        ${this._colorRow('Active','mushroom','active', M.active)}
-        ${this._colorRow('Inactive','mushroom','inactive', M.inactive)}
-      </div>
-    `;
-  }
-  _renderSectionSensor() {
-    const S = this._sensor;
-    return html`
-      <div class="section">
-        <h3>Sensori</h3>
-        ${this._colorRow('Sensor Active','sensor','sensor_active', S.sensor_active)}
-        ${this._colorRow('Sensor Inactive','sensor','sensor_inactive', S.sensor_inactive)}
+      <div class="apply-row">
+        <div class="checks">
+          <label>
+            <input type="checkbox" .checked=${this._applyRoom}
+              @change=${e => this._applyRoom = e.target.checked} />
+            Applica a Room
+          </label>
+          <label>
+            <input type="checkbox" .checked=${this._applySub}
+              @change=${e => this._applySub = e.target.checked} />
+            Applica a Subbutton
+          </label>
+          <label title="Solo per Room">
+            <input type="checkbox" .checked=${this._applyText}
+              @change=${e => this._applyText = e.target.checked} />
+            Includi testo (Room)
+          </label>
+        </div>
+        <button class="apply-btn" @click=${this._applySelectedPreset}>
+          Applica preset
+        </button>
       </div>
     `;
   }
 
-  _colorRow(label, section, key, val) {
-    const hexGuess = this._guessHex(val);
+  _renderPresetCard(key, p) {
+    const sel = this._selectedPreset === key ? 'selected' : '';
+    const roomA = p.room.background_active;
+    const roomI = p.room.background_inactive;
+    const iconA = p.room.icon_active;
+    const iconI = p.room.icon_inactive;
     return html`
-      <div class="row">
-        <label>${label}</label>
-        <div class="color-input">
-          <input type="color" .value=${hexGuess} @input=${e => this._onColorInput(section, key, e.target.value)}/>
-          <input type="text" placeholder="#RRGGBB oppure rgba(...)" .value=${val || ''} @change=${e => this._onColorInput(section, key, e.target.value)}/>
+      <div class="preset-card ${sel}" @click=${() => this._selectedPreset = key}>
+        <div class="preset-name">${p.label}</div>
+        <div class="swatches">
+          <div class="swatch" style="background:${roomA}">
+            <span class="dot" style="background:${iconA}"></span>
+            <span class="swatch-label">Active</span>
+          </div>
+          <div class="swatch" style="background:${roomI}">
+            <span class="dot" style="background:${iconI}"></span>
+            <span class="swatch-label">Inactive</span>
+          </div>
         </div>
       </div>
     `;
   }
-  _guessHex(v) {
-    if (!v) return '#000000';
-    const s = String(v).trim();
-    if (s.startsWith('#') && (s.length === 7 || s.length === 4)) return s.length === 4 ? this._expandShorthandHex(s) : s;
-    if (s.startsWith('rgba') || s.startsWith('rgb')) {
-      try {
-        const [r,g,b] = s.replace(/rgba?\(|\)|\s/g,'').split(',').map(n => Number(n)|0);
-        return '#' + [r,g,b].map(n => n.toString(16).padStart(2,'0')).join('');
-      } catch { return '#000000'; }
-    }
-    return '#000000';
+
+  _toggleColor(index) {
+    this._expandedColors = this._expandedColors.map((v, i) => i === index ? !v : false);
   }
-  _expandShorthandHex(h) { return '#' + h.slice(1).split('').map(c => c + c).join(''); }
+
+  _renderColorField(section, key, label) {
+    const rgba = this.config.colors?.[section]?.[key] || '';
+    const [r, g, b, a] = this._parseRGBA(rgba);
+    const hex = `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
+    return html`
+      <div class="input-group">
+        <label>${label}</label>
+        <input
+          type="color"
+          .value=${hex}
+          @input=${e => this._updateColor(section, key, e.target.value, a)}
+        />
+        <input
+          type="range"
+          min="0" max="1" step="0.01"
+          .value=${a}
+          @input=${e => this._updateColor(section, key, hex, e.target.value)}
+        />
+        <input
+          type="text"
+          .value=${rgba}
+          @input=${e => this._updateColorRaw(section, key, e.target.value)}
+        />
+      </div>
+    `;
+  }
+
+  // ===================== APPLY / RESET =====================
+  _applySelectedPreset = () => {
+    const key = this._selectedPreset;
+    const preset = this.PRESETS[key];
+    if (!preset) return;
+
+    const ops = [];
+
+    if (this._applyRoom) {
+      ops.push(['colors.room.background_active',   preset.room.background_active]);
+      ops.push(['colors.room.background_inactive', preset.room.background_inactive]);
+      ops.push(['colors.room.icon_active',         preset.room.icon_active]);
+      ops.push(['colors.room.icon_inactive',       preset.room.icon_inactive]);
+      if (this._applyText) {
+        ops.push(['colors.room.text_active',       preset.room.text_active]);
+        ops.push(['colors.room.text_inactive',     preset.room.text_inactive]);
+      }
+    }
+
+    if (this._applySub) {
+      ops.push(['colors.subbutton.background_on',  preset.sub.background_on]);
+      ops.push(['colors.subbutton.background_off', preset.sub.background_off]);
+      ops.push(['colors.subbutton.icon_on',        preset.sub.icon_on]);
+      ops.push(['colors.subbutton.icon_off',       preset.sub.icon_off]);
+    }
+
+    for (const [prop, val] of ops) {
+      this._emit(prop, val);
+    }
+  };
+
+  _resetColors() {
+    this._expandedColors = [false, false];
+    const sections = ['room','subbutton'];
+    const keys = {
+      room:      ['background_active','background_inactive','icon_active','icon_inactive','text_active','text_inactive'],
+      subbutton: ['background_on','background_off','icon_on','icon_off']
+    };
+    sections.forEach(sec => {
+      keys[sec].forEach(k => this._emit(`colors.${sec}.${k}`, ''));
+    });
+  }
+
+  // ===================== Low-level helpers =====================
+  _parseRGBA(str) {
+    if (!str) return [0,0,0,1];
+    const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(str);
+    if (m) return [ +m[1], +m[2], +m[3], +(m[4] ?? 1) ];
+    return [0,0,0,1];
+  }
+
+  _updateColor(section, key, hex, alpha) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    const a = Number(alpha);
+    const rgba = `rgba(${r},${g},${b},${isNaN(a) ? 1 : a})`;
+    this._emit(`colors.${section}.${key}`, rgba);
+  }
+
+  _updateColorRaw(section, key, raw) {
+    this._emit(`colors.${section}.${key}`, raw);
+  }
+
+  _emit(prop, val) {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop, val },
+      bubbles: true, composed: true,
+    }));
+  }
 }
 
 customElements.define('color-panel', ColorPanel);
