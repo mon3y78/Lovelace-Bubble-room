@@ -201,11 +201,18 @@ export class RoomPanel extends LitElement {
     this._syncingFromConfig = false;
   }
 
-  updated(changed) {
+updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
       this._syncingFromConfig = true;
-
-      maybeAutoDiscover(this.hass, this.config, 'area');
+      
+      // ❌ Rimuovere o condizionare l'auto-discover iniziale
+      // maybeAutoDiscover(this.hass, this.config, 'area');
+      
+      // ✅ Condizione: esegue auto-discover solo se area è già valorizzata
+      if (this.config?.area) {
+        maybeAutoDiscover(this.hass, this.config, 'area');
+      }
+      
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
 
       if (changed.has('config') && Array.isArray(this.config.presence_filters)) {
@@ -251,13 +258,16 @@ export class RoomPanel extends LitElement {
   _onAreaChange(v) {
     const cfg = this.config || {};
     const ad = { ...(cfg.auto_discovery_sections || {}) };
-    ad.camera = true;
-    ad.climate = true;
-    ad.sensor = true;
-    ad.mushroom = true;
-    ad.subbutton = true;
-    ad.presence = true;
-
+    
+    // Attiva auto-discovery solo quando l'area passa da vuota a valorizzata
+    if (v && !cfg.area) {
+      ad.camera = true;
+      ad.climate = true;
+      ad.sensor = true;
+      ad.mushroom = true;
+      ad.subbutton = true;
+      ad.presence = true;
+    }
     const next = {
       ...cfg,
       area: v,
