@@ -10,19 +10,19 @@ export class CameraPanel extends LitElement {
     config:   { type: Object },
     expanded: { type: Boolean },
 
-    _entity:  { type: String, state: true },
-    _icon:    { type: String, state: true },
-    _candidates: { type: Array, state: true },
+    _entity:      { type: String, state: true },
+    _icon:        { type: String, state: true },
+    _candidates:  { type: Array,  state: true },
   };
 
   constructor() {
     super();
-    this.hass       = {};
-    this.config     = {};
-    this.expanded   = false;
+    this.hass = {};
+    this.config = {};
+    this.expanded = false;
 
-    this._entity    = '';
-    this._icon      = '';
+    this._entity = '';
+    this._icon = '';
     this._candidates = [];
     this._syncingFromConfig = false;
   }
@@ -31,17 +31,14 @@ export class CameraPanel extends LitElement {
     if (changed.has('config') || changed.has('hass')) {
       this._syncingFromConfig = true;
 
-      // allineato agli altri pannelli: lascia che l’editor triggeri l’autofill;
-      // qui ci limitiamo a rispettare il flag e a popolare i candidati
+      // 🔎 applica autodiscovery se attivo
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.camera');
 
-      // stato locale da config
-      const ent = this.config?.entities?.camera?.entity || '';
-      const ico = this.config?.entities?.camera?.icon   || '';
-      this._entity = ent;
-      this._icon   = ico;
+      // sync stato locale da config
+      this._entity = this.config?.entities?.camera?.entity || '';
+      this._icon   = this.config?.entities?.camera?.icon   || '';
 
-      // lista candidati (filtrati per area/contesto dal pipeline)
+      // 🎯 candidate filtrate per area (keep selected)
       const list = candidatesFor(this.hass, this.config, 'camera') || [];
       this._candidates = Array.isArray(list) ? list : [];
 
@@ -54,8 +51,8 @@ export class CameraPanel extends LitElement {
     .glass-panel {
       margin: 0 !important; width: 100%; box-sizing: border-box;
       border-radius: 40px; position: relative;
-      background: var(--glass-bg, rgba(40,120,180,0.28));
-      box-shadow: var(--glass-shadow, 0 2px 24px rgba(40,120,180,0.18));
+      background: var(--glass-bg, rgba(80,120,200,0.28));
+      box-shadow: var(--glass-shadow, 0 2px 24px rgba(80,120,200,0.18));
       overflow: hidden;
     }
     .glass-panel::after {
@@ -78,7 +75,7 @@ export class CameraPanel extends LitElement {
     }
     .input-group { margin: 12px 16px; }
     .input-group label {
-      display:block; font-weight:700; margin-bottom:6px; color:#7ec2ff;
+      display:block; font-weight:700; margin-bottom:6px; color:#a7c7ff;
     }
     ha-selector, ha-icon-picker { width:100%; box-sizing:border-box; }
     .reset-button {
@@ -158,13 +155,12 @@ export class CameraPanel extends LitElement {
     this._entity = ent || '';
     if (this._syncingFromConfig) return;
 
-    // salva l’entità
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: 'entities.camera.entity', val: this._entity },
       bubbles: true, composed: true,
     }));
 
-    // auto-icona SOLO alla scelta utente (come MushroomPanel)
+    // auto‑icon come ClimatePanel
     const currentIcon = this.config?.entities?.camera?.icon || '';
     if (!currentIcon && this._entity) {
       const st = this.hass?.states?.[this._entity];

@@ -155,13 +155,14 @@ export class BubbleRoomEditor extends LitElement {
    * Reset centralizzati.
    * I pannelli inviano: detail { cmd:'reset', section: 'room'|'sensors'|'mushrooms'|'subbuttons'|'climate'|'camera' }
    */
-// dentro src/bubble-room-editor.js
+
   _onPanelCmd(e) {
     e.stopPropagation();
     const { cmd, section } = e.detail || {};
     if (cmd !== 'reset') return;
-    
+
     let next = this.config || {};
+
     switch (section) {
       case 'room':
         next = resetRoom(next);
@@ -177,24 +178,32 @@ export class BubbleRoomEditor extends LitElement {
         break;
       case 'climate':
         next = resetClimate(next);
-        // 🔁 se l'autodiscovery è attivo, rilancia l'autofill ORA
-        if (next?.auto_discovery_sections?.climate) {
-          next = maybeAutoDiscover(this.hass, next, 'auto_discovery_sections.climate', false);
-        }
         break;
       case 'camera':
         next = resetCamera(next);
-        // 🔁 se l'autodiscovery è attivo, rilancia l'autofill ORA
-        if (next?.auto_discovery_sections?.camera) {
-          next = maybeAutoDiscover(this.hass, next, 'auto_discovery_sections.camera', false);
-        }
         break;
       default:
-        return; // sezione ignota, esci
+        return;
     }
-    
+
+    // 🎯 Centralizza: se c’è almeno un toggle di autodiscovery attivo,
+    // riallinea TUTTE le sezioni abilitate in un colpo solo.
+    const ad = next?.auto_discovery_sections || {};
+    const anyAD =
+      ad.sensor || ad.mushroom || ad.subbutton || ad.presence ||
+      ad.climate || ad.camera;
+
+    if (anyAD) {
+      // Nota: passando `undefined` come path, l’helper applica l’AD
+      // a tutte le sezioni supportate e abilitate nei toggle.
+      next = maybeAutoDiscover(this.hass, next, undefined, false);
+      // In alternativa, se il tuo helper richiede un trigger “neutro”,
+      // usa: next = maybeAutoDiscover(this.hass, next, 'area', false);
+    }
+
     this._emitConfig(next);
   }
+
 
   /**
    * UI: apertura/chiusura dei pannelli (expansion)
