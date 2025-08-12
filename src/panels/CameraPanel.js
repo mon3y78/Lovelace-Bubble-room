@@ -2,6 +2,7 @@
 import { LitElement, html, css } from 'lit';
 import { candidatesFor } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
+import { IconCache } from '../helpers/icon-cache.js';
 
 export class CameraPanel extends LitElement {
   static properties = {
@@ -21,6 +22,7 @@ export class CameraPanel extends LitElement {
     this._entity  = '';
     this._icon    = '';
     this._cameraCandidates = [];
+    this._iconCache = new IconCache();
   }
 
   // ---- helpers area/registry ------------------------------------------------
@@ -70,11 +72,17 @@ export class CameraPanel extends LitElement {
       const ent = this.config?.entities?.camera?.entity || '';
       const ico = this.config?.entities?.camera?.icon   || '';
 
-      // auto-icona se vuota
+      // auto-icona se vuota, usando cache
       if (ent && !ico) {
-        const st = this.hass?.states?.[ent];
-        const iconFromState = st?.attributes?.icon;
-        const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
+        let autoIcon = this._iconCache.get(ent);
+        if (!autoIcon) {
+          const st = this.hass?.states?.[ent];
+          const iconFromState = st?.attributes?.icon;
+          autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
+          if (autoIcon) {
+            this._iconCache.set(ent, autoIcon);
+          }
+        }
         if (autoIcon) this._set('entities.camera.icon', autoIcon);
       }
 

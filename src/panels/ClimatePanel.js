@@ -2,6 +2,7 @@
 import { LitElement, html, css } from 'lit';
 import { candidatesFor } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
+import { IconCache } from '../helpers/icon-cache.js';
 
 export class ClimatePanel extends LitElement {
   static properties = {
@@ -70,11 +71,17 @@ export class ClimatePanel extends LitElement {
       const ent = this.config?.entities?.climate?.entity || '';
       const ico = this.config?.entities?.climate?.icon   || '';
 
-      // auto-icona se vuota
+      // auto-icona con cache
       if (ent && !ico) {
-        const st = this.hass?.states?.[ent];
-        const iconFromState = st?.attributes?.icon;
-        const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
+        let autoIcon = IconCache.get(ent);
+        if (!autoIcon) {
+          const st = this.hass?.states?.[ent];
+          const iconFromState = st?.attributes?.icon;
+          autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
+          if (autoIcon) {
+            IconCache.set(ent, autoIcon);
+          }
+        }
         if (autoIcon) this._set('entities.climate.icon', autoIcon);
       }
 

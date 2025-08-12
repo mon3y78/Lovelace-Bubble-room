@@ -3,6 +3,7 @@ import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor }     from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // path corretto
+import { IconCache }         from '../helpers/icon-cache.js';
 
 const PRESENCE_CATS = [
   'presence',
@@ -201,19 +202,18 @@ export class RoomPanel extends LitElement {
     this._syncingFromConfig = false;
   }
 
-updated(changed) {
+  updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
       this._syncingFromConfig = true;
       
-      // ❌ Rimuovere o condizionare l'auto-discover iniziale
-      // maybeAutoDiscover(this.hass, this.config, 'area');
-      
-      // ✅ Condizione: esegue auto-discover solo se area è già valorizzata
+      // ✅ Auto-discover solo se area è già valorizzata
       if (this.config?.area) {
         maybeAutoDiscover(this.hass, this.config, 'area');
       }
-      
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
+
+      // 🔸 Pre‑warm cache icone MDI (in memoria) — chiamata idempotente
+      IconCache.warm(this.hass);
 
       if (changed.has('config') && Array.isArray(this.config.presence_filters)) {
         this.activeFilters = [...this.config.presence_filters];
@@ -254,7 +254,7 @@ updated(changed) {
     }
   };
 
-  // 🔹 Nuovo metodo per cambio area con auto-discovery su tutti i pannelli
+  // 🔹 Cambio area con auto-discovery attivo solo alla prima selezione
   _onAreaChange(v) {
     const cfg = this.config || {};
     const ad = { ...(cfg.auto_discovery_sections || {}) };
@@ -354,6 +354,7 @@ updated(changed) {
                 .hass=${this.hass}
                 .value=${icon}
                 allow-custom-icon
+                @opened=${() => IconCache.warm(this.hass)}
                 @value-changed=${e => this._fire('icon', e.detail.value)}
               ></ha-icon-picker>
             </div>
