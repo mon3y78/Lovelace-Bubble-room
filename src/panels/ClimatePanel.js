@@ -2,7 +2,6 @@
 import { LitElement, html, css } from 'lit';
 import { candidatesFor } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
-import { IconCache } from '../helpers/icon-cache.js';
 
 export class ClimatePanel extends LitElement {
   static properties = {
@@ -68,17 +67,11 @@ export class ClimatePanel extends LitElement {
       const ent = this.config?.entities?.climate?.entity || '';
       const ico = this.config?.entities?.climate?.icon   || '';
 
-      // auto-icona con cache (se l'hai implementata nel tuo IconCache)
+      // auto-icona se vuota
       if (ent && !ico) {
-        let autoIcon = IconCache.get?.(ent);
-        if (!autoIcon) {
-          const st = this.hass?.states?.[ent];
-          const iconFromState = st?.attributes?.icon;
-          autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
-          if (autoIcon && IconCache.set) {
-            IconCache.set(ent, autoIcon);
-          }
-        }
+        const st = this.hass?.states?.[ent];
+        const iconFromState = st?.attributes?.icon;
+        const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
         if (autoIcon) this._set('entities.climate.icon', autoIcon);
       }
 
@@ -146,4 +139,74 @@ export class ClimatePanel extends LitElement {
 
   render() {
     const autoDisc = this.config?.auto_discovery_sections?.climate ?? false;
-   
+    return html`
+      <ha-expansion-panel
+        class="glass-panel"
+        .expanded=${this.expanded}
+        @expanded-changed=${e => (this.expanded = e.detail.expanded)}
+      >
+        <div slot="header" class="glass-header">🌡️ Climate</div>
+
+        <div class="input-group autodiscover">
+          <input
+            type="checkbox"
+            .checked=${autoDisc}
+            @change=${e => this._toggleAuto(e.target.checked)}
+          />
+          <label>🪄 Auto-discovery</label>
+        </div>
+
+        <div class="input-group">
+          <label>Climate (ID):</label>
+          <ha-selector
+            .hass=${this.hass}
+            .value=${this._entity}
+            .selector=${
+              this._climateCandidates.length
+                ? { entity: { include_entities: this._climateCandidates } }
+                : { entity: { domain: 'climate' } }
+            }
+            allow-custom-entity
+            @value-changed=${e => this._set('entities.climate.entity', e.detail.value)}
+          ></ha-selector>
+        </div>
+
+        <div class="input-group">
+          <label>Climate Icon:</label>
+          <ha-selector
+            .hass=${this.hass}
+            .value=${this._icon}
+            .selector={{ icon: {} }}
+            @value-changed=${e => this._set('entities.climate.icon', e.detail.value)}
+          ></ha-selector>
+        </div>
+
+        <button
+          class="reset-button"
+          @click=${() =>
+            this.dispatchEvent(new CustomEvent('__panel_cmd__', {
+              detail: { cmd: 'reset', section: 'climate' },
+              bubbles: true, composed: true,
+            }))
+          }
+        >🧹 Reset Climate</button>
+      </ha-expansion-panel>
+    `;
+  }
+
+  _toggleAuto(on) {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: 'auto_discovery_sections.climate', val: on },
+      bubbles: true, composed: true,
+    }));
+  }
+
+  _set(prop, val) {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop, val },
+      bubbles: true, composed: true,
+    }));
+  }
+}
+
+customElements.define('climate-panel', ClimatePanel);
