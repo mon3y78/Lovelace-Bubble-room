@@ -18,15 +18,11 @@ export class BubbleSensor extends LitElement {
     this._lastBox = { w: 0, h: 0 };
     this._pillCache = new WeakMap();
     this._pendingChanged = null;
-
-    // profilo di font-size condiviso per gruppi di pill con stessa geometria
-    this._sharedSize = new Map(); // key -> { best, unit, label }
   }
 
   connectedCallback() {
     super.connectedCallback();
     this._updateLayout();
-    this._sharedSize.clear();
     this._scheduleAutoscale();
     this._resizeObserver = new ResizeObserver((entries) => {
       const entry = entries[0];
@@ -45,7 +41,6 @@ export class BubbleSensor extends LitElement {
       }
       if (Math.abs(w - this._lastBox.w) > 2 || Math.abs(h - this._lastBox.h) > 2) {
         this._lastBox = { w, h };
-        this._sharedSize.clear();
         this._scheduleAutoscale();
       }
     });
@@ -62,7 +57,6 @@ export class BubbleSensor extends LitElement {
     if (changedProperties.has('sensors')) {
       const prev = changedProperties.get('sensors') || [];
       this._updateLayout();
-      this._sharedSize.clear();
 
       const changedIdx = this._diffChangedSensorIndices(prev, this.sensors);
       if (changedIdx.size === 0) return;
@@ -101,61 +95,6 @@ export class BubbleSensor extends LitElement {
     return out;
   }
 
-  // ---------- Nuove utility per la taglia condivisa ----------
-  _keyForPill(pill) {
-    const w = Math.round(pill.clientWidth) || 0;
-    const h = Math.round(pill.clientHeight) || 0;
-    const hasUnit  = !!pill.querySelector('.sensor-unit')?.textContent?.trim();
-    const hasLabel = !!pill.querySelector('.sensor-label')?.textContent?.trim();
-    const hasIcon  = !!pill.querySelector('.sensor-icon');
-    return `${w}x${h}|u:${hasUnit?'1':'0'}|l:${hasLabel?'1':'0'}|i:${hasIcon?'1':'0'}`;
-  }
-
-  _textWeight(pill) {
-    const get = sel => pill.querySelector(sel)?.textContent ?? '';
-    const v = get('.sensor-value');
-    const u = get('.sensor-unit');
-    const l = get('.sensor-label');
-    return v.length + u.length * 0.8 + l.length * 1.1;
-  }
-
-  _measureAndApply(pill) {
-    this._fitValueAndUnit(pill);
-
-    const valueEl = pill.querySelector('.sensor-value');
-    const unitEl  = pill.querySelector('.sensor-unit');
-    const labelEl = pill.querySelector('.sensor-label');
-
-    const bestPx  = parseFloat(getComputedStyle(valueEl).fontSize) || 12;
-    const unitPx  = unitEl  ? parseFloat(getComputedStyle(unitEl).fontSize)   || Math.round(bestPx * 0.75) : 0;
-    const labelPx = labelEl ? parseFloat(getComputedStyle(labelEl).fontSize) || Math.round(bestPx * 0.90) : 0;
-
-    return { best: bestPx, unit: unitPx, label: labelPx };
-  }
-
-  _applySharedSize(pill, shared) {
-    const valueEl = pill.querySelector('.sensor-value');
-    const unitEl  = pill.querySelector('.sensor-unit');
-    const labelEl = pill.querySelector('.sensor-label');
-    const iconEl  = pill.querySelector('.sensor-icon');
-    if (!valueEl) return;
-
-    valueEl.style.fontSize = `${shared.best}px`;
-    if (unitEl)  unitEl.style.fontSize  = `${shared.unit}px`;
-    if (labelEl) labelEl.style.fontSize = `${shared.label}px`;
-
-    this._pillCache.set(pill, {
-      text: valueEl.textContent ?? '',
-      unitText: unitEl ? (unitEl.textContent ?? '') : '',
-      labelTxt: labelEl ? (labelEl.textContent ?? '') : '',
-      iconName: iconEl?.getAttribute('icon') || iconEl?.icon || '',
-      boxW: Math.round(pill.clientWidth),
-      boxH: Math.round(pill.clientHeight),
-      best: shared.best
-    });
-  }
-  // -----------------------------------------------------------
-
   _autoScaleValues(changedIndices = null) {
     const pills = this.renderRoot?.querySelectorAll('.sensor-pill');
     if (!pills?.length) return;
@@ -166,53 +105,16 @@ export class BubbleSensor extends LitElement {
 
     if (!targetPills.length) return;
 
-    // Raggruppa per geometria e struttura
-    const groups = new Map();
-    for (const pill of targetPills) {
-      const key = this._keyForPill(pill);
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(pill);
-    }
-
-    // Per ogni gruppo: usa la taglia condivisa se esiste, altrimenti misura sul worst-case
-    for (const [key, group] of groups.entries()) {
-      const shared = this._sharedSize.get(key);
-      if (shared) {
-        for (const pill of group) this._applySharedSize(pill, shared);
-        continue;
-      }
-
-      // Scegli la pill con testo più "pesante"
-      let worst = group[0];
-      let worstScore = this._textWeight(worst);
-      for (let i = 1; i < group.length; i++) {
-        const s = this._textWeight(group[i]);
-        if (s > worstScore) {
-          worstScore = s;
-          worst = group[i];
-        }
-      }
-
-      const sharedComputed = this._measureAndApply(worst);
-      this._sharedSize.set(key, sharedComputed);
-      for (const pill of group) {
-        if (pill !== worst) this._applySharedSize(pill, sharedComputed);
-      }
-    }
+    targetPills.forEach((pill) => this._fitValueAndUnit(pill));
   }
 
   _fitValueAndUnit(pill) {
     const valueEl = pill.querySelector('.sensor-value');
     const unitEl  = pill.querySelector('.sensor-unit');
-    const labelEl = pill.querySelector('.sensor-label');
-    const iconEl  = pill.querySelector('.sensor-icon');
     if (!valueEl) return;
 
-    const text     = valueEl.textContent ?? '';
-    const unitText = unitEl ? (unitEl.textContent ?? '') : '';
-    const labelTxt = labelEl ? (labelEl.textContent ?? '') : '';
-    const iconName = iconEl?.getAttribute('icon') || iconEl?.icon || '';
-
+    const text = valueEl.textContent ?? '';
+    const unitText = unitEl ? unitEl.textContent ?? '' : '';
     const boxW = Math.round(pill.clientWidth);
     const boxH = Math.round(pill.clientHeight);
     if (boxW <= 0 || boxH <= 0) return;
@@ -221,61 +123,37 @@ export class BubbleSensor extends LitElement {
     if (cacheKey &&
         cacheKey.text === text &&
         cacheKey.unitText === unitText &&
-        cacheKey.labelTxt === labelTxt &&
-        cacheKey.iconName === iconName &&
         cacheKey.boxW === boxW &&
         cacheKey.boxH === boxH) {
       return;
     }
 
-    // valori coerenti con il CSS attuale (padding: 10px 12px) e senza gap
-    const PADDING_X = 24; // 12 + 12
-    const PADDING_Y = 20; // 10 + 10
-    const UNIT_ML   = 4;  // margin-left della .sensor-unit
+    const maxWidth  = Math.floor(boxW * 0.52);
+    const maxHeight = Math.floor(boxH * 0.78);
+    if (maxWidth <= 0 || maxHeight <= 0) return;
 
     valueEl.style.fontSize = '';
     if (unitEl) unitEl.style.fontSize = '';
-    if (labelEl) labelEl.style.fontSize = '';
-
-    const iconW = iconEl ? iconEl.offsetWidth : 0;
-    const iconH = iconEl ? iconEl.offsetHeight : 0;
-
-    const maxWidth  = Math.max(0, boxW - PADDING_X);
-    const maxHeight = Math.max(0, boxH - PADDING_Y);
-    if (maxWidth === 0 || maxHeight === 0) return;
 
     let lo = 10;
     let hi = Math.min(44, maxHeight);
     let best = lo;
 
-    const unitRatio  = 0.75;
-    const labelRatio = 0.90;
-
     for (let i = 0; i < 8 && lo <= hi; i++) {
       const mid = (lo + hi) >> 1;
-
       valueEl.style.fontSize = `${mid}px`;
-      if (unitEl)  unitEl.style.fontSize  = `${Math.max(10, Math.round(mid * unitRatio))}px`;
-      if (labelEl) labelEl.style.fontSize = `${Math.max(10, Math.round(mid * labelRatio))}px`;
+      if (unitEl) {
+        const unitSize = Math.max(10, Math.round(mid * 0.75));
+        unitEl.style.fontSize = `${unitSize}px`;
+      }
 
       const vW = valueEl.offsetWidth;
       const vH = valueEl.offsetHeight;
-
       const uW = unitEl ? unitEl.offsetWidth : 0;
       const uH = unitEl ? unitEl.offsetHeight : 0;
 
-      const lW = labelEl ? labelEl.offsetWidth : 0;
-      const lH = labelEl ? labelEl.offsetHeight : 0;
-
-      const blocks = [
-        iconW > 0 ? iconW : 0,
-        lW,
-        vW,
-        uW > 0 ? (UNIT_ML + uW) : 0
-      ].filter(w => w > 0);
-
-      const totalWidth = blocks.reduce((a,b) => a + b, 0);
-      const totalHeight = Math.max(iconH, lH, vH, uH);
+      const totalWidth  = vW + uW + 6;
+      const totalHeight = vH > uH ? vH : uH;
 
       if (totalWidth <= maxWidth && totalHeight <= maxHeight) {
         best = mid;
@@ -286,12 +164,11 @@ export class BubbleSensor extends LitElement {
     }
 
     valueEl.style.fontSize = `${best}px`;
-    if (unitEl)  unitEl.style.fontSize  = `${Math.max(10, Math.round(best * unitRatio))}px`;
-    if (labelEl) labelEl.style.fontSize = `${Math.max(10, Math.round(best * labelRatio))}px`;
+    if (unitEl) {
+      unitEl.style.fontSize = `${Math.max(10, Math.round(best * 0.75))}px`;
+    }
 
-    this._pillCache.set(pill, {
-      text, unitText, labelTxt, iconName, boxW, boxH, best
-    });
+    this._pillCache.set(pill, { text, unitText, boxW, boxH, best });
   }
 
   /** Helpers per confronto sensori */
@@ -390,7 +267,7 @@ export class BubbleSensor extends LitElement {
     .sensor-pill {
       display: flex;
       align-items: center;
-      /* gap rimosso per semplificare il fitting */
+      gap: 8px;
       background: rgba(32,38,55,0.12);
       border-radius: 18px;
       font-size: 1em;
@@ -405,14 +282,15 @@ export class BubbleSensor extends LitElement {
       padding: 10px 12px;
     }
     .sensor-icon {
-      font-size: 1.4em;
+      font-size: 1.0em;
       flex: 0 0 auto;
     }
     .sensor-label {
       font-weight: 600;
-      font-size: 1em; /* sarà scalata via JS */
-      line-height: 1;
+      font-size: clamp(14px, 1.5vw, 20px);
+      transform: scale(0.95);
       display: inline-block;
+      line-height: 1;
       flex: 0 0 auto;
     }
     .sensor-value {
@@ -427,7 +305,7 @@ export class BubbleSensor extends LitElement {
       overflow: hidden;
       text-overflow: ellipsis;
       line-height: 1;
-      margin-left: 4px; /* resta per separare valore e unità */
+      margin-left: 4px;
       flex: 0 0 auto;
     }
   `;
