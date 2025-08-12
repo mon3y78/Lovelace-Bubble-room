@@ -30,11 +30,10 @@ export class SubButtonPanel extends LitElement {
   
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // ✅ Autodiscovery area‑based (copre subbutton se il toggle è attivo)
       if (this.config?.area || this.config?.area_id) {
         maybeAutoDiscover(this.hass, this.config, 'area', false);
       }
-
+      
       if (!Array.isArray(this.config.subbuttons))
         this.config.subbuttons = Array(4).fill().map(() => ({}));
       
@@ -42,26 +41,17 @@ export class SubButtonPanel extends LitElement {
       if (Array.isArray(cfgFilters) && cfgFilters.length === 4)
         this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...COMMON_CATS]);
       
-      // 🖼️ Auto-icona anche al load: se ho entity e l'icona è vuota, popolala ora
-      let anyIconApplied = false;
       for (let i = 0; i < 4; i++) {
         const ent = this.config.subbuttons[i]?.entity_id || '';
         this._entities[i] = ent;
 
+        // Auto-icona anche al load: se ho entity e l'icona è vuota, popolala ora
         if (ent && !this.config.subbuttons[i].icon && this.hass) {
           const st = this.hass.states?.[ent];
           const iconFromState = st?.attributes?.icon;
           const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
-          if (autoIcon) {
-            this.config.subbuttons[i].icon = autoIcon;
-            anyIconApplied = true;
-          }
+          if (autoIcon) this.config.subbuttons[i].icon = autoIcon;
         }
-      }
-
-      // se ho assegnato icone al volo, notifica il parent per salvare
-      if (anyIconApplied) {
-        this._emit('subbuttons', this.config.subbuttons);
       }
     }
   }
@@ -330,7 +320,8 @@ export class SubButtonPanel extends LitElement {
     if (!this.config.subbuttons[i]) this.config.subbuttons[i] = {};
     this.config.subbuttons[i].entity_id = ent;
     
-    // 🎨 Auto‑icona quando selezioni: stato.icon → fallback resolveEntityIcon
+    // Se non c'è già un'icona, assegnala in automatico:
+    // 1) usa attributes.icon dello stato; 2) fallback resolveEntityIcon
     if (!this.config.subbuttons[i].icon && this.hass) {
       const st = this.hass.states?.[ent];
       const iconFromState = st?.attributes?.icon;
