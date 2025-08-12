@@ -8,15 +8,17 @@ import {
 } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
 
+const SLOT_COUNT = 6;
+
 export class SubButtonPanel extends LitElement {
   static properties = {
     hass: { type: Object },
     config: { type: Object },
     expanded: { type: Boolean },
 
-    _expanded: { type: Array, state: true }, // quali “pill” sono aperte
-    _filters:  { type: Array, state: true }, // 4 array di categorie
-    _entities: { type: Array, state: true }, // 4 entity_id locali
+    _expanded: { type: Array, state: true },
+    _filters:  { type: Array, state: true },
+    _entities: { type: Array, state: true },
   };
 
   constructor() {
@@ -25,9 +27,9 @@ export class SubButtonPanel extends LitElement {
     this.config = {};
     this.expanded = false;
 
-    this._expanded = Array(4).fill(false);
-    this._filters  = Array(4).fill().map(() => [...COMMON_CATS]);
-    this._entities = Array(4).fill('');
+    this._expanded = Array(SLOT_COUNT).fill(false);
+    this._filters  = Array(SLOT_COUNT).fill().map(() => [...COMMON_CATS]);
+    this._entities = Array(SLOT_COUNT).fill('');
 
     this._syncingFromConfig = false;
   }
@@ -37,50 +39,49 @@ export class SubButtonPanel extends LitElement {
 
     this._syncingFromConfig = true;
 
-    // 🔁 AD area‑based: copre anche subbutton se il toggle è attivo
+    // 🔁 AD area‑based: copre la sezione se il toggle è attivo
     if (this.config?.area || this.config?.area_id) {
       maybeAutoDiscover(this.hass, this.config, 'area', false);
     }
 
-    // Assicura la struttura subbuttons in config (senza mutare direttamente)
+    // Normalizza lunghezza array subbuttons da config senza mutare in place
     const cfgSubs = Array.isArray(this.config?.subbuttons)
       ? this.config.subbuttons
-      : Array(4).fill().map(() => ({}));
+      : [];
+
+    const normSubs = Array.from({ length: SLOT_COUNT }, (_, i) => cfgSubs[i] || {});
 
     // 🔹 Sync filtri da config (se presenti)
     const cfgFilters = this.config?.subbutton_filters;
-    if (Array.isArray(cfgFilters) && cfgFilters.length === 4) {
+    if (Array.isArray(cfgFilters) && cfgFilters.length === SLOT_COUNT) {
       this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...COMMON_CATS]);
     }
 
     // 🔹 Sync entità locali dagli slot
-    for (let i = 0; i < 4; i++) {
-      this._entities[i] = cfgSubs[i]?.entity_id || '';
+    for (let i = 0; i < SLOT_COUNT; i++) {
+      this._entities[i] = normSubs[i]?.entity_id || '';
     }
 
     this._syncingFromConfig = false;
 
-    // 🎨 Auto‑icona al primo load per slot con entity_id e icona mancante
-    const pending = [];
-    for (let i = 0; i < 4; i++) {
-      const ent = cfgSubs[i]?.entity_id || '';
-      const ico = cfgSubs[i]?.icon || '';
+    // 🎨 Auto‑icona al primo load per slot con entity_id e icona mancante → emetti variante immutabile
+    const withIcons = normSubs.map((r, i) => {
+      const ent = r?.entity_id || '';
+      const ico = r?.icon || '';
       if (ent && !ico) {
         const st = this.hass?.states?.[ent];
         const iconFromState = st?.attributes?.icon;
         const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
-        if (autoIcon) {
-          pending.push({ i, icon: autoIcon });
-        }
+        return autoIcon ? { ...(r || {}), icon: autoIcon } : r || {};
       }
-    }
-    if (pending.length) {
-      // emetti una singola struttura aggiornata
-      const next = cfgSubs.map((r, idx) => {
-        const hit = pending.find(p => p.i === idx);
-        return hit ? { ...(r || {}), icon: hit.icon } : r || {};
-      });
-      this._emit('subbuttons', next);
+      return r || {};
+    });
+
+    // Se c'è differenza rispetto ai dati attuali, emetti l'aggiornamento
+    const changedIcons =
+      JSON.stringify(withIcons) !== JSON.stringify(cfgSubs);
+    if (changedIcons) {
+      this._emit('subbuttons', withIcons);
     }
   }
 
@@ -161,9 +162,7 @@ export class SubButtonPanel extends LitElement {
       display: block; font-weight: 600;
       margin-bottom: 6px; color: #b28fff;
     }
-    ha-selector, ha-icon-picker {
-      width: 100%; box-sizing: border-box;
-    }
+    ha-selector, ha-icon-picker { width: 100%; box-sizing: border-box; }
     ha-selector::part(combobox) { min-height: 40px; }
 
     .pill-group {
@@ -225,7 +224,7 @@ export class SubButtonPanel extends LitElement {
     const types = this._filters[i];
     const ent   = this._entities[i];
     const cands = candidatesFor(this.hass, this.config, 'subbutton', types);
-    const cfg   = (Array.isArray(this.config?.subbuttons) && this.config.subbuttons[i]) ? this.config.subbuttons[i] : {};
+    const cfg   = Array.isArray(this.config?.subbuttons) ? (this.config.subbuttons[i] || {}) : {};
     const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
 
     return html`
@@ -236,6 +235,7 @@ export class SubButtonPanel extends LitElement {
 
         ${open ? html`
           <div class="mini-pill-content">
+            <!-- Filter categories -->
             <div class="input-group">
               <label>Filter categories:</label>
               <ha-selector
@@ -246,6 +246,7 @@ export class SubButtonPanel extends LitElement {
               ></ha-selector>
             </div>
 
+            <!-- Entity -->
             <div class="input-group">
               <label>Entity:</label>
               <ha-selector
@@ -257,6 +258,7 @@ export class SubButtonPanel extends LitElement {
               ></ha-selector>
             </div>
 
+            <!-- Icon -->
             <div class="input-group">
               <label>Icon:</label>
               <ha-icon-picker
@@ -300,7 +302,7 @@ export class SubButtonPanel extends LitElement {
     if (act === 'call-service') {
       return html`
         <input type="text" placeholder="Service (es. light.turn_on)"
-          .value=${cfg[`${type}_action`]?.service || ''}
+          .value=${cfg[`${type}_action`] ?.service || ''}
           @input=${e => this._onAction(i, type, 'service', e.target.value)}
         />
         <input type="text" placeholder='Service Data (JSON)'
@@ -331,11 +333,13 @@ export class SubButtonPanel extends LitElement {
   _onEntity(i, ent) {
     this._entities[i] = ent;
 
+    // Costruisci "next" immutabile
     const prev = Array.isArray(this.config?.subbuttons)
       ? this.config.subbuttons
-      : Array(4).fill().map(() => ({}));
+      : [];
 
-    const currentIcon = prev[i]?.icon || '';
+    const normPrev = Array.from({ length: SLOT_COUNT }, (_, idx) => prev[idx] || {});
+    const currentIcon = normPrev[i]?.icon || '';
 
     let iconToSet = currentIcon;
     if (!currentIcon && ent) {
@@ -344,7 +348,7 @@ export class SubButtonPanel extends LitElement {
       iconToSet = iconFromState || resolveEntityIcon(ent, this.hass) || '';
     }
 
-    const next = prev.map((r, idx) =>
+    const next = normPrev.map((r, idx) =>
       idx === i ? { ...(r || {}), entity_id: ent, ...(iconToSet ? { icon: iconToSet } : {}) } : (r || {})
     );
 
@@ -354,9 +358,10 @@ export class SubButtonPanel extends LitElement {
   _onIcon(i, icon) {
     const prev = Array.isArray(this.config?.subbuttons)
       ? this.config.subbuttons
-      : Array(4).fill().map(() => ({}));
+      : [];
 
-    const next = prev.map((r, idx) =>
+    const normPrev = Array.from({ length: SLOT_COUNT }, (_, idx) => prev[idx] || {});
+    const next = normPrev.map((r, idx) =>
       idx === i ? { ...(r || {}), icon: icon || '' } : (r || {})
     );
 
@@ -366,9 +371,10 @@ export class SubButtonPanel extends LitElement {
   _onAction(i, type, field, val) {
     const prev = Array.isArray(this.config?.subbuttons)
       ? this.config.subbuttons
-      : Array(4).fill().map(() => ({}));
+      : [];
 
-    const next = prev.map((r, idx) => {
+    const normPrev = Array.from({ length: SLOT_COUNT }, (_, idx) => prev[idx] || {});
+    const next = normPrev.map((r, idx) => {
       if (idx !== i) return r || {};
       const cur = r?.[`${type}_action`] || {};
       return { ...(r || {}), [`${type}_action`]: { ...cur, [field]: val } };
@@ -378,12 +384,12 @@ export class SubButtonPanel extends LitElement {
   }
 
   _reset() {
-    this._expanded = Array(4).fill(false);
-    this._filters  = Array(4).fill().map(() => [...COMMON_CATS]);
-    this._entities = Array(4).fill('');
+    this._expanded = Array(SLOT_COUNT).fill(false);
+    this._filters  = Array(SLOT_COUNT).fill().map(() => [...COMMON_CATS]);
+    this._entities = Array(SLOT_COUNT).fill('');
 
     this._emit('subbutton_filters', this._filters);
-    this._emit('subbuttons', Array(4).fill().map(() => ({})));
+    this._emit('subbuttons', Array(SLOT_COUNT).fill().map(() => ({})));
   }
 
   _emit(prop, val) {
