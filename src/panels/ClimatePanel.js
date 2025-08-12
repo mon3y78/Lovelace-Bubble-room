@@ -25,40 +25,37 @@ export class ClimatePanel extends LitElement {
 
   // ---- helpers area/registry ------------------------------------------------
   _resolveAreaRef() {
-    // Rispetta SEMPRE l'area selezionata in config, se presente
     const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
 
-    if (typeof raw === 'string' && raw) {
-      if (raw.startsWith('area_')) {
-        return { areaId: raw, areaName: '' };
-      }
-      // nome area → prova a derivare ID se disponibile, senza fallback su entity
-      let areaId = '';
-      const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
-      if (areas.length) {
-        const hit = areas.find(a => (a.name || '').toLowerCase() === String(raw).toLowerCase());
-        if (hit?.area_id) areaId = hit.area_id;
-      }
-      return { areaId, areaName: raw };
-    }
-
-    // Se config.area NON è impostata, fallback su entity/attributes
     let areaId = '';
     let areaName = '';
-    const ent = this.config?.entities?.climate?.entity;
-    const reg = this.hass?.entities;
-    const st  = ent ? this.hass?.states?.[ent] : undefined;
 
-    if (ent && reg?.[ent]?.area_id) areaId = reg[ent].area_id;
-    if (!areaId && st?.attributes?.area_id) areaId = st.attributes.area_id;
-    if (!areaId && st?.attributes?.area)    areaName = st.attributes.area;
+    if (typeof raw === 'string') {
+      if (raw.startsWith('area_')) {
+        areaId = raw;
+      } else if (raw.trim()) {
+        areaName = raw.trim();
+      }
+    } else if (raw && typeof raw === 'object') {
+      areaId   = raw.area_id || raw.area || '';
+      areaName = raw.name || '';
+      if (!areaId && typeof raw.value === 'string') {
+        if (raw.value.startsWith('area_')) areaId = raw.value;
+        else areaName = raw.value;
+      }
+    }
 
+    const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
+    if (!areaId && areas.length && areaName) {
+      const hit = areas.find(a => (a.name || '').toLowerCase() === String(areaName).toLowerCase());
+      if (hit?.area_id) areaId = hit.area_id;
+    }
+
+    // ⛔️ Nessun fallback all’area dell’entità selezionata
     return { areaId, areaName };
   }
 
   _matchAreaForEntityId(id, areaId, areaName) {
-    if (!(areaId || areaName)) return true;
-
     const reg = this.hass?.entities;
     if (areaId && reg?.[id]?.area_id) return reg[id].area_id === areaId;
 
@@ -87,7 +84,7 @@ export class ClimatePanel extends LitElement {
       const ent = this.config?.entities?.climate?.entity || '';
       const ico = this.config?.entities?.climate?.icon   || '';
 
-      // auto-icona se vuota (icona stato -> fallback mapping)
+      // auto-icona se vuota
       if (ent && !ico) {
         const st = this.hass?.states?.[ent];
         const iconFromState = st?.attributes?.icon;
@@ -98,7 +95,7 @@ export class ClimatePanel extends LitElement {
       this._entity = ent;
       this._icon   = this.config?.entities?.climate?.icon || '';
 
-      // candidati: dominio corretto + filtro area + mantieni selezionato
+      // candidati: dominio + filtro area + mantieni selezionato
       const autoDisc = this.config?.auto_discovery_sections?.climate ?? false;
       if (autoDisc) {
         const { areaId, areaName } = this._resolveAreaRef();
@@ -146,9 +143,9 @@ export class ClimatePanel extends LitElement {
     }
     .input-group { margin: 12px 16px; }
     .input-group label {
-      display:block; font-weight:700; margin-bottom:6px; color:#ffb07e;
+      display:block; font-weight:700; margin-bottom:6px; color: #ffb07e;
     }
-    ha-selector, ha-icon-picker { width:100%; box-sizing:border-box; }
+    ha-selector { width:100%; box-sizing:border-box; }
     .reset-button {
       border: 3.5px solid #ff4c6a; color:#ff4c6a; border-radius:24px;
       padding:12px 38px; background:transparent; cursor:pointer;
@@ -183,8 +180,8 @@ export class ClimatePanel extends LitElement {
             .value=${this._entity}
             .selector=${
               this._climateCandidates.length
-                ? { entity: { include_entities: this._climateCandidates, multiple: false } }
-                : { entity: { domain: 'climate', multiple: false } }
+                ? { entity: { include_entities: this._climateCandidates } }
+                : { entity: { domain: 'climate' } }
             }
             allow-custom-entity
             @value-changed=${e => this._set('entities.climate.entity', e.detail.value)}
@@ -193,12 +190,12 @@ export class ClimatePanel extends LitElement {
 
         <div class="input-group">
           <label>Climate Icon:</label>
-          <ha-icon-picker
+          <ha-selector
             .hass=${this.hass}
             .value=${this._icon}
-            allow-custom-icon
+            .selector={{ icon: {} }}
             @value-changed=${e => this._set('entities.climate.icon', e.detail.value)}
-          ></ha-icon-picker>
+          ></ha-selector>
         </div>
 
         <button
