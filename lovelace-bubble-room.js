@@ -1344,7 +1344,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
         .expanded=${this.expanded}
         @expanded-changed=${t=>this.expanded=t.detail.expanded}
       >
-        <div slot="header" class="glass-header">📷 Camera</div>
+        <div slot="header" class="glass-header">ð· Camera</div>
 
         <div class="input-group autodiscover">
           <input
@@ -1352,7 +1352,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
             .checked=${t}
             @change=${t=>this._toggleAuto(t.target.checked)}
           />
-          <label>🪄 Auto-discovery</label>
+          <label>ðª Auto-discovery</label>
         </div>
 
         <div class="input-group">
@@ -1371,7 +1371,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
           <ha-selector
             .hass=${this.hass}
             .value=${this._icon}
-            .selector={{ icon: {} }}
+            ..selector=${{icon:{}}}
             @value-changed=${t=>this._set("entities.camera.icon",t.detail.value)}
           ></ha-selector>
         </div>
@@ -1379,9 +1379,9 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
         <button
           class="reset-button"
           @click=${()=>this.dispatchEvent(new CustomEvent("__panel_cmd__",{detail:{cmd:"reset",section:"camera"},bubbles:!0,composed:!0}))}
-        >🧹 Reset Camera</button>
+        >ð§¹ Reset Camera</button>
       </ha-expansion-panel>
-    `}_toggleAuto(t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.camera",val:t},bubbles:!0,composed:!0}))}_set(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("camera-panel",jt);class Mt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_entity:{type:String,state:!0},_icon:{type:String,state:!0},_climateCandidates:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._entity="",this._icon="",this._climateCandidates=[]}_resolveAreaRef(){const t=Array.isArray(this.config?.area)?this.config.area[0]:this.config?.area,e="string"!=typeof t||t.startsWith("area_")?"":t;let i="string"==typeof t&&t.startsWith("area_")?t:"";const s=Array.isArray(this.hass?.areas)?this.hass.areas:[];if(!i&&s.length&&e){const t=s.find(t=>(t.name||"").toLowerCase()===String(e).toLowerCase());t?.area_id&&(i=t.area_id)}if(!i){const t=this.config?.entities?.climate?.entity,e=this.hass?.entities;t&&e?.[t]?.area_id&&(i=e[t].area_id)}return{areaId:i,areaName:e}}_matchAreaForEntityId(t,e,i){const s=this.hass?.entities;if(e&&s?.[t]?.area_id)return s[t].area_id===e;const o=this.hass?.states?.[t];if(!o)return!(e||i);const n=o.attributes?.area_id,a=o.attributes?.area;return e&&n?n===e:i&&a?String(a).toLowerCase()===String(i).toLowerCase():!(e||i)}_filterByAreaIncludeSelected(t,e,i,s){const o=(t||[]).filter(t=>this._matchAreaForEntityId(t,e,i));return s&&!o.includes(s)&&o.unshift(s),Array.from(new Set(o))}updated(t){if(t.has("config")||t.has("hass")){const t=this.config?.entities?.climate?.entity||"",e=this.config?.entities?.climate?.icon||"";if(t&&!e){let e=yt.get(t);if(!e){const i=this.hass?.states?.[t],s=i?.attributes?.icon;e=s||kt(t,this.hass),e&&yt.set(t,e)}e&&this._set("entities.climate.icon",e)}this._entity=t,this._icon=this.config?.entities?.climate?.icon||"";if(this.config?.auto_discovery_sections?.climate??!1){const{areaId:t,areaName:e}=this._resolveAreaRef();let i=pt(this.hass,this.config,"climate")||[];!i.length&&this.hass?.states&&(i=Object.keys(this.hass.states).filter(t=>t.startsWith("climate."))),this._climateCandidates=this._filterByAreaIncludeSelected(i,t,e,this._entity)}else this._climateCandidates=[]}}static styles=n`
+    `}_toggleAuto(t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.camera",val:t},bubbles:!0,composed:!0}))}_set(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("camera-panel",jt);class Mt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_entity:{type:String,state:!0},_icon:{type:String,state:!0},_climateCandidates:{type:Array,state:!0}};constructor(){this._iconCache=new yt,super(),this.hass={},this.config={},this.expanded=!1,this._entity="",this._icon="",this._climateCandidates=[]}_resolveAreaRef(){const t=Array.isArray(this.config?.area)?this.config.area[0]:this.config?.area,e="string"!=typeof t||t.startsWith("area_")?"":t;let i="string"==typeof t&&t.startsWith("area_")?t:"";const s=Array.isArray(this.hass?.areas)?this.hass.areas:[];if(!i&&s.length&&e){const t=s.find(t=>(t.name||"").toLowerCase()===String(e).toLowerCase());t?.area_id&&(i=t.area_id)}if(!i){const t=this.config?.entities?.climate?.entity,e=this.hass?.entities;t&&e?.[t]?.area_id&&(i=e[t].area_id)}return{areaId:i,areaName:e}}_matchAreaForEntityId(t,e,i){const s=this.hass?.entities;if(e&&s?.[t]?.area_id)return s[t].area_id===e;const o=this.hass?.states?.[t];if(!o)return!(e||i);const n=o.attributes?.area_id,a=o.attributes?.area;return e&&n?n===e:i&&a?String(a).toLowerCase()===String(i).toLowerCase():!(e||i)}_filterByAreaIncludeSelected(t,e,i,s){const o=(t||[]).filter(t=>this._matchAreaForEntityId(t,e,i));return s&&!o.includes(s)&&o.unshift(s),Array.from(new Set(o))}updated(t){if(t.has("config")||t.has("hass")){const t=this.config?.entities?.climate?.entity||"",e=this.config?.entities?.climate?.icon||"";if(t&&!e){let e=this._iconCache.get(t);if(!e){const i=this.hass?.states?.[t],s=i?.attributes?.icon;e=s||kt(t,this.hass),e&&this._iconCache.set(t,e)}e&&this._set("entities.climate.icon",e)}this._entity=t,this._icon=this.config?.entities?.climate?.icon||"";if(this.config?.auto_discovery_sections?.climate??!1){const{areaId:t,areaName:e}=this._resolveAreaRef();let i=pt(this.hass,this.config,"climate")||[];!i.length&&this.hass?.states&&(i=Object.keys(this.hass.states).filter(t=>t.startsWith("climate."))),this._climateCandidates=this._filterByAreaIncludeSelected(i,t,e,this._entity)}else this._climateCandidates=[]}}static styles=n`
     :host { display: block; }
     .glass-panel {
       margin: 0 !important; width: 100%; box-sizing: border-box;
@@ -1425,7 +1425,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
         .expanded=${this.expanded}
         @expanded-changed=${t=>this.expanded=t.detail.expanded}
       >
-        <div slot="header" class="glass-header">🌡️ Climate</div>
+        <div slot="header" class="glass-header">ð¡ï¸ Climate</div>
 
         <div class="input-group autodiscover">
           <input
@@ -1433,7 +1433,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
             .checked=${t}
             @change=${t=>this._toggleAuto(t.target.checked)}
           />
-          <label>🪄 Auto-discovery</label>
+          <label>ðª Auto-discovery</label>
         </div>
 
         <div class="input-group">
@@ -1452,7 +1452,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
           <ha-selector
             .hass=${this.hass}
             .value=${this._icon}
-            .selector={{ icon: {} }}
+            ..selector=${{icon:{}}}
             @value-changed=${t=>this._set("entities.climate.icon",t.detail.value)}
           ></ha-selector>
         </div>
@@ -1460,7 +1460,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
         <button
           class="reset-button"
           @click=${()=>this.dispatchEvent(new CustomEvent("__panel_cmd__",{detail:{cmd:"reset",section:"climate"},bubbles:!0,composed:!0}))}
-        >🧹 Reset Climate</button>
+        >ð§¹ Reset Climate</button>
       </ha-expansion-panel>
     `}_toggleAuto(t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.climate",val:t},bubbles:!0,composed:!0}))}_set(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("climate-panel",Mt);class Ft extends st{static properties={hass:{type:Object},config:{type:Object},openPanel:{type:String,state:!0}};constructor(){super(),this.hass=void 0,this.config={},this.openPanel="",this._onPanelChanged=this._onPanelChanged.bind(this),this._onPanelCmd=this._onPanelCmd.bind(this),this._togglePanel=this._togglePanel.bind(this),this._onConfigChanged=this._onConfigChanged.bind(this)}setConfig(t){this.config={type:t?.type||"custom:bubble-room",...t||{}},this.requestUpdate()}set value(t){this.config=t||{}}get value(){return this.config}connectedCallback(){super.connectedCallback(),this.addEventListener("panel-changed",this._onPanelChanged),this.addEventListener("__panel_cmd__",this._onPanelCmd)}disconnectedCallback(){this.removeEventListener("panel-changed",this._onPanelChanged),this.removeEventListener("__panel_cmd__",this._onPanelCmd),super.disconnectedCallback()}_emitConfig(t){const e={type:this.config?.type||"custom:bubble-room",...t||{}};this.config=e,this.dispatchEvent(new CustomEvent("config-changed",{detail:{config:this.config},bubbles:!0,composed:!0})),this.requestUpdate()}_setConfigValue(t,e){const i=String(t).split("."),s=structuredClone(this.config||{});let o=s;for(let t=0;t<i.length-1;t++){const e=i[t];"object"==typeof o[e]&&null!==o[e]||(o[e]={}),o=o[e]}o[i[i.length-1]]=e,this._emitConfig(s)}_onPanelChanged(t){t.stopPropagation();const{prop:e,val:i}=t.detail||{};if(!e)return;const s=this.config,o=structuredClone(s||{}),n=String(e).split(".");let a=o;for(let t=0;t<n.length-1;t++){const e=n[t];"object"==typeof a[e]&&null!==a[e]||(a[e]={}),a=a[e]}a[n[n.length-1]]=i;const r="area"===e,l=e.startsWith("auto_discovery_sections."),c=r||l?xt(this.hass,o,e,!1):o;this._emitConfig(c)}_onConfigChanged(t){t.stopPropagation();const{path:e,value:i}=t.detail||{};if(!e)return;const s=this.config,o=structuredClone(s||{}),n=String(e).split(".");let a=o;for(let t=0;t<n.length-1;t++){const e=n[t];"object"==typeof a[e]&&null!==a[e]||(a[e]={}),a=a[e]}a[n[n.length-1]]=i;const r="area"===e,l=e.startsWith("auto_discovery_sections."),c=r||l?xt(this.hass,o,e,!1):o;this._emitConfig(c)}_onPanelCmd(t){t.stopPropagation();const{cmd:e,section:i}=t.detail||{};if("reset"!==e)return;let s=this.config||{};switch(i){case"room":s=function(t){const e={...t.entities||{}};delete e.presence;const i={...t,entities:e};return delete i.name,delete i.icon,delete i.area,delete i.presence_entity,i}(s);break;case"sensors":s=function(t){const e={...t.entities||{}};return["sensor1","sensor2","sensor3","sensor4","sensor5","sensor6","sensor7","sensor8"].forEach(t=>delete e[t]),{...t,entities:e}}(s);break;case"mushrooms":s=function(t){const e={...t.entities||{}};return["mushroom1","mushroom2","mushroom3","mushroom4","mushroom5","climate","camera"].forEach(t=>delete e[t]),{...t,entities:e}}(s);break;case"subbuttons":s=function(t){const e={...t.entities||{}};return["sub-button1","sub-button2","sub-button3","sub-button4","sub-button5","sub-button6"].forEach(t=>delete e[t]),{...t,entities:e}}(s);break;case"climate":s=function(t){const e={...t.entities||{}};return delete e.climate,{...t,entities:e}}(s),s?.auto_discovery_sections?.climate&&(s=xt(this.hass,s,"auto_discovery_sections.climate",!1));break;case"camera":s=function(t){const e={...t.entities||{}};return delete e.camera,{...t,entities:e}}(s),s?.auto_discovery_sections?.camera&&(s=xt(this.hass,s,"auto_discovery_sections.camera",!1));break;default:return}this._emitConfig(s)}_togglePanel(t,e){const i=t?.detail?.expanded;this.openPanel=i?e:""}static styles=n`
     :host { display:block; }
