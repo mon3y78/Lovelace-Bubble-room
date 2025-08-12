@@ -14,7 +14,7 @@ const t=window,e=t.ShadowRoot&&(void 0===t.ShadyCSS||t.ShadyCSS.nativeShadow)&&"
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-var m;f[b]=!0,f.elementProperties=new Map,f.elementStyles=[],f.shadowRootOptions={mode:"open"},null==h||h({ReactiveElement:f}),(null!==(r=c.reactiveElementVersions)&&void 0!==r?r:c.reactiveElementVersions=[]).push("1.6.3");const _=window,v=_.trustedTypes,x=v?v.createPolicy("lit-html",{createHTML:t=>t}):void 0,y="$lit$",$=`lit$${(Math.random()+"").slice(9)}$`,w="?"+$,k=`<${w}>`,A=document,C=()=>A.createComment(""),S=t=>null===t||"object"!=typeof t&&"function"!=typeof t,E=Array.isArray,P="[ \t\n\f\r]",z=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,O=/-->/g,j=/>/g,F=RegExp(`>|${P}(?:([^\\s"'>=/]+)(${P}*=${P}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),M=/'/g,I=/"/g,T=/^(?:script|style|textarea|title)$/i,R=(t=>(e,...i)=>({_$litType$:t,strings:e,values:i}))(1),B=Symbol.for("lit-noChange"),U=Symbol.for("lit-nothing"),N=new WeakMap,H=A.createTreeWalker(A,129,null,!1);function W(t,e){if(!Array.isArray(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==x?x.createHTML(e):e}const L=(t,e)=>{const i=t.length-1,s=[];let n,o=2===e?"<svg>":"",a=z;for(let e=0;e<i;e++){const i=t[e];let r,c,l=-1,d=0;for(;d<i.length&&(a.lastIndex=d,c=a.exec(i),null!==c);)d=a.lastIndex,a===z?"!--"===c[1]?a=O:void 0!==c[1]?a=j:void 0!==c[2]?(T.test(c[2])&&(n=RegExp("</"+c[2],"g")),a=F):void 0!==c[3]&&(a=F):a===F?">"===c[0]?(a=null!=n?n:z,l=-1):void 0===c[1]?l=-2:(l=a.lastIndex-c[2].length,r=c[1],a=void 0===c[3]?F:'"'===c[3]?I:M):a===I||a===M?a=F:a===O||a===j?a=z:(a=F,n=void 0);const h=a===F&&t[e+1].startsWith("/>")?" ":"";o+=a===z?i+k:l>=0?(s.push(r),i.slice(0,l)+y+i.slice(l)+$+h):i+$+(-2===l?(s.push(void 0),e):h)}return[W(t,o+(t[i]||"<?>")+(2===e?"</svg>":"")),s]};class D{constructor({strings:t,_$litType$:e},i){let s;this.parts=[];let n=0,o=0;const a=t.length-1,r=this.parts,[c,l]=L(t,e);if(this.el=D.createElement(c,i),H.currentNode=this.el.content,2===e){const t=this.el.content,e=t.firstChild;e.remove(),t.append(...e.childNodes)}for(;null!==(s=H.nextNode())&&r.length<a;){if(1===s.nodeType){if(s.hasAttributes()){const t=[];for(const e of s.getAttributeNames())if(e.endsWith(y)||e.startsWith($)){const i=l[o++];if(t.push(e),void 0!==i){const t=s.getAttribute(i.toLowerCase()+y).split($),e=/([.?@])?(.*)/.exec(i);r.push({type:1,index:n,name:e[2],strings:t,ctor:"."===e[1]?G:"?"===e[1]?Z:"@"===e[1]?X:Y})}else r.push({type:6,index:n})}for(const e of t)s.removeAttribute(e)}if(T.test(s.tagName)){const t=s.textContent.split($),e=t.length-1;if(e>0){s.textContent=v?v.emptyScript:"";for(let i=0;i<e;i++)s.append(t[i],C()),H.nextNode(),r.push({type:2,index:++n});s.append(t[e],C())}}}else if(8===s.nodeType)if(s.data===w)r.push({type:2,index:n});else{let t=-1;for(;-1!==(t=s.data.indexOf($,t+1));)r.push({type:7,index:n}),t+=$.length-1}n++}}static createElement(t,e){const i=A.createElement("template");return i.innerHTML=t,i}}function V(t,e,i=t,s){var n,o,a,r;if(e===B)return e;let c=void 0!==s?null===(n=i._$Co)||void 0===n?void 0:n[s]:i._$Cl;const l=S(e)?void 0:e._$litDirective$;return(null==c?void 0:c.constructor)!==l&&(null===(o=null==c?void 0:c._$AO)||void 0===o||o.call(c,!1),void 0===l?c=void 0:(c=new l(t),c._$AT(t,i,s)),void 0!==s?(null!==(a=(r=i)._$Co)&&void 0!==a?a:r._$Co=[])[s]=c:i._$Cl=c),void 0!==c&&(e=V(t,c._$AS(t,e.values),c,s)),e}class q{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){var e;const{el:{content:i},parts:s}=this._$AD,n=(null!==(e=null==t?void 0:t.creationScope)&&void 0!==e?e:A).importNode(i,!0);H.currentNode=n;let o=H.nextNode(),a=0,r=0,c=s[0];for(;void 0!==c;){if(a===c.index){let e;2===c.type?e=new J(o,o.nextSibling,this,t):1===c.type?e=new c.ctor(o,c.name,c.strings,this,t):6===c.type&&(e=new Q(o,this,t)),this._$AV.push(e),c=s[++r]}a!==(null==c?void 0:c.index)&&(o=H.nextNode(),a++)}return H.currentNode=A,n}v(t){let e=0;for(const i of this._$AV)void 0!==i&&(void 0!==i.strings?(i._$AI(t,i,e),e+=i.strings.length-2):i._$AI(t[e])),e++}}class J{constructor(t,e,i,s){var n;this.type=2,this._$AH=U,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=i,this.options=s,this._$Cp=null===(n=null==s?void 0:s.isConnected)||void 0===n||n}get _$AU(){var t,e;return null!==(e=null===(t=this._$AM)||void 0===t?void 0:t._$AU)&&void 0!==e?e:this._$Cp}get parentNode(){let t=this._$AA.parentNode;const e=this._$AM;return void 0!==e&&11===(null==t?void 0:t.nodeType)&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=V(this,t,e),S(t)?t===U||null==t||""===t?(this._$AH!==U&&this._$AR(),this._$AH=U):t!==this._$AH&&t!==B&&this._(t):void 0!==t._$litType$?this.g(t):void 0!==t.nodeType?this.$(t):(t=>E(t)||"function"==typeof(null==t?void 0:t[Symbol.iterator]))(t)?this.T(t):this._(t)}k(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}$(t){this._$AH!==t&&(this._$AR(),this._$AH=this.k(t))}_(t){this._$AH!==U&&S(this._$AH)?this._$AA.nextSibling.data=t:this.$(A.createTextNode(t)),this._$AH=t}g(t){var e;const{values:i,_$litType$:s}=t,n="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=D.createElement(W(s.h,s.h[0]),this.options)),s);if((null===(e=this._$AH)||void 0===e?void 0:e._$AD)===n)this._$AH.v(i);else{const t=new q(n,this),e=t.u(this.options);t.v(i),this.$(e),this._$AH=t}}_$AC(t){let e=N.get(t.strings);return void 0===e&&N.set(t.strings,e=new D(t)),e}T(t){E(this._$AH)||(this._$AH=[],this._$AR());const e=this._$AH;let i,s=0;for(const n of t)s===e.length?e.push(i=new J(this.k(C()),this.k(C()),this,this.options)):i=e[s],i._$AI(n),s++;s<e.length&&(this._$AR(i&&i._$AB.nextSibling,s),e.length=s)}_$AR(t=this._$AA.nextSibling,e){var i;for(null===(i=this._$AP)||void 0===i||i.call(this,!1,!0,e);t&&t!==this._$AB;){const e=t.nextSibling;t.remove(),t=e}}setConnected(t){var e;void 0===this._$AM&&(this._$Cp=t,null===(e=this._$AP)||void 0===e||e.call(this,t))}}class Y{constructor(t,e,i,s,n){this.type=1,this._$AH=U,this._$AN=void 0,this.element=t,this.name=e,this._$AM=s,this.options=n,i.length>2||""!==i[0]||""!==i[1]?(this._$AH=Array(i.length-1).fill(new String),this.strings=i):this._$AH=U}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(t,e=this,i,s){const n=this.strings;let o=!1;if(void 0===n)t=V(this,t,e,0),o=!S(t)||t!==this._$AH&&t!==B,o&&(this._$AH=t);else{const s=t;let a,r;for(t=n[0],a=0;a<n.length-1;a++)r=V(this,s[i+a],e,a),r===B&&(r=this._$AH[a]),o||(o=!S(r)||r!==this._$AH[a]),r===U?t=U:t!==U&&(t+=(null!=r?r:"")+n[a+1]),this._$AH[a]=r}o&&!s&&this.j(t)}j(t){t===U?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=t?t:"")}}class G extends Y{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===U?void 0:t}}const K=v?v.emptyScript:"";class Z extends Y{constructor(){super(...arguments),this.type=4}j(t){t&&t!==U?this.element.setAttribute(this.name,K):this.element.removeAttribute(this.name)}}class X extends Y{constructor(t,e,i,s,n){super(t,e,i,s,n),this.type=5}_$AI(t,e=this){var i;if((t=null!==(i=V(this,t,e,0))&&void 0!==i?i:U)===B)return;const s=this._$AH,n=t===U&&s!==U||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,o=t!==U&&(s===U||n);n&&this.element.removeEventListener(this.name,this,s),o&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){var e,i;"function"==typeof this._$AH?this._$AH.call(null!==(i=null===(e=this.options)||void 0===e?void 0:e.host)&&void 0!==i?i:this.element,t):this._$AH.handleEvent(t)}}class Q{constructor(t,e,i){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=i}get _$AU(){return this._$AM._$AU}_$AI(t){V(this,t)}}const tt=_.litHtmlPolyfillSupport;null==tt||tt(D,J),(null!==(m=_.litHtmlVersions)&&void 0!==m?m:_.litHtmlVersions=[]).push("2.8.0");
+var m;f[b]=!0,f.elementProperties=new Map,f.elementStyles=[],f.shadowRootOptions={mode:"open"},null==h||h({ReactiveElement:f}),(null!==(r=c.reactiveElementVersions)&&void 0!==r?r:c.reactiveElementVersions=[]).push("1.6.3");const _=window,v=_.trustedTypes,x=v?v.createPolicy("lit-html",{createHTML:t=>t}):void 0,y="$lit$",$=`lit$${(Math.random()+"").slice(9)}$`,w="?"+$,k=`<${w}>`,A=document,C=()=>A.createComment(""),S=t=>null===t||"object"!=typeof t&&"function"!=typeof t,E=Array.isArray,P="[ \t\n\f\r]",z=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,O=/-->/g,j=/>/g,F=RegExp(`>|${P}(?:([^\\s"'>=/]+)(${P}*=${P}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),M=/'/g,I=/"/g,T=/^(?:script|style|textarea|title)$/i,R=(t=>(e,...i)=>({_$litType$:t,strings:e,values:i}))(1),B=Symbol.for("lit-noChange"),U=Symbol.for("lit-nothing"),N=new WeakMap,H=A.createTreeWalker(A,129,null,!1);function W(t,e){if(!Array.isArray(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==x?x.createHTML(e):e}const L=(t,e)=>{const i=t.length-1,s=[];let n,o=2===e?"<svg>":"",a=z;for(let e=0;e<i;e++){const i=t[e];let r,c,l=-1,d=0;for(;d<i.length&&(a.lastIndex=d,c=a.exec(i),null!==c);)d=a.lastIndex,a===z?"!--"===c[1]?a=O:void 0!==c[1]?a=j:void 0!==c[2]?(T.test(c[2])&&(n=RegExp("</"+c[2],"g")),a=F):void 0!==c[3]&&(a=F):a===F?">"===c[0]?(a=null!=n?n:z,l=-1):void 0===c[1]?l=-2:(l=a.lastIndex-c[2].length,r=c[1],a=void 0===c[3]?F:'"'===c[3]?I:M):a===I||a===M?a=F:a===O||a===j?a=z:(a=F,n=void 0);const h=a===F&&t[e+1].startsWith("/>")?" ":"";o+=a===z?i+k:l>=0?(s.push(r),i.slice(0,l)+y+i.slice(l)+$+h):i+$+(-2===l?(s.push(void 0),e):h)}return[W(t,o+(t[i]||"<?>")+(2===e?"</svg>":"")),s]};class D{constructor({strings:t,_$litType$:e},i){let s;this.parts=[];let n=0,o=0;const a=t.length-1,r=this.parts,[c,l]=L(t,e);if(this.el=D.createElement(c,i),H.currentNode=this.el.content,2===e){const t=this.el.content,e=t.firstChild;e.remove(),t.append(...e.childNodes)}for(;null!==(s=H.nextNode())&&r.length<a;){if(1===s.nodeType){if(s.hasAttributes()){const t=[];for(const e of s.getAttributeNames())if(e.endsWith(y)||e.startsWith($)){const i=l[o++];if(t.push(e),void 0!==i){const t=s.getAttribute(i.toLowerCase()+y).split($),e=/([.?@])?(.*)/.exec(i);r.push({type:1,index:n,name:e[2],strings:t,ctor:"."===e[1]?Y:"?"===e[1]?Z:"@"===e[1]?X:G})}else r.push({type:6,index:n})}for(const e of t)s.removeAttribute(e)}if(T.test(s.tagName)){const t=s.textContent.split($),e=t.length-1;if(e>0){s.textContent=v?v.emptyScript:"";for(let i=0;i<e;i++)s.append(t[i],C()),H.nextNode(),r.push({type:2,index:++n});s.append(t[e],C())}}}else if(8===s.nodeType)if(s.data===w)r.push({type:2,index:n});else{let t=-1;for(;-1!==(t=s.data.indexOf($,t+1));)r.push({type:7,index:n}),t+=$.length-1}n++}}static createElement(t,e){const i=A.createElement("template");return i.innerHTML=t,i}}function V(t,e,i=t,s){var n,o,a,r;if(e===B)return e;let c=void 0!==s?null===(n=i._$Co)||void 0===n?void 0:n[s]:i._$Cl;const l=S(e)?void 0:e._$litDirective$;return(null==c?void 0:c.constructor)!==l&&(null===(o=null==c?void 0:c._$AO)||void 0===o||o.call(c,!1),void 0===l?c=void 0:(c=new l(t),c._$AT(t,i,s)),void 0!==s?(null!==(a=(r=i)._$Co)&&void 0!==a?a:r._$Co=[])[s]=c:i._$Cl=c),void 0!==c&&(e=V(t,c._$AS(t,e.values),c,s)),e}class q{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){var e;const{el:{content:i},parts:s}=this._$AD,n=(null!==(e=null==t?void 0:t.creationScope)&&void 0!==e?e:A).importNode(i,!0);H.currentNode=n;let o=H.nextNode(),a=0,r=0,c=s[0];for(;void 0!==c;){if(a===c.index){let e;2===c.type?e=new J(o,o.nextSibling,this,t):1===c.type?e=new c.ctor(o,c.name,c.strings,this,t):6===c.type&&(e=new Q(o,this,t)),this._$AV.push(e),c=s[++r]}a!==(null==c?void 0:c.index)&&(o=H.nextNode(),a++)}return H.currentNode=A,n}v(t){let e=0;for(const i of this._$AV)void 0!==i&&(void 0!==i.strings?(i._$AI(t,i,e),e+=i.strings.length-2):i._$AI(t[e])),e++}}class J{constructor(t,e,i,s){var n;this.type=2,this._$AH=U,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=i,this.options=s,this._$Cp=null===(n=null==s?void 0:s.isConnected)||void 0===n||n}get _$AU(){var t,e;return null!==(e=null===(t=this._$AM)||void 0===t?void 0:t._$AU)&&void 0!==e?e:this._$Cp}get parentNode(){let t=this._$AA.parentNode;const e=this._$AM;return void 0!==e&&11===(null==t?void 0:t.nodeType)&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=V(this,t,e),S(t)?t===U||null==t||""===t?(this._$AH!==U&&this._$AR(),this._$AH=U):t!==this._$AH&&t!==B&&this._(t):void 0!==t._$litType$?this.g(t):void 0!==t.nodeType?this.$(t):(t=>E(t)||"function"==typeof(null==t?void 0:t[Symbol.iterator]))(t)?this.T(t):this._(t)}k(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}$(t){this._$AH!==t&&(this._$AR(),this._$AH=this.k(t))}_(t){this._$AH!==U&&S(this._$AH)?this._$AA.nextSibling.data=t:this.$(A.createTextNode(t)),this._$AH=t}g(t){var e;const{values:i,_$litType$:s}=t,n="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=D.createElement(W(s.h,s.h[0]),this.options)),s);if((null===(e=this._$AH)||void 0===e?void 0:e._$AD)===n)this._$AH.v(i);else{const t=new q(n,this),e=t.u(this.options);t.v(i),this.$(e),this._$AH=t}}_$AC(t){let e=N.get(t.strings);return void 0===e&&N.set(t.strings,e=new D(t)),e}T(t){E(this._$AH)||(this._$AH=[],this._$AR());const e=this._$AH;let i,s=0;for(const n of t)s===e.length?e.push(i=new J(this.k(C()),this.k(C()),this,this.options)):i=e[s],i._$AI(n),s++;s<e.length&&(this._$AR(i&&i._$AB.nextSibling,s),e.length=s)}_$AR(t=this._$AA.nextSibling,e){var i;for(null===(i=this._$AP)||void 0===i||i.call(this,!1,!0,e);t&&t!==this._$AB;){const e=t.nextSibling;t.remove(),t=e}}setConnected(t){var e;void 0===this._$AM&&(this._$Cp=t,null===(e=this._$AP)||void 0===e||e.call(this,t))}}class G{constructor(t,e,i,s,n){this.type=1,this._$AH=U,this._$AN=void 0,this.element=t,this.name=e,this._$AM=s,this.options=n,i.length>2||""!==i[0]||""!==i[1]?(this._$AH=Array(i.length-1).fill(new String),this.strings=i):this._$AH=U}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(t,e=this,i,s){const n=this.strings;let o=!1;if(void 0===n)t=V(this,t,e,0),o=!S(t)||t!==this._$AH&&t!==B,o&&(this._$AH=t);else{const s=t;let a,r;for(t=n[0],a=0;a<n.length-1;a++)r=V(this,s[i+a],e,a),r===B&&(r=this._$AH[a]),o||(o=!S(r)||r!==this._$AH[a]),r===U?t=U:t!==U&&(t+=(null!=r?r:"")+n[a+1]),this._$AH[a]=r}o&&!s&&this.j(t)}j(t){t===U?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=t?t:"")}}class Y extends G{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===U?void 0:t}}const K=v?v.emptyScript:"";class Z extends G{constructor(){super(...arguments),this.type=4}j(t){t&&t!==U?this.element.setAttribute(this.name,K):this.element.removeAttribute(this.name)}}class X extends G{constructor(t,e,i,s,n){super(t,e,i,s,n),this.type=5}_$AI(t,e=this){var i;if((t=null!==(i=V(this,t,e,0))&&void 0!==i?i:U)===B)return;const s=this._$AH,n=t===U&&s!==U||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,o=t!==U&&(s===U||n);n&&this.element.removeEventListener(this.name,this,s),o&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){var e,i;"function"==typeof this._$AH?this._$AH.call(null!==(i=null===(e=this.options)||void 0===e?void 0:e.host)&&void 0!==i?i:this.element,t):this._$AH.handleEvent(t)}}class Q{constructor(t,e,i){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=i}get _$AU(){return this._$AM._$AU}_$AI(t){V(this,t)}}const tt=_.litHtmlPolyfillSupport;null==tt||tt(D,J),(null!==(m=_.litHtmlVersions)&&void 0!==m?m:_.litHtmlVersions=[]).push("2.8.0");
 /**
  * @license
  * Copyright 2017 Google LLC
@@ -764,89 +764,57 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
           .value=${i[`${e}_action`]?.service_data?JSON.stringify(i[`${e}_action`].service_data):""}
           @input=${i=>this._onAction(t,e,"service_data",this._safeJson(i.target.value))}
         />
-      `:""}_safeJson(t){try{return JSON.parse(t)}catch{return{}}}_toggleAuto(t){this._syncingFromConfig||this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.mushroom",val:t},bubbles:!0,composed:!0}))}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e),this.requestUpdate()}_onFilter(t,e){this._filters[t]=[...e],this._syncingFromConfig||this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"mushroom_filters",val:this._filters},bubbles:!0,composed:!0}))}_onEntity(t,e){if(this._entities[t]=e,!this._syncingFromConfig){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t+1}.entity`,val:e},bubbles:!0,composed:!0}));if(!(this.config?.entities?.[`mushroom${t+1}`]?.icon||"")){const i=this.hass?.states?.[e],s=i?.attributes?.icon,n=s||Et(e,this.hass);n&&(this._icons[t]=n,this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t+1}.icon`,val:n},bubbles:!0,composed:!0})))}}}_onIcon(t,e){this._icons[t]=e||"",this._syncingFromConfig||this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t+1}.icon`,val:this._icons[t]},bubbles:!0,composed:!0}))}_onAction(t,e,i,s){if(this._syncingFromConfig)return;const n=`mushroom${t+1}`,o={...this.config?.entities?.[n]?.[`${e}_action`]||{},[i]:s};this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.${n}.${e}_action`,val:o},bubbles:!0,composed:!0}))}_reset(){this._expanded=Array(5).fill(!1),this._filters=Array(5).fill().map(()=>[...at]),this._entities=Array(5).fill(""),this._icons=Array(5).fill(""),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"mushroom_filters",val:this._filters},bubbles:!0,composed:!0}));for(let t=1;t<=5;t++)this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t}.entity`,val:""},bubbles:!0,composed:!0})),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t}.icon`,val:""},bubbles:!0,composed:!0})),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t}.tap_action`,val:{action:"none"}},bubbles:!0,composed:!0})),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t}.hold_action`,val:{action:"none"}},bubbles:!0,composed:!0}))}_autoIconFor(t){if(!t)return"";const e=this.hass?.states?.[t];return e?.attributes?.icon||Et(t,this.hass)}}customElements.define("mushroom-panel",It);class Tt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(6).fill(!1),this._filters=Array(6).fill().map(()=>[...at]),this._entities=Array(6).fill(""),this._syncingFromConfig=!1}updated(t){if(!t.has("config")&&!t.has("hass"))return;this._syncingFromConfig=!0,(this.config?.area||this.config?.area_id)&&wt(this.hass,this.config,"area",!1);const e=Array.isArray(this.config?.subbuttons)?this.config.subbuttons:[],i=Array.from({length:6},(t,i)=>e[i]||{}),s=this.config?.subbutton_filters;Array.isArray(s)&&6===s.length&&(this._filters=s.map(t=>Array.isArray(t)?[...t]:[...at]));for(let t=0;t<6;t++)this._entities[t]=i[t]?.entity_id||"";this._syncingFromConfig=!1;const n=i.map((t,e)=>{const i=t?.entity_id||"";if(i&&!(t?.icon||"")){const e=this.hass?.states?.[i],s=e?.attributes?.icon,n=s||Et(i,this.hass);return n?{...t||{},icon:n}:t||{}}return t||{}});JSON.stringify(n)!==JSON.stringify(e)&&this._emit("subbuttons",n)}static styles=o`
+      `:""}_safeJson(t){try{return JSON.parse(t)}catch{return{}}}_toggleAuto(t){this._syncingFromConfig||this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.mushroom",val:t},bubbles:!0,composed:!0}))}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e),this.requestUpdate()}_onFilter(t,e){this._filters[t]=[...e],this._syncingFromConfig||this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"mushroom_filters",val:this._filters},bubbles:!0,composed:!0}))}_onEntity(t,e){if(this._entities[t]=e,!this._syncingFromConfig){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t+1}.entity`,val:e},bubbles:!0,composed:!0}));if(!(this.config?.entities?.[`mushroom${t+1}`]?.icon||"")){const i=this.hass?.states?.[e],s=i?.attributes?.icon,n=s||Et(e,this.hass);n&&(this._icons[t]=n,this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t+1}.icon`,val:n},bubbles:!0,composed:!0})))}}}_onIcon(t,e){this._icons[t]=e||"",this._syncingFromConfig||this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t+1}.icon`,val:this._icons[t]},bubbles:!0,composed:!0}))}_onAction(t,e,i,s){if(this._syncingFromConfig)return;const n=`mushroom${t+1}`,o={...this.config?.entities?.[n]?.[`${e}_action`]||{},[i]:s};this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.${n}.${e}_action`,val:o},bubbles:!0,composed:!0}))}_reset(){this._expanded=Array(5).fill(!1),this._filters=Array(5).fill().map(()=>[...at]),this._entities=Array(5).fill(""),this._icons=Array(5).fill(""),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"mushroom_filters",val:this._filters},bubbles:!0,composed:!0}));for(let t=1;t<=5;t++)this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t}.entity`,val:""},bubbles:!0,composed:!0})),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t}.icon`,val:""},bubbles:!0,composed:!0})),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t}.tap_action`,val:{action:"none"}},bubbles:!0,composed:!0})),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.mushroom${t}.hold_action`,val:{action:"none"}},bubbles:!0,composed:!0}))}_autoIconFor(t){if(!t)return"";const e=this.hass?.states?.[t];return e?.attributes?.icon||Et(t,this.hass)}}customElements.define("mushroom-panel",It);class Tt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(4).fill(!1),this._filters=Array(4).fill().map(()=>[...at]),this._entities=Array(4).fill(""),this._syncingFromConfig=!1}updated(t){if(!t.has("config")&&!t.has("hass"))return;this._syncingFromConfig=!0,(this.config?.area||this.config?.area_id)&&wt(this.hass,this.config,"area",!1);const e=Array.isArray(this.config?.subbuttons)?this.config.subbuttons:[],i=Array.from({length:4},(t,i)=>e[i]||{}),s=this.config?.subbutton_filters;Array.isArray(s)&&4===s.length&&(this._filters=s.map(t=>Array.isArray(t)?[...t]:[...at]));for(let t=0;t<4;t++)this._entities[t]=i[t]?.entity_id||"";this._syncingFromConfig=!1;const n=i.map(t=>{const e=t?.entity_id||"";if(e&&!(t?.icon||"")){const i=this.hass?.states?.[e],s=i?.attributes?.icon,n=s||Et(e,this.hass);return n?{...t||{},icon:n}:t||{}}return t||{}});JSON.stringify(n)!==JSON.stringify(e.slice(0,4))&&this._emit("subbuttons",n)}static styles=o`
     :host { display: block; }
     .glass-panel {
-      margin: 0 !important;
-      width: 100%;
-      box-sizing: border-box;
-      border-radius: 40px;
-      position: relative;
+      margin: 0 !important; width: 100%; box-sizing: border-box;
+      border-radius: 40px; position: relative;
       background: var(--glass-bg, rgba(180,120,255,0.34));
       box-shadow: var(--glass-shadow, 0 2px 24px rgba(160,100,255,0.19));
       overflow: hidden;
     }
     .glass-panel::after {
-      content: '';
-      position: absolute; inset: 0;
-      border-radius: inherit;
+      content: ''; position: absolute; inset: 0; border-radius: inherit;
       background: var(--glass-sheen,
         linear-gradient(120deg, rgba(255,255,255,0.22),
         rgba(255,255,255,0.10) 70%, transparent 100%));
       pointer-events: none;
     }
     .glass-header {
-      padding: 22px 0;
-      text-align: center;
-      font-size: 1.12rem;
-      font-weight: 700;
-      color: #fff;
+      padding: 22px 0; text-align: center; font-size: 1.12rem;
+      font-weight: 700; color: #fff;
     }
     .input-group.autodiscover {
-      margin: 0 16px 13px;
-      padding: 14px 18px 10px;
+      margin: 0 16px 13px; padding: 14px 18px 10px;
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.13);
       box-shadow: 0 2px 14px rgba(70,120,220,0.10);
-      border-radius: 18px;
-      display: flex; align-items: center; gap: 8px;
+      border-radius: 18px; display:flex; align-items:center; gap:8px;
     }
     .input-group.autodiscover input { margin-right: 8px; }
-    .input-group.autodiscover label {
-      margin: 0; font-weight: 700; color: #fff;
-    }
+    .input-group.autodiscover label { margin:0; font-weight:700; color:#fff; }
 
     .mini-pill {
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.13);
       box-shadow: 0 2px 14px rgba(70,120,220,0.10);
       backdrop-filter: blur(7px) saturate(1.2);
-      border-radius: 24px;
-      margin: 8px 16px;
-      overflow: hidden;
+      border-radius: 24px; margin: 8px 16px; overflow: hidden;
     }
     .mini-pill-header {
-      display: flex; align-items: center;
-      padding: 12px 16px;
-      cursor: pointer; user-select: none;
-      font-weight: 700; color: #b28fff;
+      display: flex; align-items: center; padding: 12px 16px;
+      cursor: pointer; user-select: none; font-weight: 700; color: #b28fff;
     }
-    .mini-pill-header .chevron {
-      margin-left: auto; transition: transform 0.2s;
-    }
-    .mini-pill.expanded .mini-pill-header .chevron {
-      transform: rotate(90deg);
-    }
-    .mini-pill-content {
-      padding: 12px 16px 16px;
-      animation: pill-expand 0.2s ease-out both;
-    }
-    @keyframes pill-expand {
-      from { opacity: 0; transform: translateY(-8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    .mini-pill-header .chevron { margin-left:auto; transition:transform .2s; }
+    .mini-pill.expanded .mini-pill-header .chevron { transform: rotate(90deg); }
+    .mini-pill-content { padding: 12px 16px 16px; }
 
     .input-group { margin-bottom: 12px; }
-    .input-group label {
-      display: block; font-weight: 600;
-      margin-bottom: 6px; color: #b28fff;
-    }
-    ha-selector, ha-icon-picker { width: 100%; box-sizing: border-box; }
+    .input-group label { display:block; font-weight:600; margin-bottom:6px; color:#b28fff; }
+    ha-selector, ha-icon-picker { width:100%; box-sizing:border-box; }
     ha-selector::part(combobox) { min-height: 40px; }
 
-    .pill-group {
-      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;
-    }
+    .pill-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
     .pill-button {
       padding: 6px 10px; border-radius: 999px; border: 1px solid #555;
       cursor: pointer; background: transparent; font-weight: 600;
@@ -855,16 +823,14 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
     .pill-button.active { border-color: #b28fff; color: #b28fff; }
     .pill-button:hover:not(.active) { background: rgba(178,143,255,0.1); }
 
-    .reset-button {
-      border: 3.5px solid #ff4c6a; color: #ff4c6a; border-radius: 24px;
-      padding: 12px 38px; background: transparent; cursor: pointer;
-      display: block; margin: 20px auto; font-size: 1.15rem; font-weight: 700;
-      box-shadow: 0 2px 24px #ff4c6a44; transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    .reset-row { display:flex; gap:10px; justify-content:center; margin:20px 0; }
+    .reset-button, .add-button {
+      border: 3.5px solid #ff4c6a; color:#ff4c6a; border-radius:24px;
+      padding: 10px 26px; background:transparent; cursor:pointer;
+      font-size:1rem; font-weight:700; box-shadow: 0 2px 24px #ff4c6a44;
     }
-    .reset-button:hover {
-      background: rgba(255,76,106,0.18); color: #fff; box-shadow: 0 6px 32px #ff4c6abf;
-    }
-  `;render(){const t=this.config?.auto_discovery_sections?.subbutton??!1,e=at.map(t=>({value:t,label:ot[t]||t.charAt(0).toUpperCase()+t.slice(1)}));return R`
+    .add-button { border-color:#2ecc71; color:#2ecc71; box-shadow: 0 2px 24px #2ecc7144; }
+  `;render(){const t=this.config?.auto_discovery_sections?.subbutton??!1,e=at.map(t=>({value:t,label:ot[t]||t.charAt(0).toUpperCase()+t.slice(1)})),i=[];for(let t=0;t<4;t++)(this._expanded[t]||this._hasContent(t))&&i.push(t);return R`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
@@ -873,57 +839,51 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
         <div slot="header" class="glass-header">🎛️ Sub-buttons</div>
 
         <div class="input-group autodiscover">
-          <input
-            type="checkbox"
-            .checked=${t}
-            @change=${t=>this._toggleAuto(t.target.checked)}
-          />
+          <input type="checkbox" .checked=${t} @change=${t=>this._toggleAuto(t.target.checked)} />
           <label>🪄 Auto-discover Subbuttons</label>
         </div>
 
-        ${this._expanded.map((t,i)=>this._renderSubButton(i,t,e))}
+        ${i.map(t=>this._renderSubButton(t,e))}
 
-        <button class="reset-button" @click=${()=>this._reset()}>
-          🧹 Reset Sub-buttons
-        </button>
+        <div class="reset-row">
+          <button class="add-button" @click=${this._addSlot}>＋ Add sub-button</button>
+          <button class="reset-button" @click=${()=>this._reset()}>🧹 Reset Sub-buttons</button>
+        </div>
       </ha-expansion-panel>
-    `}_renderSubButton(t,e,i){const s=this._filters[t],n=this._entities[t],o=bt(this.hass,this.config,"subbutton",s),a=Array.isArray(this.config?.subbuttons)&&this.config.subbuttons[t]||{},r=["toggle","more-info","navigate","call-service","none"];return R`
-      <div class="mini-pill ${e?"expanded":""}">
+    `}_renderSubButton(t,e){const i=this._filters[t],s=this._entities[t],n=bt(this.hass,this.config,"subbutton",i),o=Array.isArray(this.config?.subbuttons)&&this.config.subbuttons[t]||{},a=["toggle","more-info","navigate","call-service","none"],r=!!this._expanded[t];return R`
+      <div class="mini-pill ${r?"expanded":""}">
         <div class="mini-pill-header" @click=${()=>this._togglePill(t)}>
-          Sub-button ${t+1} <span class="chevron">${e?"▼":"▶"}</span>
+          Sub-button ${t+1} <span class="chevron">${r?"▼":"▶"}</span>
         </div>
 
-        ${e?R`
+        ${r?R`
           <div class="mini-pill-content">
-            <!-- Filter categories -->
             <div class="input-group">
               <label>Filter categories:</label>
               <ha-selector
                 .hass=${this.hass}
-                .value=${s}
-                .selector=${{select:{multiple:!0,mode:"box",options:i}}}
+                .value=${i}
+                .selector=${{select:{multiple:!0,mode:"box",options:e}}}
                 @value-changed=${e=>this._onFilter(t,e.detail.value)}
               ></ha-selector>
             </div>
 
-            <!-- Entity -->
             <div class="input-group">
               <label>Entity:</label>
               <ha-selector
                 .hass=${this.hass}
-                .value=${n}
-                .selector=${{entity:{include_entities:o,multiple:!1}}}
+                .value=${s}
+                .selector=${{entity:{include_entities:n,multiple:!1}}}
                 allow-custom-entity
                 @value-changed=${e=>this._onEntity(t,e.detail.value)}
               ></ha-selector>
             </div>
 
-            <!-- Icon -->
             <div class="input-group">
               <label>Icon:</label>
               <ha-icon-picker
                 .hass=${this.hass}
-                .value=${a.icon||""}
+                .value=${o.icon||""}
                 allow-custom-icon
                 @value-changed=${e=>this._onIcon(t,e.detail.value)}
               ></ha-icon-picker>
@@ -933,14 +893,14 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
               <div class="input-group">
                 <label>${"tap"===e?"Tap Action":"Hold Action"}:</label>
                 <div class="pill-group">
-                  ${r.map(i=>R`
+                  ${a.map(i=>R`
                     <button
-                      class="pill-button ${a[`${e}_action`]?.action===i?"active":""}"
+                      class="pill-button ${o[`${e}_action`]?.action===i?"active":""}"
                       @click=${()=>this._onAction(t,e,"action",i)}
                     >${i}</button>
                   `)}
                 </div>
-                ${this._extraFields(t,e,a)}
+                ${this._extraFields(t,e,o)}
               </div>
             `)}
           </div>
@@ -960,7 +920,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
           .value=${i[`${e}_action`]?.service_data?JSON.stringify(i[`${e}_action`].service_data):""}
           @input=${i=>this._onAction(t,e,"service_data",this._safeJson(i.target.value))}
         />
-      `:""}_safeJson(t){try{return JSON.parse(t)}catch{return{}}}_toggleAuto(t){this._emit("auto_discovery_sections.subbutton",t)}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e)}_onFilter(t,e){this._filters[t]=[...e],this._emit("subbutton_filters",this._filters)}_onEntity(t,e){this._entities[t]=e;const i=Array.isArray(this.config?.subbuttons)?this.config.subbuttons:[],s=Array.from({length:6},(t,e)=>i[e]||{}),n=s[t]?.icon||"";let o=n;if(!n&&e){const t=this.hass?.states?.[e],i=t?.attributes?.icon;o=i||Et(e,this.hass)||""}const a=s.map((i,s)=>s===t?{...i||{},entity_id:e,...o?{icon:o}:{}}:i||{});this._emit("subbuttons",a)}_onIcon(t,e){const i=Array.isArray(this.config?.subbuttons)?this.config.subbuttons:[],s=Array.from({length:6},(t,e)=>i[e]||{}).map((i,s)=>s===t?{...i||{},icon:e||""}:i||{});this._emit("subbuttons",s)}_onAction(t,e,i,s){const n=Array.isArray(this.config?.subbuttons)?this.config.subbuttons:[],o=Array.from({length:6},(t,e)=>n[e]||{}).map((n,o)=>{if(o!==t)return n||{};const a=n?.[`${e}_action`]||{};return{...n||{},[`${e}_action`]:{...a,[i]:s}}});this._emit("subbuttons",o)}_reset(){this._expanded=Array(6).fill(!1),this._filters=Array(6).fill().map(()=>[...at]),this._entities=Array(6).fill(""),this._emit("subbutton_filters",this._filters),this._emit("subbuttons",Array(6).fill().map(()=>({})))}_emit(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("sub-button-panel",Tt);class Rt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_room:{type:Object,state:!0},_subbutton:{type:Object,state:!0},_mushroom:{type:Object,state:!0},_sensor:{type:Object,state:!0},_selectedPreset:{type:String,state:!0},_expandedColors:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._room={},this._subbutton={},this._mushroom={},this._sensor={},this._selectedPreset="green",this._expandedColors=[!1,!1,!1]}updated(t){if(t.has("config")){const t=this.config?.colors||{};this._room={icon_active:t.room?.icon_active??"",icon_inactive:t.room?.icon_inactive??"",background_active:t.room?.background_active??"",background_inactive:t.room?.background_inactive??"",text_active:t.room?.text_active??"",text_inactive:t.room?.text_inactive??""},this._subbutton={background_on:t.subbutton?.background_on??"",background_off:t.subbutton?.background_off??"",icon_on:t.subbutton?.icon_on??"",icon_off:t.subbutton?.icon_off??""},this._mushroom={active:t.mushroom?.active??"",inactive:t.mushroom?.inactive??""},this._sensor={sensor_active:t.sensor?.sensor_active??"",sensor_inactive:t.sensor?.sensor_inactive??""}}}get PRESETS(){return{green:{label:"Green",room:{icon_active:"#21df73",icon_inactive:"#173c16",background_active:"rgba(33,223,115,0.12)",background_inactive:"rgba(23,60,22,0.12)",text_active:"#ffffff",text_inactive:"rgba(255,255,255,0.55)"},sub:{background_on:"rgba(33,223,115,1)",background_off:"rgba(33,223,115,0.28)",icon_on:"#fff",icon_off:"#667a6a"},mushroom:{active:"#00e676",inactive:"#7a8b7a"},sensor:{sensor_active:"#21df73",sensor_inactive:"#173c16"}},blue:{label:"Blue",room:{icon_active:"#55afff",icon_inactive:"#0f2a4a",background_active:"rgba(85,175,255,0.14)",background_inactive:"rgba(15,42,74,0.14)",text_active:"#ffffff",text_inactive:"rgba(255,255,255,0.55)"},sub:{background_on:"rgba(85,175,255,1)",background_off:"rgba(85,175,255,0.28)",icon_on:"#fff",icon_off:"#5c6b7a"},mushroom:{active:"#59c3ff",inactive:"#7a8793"},sensor:{sensor_active:"#55afff",sensor_inactive:"#0f2a4a"}},amber:{label:"Amber",room:{icon_active:"#ff9b3d",icon_inactive:"#4a2a0f",background_active:"rgba(255,155,61,0.16)",background_inactive:"rgba(74,42,15,0.12)",text_active:"#ffffff",text_inactive:"rgba(255,255,255,0.55)"},sub:{background_on:"rgba(255,155,61,1)",background_off:"rgba(255,155,61,0.28)",icon_on:"#1f140a",icon_off:"#6b5c52"},mushroom:{active:"#ffb067",inactive:"#8b7a6e"},sensor:{sensor_active:"#ff9b3d",sensor_inactive:"#4a2a0f"}},purple:{label:"Purple",room:{icon_active:"#bd64ff",icon_inactive:"#2c0f4a",background_active:"rgba(189,100,255,0.16)",background_inactive:"rgba(44,15,74,0.12)",text_active:"#ffffff",text_inactive:"rgba(255,255,255,0.55)"},sub:{background_on:"rgba(189,100,255,1)",background_off:"rgba(189,100,255,0.28)",icon_on:"#160a1f",icon_off:"#6b5c7a"},mushroom:{active:"#c785ff",inactive:"#837a8b"},sensor:{sensor_active:"#bd64ff",sensor_inactive:"#2c0f4a"}},red:{label:"Red",room:{icon_active:"#ff5c6a",icon_inactive:"#4a0f1a",background_active:"rgba(255,92,106,0.16)",background_inactive:"rgba(74,15,26,0.12)",text_active:"#ffffff",text_inactive:"rgba(255,255,255,0.55)"},sub:{background_on:"rgba(255,92,106,1)",background_off:"rgba(255,92,106,0.28)",icon_on:"#1f0a10",icon_off:"#7a5c65"},mushroom:{active:"#ff7884",inactive:"#8b7a7f"},sensor:{sensor_active:"#ff5c6a",sensor_inactive:"#4a0f1a"}},gray:{label:"Gray",room:{icon_active:"#c5c8ce",icon_inactive:"#3b4048",background_active:"rgba(197,200,206,0.14)",background_inactive:"rgba(59,64,72,0.12)",text_active:"#ffffff",text_inactive:"rgba(255,255,255,0.55)"},sub:{background_on:"rgba(197,200,206,1)",background_off:"rgba(197,200,206,0.28)",icon_on:"#1a1b1d",icon_off:"#6b707a"},mushroom:{active:"#d7d9de",inactive:"#83878f"},sensor:{sensor_active:"#c5c8ce",sensor_inactive:"#3b4048"}}}}static styles=o`
+      `:""}_safeJson(t){try{return JSON.parse(t)}catch{return{}}}_hasContent(t){const e=Array.isArray(this.config?.subbuttons)&&this.config.subbuttons[t]||{};return!!(e.entity_id||e.icon||e.tap_action||e.hold_action)}_addSlot=()=>{for(let t=0;t<4;t++)if(!this._hasContent(t)&&!this._expanded[t]){this._expanded=this._expanded.map((e,i)=>i===t||e);break}};_toggleAuto(t){this._emit("auto_discovery_sections.subbutton",t)}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t?!e:e)}_onFilter(t,e){this._filters[t]=[...e],this._emit("subbutton_filters",this._filters)}_onEntity(t,e){this._entities[t]=e;const i=Array.isArray(this.config?.subbuttons)?this.config.subbuttons:[],s=Array.from({length:4},(t,e)=>i[e]||{}),n=s[t]?.icon||"";let o=n;if(!n&&e){const t=this.hass?.states?.[e],i=t?.attributes?.icon;o=i||Et(e,this.hass)||""}const a=s.map((i,s)=>s===t?{...i||{},entity_id:e,...o?{icon:o}:{}}:i||{});this._emit("subbuttons",a),this._expanded[t]||(this._expanded=this._expanded.map((e,i)=>i===t||e))}_onIcon(t,e){const i=Array.isArray(this.config?.subbuttons)?this.config.subbuttons:[],s=Array.from({length:4},(t,e)=>i[e]||{}).map((i,s)=>s===t?{...i||{},icon:e||""}:i||{});this._emit("subbuttons",s)}_onAction(t,e,i,s){const n=Array.isArray(this.config?.subbuttons)?this.config.subbuttons:[],o=Array.from({length:4},(t,e)=>n[e]||{}).map((n,o)=>{if(o!==t)return n||{};const a=n?.[`${e}_action`]||{};return{...n||{},[`${e}_action`]:{...a,[i]:s}}});this._emit("subbuttons",o)}_reset(){this._expanded=Array(4).fill(!1),this._filters=Array(4).fill().map(()=>[...at]),this._entities=Array(4).fill(""),this._emit("subbutton_filters",this._filters),this._emit("subbuttons",Array(4).fill().map(()=>({})))}_emit(t,e){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:t,val:e},bubbles:!0,composed:!0}))}}customElements.define("sub-button-panel",Tt);class Rt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_room:{type:Object,state:!0},_subbutton:{type:Object,state:!0},_mushroom:{type:Object,state:!0},_sensor:{type:Object,state:!0},_selectedPreset:{type:String,state:!0},_expandedColors:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._room={},this._subbutton={},this._mushroom={},this._sensor={},this._selectedPreset="green",this._expandedColors=[!1,!1,!1]}updated(t){if(t.has("config")){const t=this.config?.colors||{};this._room={icon_active:t.room?.icon_active??"",icon_inactive:t.room?.icon_inactive??"",background_active:t.room?.background_active??"",background_inactive:t.room?.background_inactive??"",text_active:t.room?.text_active??"",text_inactive:t.room?.text_inactive??""},this._subbutton={background_on:t.subbutton?.background_on??"",background_off:t.subbutton?.background_off??"",icon_on:t.subbutton?.icon_on??"",icon_off:t.subbutton?.icon_off??""},this._mushroom={active:t.mushroom?.active??"",inactive:t.mushroom?.inactive??""},this._sensor={sensor_active:t.sensor?.sensor_active??"",sensor_inactive:t.sensor?.sensor_inactive??""}}}get PRESETS(){return{green:{label:"Green",room:{icon_active:"#21df73",icon_inactive:"#173c16",background_active:"rgba(33,223,115,0.12)",background_inactive:"rgba(23,60,22,0.12)",text_active:"#ffffff",text_inactive:"rgba(255,255,255,0.55)"},sub:{background_on:"rgba(33,223,115,1)",background_off:"rgba(33,223,115,0.28)",icon_on:"#fff",icon_off:"#667a6a"},mushroom:{active:"#00e676",inactive:"#7a8b7a"},sensor:{sensor_active:"#21df73",sensor_inactive:"#173c16"}},blue:{label:"Blue",room:{icon_active:"#55afff",icon_inactive:"#0f2a4a",background_active:"rgba(85,175,255,0.14)",background_inactive:"rgba(15,42,74,0.14)",text_active:"#ffffff",text_inactive:"rgba(255,255,255,0.55)"},sub:{background_on:"rgba(85,175,255,1)",background_off:"rgba(85,175,255,0.28)",icon_on:"#fff",icon_off:"#5c6b7a"},mushroom:{active:"#59c3ff",inactive:"#7a8793"},sensor:{sensor_active:"#55afff",sensor_inactive:"#0f2a4a"}},amber:{label:"Amber",room:{icon_active:"#ff9b3d",icon_inactive:"#4a2a0f",background_active:"rgba(255,155,61,0.16)",background_inactive:"rgba(74,42,15,0.12)",text_active:"#ffffff",text_inactive:"rgba(255,255,255,0.55)"},sub:{background_on:"rgba(255,155,61,1)",background_off:"rgba(255,155,61,0.28)",icon_on:"#1f140a",icon_off:"#6b5c52"},mushroom:{active:"#ffb067",inactive:"#8b7a6e"},sensor:{sensor_active:"#ff9b3d",sensor_inactive:"#4a2a0f"}},purple:{label:"Purple",room:{icon_active:"#bd64ff",icon_inactive:"#2c0f4a",background_active:"rgba(189,100,255,0.16)",background_inactive:"rgba(44,15,74,0.12)",text_active:"#ffffff",text_inactive:"rgba(255,255,255,0.55)"},sub:{background_on:"rgba(189,100,255,1)",background_off:"rgba(189,100,255,0.28)",icon_on:"#160a1f",icon_off:"#6b5c7a"},mushroom:{active:"#c785ff",inactive:"#837a8b"},sensor:{sensor_active:"#bd64ff",sensor_inactive:"#2c0f4a"}},red:{label:"Red",room:{icon_active:"#ff5c6a",icon_inactive:"#4a0f1a",background_active:"rgba(255,92,106,0.16)",background_inactive:"rgba(74,15,26,0.12)",text_active:"#ffffff",text_inactive:"rgba(255,255,255,0.55)"},sub:{background_on:"rgba(255,92,106,1)",background_off:"rgba(255,92,106,0.28)",icon_on:"#1f0a10",icon_off:"#7a5c65"},mushroom:{active:"#ff7884",inactive:"#8b7a7f"},sensor:{sensor_active:"#ff5c6a",sensor_inactive:"#4a0f1a"}},gray:{label:"Gray",room:{icon_active:"#c5c8ce",icon_inactive:"#3b4048",background_active:"rgba(197,200,206,0.14)",background_inactive:"rgba(59,64,72,0.12)",text_active:"#ffffff",text_inactive:"rgba(255,255,255,0.55)"},sub:{background_on:"rgba(197,200,206,1)",background_off:"rgba(197,200,206,0.28)",icon_on:"#1a1b1d",icon_off:"#6b707a"},mushroom:{active:"#d7d9de",inactive:"#83878f"},sensor:{sensor_active:"#c5c8ce",sensor_inactive:"#3b4048"}}}}static styles=o`
     :host { display:block; }
     .glass-panel {
       margin: 0 !important;
