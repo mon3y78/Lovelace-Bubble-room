@@ -2,7 +2,6 @@
 import { LitElement, html, css } from 'lit';
 import { candidatesFor } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
-import { IconCache } from '../helpers/icon-cache.js';
 
 export class CameraPanel extends LitElement {
   static properties = {
@@ -22,16 +21,13 @@ export class CameraPanel extends LitElement {
     this._entity  = '';
     this._icon    = '';
     this._cameraCandidates = [];
-    this._iconCache = new IconCache();
   }
 
   // ---- helpers area/registry ------------------------------------------------
   _resolveAreaRef() {
-    // Usa SOLO l'area scelta in config (nome o area_id). Niente fallback sull'entità.
     const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
-    const areaName = (typeof raw === 'string' && !raw?.startsWith('area_')) ? raw : '';
-    let areaId = (typeof raw === 'string' && raw?.startsWith('area_')) ? raw : '';
-
+    const areaName = (typeof raw === 'string' && !raw.startsWith('area_')) ? raw : '';
+    let areaId = (typeof raw === 'string' && raw.startsWith('area_')) ? raw : '';
     const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
     if (!areaId && areas.length && areaName) {
       const hit = areas.find(a => (a.name || '').toLowerCase() === String(areaName).toLowerCase());
@@ -69,17 +65,11 @@ export class CameraPanel extends LitElement {
       const ent = this.config?.entities?.camera?.entity || '';
       const ico = this.config?.entities?.camera?.icon   || '';
 
-      // auto-icona se vuota, usando cache
+      // auto-icona se vuota
       if (ent && !ico) {
-        let autoIcon = this._iconCache.get(ent);
-        if (!autoIcon) {
-          const st = this.hass?.states?.[ent];
-          const iconFromState = st?.attributes?.icon;
-          autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
-          if (autoIcon) {
-            this._iconCache.set(ent, autoIcon);
-          }
-        }
+        const st = this.hass?.states?.[ent];
+        const iconFromState = st?.attributes?.icon;
+        const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
         if (autoIcon) this._set('entities.camera.icon', autoIcon);
       }
 
@@ -136,7 +126,7 @@ export class CameraPanel extends LitElement {
     .input-group label {
       display:block; font-weight:700; margin-bottom:6px; color:#7ec2ff;
     }
-    ha-selector { width:100%; box-sizing:border-box; }
+    ha-selector, ha-icon-picker { width:100%; box-sizing:border-box; }
     .reset-button {
       border: 3.5px solid #ff4c6a; color:#ff4c6a; border-radius:24px;
       padding:12px 38px; background:transparent; cursor:pointer;
@@ -181,12 +171,12 @@ export class CameraPanel extends LitElement {
 
         <div class="input-group">
           <label>Camera Icon:</label>
-          <ha-selector
+          <ha-icon-picker
             .hass=${this.hass}
             .value=${this._icon}
-            .selector={{ icon: {} }}
+            allow-custom-icon
             @value-changed=${e => this._set('entities.camera.icon', e.detail.value)}
-          ></ha-selector>
+          ></ha-icon-picker>
         </div>
 
         <button

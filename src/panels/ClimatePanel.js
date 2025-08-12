@@ -25,11 +25,10 @@ export class ClimatePanel extends LitElement {
 
   // ---- helpers area/registry ------------------------------------------------
   _resolveAreaRef() {
-    // Usa SOLO l'area scelta in config (nome o area_id). Niente fallback sull'entità.
+    // Usa SOLO l'area scelta in config
     const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
-    const areaName = (typeof raw === 'string' && !raw?.startsWith('area_')) ? raw : '';
-    let areaId = (typeof raw === 'string' && raw?.startsWith('area_')) ? raw : '';
-
+    const areaName = (typeof raw === 'string' && !raw.startsWith('area_')) ? raw : '';
+    let areaId = (typeof raw === 'string' && raw.startsWith('area_')) ? raw : '';
     const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
     if (!areaId && areas.length && areaName) {
       const hit = areas.find(a => (a.name || '').toLowerCase() === String(areaName).toLowerCase());
@@ -128,7 +127,7 @@ export class ClimatePanel extends LitElement {
     .input-group label {
       display:block; font-weight:700; margin-bottom:6px; color:#ffb07e;
     }
-    ha-selector { width:100%; box-sizing:border-box; }
+    ha-selector, ha-icon-picker { width:100%; box-sizing:border-box; }
     .reset-button {
       border: 3.5px solid #ff4c6a; color:#ff4c6a; border-radius:24px;
       padding:12px 38px; background:transparent; cursor:pointer;
@@ -173,12 +172,12 @@ export class ClimatePanel extends LitElement {
 
         <div class="input-group">
           <label>Climate Icon:</label>
-          <ha-selector
+          <ha-icon-picker
             .hass=${this.hass}
             .value=${this._icon}
-            .selector={{ icon: {} }}
+            allow-custom-icon
             @value-changed=${e => this._set('entities.climate.icon', e.detail.value)}
-          ></ha-selector>
+          ></ha-icon-picker>
         </div>
 
         <button
