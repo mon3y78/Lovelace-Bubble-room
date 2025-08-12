@@ -2,7 +2,6 @@
 import { LitElement, html, css } from 'lit';
 import { candidatesFor } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 
 export class CameraPanel extends LitElement {
   static properties = {
@@ -22,30 +21,44 @@ export class CameraPanel extends LitElement {
     this._entity  = '';
     this._icon    = '';
     this._cameraCandidates = [];
-
-    // evita side-effect mentre sincronizziamo da config → stato locale
-    this._syncingFromConfig = false;
   }
 
   // ---- helpers area/registry ------------------------------------------------
   _resolveAreaRef() {
+    // Rispetta SEMPRE l'area selezionata in config, se presente
     const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
-    const areaName = (typeof raw === 'string' && !raw.startsWith('area_')) ? raw : '';
-    let areaId = (typeof raw === 'string' && raw.startsWith('area_')) ? raw : '';
-    const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
-    if (!areaId && areas.length && areaName) {
-      const hit = areas.find(a => (a.name || '').toLowerCase() === String(areaName).toLowerCase());
-      if (hit?.area_id) areaId = hit.area_id;
+
+    if (typeof raw === 'string' && raw) {
+      if (raw.startsWith('area_')) {
+        return { areaId: raw, areaName: '' };
+      }
+      // è un nome area: prova a risolvere l'ID se disponibile, ma NON fare fallback su entity
+      let areaId = '';
+      const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
+      if (areas.length) {
+        const hit = areas.find(a => (a.name || '').toLowerCase() === String(raw).toLowerCase());
+        if (hit?.area_id) areaId = hit.area_id;
+      }
+      return { areaId, areaName: raw };
     }
-    if (!areaId) {
-      const ent = this.config?.entities?.camera?.entity;
-      const reg = this.hass?.entities;
-      if (ent && reg?.[ent]?.area_id) areaId = reg[ent].area_id;
-    }
+
+    // Se config.area NON è impostata, allora e solo allora fallback su entity/attributes
+    let areaId = '';
+    let areaName = '';
+    const ent = this.config?.entities?.camera?.entity;
+    const reg = this.hass?.entities;
+    const st  = ent ? this.hass?.states?.[ent] : undefined;
+
+    if (ent && reg?.[ent]?.area_id) areaId = reg[ent].area_id;
+    if (!areaId && st?.attributes?.area_id) areaId = st.attributes.area_id;
+    if (!areaId && st?.attributes?.area)    areaName = st.attributes.area;
+
     return { areaId, areaName };
   }
 
   _matchAreaForEntityId(id, areaId, areaName) {
+    if (!(areaId || areaName)) return true;
+
     const reg = this.hass?.entities;
     if (areaId && reg?.[id]?.area_id) return reg[id].area_id === areaId;
 
@@ -71,15 +84,10 @@ export class CameraPanel extends LitElement {
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      this._syncingFromConfig = true;
-
-      // allinea agli altri pannelli: trigger pipeline autodiscovery (se abilitata)
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.camera');
-
       const ent = this.config?.entities?.camera?.entity || '';
       const ico = this.config?.entities?.camera?.icon   || '';
 
-      // auto-icona se vuota
+      // auto-icona se vuota (icona stato -> fallback mapping)
       if (ent && !ico) {
         const st = this.hass?.states?.[ent];
         const iconFromState = st?.attributes?.icon;
@@ -106,8 +114,6 @@ export class CameraPanel extends LitElement {
       } else {
         this._cameraCandidates = [];
       }
-
-      this._syncingFromConfig = false;
     }
   }
 
@@ -142,7 +148,7 @@ export class CameraPanel extends LitElement {
     .input-group label {
       display:block; font-weight:700; margin-bottom:6px; color:#7ec2ff;
     }
-    ha-selector { width:100%; box-sizing:border-box; }
+    ha-selector, ha-icon-picker { width:100%; box-sizing:border-box; }
     .reset-button {
       border: 3.5px solid #ff4c6a; color:#ff4c6a; border-radius:24px;
       padding:12px 38px; background:transparent; cursor:pointer;
@@ -177,8 +183,8 @@ export class CameraPanel extends LitElement {
             .value=${this._entity}
             .selector=${
               this._cameraCandidates.length
-                ? { entity: { include_entities: this._cameraCandidates } }
-                : { entity: { domain: 'camera' } }
+                ? { entity: { include_entities: this._cameraCandidates, multiple: false } }
+                : { entity: { domain: 'camera', multiple: false } }
             }
             allow-custom-entity
             @value-changed=${e => this._set('entities.camera.entity', e.detail.value)}
@@ -187,12 +193,12 @@ export class CameraPanel extends LitElement {
 
         <div class="input-group">
           <label>Camera Icon:</label>
-          <ha-selector
+          <ha-icon-picker
             .hass=${this.hass}
             .value=${this._icon}
-            .selector={{ icon: {} }}
+            allow-custom-icon
             @value-changed=${e => this._set('entities.camera.icon', e.detail.value)}
-          ></ha-selector>
+          ></ha-icon-picker>
         </div>
 
         <button
