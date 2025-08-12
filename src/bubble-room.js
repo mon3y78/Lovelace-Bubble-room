@@ -340,7 +340,7 @@ export class BubbleRoom extends LitElement {
       border:2px dashed purple; }
     .name-placeholder { display:flex; align-items:center; justify-content:center;
       width:100%; max-width:100%; height:100%; box-sizing:border-box;
-      contain:strict; flex-shrink:1; }
+      contain:strict; flex-shrink:1; border:2px dashed yellow; }
     .icon-mushroom-area { border:2px dashed violet; box-sizing:border-box;
       position:relative; width:100%; height:100%; display:flex; align-items:center; }
     .k-space { border:2px dashed black; box-sizing:border-box; }
