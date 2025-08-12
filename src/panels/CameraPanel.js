@@ -1,8 +1,6 @@
 // src/panels/CameraPanel.js
 import { LitElement, html, css } from 'lit';
-import { candidatesFor } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
-import { IconCache } from '../helpers/icon-cache.js';
 
 export class CameraPanel extends LitElement {
   static properties = {
@@ -11,7 +9,6 @@ export class CameraPanel extends LitElement {
     expanded: { type: Boolean },
     _entity:  { type: String, state: true },
     _icon:    { type: String, state: true },
-    _cameraCandidates: { type: Array, state: true },
   };
 
   constructor() {
@@ -21,57 +18,14 @@ export class CameraPanel extends LitElement {
     this.expanded = false;
     this._entity  = '';
     this._icon    = '';
-    this._cameraCandidates = [];
   }
-
-  // ---- helpers area/registry ------------------------------------------------
-  _resolveAreaRef() {
-    const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
-    const areaName = (typeof raw === 'string' && !raw.startsWith('area_')) ? raw : '';
-    let areaId = (typeof raw === 'string' && raw.startsWith('area_')) ? raw : '';
-    const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
-    if (!areaId && areas.length && areaName) {
-      const hit = areas.find(a => (a.name || '').toLowerCase() === String(areaName).toLowerCase());
-      if (hit?.area_id) areaId = hit.area_id;
-    }
-    if (!areaId) {
-      const ent = this.config?.entities?.camera?.entity;
-      const reg = this.hass?.entities;
-      if (ent && reg?.[ent]?.area_id) areaId = reg[ent].area_id;
-    }
-    return { areaId, areaName };
-  }
-
-  _matchAreaForEntityId(id, areaId, areaName) {
-    const reg = this.hass?.entities;
-    if (areaId && reg?.[id]?.area_id) return reg[id].area_id === areaId;
-
-    const st = this.hass?.states?.[id];
-    if (!st) return !(areaId || areaName);
-
-    const attrAreaId   = st.attributes?.area_id;
-    const attrAreaName = st.attributes?.area;
-
-    if (areaId && attrAreaId)   return attrAreaId === areaId;
-    if (areaName && attrAreaName) {
-      return String(attrAreaName).toLowerCase() === String(areaName).toLowerCase();
-    }
-    return !(areaId || areaName);
-  }
-
-  _filterByAreaIncludeSelected(list, areaId, areaName, selected) {
-    const filtered = (list || []).filter(id => this._matchAreaForEntityId(id, areaId, areaName));
-    if (selected && !filtered.includes(selected)) filtered.unshift(selected);
-    return Array.from(new Set(filtered));
-  }
-  // --------------------------------------------------------------------------
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
       const ent = this.config?.entities?.camera?.entity || '';
       const ico = this.config?.entities?.camera?.icon   || '';
 
-      // auto-icona se vuota
+      // auto-icona se vuota: 1) attributes.icon 2) fallback resolveEntityIcon
       if (ent && !ico) {
         const st = this.hass?.states?.[ent];
         const iconFromState = st?.attributes?.icon;
@@ -81,23 +35,6 @@ export class CameraPanel extends LitElement {
 
       this._entity = ent;
       this._icon   = this.config?.entities?.camera?.icon || '';
-
-      // candidati: dominio corretto + filtro area + mantieni selezionato
-      const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
-      if (autoDisc) {
-        const { areaId, areaName } = this._resolveAreaRef();
-
-        let camerasAll = candidatesFor(this.hass, this.config, 'camera') || [];
-        if (!camerasAll.length && this.hass?.states) {
-          camerasAll = Object.keys(this.hass.states).filter(id => id.startsWith('camera.'));
-        }
-
-        this._cameraCandidates = this._filterByAreaIncludeSelected(
-          camerasAll, areaId, areaName, this._entity
-        );
-      } else {
-        this._cameraCandidates = [];
-      }
     }
   }
 
@@ -121,13 +58,6 @@ export class CameraPanel extends LitElement {
       padding: 22px 0; text-align: center; font-size: 1.12rem;
       font-weight: 700; color: #fff;
     }
-    .input-group.autodiscover {
-      margin: 0 16px 13px; padding: 14px 18px 10px;
-      background: rgba(20,40,70,0.23);
-      border: 1.5px solid rgba(255,255,255,0.13);
-      box-shadow: 0 2px 14px rgba(40,120,180,0.10);
-      border-radius: 18px; display:flex; align-items:center; gap:8px;
-    }
     .input-group { margin: 12px 16px; }
     .input-group label {
       display:block; font-weight:700; margin-bottom:6px; color:#7ec2ff;
@@ -142,7 +72,6 @@ export class CameraPanel extends LitElement {
   `;
 
   render() {
-    const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
     return html`
       <ha-expansion-panel
         class="glass-panel"
@@ -151,25 +80,12 @@ export class CameraPanel extends LitElement {
       >
         <div slot="header" class="glass-header">📷 Camera</div>
 
-        <div class="input-group autodiscover">
-          <input
-            type="checkbox"
-            .checked=${autoDisc}
-            @change=${e => this._toggleAuto(e.target.checked)}
-          />
-          <label>🪄 Auto-discovery</label>
-        </div>
-
         <div class="input-group">
           <label>Camera (ID):</label>
           <ha-selector
             .hass=${this.hass}
             .value=${this._entity}
-            .selector=${
-              this._cameraCandidates.length
-                ? { entity: { include_entities: this._cameraCandidates } }
-                : { entity: { domain: 'camera' } }
-            }
+            .selector=${{ entity: { domain: 'camera' } }}
             allow-custom-entity
             @value-changed=${e => this._set('entities.camera.entity', e.detail.value)}
           ></ha-selector>
@@ -181,7 +97,6 @@ export class CameraPanel extends LitElement {
             .hass=${this.hass}
             .value=${this._icon}
             allow-custom-icon
-            @opened=${() => IconCache.warm(this.hass)}
             @value-changed=${e => this._set('entities.camera.icon', e.detail.value)}
           ></ha-icon-picker>
         </div>
@@ -197,13 +112,6 @@ export class CameraPanel extends LitElement {
         >🧹 Reset Camera</button>
       </ha-expansion-panel>
     `;
-  }
-
-  _toggleAuto(on) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'auto_discovery_sections.camera', val: on },
-      bubbles: true, composed: true,
-    }));
   }
 
   _set(prop, val) {
