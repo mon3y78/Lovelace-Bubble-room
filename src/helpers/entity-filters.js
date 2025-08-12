@@ -41,7 +41,7 @@ export const COMMON_CATS = [
   'vacuum',
 ];
 
-/* ───────────── filtri di sezione (no area qui!) ───────────── */
+/* ───────────── filtri di sezione (senza filtro area qui) ───────────── */
 export const FILTERS = {
   presence: (cats = []) => ({
     includeDomains: COMMON_CATS,
@@ -139,7 +139,7 @@ function _entitiesMap(hass) {
   return map;
 }
 
-/** Ricava { areaId, areaName } dalla config (accetta nome o area_id). */
+/** Ricava { areaId, areaName } da config.area (accetta nome o area_id). */
 function _resolveAreaRef(hass, config) {
   const raw = Array.isArray(config?.area) ? config.area[0] : config?.area;
   if (!raw || typeof raw !== 'string') return { areaId: '', areaName: '' };
@@ -153,7 +153,7 @@ function _resolveAreaRef(hass, config) {
   return { areaId: hit?.area_id || '', areaName: name };
 }
 
-/** Verifica se un entity è in area (entity.area_id → device.area_id → state.attributes). */
+/** Verifica se una entity è in area (entity.area_id → device.area_id → state.attributes). */
 function _matchArea(hass, entityId, areaId, areaName) {
   if (!(areaId || areaName)) return true;
 
@@ -182,7 +182,7 @@ function _matchArea(hass, entityId, areaId, areaName) {
     }
   }
 
-  // fallback: non escludere se non determinabile
+  // fallback: se non determinabile, non escludere
   return true;
 }
 
@@ -202,12 +202,12 @@ export function entitiesInArea(hass, areaRef) {
   return all.filter((eid) => _matchArea(hass, eid, areaId, areaName));
 }
 
-/* ───────────── candidatesFor: genera la lista per i selector ─────────────
-   NOTE: area‑scoping applicato SOLO a camera/climate (gli altri restano invariati). */
+/* ───────────── candidatesFor: lista per i selector ─────────────
+   NOTE: filtro per area applicato SOLO a camera/climate (gli altri invariati). */
 export function candidatesFor(hass, config, section, cats = []) {
   if (!hass?.states) return [];
 
-  // 1) selettore filtri base per sezione
+  // 1) filtri base per sezione
   let desc;
   if (section === 'presence') {
     desc = FILTERS.presence(cats);
@@ -230,7 +230,7 @@ export function candidatesFor(hass, config, section, cats = []) {
     desc.includeDomains.includes(id.split('.')[0])
   );
 
-  // 3) filtro device_class/domains specifico
+  // 3) filtro specifico (device_class/domains)
   const byDesc = byDomain.filter((id) => desc.entityFilter(id, hass));
 
   // 4) (solo camera/climate) scoping area quando AD è attivo e area presente
@@ -241,15 +241,17 @@ export function candidatesFor(hass, config, section, cats = []) {
     const { areaId, areaName } = _resolveAreaRef(hass, config);
     if (areaId || areaName) {
       const filtered = byDesc.filter((eid) => _matchArea(hass, eid, areaId, areaName));
+
       const selected =
         section === 'camera'
           ? (config?.entities?.camera?.entity || '')
           : (config?.entities?.climate?.entity || '');
-      const base = filtered.length ? filtered : byDesc; // fallback se il match area è vuoto
+
+      const base = filtered.length ? filtered : byDesc; // fallback se match area vuoto
       return _keepSelectedFirst(base, selected);
     }
   }
 
-  // 5) per tutte le altre sezioni (o se area non definita), nessun filtraggio extra
+  // 5) per tutte le altre sezioni (o se area non definita), nessun filtro extra
   return byDesc;
 }
