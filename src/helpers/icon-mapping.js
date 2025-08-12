@@ -1,3 +1,4 @@
+// src/helpers/icon-mapping.js
 import { IconCache } from './icon-cache.js';
 
 /** Icone dipendenti dalla device_class e dallo stato on/off */
@@ -53,27 +54,39 @@ export const DOMAIN_ICON_MAP = {
   siren: 'mdi:bullhorn'
 };
 
+/** Normalizza gli argomenti per accettare sia (entityId, hass) sia (hass, entityId) */
+function _normalizeArgs(a, b) {
+  // se "a" sembra un hass (ha .states), vuol dire che l’ordine è invertito
+  const aLooksLikeHass = a && typeof a === 'object' && a.states && typeof b === 'string';
+  if (aLooksLikeHass) return { entityId: b, hass: a };
+
+  // ordine “nuovo” atteso: (entityId, hass)
+  return { entityId: a, hass: b };
+}
+
 /**
  * Risolve l'icona di un'entità, con caching per migliorare le prestazioni.
+ * Firma compatibile: resolveEntityIcon(entityId, hass) **o** resolveEntityIcon(hass, entityId)
  */
-export function resolveEntityIcon(entityId, hass) {
+export function resolveEntityIcon(a, b) {
+  const { entityId, hass } = _normalizeArgs(a, b);
+  if (!entityId) return DEFAULT_ICON;
+
   const cachedIcon = IconCache.get(entityId);
-  if (cachedIcon) {
-    return cachedIcon;
-  }
-  
-  const stateObj = hass.states?.[entityId];
+  if (cachedIcon) return cachedIcon;
+
+  const stateObj = hass?.states?.[entityId];
   const attrs = stateObj?.attributes || {};
   const devClass = attrs.device_class;
   const domain = entityId?.split('.')?.[0] ?? '';
   const entityState = stateObj?.state;
-  
-  const devIcon = devClass && DEVICE_CLASS_ICON_MAP[devClass] ?
-    DEVICE_CLASS_ICON_MAP[devClass][entityState === 'on' ? 'on' : 'off'] :
-    null;
-  
+
+  const devIcon = devClass && DEVICE_CLASS_ICON_MAP[devClass]
+    ? DEVICE_CLASS_ICON_MAP[devClass][entityState === 'on' ? 'on' : 'off']
+    : null;
+
   const resolvedIcon = attrs.icon || devIcon || DOMAIN_ICON_MAP[domain] || DEFAULT_ICON;
-  
+
   IconCache.set(entityId, resolvedIcon);
   return resolvedIcon;
 }
