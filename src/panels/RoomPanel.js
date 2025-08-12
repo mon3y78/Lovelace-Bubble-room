@@ -203,30 +203,45 @@ export class RoomPanel extends LitElement {
   }
 
   updated(changed) {
-    if (changed.has('config') || changed.has('hass')) {
-      this._syncingFromConfig = true;
-      
-      // ✅ Auto-discover solo se area è già valorizzata
-      if (this.config?.area) {
-        maybeAutoDiscover(this.hass, this.config, 'area');
-      }
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.presence');
-
-      // 🔸 Pre‑warm cache icone MDI (in memoria) — chiamata idempotente
-      IconCache.warm(this.hass);
-
-      if (changed.has('config') && Array.isArray(this.config.presence_filters)) {
+    if (!changed.has('config') && !changed.has('hass')) return;
+  
+    this._syncingFromConfig = true;
+  
+    // 🔁 Applica autodiscovery su cambio area / primo load se area è valorizzata
+    if (this.config?.area || this.config?.area_id) {
+      // 'area' è un trigger "globale": l'helper applica AD a tutte le sezioni abilitate
+      maybeAutoDiscover(this.hass, this.config, 'area', false);
+    }
+  
+    // 🔸 Pre‑warm cache icone MDI — idempotente
+    IconCache.warm(this.hass);
+  
+    // 🧩 Sync filtri presenza dall a config (se presenti)
+    if (changed.has('config')) {
+      if (Array.isArray(this.config?.presence_filters)) {
         this.activeFilters = [...this.config.presence_filters];
       }
-
-      const cfgLayout = this.config.layout;
+      const cfgLayout = this.config?.layout;
       if (cfgLayout && cfgLayout !== this.layout) {
         this.layout = cfgLayout;
       }
-
-      this._syncingFromConfig = false;
+    }
+  
+    this._syncingFromConfig = false;
+  
+    // 🎨 Auto‑icona stanza al primo load: se c'è una presence e manca l'icona della stanza
+    const pres = this.config?.entities?.presence?.entity;
+    const roomIcon = this.config?.icon || '';
+    if (pres && !roomIcon) {
+      const st = this.hass?.states?.[pres];
+      const autoIcon = st?.attributes?.icon || resolveEntityIcon(pres, this.hass);
+      if (autoIcon) {
+        // emetti l'aggiornamento dell'icona stanza
+        this._fire('icon', autoIcon);
+      }
     }
   }
+  
 
   _onLayoutClick(mode) {
     this.layout = mode;
@@ -271,6 +286,7 @@ export class RoomPanel extends LitElement {
     const next = {
       ...cfg,
       area: v,
+      area_id: v,
       auto_discovery_sections: ad
     };
 

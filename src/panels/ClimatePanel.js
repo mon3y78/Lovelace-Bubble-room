@@ -28,22 +28,42 @@ export class ClimatePanel extends LitElement {
   }
 
   updated(changed) {
-    if (changed.has('config') || changed.has('hass')) {
-      this._syncingFromConfig = true;
-
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.climate');
-
-      const ent = this.config?.entities?.climate?.entity || '';
-      const ico = this.config?.entities?.climate?.icon   || '';
-      this._entity = ent;
-      this._icon   = ico;
-
-      const list = candidatesFor(this.hass, this.config, 'climate') || [];
-      this._candidates = Array.isArray(list) ? list : [];
-
-      this._syncingFromConfig = false;
+    if (!changed.has('config') && !changed.has('hass')) return;
+  
+    this._syncingFromConfig = true;
+  
+    // 🔁 Applica autodiscovery in base all'area (copre climate se attivo)
+    if (this.config?.area || this.config?.area_id) {
+      maybeAutoDiscover(this.hass, this.config, 'area', false);
     }
+  
+    // 🔹 Entità e icona dalla config
+    const ent = this.config?.entities?.climate?.entity || '';
+    const ico = this.config?.entities?.climate?.icon   || '';
+    this._entity = ent;
+    this._icon   = ico;
+  
+    // 🎯 Candidate filtrate per area (keep selected)
+    const list = candidatesFor(this.hass, this.config, 'climate') || [];
+    this._candidates = Array.isArray(list) ? list : [];
+  
+    // 🎨 Auto-icona al primo load se entità presente e icona vuota
+    if (this._entity && !this._icon) {
+      const st = this.hass?.states?.[this._entity];
+      const iconFromState = st?.attributes?.icon;
+      const autoIcon = iconFromState || resolveEntityIcon(this._entity, this.hass);
+      if (autoIcon) {
+        this._icon = autoIcon;
+        this.dispatchEvent(new CustomEvent('panel-changed', {
+          detail: { prop: 'entities.climate.icon', val: autoIcon },
+          bubbles: true, composed: true,
+        }));
+      }
+    }
+  
+    this._syncingFromConfig = false;
   }
+  
 
   static styles = css`
     :host { display: block; }

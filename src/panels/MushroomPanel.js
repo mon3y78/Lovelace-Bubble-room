@@ -36,32 +36,51 @@ export class MushroomPanel extends LitElement {
   }
 
   updated(changed) {
-    if (changed.has('config') || changed.has('hass')) {
-      this._syncingFromConfig = true;
+    if (!changed.has('config') && !changed.has('hass')) return;
 
-      // 1) auto-discover opzionale
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.mushroom');
+    this._syncingFromConfig = true;
 
-      // 2) sincronizza filtri da config (se presenti)
-      const cfgFilters = this.config.mushroom_filters;
-      if (Array.isArray(cfgFilters) && cfgFilters.length === 5) {
-        this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...COMMON_CATS]);
+    // 1) Autodiscovery area-based (copre la sezione mushroom se il toggle è attivo)
+    if (this.config?.area || this.config?.area_id) {
+      maybeAutoDiscover(this.hass, this.config, 'area', false);
+    }
+
+    // 2) sincronizza filtri da config (se presenti)
+    const cfgFilters = this.config?.mushroom_filters;
+    if (Array.isArray(cfgFilters) && cfgFilters.length === 5) {
+      this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...COMMON_CATS]);
+    }
+
+    // 3) sincronizza entity + icon da config.entities
+    const ents = this.config?.entities || {};
+    for (let i = 0; i < 5; i++) {
+      const key = `mushroom${i+1}`;
+      const rec = ents[key] || {};
+      if (rec.entity) this._entities[i] = rec.entity;
+      if (typeof rec.icon === 'string') this._icons[i] = rec.icon;
+    }
+
+    this._syncingFromConfig = false;
+
+    // 4) Auto-icona al primo load: se c'è entità ma l'icona in config è vuota, impostala ora
+    const pending = [];
+    for (let i = 0; i < 5; i++) {
+      const key = `mushroom${i+1}`;
+      const ent = this._entities[i];
+      const cfgIcon = this.config?.entities?.[key]?.icon;
+      if (ent && !cfgIcon) {
+        const autoIco = this._autoIconFor(ent);
+        if (autoIco) pending.push({ i, key, icon: autoIco });
       }
-
-      // 3) sincronizza entity + icon da config.entities
-      const ents = this.config.entities || {};
-      for (let i = 0; i < 5; i++) {
-        const key = `mushroom${i+1}`;
-        const rec = ents[key] || {};
-        if (rec.entity) this._entities[i] = rec.entity;
-        if (typeof rec.icon === 'string') this._icons[i] = rec.icon;
+    }
+    if (pending.length) {
+      for (const { i, key, icon } of pending) {
+        this._icons[i] = icon;
+        this.dispatchEvent(new CustomEvent('panel-changed', {
+          detail: { prop: `entities.${key}.icon`, val: icon },
+          bubbles: true, composed: true,
+        }));
       }
-
-      // 4) **IMPORTANTE**: niente auto-icona qui.
-      //    L’auto-icona viene gestita SOLO in _onEntity() quando l’utente
-      //    seleziona l’entità, così evitiamo loop di panel-changed.
-
-      this._syncingFromConfig = false;
     }
   }
 
@@ -186,7 +205,7 @@ export class MushroomPanel extends LitElement {
   `;
 
   render() {
-    const autoDisc = this.config.auto_discovery_sections?.mushroom ?? false;
+    const autoDisc = this.config?.auto_discovery_sections?.mushroom ?? false;
 
     const options = COMMON_CATS.map(cat => ({
       value: cat,
@@ -270,7 +289,7 @@ export class MushroomPanel extends LitElement {
               <ha-selector
                 .hass=${this.hass}
                 .value=${icon}
-                .selector=${{ icon: {} }}
+                .selector={{ icon: {} }}
                 @value-changed=${e => this._onIcon(i, e.detail.value)}
               ></ha-selector>
             </div>
@@ -369,7 +388,8 @@ export class MushroomPanel extends LitElement {
       }));
 
       // se l’icona è vuota → imposta subito auto-icona (stato → fallback)
-      if (!this._icons[i]) {
+      const currentIcon = this.config?.entities?.[`mushroom${i+1}`]?.icon || '';
+      if (!currentIcon) {
         const autoIco = this._autoIconFor(ent);
         if (autoIco) {
           this._icons[i] = autoIco;

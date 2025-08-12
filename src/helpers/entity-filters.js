@@ -21,6 +21,7 @@ export const FILTER_LABELS = {
   switch: 'Pulsante',
 };
 
+/* ───────────── domini comuni (senza “sensor”) ───────────── */
 export const COMMON_CATS = [
   'alarm_control_panel',
   'binary_sensor',

@@ -32,15 +32,21 @@ export class CameraPanel extends LitElement {
       this._syncingFromConfig = true;
 
       // 🔎 applica autodiscovery se attivo
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.camera');
+      if (this.config?.area || this.config?.area_id) {
+        maybeAutoDiscover(this.hass, this.config, 'area', false);
+      }
 
       // sync stato locale da config
       this._entity = this.config?.entities?.camera?.entity || '';
       this._icon   = this.config?.entities?.camera?.icon   || '';
 
       // 🎯 candidate filtrate per area (keep selected)
-      const list = candidatesFor(this.hass, this.config, 'camera') || [];
-      this._candidates = Array.isArray(list) ? list : [];
+      // 🎨 Auto-icona camera al primo load se entità presente e icona vuota
+      if (this._entity && !this._icon) {
+        const st = this.hass?.states?.[this._entity];
+        const autoIcon = st?.attributes?.icon || resolveEntityIcon(this._entity, this.hass);
+        if (autoIcon) this._icon = autoIcon;
+      }
 
       this._syncingFromConfig = false;
     }
