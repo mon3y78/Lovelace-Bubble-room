@@ -21,7 +21,6 @@ export const FILTER_LABELS = {
   switch: 'Pulsante',
 };
 
-/* ───────────── domini comuni (senza “sensor”) ───────────── */
 export const COMMON_CATS = [
   'alarm_control_panel',
   'binary_sensor',
@@ -39,7 +38,7 @@ export const COMMON_CATS = [
   'vacuum',
 ];
 
-/* ───────────── filtri di sezione (solo criteri dominio/device_class) ───────────── */
+/* ───────────── filtri di sezione (criteri dominio/device_class; niente area qui) ───────────── */
 export const FILTERS = {
   presence: (cats = []) => ({
     includeDomains: COMMON_CATS,
@@ -94,7 +93,6 @@ export const FILTERS = {
     },
   }),
 
-  // 📷 Camera
   camera: (cats = []) => ({
     includeDomains: ['camera'],
     entityFilter: (id, hass) => {
@@ -104,7 +102,6 @@ export const FILTERS = {
     },
   }),
 
-  // 🌡️ Climate
   climate: (_cats = []) => ({
     includeDomains: ['climate'],
     entityFilter: (_id, _hass) => true,
@@ -134,9 +131,9 @@ function _toDeviceMap(devices) {
   return map;
 }
 
-/* ───────────── helpers area (SOLO area_id) ───────────── */
+/* ───────────── helpers area (SOLO area_id, qualsiasi stringa non vuota) ───────────── */
 function _isValidAreaId(areaId) {
-  return typeof areaId === 'string' && areaId.startsWith('area_');
+  return typeof areaId === 'string' && areaId.trim().length > 0;
 }
 
 /** Verifica se una entity è nell'area indicata (solo confronti su area_id). */
