@@ -43,8 +43,19 @@ export class CameraPanel extends LitElement {
 
   _matchAreaForEntityId(id, areaId, areaName) {
     const reg = this.hass?.entities;
+    const devices = Array.isArray(this.hass?.devices) ? this.hass.devices : null;
+
+    // 1) entity registry → area_id diretto
     if (areaId && reg?.[id]?.area_id) return reg[id].area_id === areaId;
 
+    // 2) entity registry → device_id → device.area_id
+    const devId = reg?.[id]?.device_id;
+    if (areaId && devId && devices) {
+      const dev = devices.find(d => d.id === devId || d.device_id === devId);
+      if (dev?.area_id) return dev.area_id === areaId;
+    }
+
+    // 3) stato → attributes.area_id / attributes.area (nome)
     const st = this.hass?.states?.[id];
     if (!st) return !(areaId || areaName);
 
