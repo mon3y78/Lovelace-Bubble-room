@@ -21,6 +21,7 @@ export const FILTER_LABELS = {
   switch: 'Pulsante',
 };
 
+/* ───────────── domini comuni (senza “sensor”) ───────────── */
 export const COMMON_CATS = [
   'alarm_control_panel',
   'binary_sensor',
@@ -38,7 +39,7 @@ export const COMMON_CATS = [
   'vacuum',
 ];
 
-/* ───────────── filtri di sezione ───────────── */
+/* ───────────── filtri di sezione (solo criteri dominio/device_class) ───────────── */
 export const FILTERS = {
   presence: (cats = []) => ({
     includeDomains: COMMON_CATS,
@@ -52,6 +53,7 @@ export const FILTERS = {
       return cats.includes(domain);
     },
   }),
+
   sensor: (cats = []) => ({
     includeDomains: ['sensor'],
     entityFilter: (id, hass) => {
@@ -60,10 +62,14 @@ export const FILTERS = {
       return cats.includes(dc);
     },
   }),
+
   mushroom: (cats = []) => ({
     includeDomains: COMMON_CATS,
     entityFilter: (id, hass) => {
-      if (!cats.length) return id.split('.')[0] === 'binary_sensor';
+      if (!cats.length) {
+        // default: propone i binary_sensor
+        return id.split('.')[0] === 'binary_sensor';
+      }
       const [domain] = id.split('.');
       if (domain === 'binary_sensor') {
         const dc = hass.states[id]?.attributes?.device_class ?? '';
@@ -72,14 +78,23 @@ export const FILTERS = {
       return cats.includes(domain);
     },
   }),
+
   subbutton: (cats = []) => ({
     includeDomains: COMMON_CATS,
-    entityFilter: (id) => {
-      if (!cats.length) return COMMON_CATS.includes(id.split('.')[0]);
+    entityFilter: (id, hass) => {
+      if (!cats.length) {
+        return COMMON_CATS.includes(id.split('.')[0]);
+      }
       const [domain] = id.split('.');
+      if (domain === 'binary_sensor') {
+        const dc = hass.states[id]?.attributes?.device_class ?? '';
+        return cats.includes(dc);
+      }
       return COMMON_CATS.includes(domain);
     },
   }),
+
+  // 📷 Camera
   camera: (cats = []) => ({
     includeDomains: ['camera'],
     entityFilter: (id, hass) => {
@@ -88,56 +103,66 @@ export const FILTERS = {
       return cats.includes(dc);
     },
   }),
-  climate: () => ({
+
+  // 🌡️ Climate
+  climate: (_cats = []) => ({
     includeDomains: ['climate'],
-    entityFilter: () => true,
+    entityFilter: (_id, _hass) => true,
   }),
 };
 
-/* ───────────── helpers area ───────────── */
+/* ───────────── helpers: normalizza registri che possono essere array o mappe ───────────── */
 function _toEntityMap(entities) {
   if (!entities) return {};
-  if (!Array.isArray(entities)) return entities;
-  return entities.reduce((map, e) => {
+  if (!Array.isArray(entities)) return entities; // già mappa {entity_id: {...}}
+  const map = {};
+  for (const e of entities) {
     const id = e?.entity_id || e?.id;
     if (id) map[id] = e;
-    return map;
-  }, {});
+  }
+  return map;
 }
 
 function _toDeviceMap(devices) {
   if (!devices) return {};
-  if (!Array.isArray(devices)) return devices;
-  return devices.reduce((map, d) => {
+  if (!Array.isArray(devices)) return devices; // già mappa {device_id: {...}} o {id: {...}}
+  const map = {};
+  for (const d of devices) {
     const id = d?.id || d?.device_id;
     if (id) map[id] = d;
-    return map;
-  }, {});
+  }
+  return map;
 }
 
+/* ───────────── helpers area (SOLO area_id) ───────────── */
 function _isValidAreaId(areaId) {
   return typeof areaId === 'string' && areaId.startsWith('area_');
 }
 
+/** Verifica se una entity è nell'area indicata (solo confronti su area_id). */
 function _matchAreaId(hass, entityId, areaId) {
   if (!_isValidAreaId(areaId)) return true;
+
   const entReg = _toEntityMap(hass?.entities);
   const devReg = _toDeviceMap(hass?.devices);
 
+  // 1) entity registry → area_id
   const regEnt = entReg[entityId];
   if (regEnt?.area_id === areaId) return true;
 
+  // 2) entity registry → device_id → device.area_id
   const devId = regEnt?.device_id || regEnt?.deviceId;
   if (devId && devReg[devId]?.area_id === areaId) return true;
 
+  // 3) stato → attributes.area_id
   const attrAreaId = hass?.states?.[entityId]?.attributes?.area_id;
   return attrAreaId === areaId;
 }
 
-/* ───────────── keep-selected uniforme ───────────── */
+/* ───────────── keep‑selected uniforme ───────────── */
 function _keepSelectedFirst(list, selected) {
   const out = Array.from(new Set(list));
-  const sel = Array.isArray(selected) ? selected : selected ? [selected] : [];
+  const sel = Array.isArray(selected) ? selected : (selected ? [selected] : []);
   for (let i = sel.length - 1; i >= 0; i--) {
     const s = sel[i];
     if (s && !out.includes(s)) out.unshift(s);
@@ -145,15 +170,20 @@ function _keepSelectedFirst(list, selected) {
   return out;
 }
 
+/** estrae TUTTE le entity già selezionate in una sezione (ricorsivo) */
 function _extractSelectedEntities(sectionConfig) {
   const acc = new Set();
   const walk = (v) => {
     if (!v) return;
     if (typeof v === 'string' && v.includes('.')) {
       acc.add(v);
-    } else if (Array.isArray(v)) {
+      return;
+    }
+    if (Array.isArray(v)) {
       v.forEach(walk);
-    } else if (typeof v === 'object') {
+      return;
+    }
+    if (typeof v === 'object') {
       Object.values(v).forEach(walk);
     }
   };
@@ -161,32 +191,56 @@ function _extractSelectedEntities(sectionConfig) {
   return Array.from(acc);
 }
 
-/* ───────────── entitiesInArea ───────────── */
+/* ───────────── utility: tutte le entity in una certa area (SOLO area_id) ───────────── */
 export function entitiesInArea(hass, areaId) {
   if (!hass?.states || !_isValidAreaId(areaId)) return [];
   return Object.keys(hass.states).filter((eid) => _matchAreaId(hass, eid, areaId));
 }
 
-/* ───────────── candidatesFor ───────────── */
+/* ───────────── candidatesFor: lista per i selector (area‑aware + keep‑selected) ─────────────
+   Regole:
+   - Se c’è area_id (in config.area_id o config.area) → prova a filtrare per area (fallback se vuoto).
+   - Metti SEMPRE in testa le entità già selezionate in quella sezione (qualsiasi struttura).
+*/
 export function candidatesFor(hass, config, section, cats = []) {
   if (!hass?.states) return [];
 
-  let desc = FILTERS[section]?.(cats);
+  // 1) filtri base per sezione
+  let desc;
+  if (section === 'presence') {
+    desc = FILTERS.presence(cats);
+  } else if (section === 'sensor') {
+    desc = FILTERS.sensor(cats);
+  } else if (section === 'mushroom') {
+    desc = FILTERS.mushroom(cats);
+  } else if (section === 'subbutton') {
+    desc = FILTERS.subbutton(cats);
+  } else if (section === 'camera') {
+    desc = FILTERS.camera(cats);
+  } else if (section === 'climate') {
+    desc = FILTERS.climate(cats);
+  }
+
   if (!desc) return [];
 
+  // 2) filtro per dominio
   const byDomain = Object.keys(hass.states).filter((id) =>
     desc.includeDomains.includes(id.split('.')[0])
   );
 
+  // 3) filtro specifico (device_class/domains)
   const byDesc = byDomain.filter((id) => desc.entityFilter(id, hass));
 
+  // 4) scoping per area (SOLO area_id) con fallback
   let scoped = byDesc;
-  if (_isValidAreaId(config?.area)) {
-    const inArea = entitiesInArea(hass, config.area);
+  const areaId = typeof config?.area_id === 'string' ? config.area_id : config?.area;
+  if (_isValidAreaId(areaId)) {
+    const inArea = entitiesInArea(hass, areaId);
     const filtered = byDesc.filter((id) => inArea.includes(id));
-    if (filtered.length) scoped = filtered;
+    if (filtered.length) scoped = filtered; // fallback automatico se vuoto
   }
 
+  // 5) keep‑selected per TUTTE le sezioni
   const sectionCfg = config?.entities?.[section];
   const selectedAll = _extractSelectedEntities(sectionCfg);
   return _keepSelectedFirst(scoped, selectedAll);
