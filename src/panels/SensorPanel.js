@@ -40,6 +40,7 @@ export class SensorPanel extends LitElement {
 
   static styles = css`
     :host { display: block; }
+
     .glass-panel {
       margin: 0 !important;
       width: 100%;
@@ -66,6 +67,7 @@ export class SensorPanel extends LitElement {
       font-weight: 700;
       color: #fff;
     }
+
     .input-group.autodiscover {
       margin: 0 16px 13px;
       padding: 14px 18px 10px;
@@ -79,6 +81,7 @@ export class SensorPanel extends LitElement {
     .input-group.autodiscover label {
       margin: 0; font-weight: 700; color: #fff;
     }
+
     .mini-pill {
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.13);
@@ -108,6 +111,7 @@ export class SensorPanel extends LitElement {
       from { opacity: 0; transform: translateY(-8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
     .input-group { margin-bottom: 12px; }
     .input-group label {
       display: block; font-weight: 600;
@@ -115,6 +119,7 @@ export class SensorPanel extends LitElement {
     }
     ha-selector { width: 100%; box-sizing: border-box; }
     ha-selector::part(combobox) { min-height: 40px; }
+
     .filter-row {
       display: flex;
       align-items: center;
@@ -140,6 +145,7 @@ export class SensorPanel extends LitElement {
       border-color: #ff8a65;
       box-shadow: 0 3px 16px rgba(255,138,101,0.45);
     }
+
     .preview {
       display: flex; align-items: center; gap: 12px;
       padding: 0 16px 16px;
@@ -152,6 +158,7 @@ export class SensorPanel extends LitElement {
       font-size: 1.2rem;
       color: #fff;
     }
+
     .reset-button {
       border: 3.5px solid #ff4c6a;
       color: #ff4c6a;
@@ -182,7 +189,7 @@ export class SensorPanel extends LitElement {
           type.replace(/_/g, ' ')
               .replace(/\b\w/g, c => c.toUpperCase());
         return { value: type, label: `${info.emoji || ''} ${niceLabel}`.trim() };
-    });
+      });
 
     return html`
       <ha-expansion-panel
@@ -290,24 +297,41 @@ export class SensorPanel extends LitElement {
     this.requestUpdate();
   }
 
+  // Se rimuovi manualmente tutti i chip: ricrea la lista completa.
+  // Altrimenti salva i valori selezionati. Sincronizza sempre il componente UI.
   _onFilter(i, values) {
-    const arr = Array.isArray(values) ? values.filter(Boolean) : [];
+    let arr;
+    if (!Array.isArray(values) || values.length === 0) {
+      arr = Object.keys(SENSOR_TYPE_MAP); // ripristina tutti i tipi
+    } else {
+      arr = values.filter(Boolean);
+    }
+
     this._filters[i] = [...arr];
     this.requestUpdate('_filters');
+
+    const sel = this.renderRoot?.querySelector(`#filter-${i}`);
+    if (sel) sel.value = [...arr];
+
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: 'sensor_filters', val: this._filters },
       bubbles: true, composed: true,
     }));
   }
 
+  // Clear: svuota davvero l'elenco e sincronizza l'UI
   _clearFilter(i) {
     this._filters[i] = [];
     this.requestUpdate('_filters');
+
     const sel = this.renderRoot?.querySelector(`#filter-${i}`);
     if (sel) {
       sel.value = [];
-      sel.dispatchEvent(new CustomEvent('value-changed', { detail: { value: [] }, bubbles: true, composed: true }));
+      sel.dispatchEvent(new CustomEvent('value-changed', {
+        detail: { value: [] }, bubbles: true, composed: true
+      }));
     }
+
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: 'sensor_filters', val: this._filters },
       bubbles: true, composed: true,
