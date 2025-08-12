@@ -15,6 +15,7 @@ export class ClimatePanel extends LitElement {
   };
 
   constructor() {
+    this._iconCache = new IconCache();
     super();
     this.hass     = {};
     this.config   = {};
@@ -73,13 +74,13 @@ export class ClimatePanel extends LitElement {
 
       // auto-icona con cache
       if (ent && !ico) {
-        let autoIcon = IconCache.get(ent);
+        let autoIcon = this._iconCache.get(ent);
         if (!autoIcon) {
           const st = this.hass?.states?.[ent];
           const iconFromState = st?.attributes?.icon;
           autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
           if (autoIcon) {
-            IconCache.set(ent, autoIcon);
+            this._iconCache.set(ent, autoIcon);
           }
         }
         if (autoIcon) this._set('entities.climate.icon', autoIcon);
@@ -155,7 +156,7 @@ export class ClimatePanel extends LitElement {
         .expanded=${this.expanded}
         @expanded-changed=${e => (this.expanded = e.detail.expanded)}
       >
-        <div slot="header" class="glass-header">🌡️ Climate</div>
+        <div slot="header" class="glass-header">ð¡ï¸ Climate</div>
 
         <div class="input-group autodiscover">
           <input
@@ -163,7 +164,7 @@ export class ClimatePanel extends LitElement {
             .checked=${autoDisc}
             @change=${e => this._toggleAuto(e.target.checked)}
           />
-          <label>🪄 Auto-discovery</label>
+          <label>ðª Auto-discovery</label>
         </div>
 
         <div class="input-group">
@@ -186,7 +187,7 @@ export class ClimatePanel extends LitElement {
           <ha-selector
             .hass=${this.hass}
             .value=${this._icon}
-            .selector={{ icon: {} }}
+            ..selector=${{ icon: {} }}
             @value-changed=${e => this._set('entities.climate.icon', e.detail.value)}
           ></ha-selector>
         </div>
@@ -199,7 +200,7 @@ export class ClimatePanel extends LitElement {
               bubbles: true, composed: true,
             }))
           }
-        >🧹 Reset Climate</button>
+        >ð§¹ Reset Climate</button>
       </ha-expansion-panel>
     `;
   }
