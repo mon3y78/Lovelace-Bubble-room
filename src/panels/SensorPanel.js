@@ -21,13 +21,17 @@ export class SensorPanel extends LitElement {
     this.expanded  = false;
     this._expanded = Array(8).fill(false);
     const allTypes = Object.keys(SENSOR_TYPE_MAP);
+    // Stato locale dei filtri: di default TUTTI i tipi (ma NON verrà scritto nel YAML)
     this._filters  = Array(8).fill().map(() => [...allTypes]);
     this._entities = Array(8).fill('');
   }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
+      // Auto-discover come prima
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
+
+      // Se in config c'è già qualcosa, lo carichiamo (lettura OK, ma NON riscriviamo mai)
       for (let i = 0; i < 8; i++) {
         const key = `sensor${i+1}`;
         const cfgFilter = this.config.sensor_filters?.[i];
@@ -297,15 +301,11 @@ export class SensorPanel extends LitElement {
     this.requestUpdate();
   }
 
-  // Se rimuovi manualmente tutti i chip: ricrea la lista completa.
-  // Altrimenti salva i valori selezionati. Sincronizza sempre il componente UI.
+  // Gestione filtri SOLO in memoria: mai scritti nel YAML
   _onFilter(i, values) {
-    let arr;
-    if (!Array.isArray(values) || values.length === 0) {
-      arr = Object.keys(SENSOR_TYPE_MAP); // ripristina tutti i tipi
-    } else {
-      arr = values.filter(Boolean);
-    }
+    // se rimuovi manualmente tutti i chip, ripristino tutti i tipi
+    const all = Object.keys(SENSOR_TYPE_MAP);
+    const arr = Array.isArray(values) && values.length ? values.filter(Boolean) : all;
 
     this._filters[i] = [...arr];
     this.requestUpdate('_filters');
@@ -313,13 +313,10 @@ export class SensorPanel extends LitElement {
     const sel = this.renderRoot?.querySelector(`#filter-${i}`);
     if (sel) sel.value = [...arr];
 
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'sensor_filters', val: this._filters },
-      bubbles: true, composed: true,
-    }));
+    // Non emettiamo panel-changed per 'sensor_filters'
   }
 
-  // Clear: svuota davvero l'elenco e sincronizza l'UI
+  // Clear: svuota davvero l'elenco ma resta solo locale, non scritto nel YAML
   _clearFilter(i) {
     this._filters[i] = [];
     this.requestUpdate('_filters');
@@ -332,10 +329,7 @@ export class SensorPanel extends LitElement {
       }));
     }
 
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'sensor_filters', val: this._filters },
-      bubbles: true, composed: true,
-    }));
+    // Nessun salvataggio in YAML dei filtri
   }
 
   _onEntity(i, ent) {
@@ -351,10 +345,8 @@ export class SensorPanel extends LitElement {
     const allTypes = Object.keys(SENSOR_TYPE_MAP);
     this._filters  = Array(8).fill().map(() => [...allTypes]);
     this._entities = Array(8).fill('');
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'sensor_filters', val: this._filters },
-      bubbles: true, composed: true,
-    }));
+
+    // Resettiamo solo le entità in YAML; i filtri restano locali
     for (let i = 1; i <= 8; i++) {
       this.dispatchEvent(new CustomEvent('panel-changed', {
         detail: { prop: `entities.sensor${i}.entity`, val: '' },
