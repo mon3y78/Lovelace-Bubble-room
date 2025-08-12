@@ -351,7 +351,6 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       </ha-expansion-panel>
     `}}customElements.define("room-panel",Mt);const jt={temperature:{label:"Temperature",emoji:"🌡️",units:["°C","°F"]},apparent_temperature:{label:"Feels Like",emoji:"🥵",units:["°C","°F"]},humidity:{label:"Humidity",emoji:"💧",units:["%"]},pressure:{label:"Pressure",emoji:"🧭",units:["hPa","mbar","kPa"]},illuminance:{label:"Illuminance",emoji:"🔆",units:["lx"]},sound_pressure:{label:"Sound Pressure",emoji:"🔊",units:["dB"]},pm1:{label:"PM1",emoji:"🌫️",units:["µg/m³"]},pm2_5:{label:"PM2.5",emoji:"🌫️",units:["µg/m³"]},pm10:{label:"PM10",emoji:"🌫️",units:["µg/m³"]},co2:{label:"CO₂",emoji:"🫁",units:["ppm"]},uv_index:{label:"UV Index",emoji:"☀️",units:["UV index"]},irradiance:{label:"Irradiance",emoji:"🌞",units:["W/m²"]},wind_speed:{label:"Wind Speed",emoji:"🌀",units:["km/h","m/s","mph","kn"],formatter:(t,e)=>{const i=Number(t);return isNaN(i)?{value:t,unit:e}:"m/s"===e?{value:(3.6*i).toFixed(0),unit:"km/h"}:"mph"===e?{value:(1.60934*i).toFixed(0),unit:"km/h"}:"kn"===e?{value:(1.852*i).toFixed(0),unit:"km/h"}:{value:i.toFixed(0),unit:e||"km/h"}}},speed:{label:"Speed",emoji:"🌀",units:["km/h","m/s","mph","kn"]},wind_gust:{label:"Wind Gust",emoji:"🌬️",units:["km/h","m/s","mph","kn"]},wind_bearing:{label:"Wind Direction",emoji:"🧭",units:["°","cardinal"]},precipitation:{label:"Precipitation",emoji:"🌧️",units:["mm","cm","in"]},precipitation_intensity:{label:"Precipitation Intensity",emoji:"🌦️",units:["mm/h","in/h"]},precipitation_probability:{label:"Rain Probability",emoji:"☔",units:["%"]},cloud_coverage:{label:"Cloud Coverage",emoji:"☁️",units:["%"]},visibility:{label:"Visibility",emoji:"👁️",units:["km","m","mi"]},dew_point:{label:"Dew Point",emoji:"💧",units:["°C","°F"]},power:{label:"Power",emoji:"⚡",units:["kW","W","MW"],formatter:(t,e)=>{const i=Number(t);return isNaN(i)?{value:t,unit:e}:"W"===e?{value:(i/1e3).toFixed(i>=100?0:1),unit:"kW"}:"MW"===e?{value:(1e3*i).toFixed(0),unit:"kW"}:{value:i,unit:e||"kW"}}},energy:{label:"Energy",emoji:"🔌",units:["kWh","Wh","MWh"],formatter:(t,e)=>{const i=Number(t);return isNaN(i)?{value:t,unit:e}:"Wh"===e?{value:(i/1e3).toFixed(i>=1e3?0:1),unit:"kWh"}:"MWh"===e?{value:(1e3*i).toFixed(0),unit:"kWh"}:{value:i,unit:e||"kWh"}}},power_factor:{label:"Power Factor",emoji:"📐",units:["%","ratio"]},voltage:{label:"Voltage",emoji:"⚙️",units:["V"]},current:{label:"Current",emoji:"🧲",units:["A","mA"]},frequency:{label:"Frequency",emoji:"〰️",units:["Hz"]},apparent_power:{label:"Apparent Power",emoji:"🧮",units:["VA","kVA"]},reactive_power:{label:"Reactive Power",emoji:"🧮",units:["var","kvar"]},monetary:{label:"Cost",emoji:"💶",units:["€","EUR","$"]},gas:{label:"Gas",emoji:"🔥",units:["m³","Nm³","kWh"]},water:{label:"Water",emoji:"🚿",units:["m³","L"]},battery:{label:"Battery",emoji:"🔋",units:["%"]},signal_strength:{label:"Signal Strength",emoji:"📶",units:["dBm"]},_fallback:{label:"Other",emoji:"❓",units:[""]}};class Ft extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(8).fill(!1);const t=Object.keys(jt);this._filters=Array(8).fill().map(()=>[...t]),this._entities=Array(8).fill("")}updated(t){if(t.has("config")||t.has("hass")){wt(this.hass,this.config,"auto_discovery_sections.sensor");for(let t=0;t<8;t++){const e=`sensor${t+1}`,i=this.config.sensor_filters?.[t],s=this.config.entities?.[e]?.entity;Array.isArray(i)&&(this._filters[t]=[...i]),s&&(this._entities[t]=s)}}}static styles=n`
     :host { display: block; }
-
     .glass-panel {
       margin: 0 !important;
       width: 100%;
@@ -378,7 +377,6 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       font-weight: 700;
       color: #fff;
     }
-
     .input-group.autodiscover {
       margin: 0 16px 13px;
       padding: 14px 18px 10px;
@@ -392,7 +390,6 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
     .input-group.autodiscover label {
       margin: 0; font-weight: 700; color: #fff;
     }
-
     .mini-pill {
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.13);
@@ -422,30 +419,19 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       from { opacity: 0; transform: translateY(-8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
-    .input-group {
-      margin-bottom: 12px;
-    }
+    .input-group { margin-bottom: 12px; }
     .input-group label {
       display: block; font-weight: 600;
       margin-bottom: 6px; color: #8cff8a;
     }
-    ha-selector {
-      width: 100%; box-sizing: border-box;
-    }
-    ha-selector::part(combobox) {
-      min-height: 40px;
-    }
-
+    ha-selector { width: 100%; box-sizing: border-box; }
+    ha-selector::part(combobox) { min-height: 40px; }
     .filter-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
       margin-bottom: 6px;
-    }
-    .filter-row label {
-      margin: 0;
     }
     .clear-chip {
       border: 2px solid var(--warning-color, #ff8a65);
@@ -455,7 +441,6 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       padding: 6px 12px;
       font-size: 0.9rem;
       font-weight: 800;
-      line-height: 1;
       cursor: pointer;
       transition: background .15s, color .15s, box-shadow .15s, border-color .15s;
       box-shadow: 0 1px 10px rgba(255,138,101,0.25);
@@ -466,7 +451,6 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       border-color: #ff8a65;
       box-shadow: 0 3px 16px rgba(255,138,101,0.45);
     }
-
     .preview {
       display: flex; align-items: center; gap: 12px;
       padding: 0 16px 16px;
@@ -479,7 +463,6 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       font-size: 1.2rem;
       color: #fff;
     }
-
     .reset-button {
       border: 3.5px solid #ff4c6a;
       color: #ff4c6a;
@@ -507,7 +490,6 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       >
         <div slot="header" class="glass-header">🧭 Sensors</div>
 
-        <!-- Auto-discover -->
         <div class="input-group autodiscover">
           <input
             type="checkbox"
@@ -517,10 +499,8 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
           <label>🪄 Auto-discover Sensors</label>
         </div>
 
-        <!-- Sei mini-pill -->
         ${this._expanded.map((t,i)=>this._renderSensor(i,t,e))}
 
-        <!-- Reset globale -->
         <button class="reset-button" @click=${()=>this._reset()}>
           🧹 Reset Sensors
         </button>
@@ -533,7 +513,6 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
         </div>
         ${e?R`
           <div class="mini-pill-content">
-            <!-- Filter category (multi‐select pill) + CLEAR -->
             <div class="input-group">
               <div class="filter-row">
                 <label for="filter-${t}">Filter category:</label>
@@ -541,8 +520,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
                   class="clear-chip"
                   type="button"
                   @click=${()=>this._clearFilter(t)}
-                  title="Svuota l'elenco dei tipi per questo sensore"
-                  aria-label="Clear filter category">
+                  title="Clear filter category">
                   Clear
                 </button>
               </div>
@@ -555,11 +533,9 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
               ></ha-selector>
             </div>
 
-            <!-- Entity selector -->
             <div class="input-group">
-              <label for="entity-${t}">Entity:</label>
+              <label>Entity:</label>
               <ha-selector
-                id="entity-${t}"
                 .hass=${this.hass}
                 .value=${o}
                 .selector=${{entity:{include_entities:n,multiple:!1}}}
@@ -568,7 +544,6 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
               ></ha-selector>
             </div>
 
-            <!-- Preview basata su device_class -->
             ${o?(()=>{const t=this.hass.states[o],e=t?.attributes?.device_class,i=jt[e]||{},s=i.emoji||"❓",n=t?.attributes?.unit_of_measurement||(i.units?.[0]??"");return R`
                 <div class="preview">
                   <span class="emoji">${s}</span>
@@ -578,7 +553,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
           </div>
         `:""}
       </div>
-    `}_toggleAuto(t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.sensor",val:t},bubbles:!0,composed:!0}))}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e),this.requestUpdate()}_onFilter(t,e){this._filters[t]=[...e],this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"sensor_filters",val:this._filters},bubbles:!0,composed:!0}))}_onEntity(t,e){this._entities[t]=e,this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.sensor${t+1}.entity`,val:e},bubbles:!0,composed:!0}))}_clearFilter(t){this._filters[t]=[],this.requestUpdate("_filters"),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"sensor_filters",val:this._filters},bubbles:!0,composed:!0}))}_reset(){this._expanded=Array(8).fill(!1);const t=Object.keys(jt);this._filters=Array(8).fill().map(()=>[...t]),this._entities=Array(8).fill(""),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"sensor_filters",val:this._filters},bubbles:!0,composed:!0}));for(let t=1;t<=8;t++)this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.sensor${t}.entity`,val:""},bubbles:!0,composed:!0}))}}customElements.define("sensor-panel",Ft);class Tt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0},_icons:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(5).fill(!1),this._filters=Array(5).fill().map(()=>[...at]),this._entities=Array(5).fill(""),this._icons=Array(5).fill(""),this._syncingFromConfig=!1}updated(t){if(!t.has("config")&&!t.has("hass"))return;this._syncingFromConfig=!0,(this.config?.area||this.config?.area_id)&&wt(this.hass,this.config,"area",!1);const e=this.config?.mushroom_filters;Array.isArray(e)&&5===e.length&&(this._filters=e.map(t=>Array.isArray(t)?[...t]:[...at]));const i=this.config?.entities||{};for(let t=0;t<5;t++){const e=i[`mushroom${t+1}`]||{};e.entity&&(this._entities[t]=e.entity),"string"==typeof e.icon&&(this._icons[t]=e.icon)}this._syncingFromConfig=!1;const s=[];for(let t=0;t<5;t++){const e=`mushroom${t+1}`,i=this._entities[t],o=this.config?.entities?.[e]?.icon;if(i&&!o){const o=this.hass?.states?.[i],n=o?.attributes?.icon,a=n||Et(i,this.hass);a&&s.push({i:t,key:e,icon:a})}}if(s.length)for(const{i:t,key:e,icon:i}of s)this._icons[t]=i,this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.${e}.icon`,val:i},bubbles:!0,composed:!0}))}static styles=n`
+    `}_toggleAuto(t){this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"auto_discovery_sections.sensor",val:t},bubbles:!0,composed:!0}))}_togglePill(t){this._expanded=this._expanded.map((e,i)=>i===t&&!e),this.requestUpdate()}_onFilter(t,e){const i=Array.isArray(e)?e.filter(Boolean):[];this._filters[t]=[...i],this.requestUpdate("_filters"),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"sensor_filters",val:this._filters},bubbles:!0,composed:!0}))}_clearFilter(t){this._filters[t]=[],this.requestUpdate("_filters");const e=this.renderRoot?.querySelector(`#filter-${t}`);e&&(e.value=[],e.dispatchEvent(new CustomEvent("value-changed",{detail:{value:[]},bubbles:!0,composed:!0}))),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"sensor_filters",val:this._filters},bubbles:!0,composed:!0}))}_onEntity(t,e){this._entities[t]=e,this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.sensor${t+1}.entity`,val:e},bubbles:!0,composed:!0}))}_reset(){this._expanded=Array(8).fill(!1);const t=Object.keys(jt);this._filters=Array(8).fill().map(()=>[...t]),this._entities=Array(8).fill(""),this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:"sensor_filters",val:this._filters},bubbles:!0,composed:!0}));for(let t=1;t<=8;t++)this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.sensor${t}.entity`,val:""},bubbles:!0,composed:!0}))}}customElements.define("sensor-panel",Ft);class Tt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0},_icons:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(5).fill(!1),this._filters=Array(5).fill().map(()=>[...at]),this._entities=Array(5).fill(""),this._icons=Array(5).fill(""),this._syncingFromConfig=!1}updated(t){if(!t.has("config")&&!t.has("hass"))return;this._syncingFromConfig=!0,(this.config?.area||this.config?.area_id)&&wt(this.hass,this.config,"area",!1);const e=this.config?.mushroom_filters;Array.isArray(e)&&5===e.length&&(this._filters=e.map(t=>Array.isArray(t)?[...t]:[...at]));const i=this.config?.entities||{};for(let t=0;t<5;t++){const e=i[`mushroom${t+1}`]||{};e.entity&&(this._entities[t]=e.entity),"string"==typeof e.icon&&(this._icons[t]=e.icon)}this._syncingFromConfig=!1;const s=[];for(let t=0;t<5;t++){const e=`mushroom${t+1}`,i=this._entities[t],o=this.config?.entities?.[e]?.icon;if(i&&!o){const o=this.hass?.states?.[i],n=o?.attributes?.icon,a=n||Et(i,this.hass);a&&s.push({i:t,key:e,icon:a})}}if(s.length)for(const{i:t,key:e,icon:i}of s)this._icons[t]=i,this.dispatchEvent(new CustomEvent("panel-changed",{detail:{prop:`entities.${e}.icon`,val:i},bubbles:!0,composed:!0}))}static styles=n`
     :host { display: block; }
     .glass-panel {
       margin: 0 !important;
