@@ -15,7 +15,6 @@ export class ClimatePanel extends LitElement {
   };
 
   constructor() {
-    this._iconCache = new IconCache();
     super();
     this.hass     = {};
     this.config   = {};
@@ -23,6 +22,7 @@ export class ClimatePanel extends LitElement {
     this._entity  = '';
     this._icon    = '';
     this._climateCandidates = [];
+    this._iconCache = new IconCache();
   }
 
   // ---- helpers area/registry ------------------------------------------------
@@ -156,7 +156,7 @@ export class ClimatePanel extends LitElement {
         .expanded=${this.expanded}
         @expanded-changed=${e => (this.expanded = e.detail.expanded)}
       >
-        <div slot="header" class="glass-header">ð¡ï¸ Climate</div>
+        <div slot="header" class="glass-header">🌡️ Climate</div>
 
         <div class="input-group autodiscover">
           <input
@@ -164,7 +164,7 @@ export class ClimatePanel extends LitElement {
             .checked=${autoDisc}
             @change=${e => this._toggleAuto(e.target.checked)}
           />
-          <label>ðª Auto-discovery</label>
+          <label>🪄 Auto-discovery</label>
         </div>
 
         <div class="input-group">
@@ -187,7 +187,7 @@ export class ClimatePanel extends LitElement {
           <ha-selector
             .hass=${this.hass}
             .value=${this._icon}
-            ..selector=${{ icon: {} }}
+            .selector=${{ icon: {} }}
             @value-changed=${e => this._set('entities.climate.icon', e.detail.value)}
           ></ha-selector>
         </div>
@@ -200,7 +200,7 @@ export class ClimatePanel extends LitElement {
               bubbles: true, composed: true,
             }))
           }
-        >ð§¹ Reset Climate</button>
+        >🧹 Reset Climate</button>
       </ha-expansion-panel>
     `;
   }

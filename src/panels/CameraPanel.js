@@ -156,7 +156,7 @@ export class CameraPanel extends LitElement {
         .expanded=${this.expanded}
         @expanded-changed=${e => (this.expanded = e.detail.expanded)}
       >
-        <div slot="header" class="glass-header">ð· Camera</div>
+        <div slot="header" class="glass-header">📷 Camera</div>
 
         <div class="input-group autodiscover">
           <input
@@ -164,7 +164,7 @@ export class CameraPanel extends LitElement {
             .checked=${autoDisc}
             @change=${e => this._toggleAuto(e.target.checked)}
           />
-          <label>ðª Auto-discovery</label>
+          <label>🪄 Auto-discovery</label>
         </div>
 
         <div class="input-group">
@@ -187,7 +187,7 @@ export class CameraPanel extends LitElement {
           <ha-selector
             .hass=${this.hass}
             .value=${this._icon}
-            ..selector=${{ icon: {} }}
+            .selector=${{ icon: {} }}
             @value-changed=${e => this._set('entities.camera.icon', e.detail.value)}
           ></ha-selector>
         </div>
@@ -200,7 +200,7 @@ export class CameraPanel extends LitElement {
               bubbles: true, composed: true,
             }))
           }
-        >ð§¹ Reset Camera</button>
+        >🧹 Reset Camera</button>
       </ha-expansion-panel>
     `;
   }
