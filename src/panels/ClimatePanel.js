@@ -2,6 +2,7 @@
 import { LitElement, html, css } from 'lit';
 import { candidatesFor } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
+import { IconCache } from '../helpers/icon-cache.js';
 
 export class ClimatePanel extends LitElement {
   static properties = {
@@ -25,37 +26,23 @@ export class ClimatePanel extends LitElement {
 
   // ---- helpers area/registry ------------------------------------------------
   _resolveAreaRef() {
+    // Usa SOLO l'area scelta in config (nome o area_id). Niente fallback sull'entità.
     const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
-    const areaName = (typeof raw === 'string' && !raw.startsWith('area_')) ? raw : '';
-    let areaId = (typeof raw === 'string' && raw.startsWith('area_')) ? raw : '';
+    const areaName = (typeof raw === 'string' && !raw?.startsWith('area_')) ? raw : '';
+    let areaId = (typeof raw === 'string' && raw?.startsWith('area_')) ? raw : '';
+
     const areas = Array.isArray(this.hass?.areas) ? this.hass.areas : [];
     if (!areaId && areas.length && areaName) {
       const hit = areas.find(a => (a.name || '').toLowerCase() === String(areaName).toLowerCase());
       if (hit?.area_id) areaId = hit.area_id;
-    }
-    if (!areaId) {
-      const ent = this.config?.entities?.climate?.entity;
-      const reg = this.hass?.entities;
-      if (ent && reg?.[ent]?.area_id) areaId = reg[ent].area_id;
     }
     return { areaId, areaName };
   }
 
   _matchAreaForEntityId(id, areaId, areaName) {
     const reg = this.hass?.entities;
-    const devices = Array.isArray(this.hass?.devices) ? this.hass.devices : null;
-
-    // 1) entity registry → area_id diretto
     if (areaId && reg?.[id]?.area_id) return reg[id].area_id === areaId;
 
-    // 2) entity registry → device_id → device.area_id
-    const devId = reg?.[id]?.device_id;
-    if (areaId && devId && devices) {
-      const dev = devices.find(d => d.id === devId || d.device_id === devId);
-      if (dev?.area_id) return dev.area_id === areaId;
-    }
-
-    // 3) stato → attributes.area_id / attributes.area (nome)
     const st = this.hass?.states?.[id];
     if (!st) return !(areaId || areaName);
 
@@ -81,11 +68,17 @@ export class ClimatePanel extends LitElement {
       const ent = this.config?.entities?.climate?.entity || '';
       const ico = this.config?.entities?.climate?.icon   || '';
 
-      // auto-icona se vuota
+      // auto-icona con cache (se l'hai implementata nel tuo IconCache)
       if (ent && !ico) {
-        const st = this.hass?.states?.[ent];
-        const iconFromState = st?.attributes?.icon;
-        const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
+        let autoIcon = IconCache.get?.(ent);
+        if (!autoIcon) {
+          const st = this.hass?.states?.[ent];
+          const iconFromState = st?.attributes?.icon;
+          autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
+          if (autoIcon && IconCache.set) {
+            IconCache.set(ent, autoIcon);
+          }
+        }
         if (autoIcon) this._set('entities.climate.icon', autoIcon);
       }
 
@@ -153,74 +146,4 @@ export class ClimatePanel extends LitElement {
 
   render() {
     const autoDisc = this.config?.auto_discovery_sections?.climate ?? false;
-    return html`
-      <ha-expansion-panel
-        class="glass-panel"
-        .expanded=${this.expanded}
-        @expanded-changed=${e => (this.expanded = e.detail.expanded)}
-      >
-        <div slot="header" class="glass-header">🌡️ Climate</div>
-
-        <div class="input-group autodiscover">
-          <input
-            type="checkbox"
-            .checked=${autoDisc}
-            @change=${e => this._toggleAuto(e.target.checked)}
-          />
-          <label>🪄 Auto-discovery</label>
-        </div>
-
-        <div class="input-group">
-          <label>Climate (ID):</label>
-          <ha-selector
-            .hass=${this.hass}
-            .value=${this._entity}
-            .selector=${
-              this._climateCandidates.length
-                ? { entity: { include_entities: this._climateCandidates } }
-                : { entity: { domain: 'climate' } }
-            }
-            allow-custom-entity
-            @value-changed=${e => this._set('entities.climate.entity', e.detail.value)}
-          ></ha-selector>
-        </div>
-
-        <div class="input-group">
-          <label>Climate Icon:</label>
-          <ha-selector
-            .hass=${this.hass}
-            .value=${this._icon}
-            .selector=${{ icon: {} }}
-            @value-changed=${e => this._set('entities.climate.icon', e.detail.value)}
-          ></ha-selector>
-        </div>
-
-        <button
-          class="reset-button"
-          @click=${() =>
-            this.dispatchEvent(new CustomEvent('__panel_cmd__', {
-              detail: { cmd: 'reset', section: 'climate' },
-              bubbles: true, composed: true,
-            }))
-          }
-        >🧹 Reset Climate</button>
-      </ha-expansion-panel>
-    `;
-  }
-
-  _toggleAuto(on) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'auto_discovery_sections.climate', val: on },
-      bubbles: true, composed: true,
-    }));
-  }
-
-  _set(prop, val) {
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val },
-      bubbles: true, composed: true,
-    }));
-  }
-}
-
-customElements.define('climate-panel', ClimatePanel);
+   
