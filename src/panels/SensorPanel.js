@@ -129,6 +129,36 @@ export class SensorPanel extends LitElement {
       min-height: 40px;
     }
 
+    .filter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .filter-row label {
+      margin: 0;
+    }
+    .clear-chip {
+      border: 2px solid var(--warning-color, #ff8a65);
+      color: var(--warning-color, #ff8a65);
+      background: transparent;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      line-height: 1;
+      cursor: pointer;
+      transition: background .15s, color .15s, box-shadow .15s, border-color .15s;
+      box-shadow: 0 1px 10px rgba(255,138,101,0.25);
+    }
+    .clear-chip:hover {
+      background: rgba(255,138,101,0.18);
+      color: #fff;
+      border-color: #ff8a65;
+      box-shadow: 0 3px 16px rgba(255,138,101,0.45);
+    }
+
     .preview {
       display: flex; align-items: center; gap: 12px;
       padding: 0 16px 16px;
@@ -198,7 +228,7 @@ export class SensorPanel extends LitElement {
         <!-- Sei mini-pill -->
         ${this._expanded.map((open, i) => this._renderSensor(i, open, options))}
 
-        <!-- Reset -->
+        <!-- Reset globale -->
         <button class="reset-button" @click=${() => this._reset()}>
           🧹 Reset Sensors
         </button>
@@ -220,10 +250,21 @@ export class SensorPanel extends LitElement {
         </div>
         ${open ? html`
           <div class="mini-pill-content">
-            <!-- Filter category (multi‐select pill) -->
+            <!-- Filter category (multi‐select pill) + CLEAR -->
             <div class="input-group">
-              <label>Filter category:</label>
+              <div class="filter-row">
+                <label for="filter-${i}">Filter category:</label>
+                <button
+                  class="clear-chip"
+                  type="button"
+                  @click=${() => this._clearFilter(i)}
+                  title="Svuota l'elenco dei tipi per questo sensore"
+                  aria-label="Clear filter category">
+                  Clear
+                </button>
+              </div>
               <ha-selector
+                id="filter-${i}"
                 .hass=${this.hass}
                 .value=${types}
                 .selector=${{ select: { multiple: true, mode: 'box', options } }}
@@ -233,8 +274,9 @@ export class SensorPanel extends LitElement {
 
             <!-- Entity selector -->
             <div class="input-group">
-              <label>Entity:</label>
+              <label for="entity-${i}">Entity:</label>
               <ha-selector
+                id="entity-${i}"
                 .hass=${this.hass}
                 .value=${ent}
                 .selector=${{ entity: { include_entities: cands, multiple: false } }}
@@ -290,6 +332,16 @@ export class SensorPanel extends LitElement {
     this._entities[i] = ent;
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: `entities.sensor${i+1}.entity`, val: ent },
+      bubbles: true, composed: true,
+    }));
+  }
+
+  _clearFilter(i) {
+    // azzera subito la lista dei tipi per questo sensore
+    this._filters[i] = [];
+    this.requestUpdate('_filters');
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: 'sensor_filters', val: this._filters },
       bubbles: true, composed: true,
     }));
   }
