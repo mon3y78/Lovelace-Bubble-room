@@ -31,8 +31,7 @@ export class MushroomPanel extends LitElement {
     this._entities = Array(5).fill('');
     this._icons    = Array(5).fill('');
 
-    // flag di servizio: evita side-effect mentre sincronizziamo lo stato locale
-    this._syncingFromConfig = false;
+    this._syncingFromConfig = false; // evita side effects durante la sync
   }
 
   updated(changed) {
@@ -40,7 +39,7 @@ export class MushroomPanel extends LitElement {
 
     this._syncingFromConfig = true;
 
-    // 1) Autodiscovery area-based (copre la sezione mushroom se il toggle è attivo)
+    // 1) Autodiscovery area-based (copre la sezione se il toggle è attivo)
     if (this.config?.area || this.config?.area_id) {
       maybeAutoDiscover(this.hass, this.config, 'area', false);
     }
@@ -62,14 +61,16 @@ export class MushroomPanel extends LitElement {
 
     this._syncingFromConfig = false;
 
-    // 4) Auto-icona al primo load: se c'è entità ma l'icona in config è vuota, impostala ora
+    // 4) Auto-icona al primo load (non sovrascrive scelta utente)
     const pending = [];
     for (let i = 0; i < 5; i++) {
       const key = `mushroom${i+1}`;
       const ent = this._entities[i];
       const cfgIcon = this.config?.entities?.[key]?.icon;
       if (ent && !cfgIcon) {
-        const autoIco = this._autoIconFor(ent);
+        const st = this.hass?.states?.[ent];
+        const iconFromState = st?.attributes?.icon;
+        const autoIco = iconFromState || resolveEntityIcon(ent, this.hass);
         if (autoIco) pending.push({ i, key, icon: autoIco });
       }
     }
@@ -162,7 +163,7 @@ export class MushroomPanel extends LitElement {
       display: block; font-weight: 600;
       margin-bottom: 6px; color: #36e6a0;
     }
-    ha-selector { width: 100%; box-sizing: border-box; }
+    ha-selector, ha-icon-picker { width: 100%; box-sizing: border-box; }
     ha-selector::part(combobox) { min-height: 40px; }
 
     /* === stile bottoni azione (come SubButtonPanel) === */
@@ -286,12 +287,12 @@ export class MushroomPanel extends LitElement {
             <!-- Icon -->
             <div class="input-group">
               <label>Icon:</label>
-              <ha-selector
+              <ha-icon-picker
                 .hass=${this.hass}
                 .value=${icon}
-                .selector={{ icon: {} }}
+                allow-custom-icon
                 @value-changed=${e => this._onIcon(i, e.detail.value)}
-              ></ha-selector>
+              ></ha-icon-picker>
             </div>
 
             <!-- Tap Action -->
@@ -390,7 +391,9 @@ export class MushroomPanel extends LitElement {
       // se l’icona è vuota → imposta subito auto-icona (stato → fallback)
       const currentIcon = this.config?.entities?.[`mushroom${i+1}`]?.icon || '';
       if (!currentIcon) {
-        const autoIco = this._autoIconFor(ent);
+        const st = this.hass?.states?.[ent];
+        const iconFromState = st?.attributes?.icon;
+        const autoIco = iconFromState || resolveEntityIcon(ent, this.hass);
         if (autoIco) {
           this._icons[i] = autoIco;
           this.dispatchEvent(new CustomEvent('panel-changed', {
