@@ -41,7 +41,7 @@ export const COMMON_CATS = [
   'vacuum',
 ];
 
-/* ───────────── filtri di sezione (senza filtro area qui) ───────────── */
+/* ───────────── filtri di sezione (criteri per dominio/device_class) ───────────── */
 export const FILTERS = {
   presence: (cats = []) => ({
     includeDomains: COMMON_CATS,
@@ -130,7 +130,7 @@ function _devicesArray(hass) {
 function _entitiesMap(hass) {
   const raw = hass?.entities;
   if (!raw) return {};
-  if (!Array.isArray(raw)) return raw;
+  if (!Array.isArray(raw)) return raw; // già mappa {entity_id: {...}}
   const map = {};
   for (const e of raw) {
     const id = e?.entity_id || e?.id;
@@ -186,13 +186,40 @@ function _matchArea(hass, entityId, areaId, areaName) {
   return true;
 }
 
+/* ───────────── keep‑selected (accetta singola stringa o array di entity_id) ───────────── */
 function _keepSelectedFirst(list, selected) {
   const out = Array.from(new Set(list));
-  if (selected && !out.includes(selected)) out.unshift(selected);
+  const sel = Array.isArray(selected) ? selected : (selected ? [selected] : []);
+  // inserisci in ordine inverso per preservare l’ordine originale in testa
+  for (let i = sel.length - 1; i >= 0; i--) {
+    const s = sel[i];
+    if (s && !out.includes(s)) out.unshift(s);
+  }
   return out;
 }
 
-/* ───────────── funzione che trova entità in una certa area (utility) ───────────── */
+/* ───────────── estrae TUTTE le entity già selezionate in una sezione (ricorsivo) ───────────── */
+function _extractSelectedEntities(sectionConfig) {
+  const acc = new Set();
+  const walk = (v) => {
+    if (!v) return;
+    if (typeof v === 'string' && v.includes('.')) {
+      acc.add(v);
+      return;
+    }
+    if (Array.isArray(v)) {
+      v.forEach(walk);
+      return;
+    }
+    if (typeof v === 'object') {
+      Object.values(v).forEach(walk);
+    }
+  };
+  walk(sectionConfig);
+  return Array.from(acc);
+}
+
+/* ───────────── utility: tutte le entity in una certa area ───────────── */
 export function entitiesInArea(hass, areaRef) {
   if (!hass?.states) return [];
   const { areaId, areaName } = _resolveAreaRef(hass, { area: areaRef });
@@ -202,8 +229,11 @@ export function entitiesInArea(hass, areaRef) {
   return all.filter((eid) => _matchArea(hass, eid, areaId, areaName));
 }
 
-/* ───────────── candidatesFor: lista per i selector ─────────────
-   NOTE: filtro per area applicato SOLO a camera/climate (gli altri invariati). */
+/* ───────────── candidatesFor: lista per i selector (area‑aware + keep‑selected) ─────────────
+   Regole:
+   - Se c’è config.area → prova a filtrare per area (fallback se vuoto).
+   - Metti SEMPRE in testa le entità già selezionate in quella sezione (qualsiasi struttura).
+*/
 export function candidatesFor(hass, config, section, cats = []) {
   if (!hass?.states) return [];
 
@@ -233,25 +263,18 @@ export function candidatesFor(hass, config, section, cats = []) {
   // 3) filtro specifico (device_class/domains)
   const byDesc = byDomain.filter((id) => desc.entityFilter(id, hass));
 
-  // 4) (solo camera/climate) scoping area quando AD è attivo e area presente
-  const wantsArea = section === 'camera' || section === 'climate';
-  const autoDisc = config?.auto_discovery_sections?.[section] ?? false;
-
-  if (wantsArea && autoDisc && config?.area) {
+  // 4) scoping per area (se config.area è impostata) con fallback
+  let scoped = byDesc;
+  if (config?.area) {
     const { areaId, areaName } = _resolveAreaRef(hass, config);
     if (areaId || areaName) {
-      const filtered = byDesc.filter((eid) => _matchArea(hass, eid, areaId, areaName));
-
-      const selected =
-        section === 'camera'
-          ? (config?.entities?.camera?.entity || '')
-          : (config?.entities?.climate?.entity || '');
-
-      const base = filtered.length ? filtered : byDesc; // fallback se match area vuoto
-      return _keepSelectedFirst(base, selected);
+      const areaList = byDesc.filter((eid) => _matchArea(hass, eid, areaId, areaName));
+      if (areaList.length) scoped = areaList;
     }
   }
 
-  // 5) per tutte le altre sezioni (o se area non definita), nessun filtro extra
-  return byDesc;
+  // 5) keep‑selected per TUTTE le sezioni (estrae le entity già impostate nella sezione)
+  const sectionCfg = config?.entities?.[section];
+  const selectedAll = _extractSelectedEntities(sectionCfg);
+  return _keepSelectedFirst(scoped, selectedAll);
 }
