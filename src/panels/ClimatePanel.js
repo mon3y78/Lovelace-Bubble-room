@@ -1,5 +1,7 @@
 // src/panels/ClimatePanel.js
 import { LitElement, html, css } from 'lit';
+import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
+import { candidatesFor } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
 
 export class ClimatePanel extends LitElement {
@@ -7,34 +9,39 @@ export class ClimatePanel extends LitElement {
     hass:     { type: Object },
     config:   { type: Object },
     expanded: { type: Boolean },
+
     _entity:  { type: String, state: true },
     _icon:    { type: String, state: true },
+    _candidates: { type: Array, state: true },
   };
 
   constructor() {
     super();
-    this.hass     = {};
-    this.config   = {};
-    this.expanded = false;
-    this._entity  = '';
-    this._icon    = '';
+    this.hass       = {};
+    this.config     = {};
+    this.expanded   = false;
+
+    this._entity    = '';
+    this._icon      = '';
+    this._candidates = [];
+    this._syncingFromConfig = false;
   }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
+      this._syncingFromConfig = true;
+
+      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.climate');
+
       const ent = this.config?.entities?.climate?.entity || '';
       const ico = this.config?.entities?.climate?.icon   || '';
-
-      // auto-icona se vuota: 1) attributes.icon 2) fallback resolveEntityIcon
-      if (ent && !ico) {
-        const st = this.hass?.states?.[ent];
-        const iconFromState = st?.attributes?.icon;
-        const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
-        if (autoIcon) this._set('entities.climate.icon', autoIcon);
-      }
-
       this._entity = ent;
-      this._icon   = this.config?.entities?.climate?.icon || '';
+      this._icon   = ico;
+
+      const list = candidatesFor(this.hass, this.config, 'climate') || [];
+      this._candidates = Array.isArray(list) ? list : [];
+
+      this._syncingFromConfig = false;
     }
   }
 
@@ -58,6 +65,13 @@ export class ClimatePanel extends LitElement {
       padding: 22px 0; text-align: center; font-size: 1.12rem;
       font-weight: 700; color: #fff;
     }
+    .input-group.autodiscover {
+      margin: 0 16px 13px; padding: 14px 18px 10px;
+      background: rgba(20,40,70,0.23);
+      border: 1.5px solid rgba(255,255,255,0.13);
+      box-shadow: 0 2px 14px rgba(40,120,180,0.10);
+      border-radius: 18px; display:flex; align-items:center; gap:8px;
+    }
     .input-group { margin: 12px 16px; }
     .input-group label {
       display:block; font-weight:700; margin-bottom:6px; color:#ffb07e;
@@ -72,6 +86,7 @@ export class ClimatePanel extends LitElement {
   `;
 
   render() {
+    const autoDisc = this.config?.auto_discovery_sections?.climate ?? false;
     return html`
       <ha-expansion-panel
         class="glass-panel"
@@ -80,14 +95,27 @@ export class ClimatePanel extends LitElement {
       >
         <div slot="header" class="glass-header">🌡️ Climate</div>
 
+        <div class="input-group autodiscover">
+          <input
+            type="checkbox"
+            .checked=${autoDisc}
+            @change=${e => this._toggleAuto(e.target.checked)}
+          />
+          <label>🪄 Auto-discover</label>
+        </div>
+
         <div class="input-group">
           <label>Climate (ID):</label>
           <ha-selector
             .hass=${this.hass}
             .value=${this._entity}
-            .selector=${{ entity: { domain: 'climate' } }}
+            .selector=${
+              this._candidates.length
+                ? { entity: { include_entities: this._candidates, multiple: false } }
+                : { entity: { domain: 'climate' } }
+            }
             allow-custom-entity
-            @value-changed=${e => this._set('entities.climate.entity', e.detail.value)}
+            @value-changed=${e => this._onEntity(e.detail.value)}
           ></ha-selector>
         </div>
 
@@ -97,7 +125,7 @@ export class ClimatePanel extends LitElement {
             .hass=${this.hass}
             .value=${this._icon}
             allow-custom-icon
-            @value-changed=${e => this._set('entities.climate.icon', e.detail.value)}
+            @value-changed=${e => this._onIcon(e.detail.value)}
           ></ha-icon-picker>
         </div>
 
@@ -114,9 +142,43 @@ export class ClimatePanel extends LitElement {
     `;
   }
 
-  _set(prop, val) {
+  _toggleAuto(on) {
+    if (this._syncingFromConfig) return;
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop, val },
+      detail: { prop: 'auto_discovery_sections.climate', val: on },
+      bubbles: true, composed: true,
+    }));
+  }
+
+  _onEntity(ent) {
+    this._entity = ent || '';
+    if (this._syncingFromConfig) return;
+
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: 'entities.climate.entity', val: this._entity },
+      bubbles: true, composed: true,
+    }));
+
+    const currentIcon = this.config?.entities?.climate?.icon || '';
+    if (!currentIcon && this._entity) {
+      const st = this.hass?.states?.[this._entity];
+      const iconFromState = st?.attributes?.icon;
+      const autoIcon = iconFromState || resolveEntityIcon(this._entity, this.hass);
+      if (autoIcon) {
+        this._icon = autoIcon;
+        this.dispatchEvent(new CustomEvent('panel-changed', {
+          detail: { prop: 'entities.climate.icon', val: autoIcon },
+          bubbles: true, composed: true,
+        }));
+      }
+    }
+  }
+
+  _onIcon(icon) {
+    this._icon = icon || '';
+    if (this._syncingFromConfig) return;
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: 'entities.climate.icon', val: this._icon },
       bubbles: true, composed: true,
     }));
   }
