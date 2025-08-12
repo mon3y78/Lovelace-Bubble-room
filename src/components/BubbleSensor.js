@@ -269,7 +269,6 @@ export class BubbleSensor extends LitElement {
       align-items: center;
       gap: 8px;
       background: rgba(32,38,55,0.12);
-      border-radius: 18px;
       font-size: 1em;
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       font-weight: 700;
@@ -279,7 +278,7 @@ export class BubbleSensor extends LitElement {
       height: 100%;
       contain: strict;
       cursor: pointer;
-      padding: 10px 12px;
+      padding: 1px 1px;
     }
     .sensor-icon {
       font-size: 1.0em;
