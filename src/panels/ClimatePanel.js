@@ -25,7 +25,7 @@ export class ClimatePanel extends LitElement {
 
   // ---- helpers area/registry ------------------------------------------------
   _resolveAreaRef() {
-    // Usa SOLO l'area scelta in config
+    // Usa SOLO l'area scelta in config (nome o area_id). Niente fallback sull’entità.
     const raw = Array.isArray(this.config?.area) ? this.config.area[0] : this.config?.area;
     const areaName = (typeof raw === 'string' && !raw.startsWith('area_')) ? raw : '';
     let areaId = (typeof raw === 'string' && raw.startsWith('area_')) ? raw : '';
@@ -56,7 +56,9 @@ export class ClimatePanel extends LitElement {
 
   _filterByAreaIncludeSelected(list, areaId, areaName, selected) {
     const filtered = (list || []).filter(id => this._matchAreaForEntityId(id, areaId, areaName));
-    if (selected && !filtered.includes(selected)) filtered.unshift(selected);
+    // Mantieni la selezionata SOLO se appartiene all’area corrente
+    const keepSelected = selected && this._matchAreaForEntityId(selected, areaId, areaName);
+    if (keepSelected && !filtered.includes(selected)) filtered.unshift(selected);
     return Array.from(new Set(filtered));
   }
   // --------------------------------------------------------------------------
@@ -77,7 +79,7 @@ export class ClimatePanel extends LitElement {
       this._entity = ent;
       this._icon   = this.config?.entities?.climate?.icon || '';
 
-      // candidati: dominio corretto + filtro area + mantieni selezionato
+      // candidati: dominio corretto + filtro area + mantieni (solo se coerente)
       const autoDisc = this.config?.auto_discovery_sections?.climate ?? false;
       if (autoDisc) {
         const { areaId, areaName } = this._resolveAreaRef();
@@ -166,7 +168,7 @@ export class ClimatePanel extends LitElement {
                 : { entity: { domain: 'climate' } }
             }
             allow-custom-entity
-            @value-changed=${e => this._set('entities.climate.entity', e.detail.value)}
+            @value-changed=${e => this._onEntityChange(e.detail.value)}
           ></ha-selector>
         </div>
 
@@ -191,6 +193,18 @@ export class ClimatePanel extends LitElement {
         >🧹 Reset Climate</button>
       </ha-expansion-panel>
     `;
+  }
+
+  _onEntityChange(ent) {
+    this._set('entities.climate.entity', ent);
+    // auto-icona immediata se vuota
+    const ico = this.config?.entities?.climate?.icon || '';
+    if (ent && !ico) {
+      const st = this.hass?.states?.[ent];
+      const iconFromState = st?.attributes?.icon;
+      const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
+      if (autoIcon) this._set('entities.climate.icon', autoIcon);
+    }
   }
 
   _toggleAuto(on) {

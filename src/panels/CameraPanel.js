@@ -55,7 +55,9 @@ export class CameraPanel extends LitElement {
 
   _filterByAreaIncludeSelected(list, areaId, areaName, selected) {
     const filtered = (list || []).filter(id => this._matchAreaForEntityId(id, areaId, areaName));
-    if (selected && !filtered.includes(selected)) filtered.unshift(selected);
+    // Mantieni la selezionata SOLO se appartiene all’area corrente
+    const keepSelected = selected && this._matchAreaForEntityId(selected, areaId, areaName);
+    if (keepSelected && !filtered.includes(selected)) filtered.unshift(selected);
     return Array.from(new Set(filtered));
   }
   // --------------------------------------------------------------------------
@@ -76,7 +78,7 @@ export class CameraPanel extends LitElement {
       this._entity = ent;
       this._icon   = this.config?.entities?.camera?.icon || '';
 
-      // candidati: dominio corretto + filtro area + mantieni selezionato
+      // candidati: dominio corretto + filtro area + mantieni (solo se coerente)
       const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
       if (autoDisc) {
         const { areaId, areaName } = this._resolveAreaRef();
@@ -165,7 +167,7 @@ export class CameraPanel extends LitElement {
                 : { entity: { domain: 'camera' } }
             }
             allow-custom-entity
-            @value-changed=${e => this._set('entities.camera.entity', e.detail.value)}
+            @value-changed=${e => this._onEntityChange(e.detail.value)}
           ></ha-selector>
         </div>
 
@@ -190,6 +192,18 @@ export class CameraPanel extends LitElement {
         >🧹 Reset Camera</button>
       </ha-expansion-panel>
     `;
+  }
+
+  _onEntityChange(ent) {
+    this._set('entities.camera.entity', ent);
+    // auto-icona immediata se vuota
+    const ico = this.config?.entities?.camera?.icon || '';
+    if (ent && !ico) {
+      const st = this.hass?.states?.[ent];
+      const iconFromState = st?.attributes?.icon;
+      const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
+      if (autoIcon) this._set('entities.camera.icon', autoIcon);
+    }
   }
 
   _toggleAuto(on) {
