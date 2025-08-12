@@ -9,9 +9,9 @@ export class SensorPanel extends LitElement {
     hass:       { type: Object },
     config:     { type: Object },
     expanded:   { type: Boolean },
-    _expanded:  { type: Array, state: true }, // quale mini‐pill è aperta
-    _filters:   { type: Array, state: true }, // tipi selezionati per ogni sensore
-    _entities:  { type: Array, state: true }, // entity_id selezionata per ogni sensore
+    _expanded:  { type: Array, state: true },
+    _filters:   { type: Array, state: true },
+    _entities:  { type: Array, state: true },
   };
 
   constructor() {
@@ -20,7 +20,6 @@ export class SensorPanel extends LitElement {
     this.config    = {};
     this.expanded  = false;
     this._expanded = Array(8).fill(false);
-    // inizializza con TUTTI i tipi disponibili
     const allTypes = Object.keys(SENSOR_TYPE_MAP);
     this._filters  = Array(8).fill().map(() => [...allTypes]);
     this._entities = Array(8).fill('');
@@ -28,9 +27,7 @@ export class SensorPanel extends LitElement {
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // 1️⃣ auto‐discover
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
-      // 2️⃣ sync da config
       for (let i = 0; i < 8; i++) {
         const key = `sensor${i+1}`;
         const cfgFilter = this.config.sensor_filters?.[i];
@@ -43,7 +40,6 @@ export class SensorPanel extends LitElement {
 
   static styles = css`
     :host { display: block; }
-
     .glass-panel {
       margin: 0 !important;
       width: 100%;
@@ -70,7 +66,6 @@ export class SensorPanel extends LitElement {
       font-weight: 700;
       color: #fff;
     }
-
     .input-group.autodiscover {
       margin: 0 16px 13px;
       padding: 14px 18px 10px;
@@ -84,7 +79,6 @@ export class SensorPanel extends LitElement {
     .input-group.autodiscover label {
       margin: 0; font-weight: 700; color: #fff;
     }
-
     .mini-pill {
       background: rgba(44,70,100,0.23);
       border: 1.5px solid rgba(255,255,255,0.13);
@@ -114,30 +108,19 @@ export class SensorPanel extends LitElement {
       from { opacity: 0; transform: translateY(-8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
-    .input-group {
-      margin-bottom: 12px;
-    }
+    .input-group { margin-bottom: 12px; }
     .input-group label {
       display: block; font-weight: 600;
       margin-bottom: 6px; color: #8cff8a;
     }
-    ha-selector {
-      width: 100%; box-sizing: border-box;
-    }
-    ha-selector::part(combobox) {
-      min-height: 40px;
-    }
-
+    ha-selector { width: 100%; box-sizing: border-box; }
+    ha-selector::part(combobox) { min-height: 40px; }
     .filter-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
       margin-bottom: 6px;
-    }
-    .filter-row label {
-      margin: 0;
     }
     .clear-chip {
       border: 2px solid var(--warning-color, #ff8a65);
@@ -147,7 +130,6 @@ export class SensorPanel extends LitElement {
       padding: 6px 12px;
       font-size: 0.9rem;
       font-weight: 800;
-      line-height: 1;
       cursor: pointer;
       transition: background .15s, color .15s, box-shadow .15s, border-color .15s;
       box-shadow: 0 1px 10px rgba(255,138,101,0.25);
@@ -158,7 +140,6 @@ export class SensorPanel extends LitElement {
       border-color: #ff8a65;
       box-shadow: 0 3px 16px rgba(255,138,101,0.45);
     }
-
     .preview {
       display: flex; align-items: center; gap: 12px;
       padding: 0 16px 16px;
@@ -171,7 +152,6 @@ export class SensorPanel extends LitElement {
       font-size: 1.2rem;
       color: #fff;
     }
-
     .reset-button {
       border: 3.5px solid #ff4c6a;
       color: #ff4c6a;
@@ -200,7 +180,7 @@ export class SensorPanel extends LitElement {
       .map(([type, info]) => {
         const niceLabel = info.label ||
           type.replace(/_/g, ' ')
-          .replace(/\b\w/g, c => c.toUpperCase());
+              .replace(/\b\w/g, c => c.toUpperCase());
         return { value: type, label: `${info.emoji || ''} ${niceLabel}`.trim() };
     });
 
@@ -215,7 +195,6 @@ export class SensorPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🧭 Sensors</div>
 
-        <!-- Auto-discover -->
         <div class="input-group autodiscover">
           <input
             type="checkbox"
@@ -225,10 +204,8 @@ export class SensorPanel extends LitElement {
           <label>🪄 Auto-discover Sensors</label>
         </div>
 
-        <!-- Sei mini-pill -->
         ${this._expanded.map((open, i) => this._renderSensor(i, open, options))}
 
-        <!-- Reset globale -->
         <button class="reset-button" @click=${() => this._reset()}>
           🧹 Reset Sensors
         </button>
@@ -239,7 +216,6 @@ export class SensorPanel extends LitElement {
   _renderSensor(i, open, options) {
     const types = this._filters[i];
     const ent   = this._entities[i];
-    const key   = `sensor${i+1}`;
     const cands = candidatesFor(this.hass, this.config, 'sensor', types);
 
     return html`
@@ -250,7 +226,6 @@ export class SensorPanel extends LitElement {
         </div>
         ${open ? html`
           <div class="mini-pill-content">
-            <!-- Filter category (multi‐select pill) + CLEAR -->
             <div class="input-group">
               <div class="filter-row">
                 <label for="filter-${i}">Filter category:</label>
@@ -258,8 +233,7 @@ export class SensorPanel extends LitElement {
                   class="clear-chip"
                   type="button"
                   @click=${() => this._clearFilter(i)}
-                  title="Svuota l'elenco dei tipi per questo sensore"
-                  aria-label="Clear filter category">
+                  title="Clear filter category">
                   Clear
                 </button>
               </div>
@@ -272,11 +246,9 @@ export class SensorPanel extends LitElement {
               ></ha-selector>
             </div>
 
-            <!-- Entity selector -->
             <div class="input-group">
-              <label for="entity-${i}">Entity:</label>
+              <label>Entity:</label>
               <ha-selector
-                id="entity-${i}"
                 .hass=${this.hass}
                 .value=${ent}
                 .selector=${{ entity: { include_entities: cands, multiple: false } }}
@@ -285,7 +257,6 @@ export class SensorPanel extends LitElement {
               ></ha-selector>
             </div>
 
-            <!-- Preview basata su device_class -->
             ${ent ? (() => {
               const stateObj = this.hass.states[ent];
               const dc       = stateObj?.attributes?.device_class;
@@ -294,7 +265,6 @@ export class SensorPanel extends LitElement {
               const unit     = stateObj?.attributes?.unit_of_measurement
                                || (info.units?.[0] ?? '');
               const val      = stateObj?.state ?? '-';
-
               return html`
                 <div class="preview">
                   <span class="emoji">${emoji}</span>
@@ -321,7 +291,23 @@ export class SensorPanel extends LitElement {
   }
 
   _onFilter(i, values) {
-    this._filters[i] = [...values];
+    const arr = Array.isArray(values) ? values.filter(Boolean) : [];
+    this._filters[i] = [...arr];
+    this.requestUpdate('_filters');
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: 'sensor_filters', val: this._filters },
+      bubbles: true, composed: true,
+    }));
+  }
+
+  _clearFilter(i) {
+    this._filters[i] = [];
+    this.requestUpdate('_filters');
+    const sel = this.renderRoot?.querySelector(`#filter-${i}`);
+    if (sel) {
+      sel.value = [];
+      sel.dispatchEvent(new CustomEvent('value-changed', { detail: { value: [] }, bubbles: true, composed: true }));
+    }
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: 'sensor_filters', val: this._filters },
       bubbles: true, composed: true,
@@ -336,27 +322,15 @@ export class SensorPanel extends LitElement {
     }));
   }
 
-  _clearFilter(i) {
-    // azzera subito la lista dei tipi per questo sensore
-    this._filters[i] = [];
-    this.requestUpdate('_filters');
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'sensor_filters', val: this._filters },
-      bubbles: true, composed: true,
-    }));
-  }
-
   _reset() {
     this._expanded = Array(8).fill(false);
     const allTypes = Object.keys(SENSOR_TYPE_MAP);
     this._filters  = Array(8).fill().map(() => [...allTypes]);
     this._entities = Array(8).fill('');
-    // reset filters array
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: 'sensor_filters', val: this._filters },
       bubbles: true, composed: true,
     }));
-    // reset entità una per una
     for (let i = 1; i <= 8; i++) {
       this.dispatchEvent(new CustomEvent('panel-changed', {
         detail: { prop: `entities.sensor${i}.entity`, val: '' },
