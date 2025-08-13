@@ -405,7 +405,9 @@ export class BubbleSensor extends LitElement {
       height: 100%;
       contain: strict;
       cursor: pointer;
-      padding: 0;               /* niente padding */
+      padding: 0;     
+      justify-content: space-between;  
+      text-align: center;         
     }
     .sensor-label {
       font-weight: 600;
