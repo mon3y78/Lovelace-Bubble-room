@@ -32,9 +32,13 @@ export class SensorPanel extends LitElement {
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // Auto-discover (solo lettura/suggerimento)
-      maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
-
+      // Auto-discover: usa il valore di ritorno e propaga la nuova config
+      const next = maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
+      if (next && next !== this.config) {
+        this.dispatchEvent(new CustomEvent('config-changed', {
+          detail: { config: next }, bubbles: true, composed: true
+        }));
+      }
       // Se esiste in config, carica ma NON riscrivere mai sensor_filters nel YAML
       for (let i = 0; i < 5; i++) {
         const key = `sensor${i+1}`;
@@ -231,7 +235,19 @@ export class SensorPanel extends LitElement {
   _renderSensor(i, open, options) {
     const types = this._filters[i];
     const ent   = this._entities[i];
-    const cands = candidatesFor(this.hass, this.config, 'sensor', types);
+    // AD ON ⇒ filtrato per area; AD OFF ⇒ nessun filtro area
+    const adOn = this.config?.auto_discovery_sections?.sensor ?? false;
+    let cands;
+    if (adOn) {
+      cands = candidatesFor(this.hass, this.config, 'sensor', types) || [];
+    } else {
+      // bypass totale: prendi dal states e filtra solo per domini/categorie rilevanti
+      const all = Object.keys(this.hass?.states || []);
+      // se le categorie corrispondono a domini (es. 'sensor', 'binary_sensor', ...):
+      const doms = Array.isArray(types) && types.length ? new Set(types) : new Set(['sensor','binary_sensor']);
+      cands = all.filter(id => doms.has(id.split('.')[0]));
+    }
+    if (ent && !cands.includes(ent)) cands = [ent, ...cands];
 
     return html`
       <div class="mini-pill ${open ? 'expanded' : ''}">

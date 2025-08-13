@@ -55,15 +55,6 @@ export class CameraPanel extends LitElement {
         if (this._entity && !ids.includes(this._entity)) ids.unshift(this._entity);
         this._candidates = ids;
       }
-
-       // 🎨 Auto-icona camera al primo load se entità presente e icona vuota
-       if (this._entity && !this._icon) {
-         const st = this.hass?.states?.[this._entity];
-         const autoIcon = st?.attributes?.icon || resolveEntityIcon(this._entity, this.hass);
-         if (autoIcon) this._icon = autoIcon;
-       }
- 
-       this._syncingFromConfig = false;
       // 🎨 Auto-icona camera al primo load se entità presente e icona vuota
       if (this._entity && !this._icon) {
         const st = this.hass?.states?.[this._entity];

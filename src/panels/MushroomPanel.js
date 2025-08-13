@@ -39,9 +39,14 @@ export class MushroomPanel extends LitElement {
 
     this._syncingFromConfig = true;
 
-    // 1) Autodiscovery area-based (copre la sezione se il toggle è attivo)
+    // 1) Autodiscovery area-based (applica il valore di ritorno)
     if (this.config?.area || this.config?.area_id) {
-      maybeAutoDiscover(this.hass, this.config, 'area', false);
+      const next = maybeAutoDiscover(this.hass, this.config, 'area', false);
+      if (next && next !== this.config) {
+        this.dispatchEvent(new CustomEvent('config-changed', {
+          detail: { config: next }, bubbles: true, composed: true
+        }));
+      }
     }
 
     // 2) sincronizza filtri da config (se presenti)
@@ -249,7 +254,22 @@ export class MushroomPanel extends LitElement {
     const icon  = this._icons[i];
     const cfg   = (this.config.entities && this.config.entities[key]) ? this.config.entities[key] : {};
 
-    const cands = candidatesFor(this.hass, this.config, 'mushroom', types);
+    // Candidati:
+    // - AD ON  ⇒ pipeline standard (filtrata per area) via candidatesFor
+    // - AD OFF ⇒ lista "no-area" direttamente da hass.states (solo domini selezionati)
+    const autoDisc = this.config?.auto_discovery_sections?.mushroom ?? false;
+    let cands;
+    if (autoDisc) {
+      cands = candidatesFor(this.hass, this.config, 'mushroom', types) || [];
+    } else {
+      const all = Object.keys(this.hass?.states || []);
+      const domains = Array.isArray(types) && types.length ? new Set(types) : null;
+      cands = domains
+        ? all.filter(id => domains.has(id.split('.')[0]))
+        : all.slice();
+    }
+    // preserva l’entità selezionata in cima se non già inclusa
+    if (ent && !cands.includes(ent)) cands = [ent, ...cands];
     const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
 
     return html`

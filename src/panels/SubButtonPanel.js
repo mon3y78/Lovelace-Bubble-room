@@ -31,7 +31,12 @@ export class SubButtonPanel extends LitElement {
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
       if (this.config?.area || this.config?.area_id) {
-        maybeAutoDiscover(this.hass, this.config, 'area', false);
+        const next = maybeAutoDiscover(this.hass, this.config, 'area', false);
+        if (next && next !== this.config) {
+          this.dispatchEvent(new CustomEvent('config-changed', {
+            detail: { config: next }, bubbles: true, composed: true,
+          }));
+        }
       }
       
       if (!Array.isArray(this.config.subbuttons))
@@ -218,7 +223,17 @@ export class SubButtonPanel extends LitElement {
   _renderSubButton(i, open, options) {
     const types = this._filters[i];
     const ent = this._entities[i];
-    const cands = candidatesFor(this.hass, this.config, 'subbutton', types);
+    const adOn = this.config?.auto_discovery_sections?.subbutton ?? false;
+    let cands;
+    if (adOn) {
+      cands = candidatesFor(this.hass, this.config, 'subbutton', types) || [];
+    } else {
+      // bypass area: prendi dai domains usabili dai sub-button
+      const allowed = new Set(['light','switch','scene','script','input_boolean','lock','cover','fan','media_player']);
+      cands = Object.keys(this.hass?.states || {}).filter((id) => allowed.has(id.split('.')[0]));
+    }
+    // tieni l'entità selezionata in testa
+    if (ent && !cands.includes(ent)) cands = [ent, ...cands];
     const cfg = this.config.subbuttons?.[i] || {};
     const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
     

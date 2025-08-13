@@ -90,7 +90,7 @@ function autoFillByDomain(hass, config, domain, key) {
   const filtered = filterByAreaKeepSelected(hass, pool, areaRef, slot.entity);
 
   // 4) prendo il primo utile
-  const pick = (filtered[0] || pool[0] || '');
+  const pick = (filtered[0] || '');
   if (pick) slot.entity = pick;
 
   if (DEBUG) {
