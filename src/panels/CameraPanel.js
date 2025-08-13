@@ -13,6 +13,8 @@ export class CameraPanel extends LitElement {
     _entity:      { type: String, state: true },
     _icon:        { type: String, state: true },
     _candidates:  { type: Array,  state: true },
+    _presence: { type: String, state: true },
+    _presenceCandidates: { type: Array, state: true },
   };
 
   constructor() {
@@ -24,6 +26,8 @@ export class CameraPanel extends LitElement {
     this._entity = '';
     this._icon = '';
     this._candidates = [];
+    this._presence = '';
+    this._presenceCandidates = [];
     this._syncingFromConfig = false;
   }
 
@@ -44,16 +48,35 @@ export class CameraPanel extends LitElement {
       // sync stato locale da config
       this._entity = this.config?.entities?.camera?.entity || '';
       this._icon   = this.config?.entities?.camera?.icon   || '';
+      this._presence = this.config?.entities?.camera?.presence?.entity || '';
 
       // 🎯 candidati
       const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
       if (autoDisc) {
         this._candidates = candidatesFor(this.hass, this.config, 'camera') || [];
+        
+          // Presence/Motion: filtra per device_class e poi area
+        const presAll = candidatesFor(this.hass, this.config, 'presence', [
+          'motion', 'occupancy', 'presence', 'moving'
+        ]) || [];
+        const presBin = presAll.filter(id => id.startsWith('binary_sensor.'));
+        // Mantiene la selezionata in cima
+        if (this._presence && !presBin.includes(this._presence)) {
+          presBin.unshift(this._presence);
+        }
+        this._presenceCandidates = presBin;   
+        
       } else {
         // Nessun filtro area: tutte le entità camera, con la selezionata in cima
         let ids = Object.keys(this.hass?.states || {}).filter((id) => id.startsWith('camera.'));
         if (this._entity && !ids.includes(this._entity)) ids.unshift(this._entity);
         this._candidates = ids;
+        
+        // Nessun filtro presence: tutti i binary_sensor, con la selezionata in cima
+        let presIds = Object.keys(this.hass?.states || {}).filter(id => id.startsWith('binary_sensor.'));
+        if (this._presence && !presIds.includes(this._presence)) presIds.unshift(this._presence);
+        this._presenceCandidates = presIds;        
+        
       }
       // 🎨 Auto-icona camera al primo load se entità presente e icona vuota
       if (this._entity && !this._icon) {
@@ -149,6 +172,22 @@ export class CameraPanel extends LitElement {
             @value-changed=${e => this._onIcon(e.detail.value)}
           ></ha-icon-picker>
         </div>
+        
+        <div class="input-group">
+          <label>Entità Presenza/Motion (binary_sensor):</label>
+          <ha-selector
+            .hass=${this.hass}
+            .value=${this._presence}
+            .selector=${
+              this._presenceCandidates.length
+                ? { entity: { include_entities: this._presenceCandidates, multiple: false } }
+                : { entity: { domain: 'binary_sensor' } }
+            }
+            allow-custom-entity
+            @value-changed=${e => this._onPresence(e.detail.value)}
+          ></ha-selector>
+        </div>
+
 
         <button
           class="reset-button"
@@ -195,7 +234,15 @@ export class CameraPanel extends LitElement {
       }
     }
   }
-
+  _onPresence(ent) {
+    this._presence = ent || '';
+    if (this._syncingFromConfig) return;
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: 'entities.camera.presence.entity', val: this._presence },
+      bubbles: true,
+      composed: true,
+    }));
+  }
   _onIcon(icon) {
     this._icon = icon || '';
     if (this._syncingFromConfig) return;
@@ -204,6 +251,49 @@ export class CameraPanel extends LitElement {
       bubbles: true, composed: true,
     }));
   }
+  
+@@
+   _onIcon(icon) {
+     this._icon = icon || '';
+     if (this._syncingFromConfig) return;
+     this.dispatchEvent(new CustomEvent('panel-changed', {
+       detail: { prop: 'entities.camera.icon', val: this._icon },
+       bubbles: true, composed: true,
+     }));
+   }
+
+  // Reset locale  richiesta di reset allo YAML
+  _reset = () => {
+    // 1) feedback immediato sulla UI
+    this._entity = '';
+    this._icon = '';
+    // se abbiamo reintrodotto presence/motion, puliamola senza errori anche se non esiste
+    if (typeof this._presence !== 'undefined') this._presence = '';
+    if (Array.isArray(this._candidates)) this._candidates = [];
+    if (Array.isArray(this._presenceCandidates)) this._presenceCandidates = [];
+
+    // 2) comanda il reset centralizzato dell'editor (usa resetCamera in backend)
+    this.dispatchEvent(new CustomEvent('__panel_cmd__', {
+      detail: { cmd: 'reset', section: 'camera' },
+      bubbles: true, composed: true,
+    }));
+
+    // 3) compatibilità: azzera esplicitamente le chiavi nel YAML
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: 'entities.camera.entity', val: '' },
+      bubbles: true, composed: true,
+    }));
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: 'entities.camera.icon', val: '' },
+      bubbles: true, composed: true,
+    }));
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: 'entities.camera.presence.entity', val: '' },
+      bubbles: true, composed: true,
+    }));
+  }
+  
+  
 }
 
 customElements.define('camera-panel', CameraPanel);
