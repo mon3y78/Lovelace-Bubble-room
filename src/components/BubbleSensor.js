@@ -234,7 +234,7 @@ export class BubbleSensor extends LitElement {
     // niente padding né bordo: massimizziamo lo spazio interno
     const PADDING_X = 0;
     const PADDING_Y = 0;
-    const UNIT_ML   = 4; // lieve spazio tra valore e unità
+    const UNIT_ML   = 1; // lieve spazio tra valore e unità
 
     valueEl.style.fontSize = '';
     if (unitEl) unitEl.style.fontSize = '';
@@ -246,22 +246,22 @@ export class BubbleSensor extends LitElement {
     if (maxWidth === 0 || maxHeight === 0) return;
 
     // abbassiamo i minimi e la taglia iniziale: emoji/icon più piccole
-    let lo = 6; // prima era 10
+    let lo = 5; // prima era 10
     let hi = Math.min(40, maxHeight); // leggermente più compatto del 44
     let best = lo;
 
     // rapporti rivisti per avere emoji/unità un po' più piccole
     const unitRatio  = 0.70;
-    const labelRatio = 0.85;
-    const iconRatio  = 0.90;
+    const labelRatio = 0.70;
+    const iconRatio  = 0.70;
 
     for (let i = 0; i < 8 && lo <= hi; i++) {
       const mid = (lo + hi) >> 1;
 
       valueEl.style.fontSize = `${mid}px`;
-      if (unitEl)  unitEl.style.fontSize  = `${Math.max(8, Math.round(mid * unitRatio))}px`;
-      if (labelEl) labelEl.style.fontSize = `${Math.max(8, Math.round(mid * labelRatio))}px`;
-      if (iconEl)  iconEl.style.fontSize  = `${Math.max(8, Math.round(mid * iconRatio))}px`;
+      if (unitEl)  unitEl.style.fontSize  = `${Math.max(5, Math.round(mid * unitRatio))}px`;
+      if (labelEl) labelEl.style.fontSize = `${Math.max(5, Math.round(mid * labelRatio))}px`;
+      if (iconEl)  iconEl.style.fontSize  = `${Math.max(5, Math.round(mid * iconRatio))}px`;
 
       const vW = valueEl.offsetWidth;
       const vH = valueEl.offsetHeight;
@@ -287,9 +287,9 @@ export class BubbleSensor extends LitElement {
     }
 
     valueEl.style.fontSize = `${best}px`;
-    if (unitEl)  unitEl.style.fontSize  = `${Math.max(8, Math.round(best * unitRatio))}px`;
-    if (labelEl) labelEl.style.fontSize = `${Math.max(8, Math.round(best * labelRatio))}px`;
-    if (iconEl)  iconEl.style.fontSize  = `${Math.max(8, Math.round(best * iconRatio))}px`;
+    if (unitEl)  unitEl.style.fontSize  = `${Math.max(5, Math.round(best * unitRatio))}px`;
+    if (labelEl) labelEl.style.fontSize = `${Math.max(5, Math.round(best * labelRatio))}px`;
+    if (iconEl)  iconEl.style.fontSize  = `${Math.max(5, Math.round(best * iconRatio))}px`;
 
     this._pillCache.set(pill, {
       text, unitText, labelTxt, iconName, boxW, boxH, best
