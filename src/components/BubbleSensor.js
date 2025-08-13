@@ -441,7 +441,12 @@ export class BubbleSensor extends LitElement {
       const map = SENSOR_TYPE_MAP[devClass] || {};
       const emoji = map.emoji || '❓';
       const unit = sensor.unit || map.units?.[0] || '';
-      return { ...sensor, label: emoji, unit };
+      let value = sensor.value;
+      if (typeof value === 'number') {
+        value = Number.isInteger(value) ? value : value.toFixed(1);
+      }
+    
+      return { ...sensor, value, label: emoji, unit };
     });
 
     return html`
