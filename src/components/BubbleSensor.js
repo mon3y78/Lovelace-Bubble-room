@@ -407,13 +407,9 @@ export class BubbleSensor extends LitElement {
       cursor: pointer;
       padding: 0;               /* niente padding */
     }
-    .sensor-icon {
-      font-size: 1em;           /* base più piccola: poi scala via JS */
-      flex: 0 0 auto;
-    }
     .sensor-label {
       font-weight: 600;
-      font-size: 1em;           /* sarà scalata via JS */
+      font-size: 0.8em;           /* sarà scalata via JS */
       line-height: 1;
       display: inline-block;
       flex: 0 0 auto;
@@ -431,7 +427,7 @@ export class BubbleSensor extends LitElement {
       overflow: hidden;
       text-overflow: ellipsis;
       line-height: 1;
-      margin-left: 4px;         /* separa valore e unità */
+      margin-left: 1px;         /* separa valore e unità */
       flex: 0 0 auto;
       opacity: 1;               /* assicurati sia visibile */
     }
