@@ -31,16 +31,39 @@ export class CameraPanel extends LitElement {
     if (changed.has('config') || changed.has('hass')) {
       this._syncingFromConfig = true;
 
-      // 🔎 applica autodiscovery se attivo
+      // 🔎 applica autodiscovery (usando il valore di ritorno)
       if (this.config?.area || this.config?.area_id) {
-        maybeAutoDiscover(this.hass, this.config, 'area', false);
+        const next = maybeAutoDiscover(this.hass, this.config, 'area', false);
+        if (next && next !== this.config) {
+          this.dispatchEvent(new CustomEvent('config-changed', {
+            detail: { config: next }, bubbles: true, composed: true
+          }));
+        }
       }
 
       // sync stato locale da config
       this._entity = this.config?.entities?.camera?.entity || '';
       this._icon   = this.config?.entities?.camera?.icon   || '';
 
-      // 🎯 candidate filtrate per area (keep selected)
+      // 🎯 candidati
+      const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
+      if (autoDisc) {
+        this._candidates = candidatesFor(this.hass, this.config, 'camera') || [];
+      } else {
+        // Nessun filtro area: tutte le entità camera, con la selezionata in cima
+        let ids = Object.keys(this.hass?.states || {}).filter((id) => id.startsWith('camera.'));
+        if (this._entity && !ids.includes(this._entity)) ids.unshift(this._entity);
+        this._candidates = ids;
+      }
+
+       // 🎨 Auto-icona camera al primo load se entità presente e icona vuota
+       if (this._entity && !this._icon) {
+         const st = this.hass?.states?.[this._entity];
+         const autoIcon = st?.attributes?.icon || resolveEntityIcon(this._entity, this.hass);
+         if (autoIcon) this._icon = autoIcon;
+       }
+ 
+       this._syncingFromConfig = false;
       // 🎨 Auto-icona camera al primo load se entità presente e icona vuota
       if (this._entity && !this._icon) {
         const st = this.hass?.states?.[this._entity];

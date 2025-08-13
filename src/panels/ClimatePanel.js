@@ -32,9 +32,14 @@ export class ClimatePanel extends LitElement {
   
     this._syncingFromConfig = true;
   
-    // 🔁 Applica autodiscovery in base all'area (copre climate se attivo)
+    // 🔁 Applica autodiscovery in base all'area (usando il valore di ritorno)
     if (this.config?.area || this.config?.area_id) {
-      maybeAutoDiscover(this.hass, this.config, 'area', false);
+      const next = maybeAutoDiscover(this.hass, this.config, 'area', false);
+      if (next && next !== this.config) {
+        this.dispatchEvent(new CustomEvent('config-changed', {
+          detail: { config: next }, bubbles: true, composed: true
+        }));
+      }
     }
   
     // 🔹 Entità e icona dalla config
@@ -43,9 +48,16 @@ export class ClimatePanel extends LitElement {
     this._entity = ent;
     this._icon   = ico;
   
-    // 🎯 Candidate filtrate per area (keep selected)
-    const list = candidatesFor(this.hass, this.config, 'climate') || [];
-    this._candidates = Array.isArray(list) ? list : [];
+    // 🎯 Candidati: AD ON ⇒ filtrati per area; AD OFF ⇒ nessun filtro area
+    const adClimate = this.config?.auto_discovery_sections?.climate ?? false;
+    if (adClimate) {
+      const list = candidatesFor(this.hass, this.config, 'climate') || [];
+      this._candidates = Array.isArray(list) ? list : [];
+    } else {
+      let ids = Object.keys(this.hass?.states || {}).filter((id) => id.startsWith('climate.'));
+      if (this._entity && !ids.includes(this._entity)) ids.unshift(this._entity);
+      this._candidates = ids;
+    }
   
     // 🎨 Auto-icona al primo load se entità presente e icona vuota
     if (this._entity && !this._icon) {

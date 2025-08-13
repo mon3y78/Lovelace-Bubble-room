@@ -207,9 +207,10 @@ function presenceCandidatesLocal(hass, config) {
     return ['motion','occupancy','presence'].includes(dc || '');
   });
 
-  // filtro per area semplice usando attributi/registry, con fallback
+  // Applica il filtro per area SOLO se l'autodiscovery "presence" è attivo
+  const adPresence = config?.auto_discovery_sections?.presence ?? false;
   const { areaId, areaName } = resolveAreaRef(hass, config);
-  if (areaId || areaName) {
+  if (adPresence && (areaId || areaName)) {
     const inArea = ids.filter((id) => matchArea(hass, id, areaId, areaName));
     if (inArea.length) ids = inArea;
   }

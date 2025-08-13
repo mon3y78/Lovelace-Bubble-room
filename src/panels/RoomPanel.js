@@ -315,9 +315,32 @@ export class RoomPanel extends LitElement {
       value: cat,
       label: cat.charAt(0).toUpperCase() + cat.slice(1),
     }));
-    const presCandidates = candidatesFor(
-      this.hass, this.config, 'presence', presFilters
-    );
+
+    const presCandidates = (autoDisc)
+      ? candidatesFor(this.hass, this.config, 'presence', presFilters)
+      : this._presenceCandidatesNoArea(this.hass, presFilters, presEntity);
+
+  _presenceCandidatesNoArea(hass, filters = [], selected) {
+    if (!hass?.states) return [];
+    const allowed = new Set([
+      'person','device_tracker','binary_sensor','light','switch',
+      'media_player','fan','humidifier','lock','input_boolean','scene'
+    ]);
+    let ids = Object.keys(hass.states).filter((id) => allowed.has(id.split('.')[0]));
+    const wants = new Set(filters || []);
+    if (wants.size) {
+      ids = ids.filter((id) => {
+        const [domain] = id.split('.');
+        if (domain !== 'binary_sensor') return true;
+        const dc = hass.states[id]?.attributes?.device_class || '';
+        return (wants.has('motion') && dc === 'motion') ||
+               (wants.has('occupancy') && dc === 'occupancy') ||
+               (wants.has('presence') && dc === 'presence');
+      });
+    }
+    if (selected && !ids.includes(selected)) ids.unshift(selected);
+    return ids;
+  }
 
     const actions = ['toggle','more-info','navigate','call-service','none'];
     const tapCfg  = this.config?.tap_action  || {};
