@@ -299,12 +299,51 @@ export class BubbleSensor extends LitElement {
   /** Helpers per confronto sensori */
   _formatValueForCompare(value) {
     if (value === null || value === undefined) return '--';
+  
+    // prova a estrarre un numero anche da stringhe tipo "58,88 %"
+    let n = null;
     if (typeof value === 'number') {
-      const isInt = Number.isInteger(value);
-      return isInt ? String(value) : value.toFixed(1);
+      n = value;
+    } else if (typeof value === 'string') {
+      const m = value.replace(',', '.').match(/-?\d+(?:\.\d+)?/);
+      if (m) n = Number(m[0]);
     }
+  
+    if (Number.isFinite(n)) {
+      // SOLO quando serve: intero → "58", altrimenti → "58.9"
+      return Number.isInteger(n) ? String(n) : n.toFixed(1);
+    }
+  
+    // fallback non numerico
     return String(value).trim().replace(/\s+/g, ' ');
   }
+  
+  _formatValueForDisplay(value, decimals = 1, trimIntegers = true) {
+    if (value === null || value === undefined) return '--';
+  
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return (trimIntegers && Number.isInteger(value))
+        ? String(value)
+        : value.toFixed(decimals);
+    }
+  
+    if (typeof value === 'string') {
+      const m = value.replace(',', '.').match(/-?\d+(?:\.\d+)?/);
+      if (m) {
+        const n = Number(m[0]);
+        if (Number.isFinite(n)) {
+          return (trimIntegers && Number.isInteger(n))
+            ? String(n)
+            : n.toFixed(decimals);
+        }
+      }
+      return value.trim();
+    }
+  
+    return String(value);
+  }
+  
+  
 
   _getSensorKey(sensor, index) {
     return sensor?.entity || sensor?.entity_id || `idx:${index}`;
@@ -406,7 +445,7 @@ export class BubbleSensor extends LitElement {
       contain: strict;
       cursor: pointer;
       padding: 0;     
-      justify-content: space-between;  
+      justify-content: center;  
       text-align: center;         
     }
     .sensor-label {
@@ -440,14 +479,14 @@ export class BubbleSensor extends LitElement {
       const devClass = sensor.device_class;
       const map = SENSOR_TYPE_MAP[devClass] || {};
       const emoji = map.emoji || '❓';
-      const unit = sensor.unit || map.units?.[0] || '';
-      let value = sensor.value;
-      if (typeof value === 'number') {
-        value = Number.isInteger(value) ? value : value.toFixed(1);
-      }
+      const unit  = sensor.unit || map.units?.[0] || '';
+    
+      // Mostra 1 decimale SOLO se non è intero
+      const value = this._formatValueForDisplay(sensor.value, 1, true);
     
       return { ...sensor, value, label: emoji, unit };
     });
+    
 
     return html`
       <div
