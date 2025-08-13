@@ -57,7 +57,11 @@ function matchArea(hass, id, areaId, areaName) {
 /** Filtra la lista per area e garantisce che l’eventuale entità già selezionata resti in lista (prima posizione). */
 function filterByAreaKeepSelected(hass, list, areaRef, selected) {
   const { areaId, areaName } = areaRef;
-  const filtered = (list || []).filter((id) => matchArea(hass, id, areaId, areaName));
+  let filtered = (list || []).filter((id) => matchArea(hass, id, areaId, areaName)); // se non ci sono entità per l’area selezionata → nessuna entità
+  if ((areaId || areaName) && filtered.length === 0) {
+    +filtered = [];
+  }
+  
   if (selected && !filtered.includes(selected)) filtered.unshift(selected);
   return Array.from(new Set(filtered));
 }
