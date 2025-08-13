@@ -331,21 +331,20 @@ export class BubbleRoom extends LitElement {
   static styles = css`
     :host { display:block; height:100%; box-sizing:border-box; }
     .bubble-room-grid { display:grid; grid-template-columns:2fr 1fr;
-      width:100%; height:100%; box-sizing:border-box; border:2px dashed yellow; }
-    .main-area { display:grid; height:100%; min-height:0; box-sizing:border-box;
-      border:2px dashed green; }
+      width:100%; height:100%; box-sizing:border-box; }
+    .main-area { display:grid; height:100%; min-height:0; box-sizing:border-box; }
     .row1 { display:grid; min-height:0; box-sizing:border-box;
-      border:2px dashed blue; grid-template-columns:1fr; }
+      grid-template-columns:1fr; }
     .row2 { display:grid; height:100%; min-height:0; box-sizing:border-box;
-      border:2px dashed purple; }
+    }
     .name-placeholder { display:flex; align-items:center; justify-content:center;
       width:100%; max-width:100%; height:100%; box-sizing:border-box;
-      contain:strict; flex-shrink:1; border:2px dashed yellow; }
-    .icon-mushroom-area { border:2px dashed violet; box-sizing:border-box;
+      contain:strict; flex-shrink:1; }
+    .icon-mushroom-area { box-sizing:border-box;
       position:relative; width:100%; height:100%; display:flex; align-items:center; }
-    .k-space { border:2px dashed black; box-sizing:border-box; }
+    .k-space { box-sizing:border-box; }
     .sidebar { display:flex; flex-direction:column; height:100%; min-height:0;
-      box-sizing:border-box; border:2px dashed red; }
+      box-sizing:border-box; }
 
     .bubble-room-grid.tall .main-area { grid-template-rows:1fr 2fr; }
     .bubble-room-grid.tall .row1      { grid-template-rows:1fr 2fr; }
