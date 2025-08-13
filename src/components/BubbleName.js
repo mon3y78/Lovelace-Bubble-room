@@ -18,7 +18,7 @@ export class BubbleName extends LitElement {
     super();
     this.name = '';
     this.fitMode = 'height'; // priorità all'altezza
-    this.stretchY = 1;       // nessuno stretch di default
+    this.stretchY = 1.12;       // nessuno stretch di default
     this._raf = null;
     this._resizeObs = null;
     this._lastScale = null;
