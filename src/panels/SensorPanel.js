@@ -241,12 +241,21 @@ export class SensorPanel extends LitElement {
     if (adOn) {
       cands = candidatesFor(this.hass, this.config, 'sensor', types) || [];
     } else {
-      // bypass totale: prendi dal states e filtra solo per domini/categorie rilevanti
-      const all = Object.keys(this.hass?.states || []);
-      // se le categorie corrispondono a domini (es. 'sensor', 'binary_sensor', ...):
-      const doms = Array.isArray(types) && types.length ? new Set(types) : new Set(['sensor','binary_sensor']);
-      cands = all.filter(id => doms.has(id.split('.')[0]));
+      // bypass area: prendi tutti i sensor/binary_sensor e, se presenti "types",
+      // filtra per device_class (non per dominio!)
+      const states = this.hass?.states || {};
+      const allIds = Object.keys(states);
+      const hasTypes = Array.isArray(types) && types.length > 0;
+      const typeSet  = hasTypes ? new Set(types) : null;
+      cands = allIds.filter((id) => {
+        const domain = id.split('.')[0];
+        if (domain !== 'sensor' && domain !== 'binary_sensor') return false;
+        if (!hasTypes) return true;
+        const dc = states[id]?.attributes?.device_class;
+        return dc ? typeSet.has(dc) : false;
+      });
     }
+
     if (ent && !cands.includes(ent)) cands = [ent, ...cands];
 
     return html`
