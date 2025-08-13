@@ -252,7 +252,6 @@ export class CameraPanel extends LitElement {
     }));
   }
   
-@@
    _onIcon(icon) {
      this._icon = icon || '';
      if (this._syncingFromConfig) return;
