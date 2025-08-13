@@ -300,26 +300,6 @@ export class RoomPanel extends LitElement {
       composed: true
     }));
   }
-
-  render() {
-    const cfg      = this.config;
-    const autoDisc = cfg.auto_discovery_sections?.presence ?? false;
-    const area     = cfg.area ?? '';
-    const name     = cfg.name ?? '';
-    const icon     = cfg.icon ?? '';
-    const presEntity = cfg.entities?.presence?.entity ?? '';
-    const presFilters = this.activeFilters.length
-      ? this.activeFilters
-      : (cfg.presence_filters ?? [...PRESENCE_CATS]);
-    const filterOptions = PRESENCE_CATS.map(cat => ({
-      value: cat,
-      label: cat.charAt(0).toUpperCase() + cat.slice(1),
-    }));
-
-    const presCandidates = (autoDisc)
-      ? candidatesFor(this.hass, this.config, 'presence', presFilters)
-      : this._presenceCandidatesNoArea(this.hass, presFilters, presEntity);
-
   _presenceCandidatesNoArea(hass, filters = [], selected) {
     if (!hass?.states) return [];
     const allowed = new Set([
@@ -341,6 +321,26 @@ export class RoomPanel extends LitElement {
     if (selected && !ids.includes(selected)) ids.unshift(selected);
     return ids;
   }
+
+  render() {
+    const cfg      = this.config;
+    const autoDisc = cfg.auto_discovery_sections?.presence ?? false;
+    const area     = cfg.area ?? '';
+    const name     = cfg.name ?? '';
+    const icon     = cfg.icon ?? '';
+    const presEntity = cfg.entities?.presence?.entity ?? '';
+    const presFilters = this.activeFilters.length
+      ? this.activeFilters
+      : (cfg.presence_filters ?? [...PRESENCE_CATS]);
+    const filterOptions = PRESENCE_CATS.map(cat => ({
+      value: cat,
+      label: cat.charAt(0).toUpperCase() + cat.slice(1),
+    }));
+
+    const presCandidates = (autoDisc)
+      ? candidatesFor(this.hass, this.config, 'presence', presFilters)
+      : this._presenceCandidatesNoArea(this.hass, presFilters, presEntity);
+
 
     const actions = ['toggle','more-info','navigate','call-service','none'];
     const tapCfg  = this.config?.tap_action  || {};
