@@ -73,8 +73,8 @@ export class BubbleSensor extends LitElement {
 
   _updateLayout() {
     const count = this.sensors?.length || 0;
-    this.rows = count > 4 ? 2 : 1;
-    this.columns = count > 4 ? 4 : count || 1;
+    this.rows = count > 5 ? 2 : 1;
+    this.columns = count > 5 ? 5 : count || 1;
   }
 
   _scheduleAutoscale(changedIndices = null) {
@@ -127,10 +127,10 @@ export class BubbleSensor extends LitElement {
     const labelEl = pill.querySelector('.sensor-label');
     const iconEl  = pill.querySelector('.sensor-icon');
 
-    const bestPx   = parseFloat(getComputedStyle(valueEl).fontSize) || 12;
-    const unitPx   = unitEl  ? parseFloat(getComputedStyle(unitEl).fontSize)   || Math.round(bestPx * 0.7) : 0;
-    const labelPx  = labelEl ? parseFloat(getComputedStyle(labelEl).fontSize) || Math.round(bestPx * 0.85) : 0;
-    const iconPx   = iconEl  ? parseFloat(getComputedStyle(iconEl).fontSize)  || Math.round(bestPx * 0.9) : 0;
+    const bestPx   = parseFloat(getComputedStyle(valueEl).fontSize) || 10;
+    const unitPx   = unitEl  ? parseFloat(getComputedStyle(unitEl).fontSize)   || Math.round(bestPx * 0.5) : 0;
+    const labelPx  = labelEl ? parseFloat(getComputedStyle(labelEl).fontSize) || Math.round(bestPx * 0.5) : 0;
+    const iconPx   = iconEl  ? parseFloat(getComputedStyle(iconEl).fontSize)  || Math.round(bestPx * 0.5) : 0;
 
     return { best: bestPx, unit: unitPx, label: labelPx, icon: iconPx };
   }
@@ -409,7 +409,7 @@ export class BubbleSensor extends LitElement {
     }
     .sensor-label {
       font-weight: 600;
-      font-size: 0.8em;           /* sarà scalata via JS */
+      font-size: 0.5em;           /* sarà scalata via JS */
       line-height: 1;
       display: inline-block;
       flex: 0 0 auto;

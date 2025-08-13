@@ -19,12 +19,12 @@ export class SensorPanel extends LitElement {
     this.hass      = {};
     this.config    = {};
     this.expanded  = false;
-    this._expanded = Array(8).fill(false);
+    this._expanded = Array(5).fill(false);
 
     const allTypes = Object.keys(SENSOR_TYPE_MAP);
     // Stato locale dei filtri: default = TUTTI i tipi (non scritto nel YAML)
-    this._filters  = Array(8).fill().map(() => [...allTypes]);
-    this._entities = Array(8).fill('');
+    this._filters  = Array(5).fill().map(() => [...allTypes]);
+    this._entities = Array(5).fill('');
 
     // Flag per distinguere i change generati dal tasto Clear
     this._ignoreNextFilterChange = new Set(); // indici -> ignora il prossimo value-changed
@@ -36,7 +36,7 @@ export class SensorPanel extends LitElement {
       maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
 
       // Se esiste in config, carica ma NON riscrivere mai sensor_filters nel YAML
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < 5; i++) {
         const key = `sensor${i+1}`;
         const cfgFilter = this.config.sensor_filters?.[i];
         const cfgEnt    = this.config.entities?.[key]?.entity;
@@ -205,7 +205,7 @@ export class SensorPanel extends LitElement {
         .expanded=${this.expanded}
         @expanded-changed=${e => {
           this.expanded = e.detail.expanded;
-          if (this.expanded) this._expanded = Array(8).fill(false);
+          if (this.expanded) this._expanded = Array(5).fill(false);
         }}
       >
         <div slot="header" class="glass-header">🧭 Sensors</div>
@@ -352,13 +352,13 @@ export class SensorPanel extends LitElement {
   }
 
   _reset() {
-    this._expanded = Array(8).fill(false);
+    this._expanded = Array(5).fill(false);
     const allTypes = Object.keys(SENSOR_TYPE_MAP);
-    this._filters  = Array(8).fill().map(() => [...allTypes]);
-    this._entities = Array(8).fill('');
+    this._filters  = Array(5).fill().map(() => [...allTypes]);
+    this._entities = Array(5).fill('');
 
     // Reset solo delle entità nel YAML; i filtri restano locali
-    for (let i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 5; i++) {
       this.dispatchEvent(new CustomEvent('panel-changed', {
         detail: { prop: `entities.sensor${i}.entity`, val: '' },
         bubbles: true, composed: true,
