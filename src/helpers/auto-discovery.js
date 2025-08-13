@@ -305,19 +305,9 @@ export function maybeAutoDiscover(hass, config, changedProp, debug = false) {
   const ad = config.auto_discovery_sections || {};
   const isAreaChange = changedProp === 'area';
   const isADChange   = changedProp && String(changedProp).startsWith('auto_discovery_sections.');
-  if (!isAreaChange && !isADChange) return config;
-
-  let next = config;
-
-  if (ad.sensor)    next = autoFillSensors(hass, next);
-  if (ad.mushroom)  next = autoFillMushrooms(hass, next);
-  if (ad.subbutton) next = autoFillSubButtons(hass, next);
-  if (ad.presence)  next = autoFillPresence(hass, next);
-  if (ad.climate)   next = autoFillClimate(hass, next);
-  if (ad.camera)    next = autoFillCamera(hass, next);
-
+  // ⚠️ Non mutiamo più la config: l’autodiscovery resta solo “suggeritore” lato UI.
   if ((debug || DEBUG) && typeof window !== 'undefined') {
-    console.info('[AutoDiscovery] applied after', changedProp, { sections: ad });
+    console.info('[AutoDiscovery] (no-op) after', changedProp, { sections: ad });
   }
-  return next;
+  return config;
 }
