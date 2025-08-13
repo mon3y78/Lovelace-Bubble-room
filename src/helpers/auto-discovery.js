@@ -59,7 +59,7 @@ function filterByAreaKeepSelected(hass, list, areaRef, selected) {
   const { areaId, areaName } = areaRef;
   let filtered = (list || []).filter((id) => matchArea(hass, id, areaId, areaName)); // se non ci sono entità per l’area selezionata → nessuna entità
   if ((areaId || areaName) && filtered.length === 0) {
-    +filtered = [];
+    filtered = [];
   }
   
   if (selected && !filtered.includes(selected)) filtered.unshift(selected);
