@@ -18,6 +18,33 @@ export const FILTER_LABELS = {
   motion: 'Movimento',
   occupancy: 'Occupazione',
   presence: 'Presenza',
+  motion: 'Movimento',
+  occupancy: 'Occupazione',
+  presence: 'Presenza',
+  moving: 'In movimento',
+  door: 'Porta',
+  window: 'Finestra',
+  opening: 'Apertura',
+  garage_door: 'Basculante',
+  vibration: 'Vibrazione',
+  sound: 'Suono',
+  moisture: 'Umidità/Perdita',
+  water: 'Acqua/Perdita',
+  smoke: 'Fumo',
+  gas: 'Gas',
+  carbon_monoxide: 'Monossido',
+  cold: 'Freddo',
+  heat: 'Caldo',
+  light_level: 'Luce (livello)',
+  connectivity: 'Connettività',
+  lock_dc: 'Serratura (stato)', // opzionale se lo usi come DC
+  plug: 'Presa',
+  power: 'Alimentazione',
+  problem: 'Problema',
+  running: 'In esecuzione',
+  safety: 'Sicurezza',
+  tamper: 'Manomissione',
+  update: 'Aggiornamento',
   switch: 'Pulsante',
 };
 
@@ -37,6 +64,15 @@ export const COMMON_CATS = [
   'siren',
   'switch',
   'vacuum',
+];
+
+/* —— device_class comuni dei binary_sensor rese selezionabili in UI —— */
+export const BINARY_SENSOR_CATS = [
+  'motion','occupancy','presence','moving',
+  'door','window','opening','garage_door',
+  'vibration','sound','moisture','water','smoke','gas','carbon_monoxide',
+  'cold','heat','light_level','connectivity',
+  'plug','power','problem','running','safety','tamper','update'
 ];
 
 /* ───────────── filtri di sezione (criteri dominio/device_class; niente area qui) ───────────── */

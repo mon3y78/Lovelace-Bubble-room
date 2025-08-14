@@ -5,6 +5,7 @@ import {
   candidatesFor,
   COMMON_CATS,
   FILTER_LABELS,
+  BINARY_SENSOR_CATS,
 } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
 
@@ -208,14 +209,30 @@ export class MushroomPanel extends LitElement {
       background: rgba(255,76,106,0.18);
       color: #fff; box-shadow: 0 6px 32px #ff4c6abf;
     }
+    .clear - button {
+    +margin - top: 6 px;
+    background: transparent;
+    border: 1.5 px solid rgba(255, 255, 255, 0.25);
+    color: #ccc;
+    font - size: 0.85 rem;
+    padding: 4 px 8 px;
+    border - radius: 8 px;
+    cursor: pointer;
+    } 
+    .clear - button: hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    } 
   `;
 
   render() {
     const autoDisc = this.config?.auto_discovery_sections?.mushroom ?? false;
 
-    const options = COMMON_CATS.map(cat => ({
+    // Unione: domini comuni + device_class dei binary_sensor
+    const allCats = Array.from(new Set([...COMMON_CATS, ...BINARY_SENSOR_CATS]));
+    const options = allCats.map(cat => ({
       value: cat,
-      label: FILTER_LABELS[cat] || cat.charAt(0).toUpperCase() + cat.slice(1),
+      label: FILTER_LABELS[cat] || (cat.charAt(0).toUpperCase() + cat.slice(1)),
     }));
 
     return html`
@@ -290,6 +307,11 @@ export class MushroomPanel extends LitElement {
                 .selector=${{ select: { multiple: true, mode: 'box', options } }}
                 @value-changed=${e => this._onFilter(i, e.detail.value)}
               ></ha-selector>
+              $ { types?.length ? html`
+                <button class="clear-button" @click=${() => this._clearFilter(i)}>
+                  ❌ Clear
+                </button>
+              ` : '' }
             </div>
 
             <!-- Entity -->
@@ -397,7 +419,14 @@ export class MushroomPanel extends LitElement {
       bubbles: true, composed: true,
     }));
   }
-
+  _clearFilter(i) {
+    this._filters[i] = [];
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: 'mushroom_filters', val: this._filters },
+      bubbles: true, composed: true,
+    }));
+    this.requestUpdate();
+  }
   _onEntity(i, ent) {
     this._entities[i] = ent;
 
