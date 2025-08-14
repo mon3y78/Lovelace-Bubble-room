@@ -307,7 +307,7 @@ export class MushroomPanel extends LitElement {
                 .selector=${{ select: { multiple: true, mode: 'box', options } }}
                 @value-changed=${e => this._onFilter(i, e.detail.value)}
               ></ha-selector>
-              $ { types?.length ? html`
+              ${types?.length ? html`
                 <button class="clear-button" @click=${() => this._clearFilter(i)}>
                   ❌ Clear
                 </button>
