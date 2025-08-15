@@ -32,18 +32,19 @@ export class SensorPanel extends LitElement {
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // Auto-discover: usa il valore di ritorno e propaga la nuova config
+      // Auto-discover: usa il valore di ritorno e propaga la nuova config (se serve)
       const next = maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
       if (next && next !== this.config) {
         this.dispatchEvent(new CustomEvent('config-changed', {
           detail: { config: next }, bubbles: true, composed: true
         }));
       }
+
       // Se esiste in config, carica ma NON riscrivere mai sensor_filters nel YAML
       for (let i = 0; i < 5; i++) {
-        const key = `sensor${i+1}`;
-        const cfgFilter = this.config.sensor_filters?.[i];
-        const cfgEnt    = this.config.entities?.[key]?.entity;
+        const key = `sensor${i + 1}`;
+        const cfgFilter = this.config?.sensor_filters?.[i];
+        const cfgEnt    = this.config?.entities?.[key]?.entity;
         if (Array.isArray(cfgFilter)) this._filters[i] = [...cfgFilter];
         if (cfgEnt)                   this._entities[i] = cfgEnt;
       }
@@ -132,6 +133,7 @@ export class SensorPanel extends LitElement {
     ha-selector { width: 100%; box-sizing: border-box; }
     ha-selector::part(combobox) { min-height: 40px; }
 
+    /* layout Clear */
     .filter-row {
       display: flex;
       align-items: center;
@@ -193,13 +195,13 @@ export class SensorPanel extends LitElement {
   `;
 
   render() {
-    const autoDisc = this.config.auto_discovery_sections?.sensor ?? false;
+    const autoDisc = this.config?.auto_discovery_sections?.sensor ?? false;
+
     const options = Object.entries(SENSOR_TYPE_MAP)
       .filter(([type]) => type !== '_fallback')
       .map(([type, info]) => {
         const niceLabel = info.label ||
-          type.replace(/_/g, ' ')
-              .replace(/\b\w/g, c => c.toUpperCase());
+          type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
         return { value: type, label: `${info.emoji || ''} ${niceLabel}`.trim() };
       });
 
@@ -235,7 +237,8 @@ export class SensorPanel extends LitElement {
   _renderSensor(i, open, options) {
     const types = this._filters[i];
     const ent   = this._entities[i];
-    // AD ON ⇒ filtrato per area; AD OFF ⇒ nessun filtro area
+
+    // AD ON ⇒ filtrato per area; AD OFF ⇒ nessun filtro area (per device_class)
     const adOn = this.config?.auto_discovery_sections?.sensor ?? false;
     let cands;
     if (adOn) {
