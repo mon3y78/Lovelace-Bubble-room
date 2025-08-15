@@ -210,36 +210,31 @@ export class MushroomPanel extends LitElement {
       background: rgba(255,76,106,0.18);
       color: #fff; box-shadow: 0 6px 32px #ff4c6abf;
     }
-    .clear - button {
-    +margin - top: 6 px;
-    background: transparent;
-    border: 1.5 px solid rgba(255, 255, 255, 0.25);
-    color: #ccc;
-    font - size: 0.85 rem;
-    padding: 4 px 8 px;
-    border - radius: 8 px;
-    cursor: pointer;
-    } 
-    .clear - button: hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-    } 
-    
-    .clear - button {
-      +margin - top: 6 px;
-      border: 1.5 px solid #ff4c6a;
-      background: transparent;
-      color: #ff4c6a;
-      font - size: 0.85 rem;
-      font - weight: 600;
-      padding: 4 px 10 px;
-      border - radius: 12 px;
-      cursor: pointer;
-      transition: all 0.2 s ease;
+     /* —— stile Clear identico a SensorPanel ——————————————— */
+    .filter - row {
+      display: flex;
+      align - items: center;
+      justify - content: space - between;
+      gap: 8 px;
+      margin - bottom: 6 px;
     }
-    .clear - button: hover {
-      +background: rgba(255, 76, 106, 0.15);
+    .clear-chip {
+      border: 2px solid var(--warning-color, #ff8a65);
+      color: var(--warning-color, #ff8a65);
+      background: transparent;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background .15s, color .15s, box-shadow .15s, border-color .15s;
+      box-shadow: 0 1px 10px rgba(255,138,101,0.25);
+    }
+    .clear-chip:hover {
+      background: rgba(255,138,101,0.18);
       color: #fff;
+      border-color: #ff8a65;
+      box-shadow: 0 3px 16px rgba(255,138,101,0.45);
     }
   `;
 
@@ -295,13 +290,12 @@ export class MushroomPanel extends LitElement {
     const autoDisc = this.config?.auto_discovery_sections?.mushroom ?? false;
     let cands;
     if (autoDisc) {
+      // AD ON: pipeline standard (filtrata per area)
       cands = candidatesFor(this.hass, this.config, 'mushroom', types) || [];
     } else {
-      const all = Object.keys(this.hass?.states || []);
-      const domains = Array.isArray(types) && types.length ? new Set(types) : null;
-      cands = domains
-        ? all.filter(id => domains.has(id.split('.')[0]))
-        : all.slice();
+      // AD OFF: rimuovi area e riusa la stessa pipeline (così funzionano anche le device_class)
+      const cfgNoArea = { ...this.config, area: undefined, area_id: undefined };
+      cands = candidatesFor(this.hass, cfgNoArea, 'mushroom', types) || [];
     }
     // preserva l’entità selezionata in cima se non già inclusa
     if (ent && !cands.includes(ent)) cands = [ent, ...cands];
@@ -316,20 +310,25 @@ export class MushroomPanel extends LitElement {
 
         ${open ? html`
           <div class="mini-pill-content">
-            <!-- Filter categories -->
+            <!-- Filter categories (layout/UX identici a SensorPanel) -->
             <div class="input-group">
-              <label>Filter categories:</label>
+              <div class="filter-row">
+                <label for="filter-${i}">Filter category:</label>
+                <button
+                  class="clear-chip"
+                  type="button"
+                  @click=${() => this._clearFilter(i)}
+                  title="Clear filter category">
+                  Clear
+                </button>
+              </div>
               <ha-selector
+                id="filter-${i}"
                 .hass=${this.hass}
                 .value=${types}
                 .selector=${{ select: { multiple: true, mode: 'box', options } }}
                 @value-changed=${e => this._onFilter(i, e.detail.value)}
               ></ha-selector>
-              ${types?.length ? html`
-                <button class="clear-button" @click=${() => this._clearFilter(i)}>
-                  ❌ Clear
-                </button>
-              ` : '' }
             </div>
 
             <!-- Entity -->
@@ -430,32 +429,30 @@ export class MushroomPanel extends LitElement {
   }
 
   _onFilter(i, values) {
+    // Replica 1:1 la logica di SensorPanel
     if (this._ignoreNextFilterChange.has(i)) {
       this._ignoreNextFilterChange.delete(i);
-      return;
-    }
-
-    if (values.length === 0 && this._filters[i].length > 0) {
-      // rimozione manuale di tutti → ripristino default
-      this._filters[i] = [...COMMON_CATS];
+      this._filters[i] = [];
     } else {
-      this._filters[i] = [...values];
+      const arr = Array.isArray(values) && values.length ? values.filter(Boolean) : [...COMMON_CATS];
+      this._filters[i] = [...arr];
     }
-
-    if (this._syncingFromConfig) return;
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'mushroom_filters', val: this._filters },
-      bubbles: true, composed: true,
-    }));
+    // Sync visuale del selector (come SensorPanel)
+    const sel = this.renderRoot?.querySelector(`#filter-${i}`);
+    if (sel) sel.value = [...this._filters[i]];
   }
+  // Clear identico a SensorPanel: svuota, setta il flag, dispatch value-changed([])
   _clearFilter(i) {
-    this._ignoreNextFilterChange.add(i);
     this._filters[i] = [];
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'mushroom_filters', val: this._filters },
-      bubbles: true, composed: true,
-    }));
-    this.requestUpdate();
+    this.requestUpdate('_filters');
+    const sel = this.renderRoot?.querySelector(`#filter-${i}`);
+    if (sel) {
+      this._ignoreNextFilterChange.add(i);
+      sel.value = [];
+      sel.dispatchEvent(new CustomEvent('value-changed', {
+        detail: { value: [] }, bubbles: true, composed: true
+      }));
+    }
   }
   _onEntity(i, ent) {
     this._entities[i] = ent;
