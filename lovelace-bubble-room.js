@@ -680,12 +680,12 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       color: #fff; box-shadow: 0 6px 32px #ff4c6abf;
     }
      /* —— stile Clear identico a SensorPanel ——————————————— */
-    .filter - row {
+    .filter-row {
       display: flex;
-      align - items: center;
-      justify - content: space - between;
+      align-items: center;
+      justify-content: space-between;
       gap: 8 px;
-      margin - bottom: 6 px;
+      margin-bottom: 6px;
     }
     .clear-chip {
       border: 2px solid var(--warning-color, #ff8a65);
