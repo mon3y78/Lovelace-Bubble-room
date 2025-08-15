@@ -23,9 +23,13 @@ export class SubButtonPanel extends LitElement {
     this.hass = {};
     this.config = {};
     this.expanded = false;
+
     this._expanded = Array(4).fill(false);
-    this._filters = Array(4).fill().map(() => [...COMMON_CATS]);
+    this._filters  = Array(4).fill().map(() => [...COMMON_CATS]);
     this._entities = Array(4).fill('');
+
+    // come SensorPanel/MushroomPanel: serve per il Clear
+    this._ignoreNextFilterChange = new Set();
   }
   
   updated(changed) {
@@ -50,7 +54,7 @@ export class SubButtonPanel extends LitElement {
         const ent = this.config.subbuttons[i]?.entity_id || '';
         this._entities[i] = ent;
 
-        // Auto-icona anche al load: se ho entity e l'icona è vuota, popolala ora
+        // Auto-icona al load: se ho entity e l'icona è vuota, popolala ora
         if (ent && !this.config.subbuttons[i].icon && this.hass) {
           const st = this.hass.states?.[ent];
           const iconFromState = st?.attributes?.icon;
@@ -133,9 +137,7 @@ export class SubButtonPanel extends LitElement {
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .input-group {
-      margin-bottom: 12px;
-    }
+    .input-group { margin-bottom: 12px; }
     .input-group label {
       display: block; font-weight: 600;
       margin-bottom: 6px; color: #b28fff;
@@ -145,6 +147,33 @@ export class SubButtonPanel extends LitElement {
     }
     ha-selector::part(combobox) {
       min-height: 40px;
+    }
+
+    /* ——— stile Clear (allineato al label, identico a Sensor/Mushroom) ——— */
+    .filter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .clear-chip {
+      border: 2px solid var(--warning-color, #ff8a65);
+      color: var(--warning-color, #ff8a65);
+      background: transparent;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background .15s, color .15s, box-shadow .15s, border-color .15s;
+      box-shadow: 0 1px 10px rgba(255,138,101,0.25);
+    }
+    .clear-chip:hover {
+      background: rgba(255,138,101,0.18);
+      color: #fff;
+      border-color: #ff8a65;
+      box-shadow: 0 3px 16px rgba(255,138,101,0.45);
     }
 
     /* === STYLE TAP/HOLD like RoomPanel === */
@@ -224,6 +253,7 @@ export class SubButtonPanel extends LitElement {
     const types = this._filters[i];
     const ent = this._entities[i];
     const adOn = this.config?.auto_discovery_sections?.subbutton ?? false;
+
     let cands;
     if (adOn) {
       cands = candidatesFor(this.hass, this.config, 'subbutton', types) || [];
@@ -232,8 +262,8 @@ export class SubButtonPanel extends LitElement {
       const allowed = new Set(['light','switch','scene','script','input_boolean','lock','cover','fan','media_player']);
       cands = Object.keys(this.hass?.states || {}).filter((id) => allowed.has(id.split('.')[0]));
     }
-    // tieni l'entità selezionata in testa
     if (ent && !cands.includes(ent)) cands = [ent, ...cands];
+
     const cfg = this.config.subbuttons?.[i] || {};
     const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
     
@@ -245,8 +275,20 @@ export class SubButtonPanel extends LitElement {
         ${open ? html`
           <div class="mini-pill-content">
             <div class="input-group">
-              <label>Filter categories:</label>
-              <ha-selector .hass=${this.hass} .value=${types}
+              <div class="filter-row">
+                <label for="filter-${i}">Filter category:</label>
+                <button
+                  class="clear-chip"
+                  type="button"
+                  @click=${() => this._clearFilter(i)}
+                  title="Clear filter category">
+                  Clear
+                </button>
+              </div>
+              <ha-selector
+                id="filter-${i}"
+                .hass=${this.hass}
+                .value=${types}
                 .selector=${{select:{multiple:true,mode:'box',options}}}
                 @value-changed=${e => this._onFilter(i, e.detail.value)}
               ></ha-selector>
@@ -275,7 +317,7 @@ export class SubButtonPanel extends LitElement {
                 <div class="pill-group">
                   ${actions.map(a => html`
                     <button
-                      class="pill-button ${cfg[`${type}_action`]?.action === a ? 'active' : ''}"
+                      class="pill-button ${cfg[`${type}_action`] ?.action === a ? 'active' : ''}"
                       @click=${() => this._onAction(i, type, 'action', a)}
                     >${a}</button>
                   `)}
@@ -294,7 +336,7 @@ export class SubButtonPanel extends LitElement {
     if (act === 'navigate') {
       return html`
         <input type="text" placeholder="Path"
-          .value=${cfg[`${type}_action`]?.navigation_path || ''}
+          .value=${cfg[`${type}_action`] ?.navigation_path || ''}
           @input=${e => this._onAction(i, type, 'navigation_path', e.target.value)}
         />
       `;
@@ -302,11 +344,11 @@ export class SubButtonPanel extends LitElement {
     if (act === 'call-service') {
       return html`
         <input type="text" placeholder="Service"
-          .value=${cfg[`${type}_action`]?.service || ''}
+          .value=${cfg[`${type}_action`] ?.service || ''}
           @input=${e => this._onAction(i, type, 'service', e.target.value)}
         />
         <input type="text" placeholder='Service Data (JSON)'
-          .value=${cfg[`${type}_action`]?.service_data ? JSON.stringify(cfg[`${type}_action`].service_data) : ''}
+          .value=${cfg[`${type}_action`] ?.service_data ? JSON.stringify(cfg[`${type}_action`].service_data) : ''}
           @input=${e => this._onAction(i, type, 'service_data', this._safeJson(e.target.value))}
         />
       `;
@@ -324,9 +366,37 @@ export class SubButtonPanel extends LitElement {
     this._expanded = this._expanded.map((v, k) => k === i ? !v : false);
   }
     
+  // identico a Sensor/Mushroom: se arriva da Clear → resta vuoto
   _onFilter(i, vals) {
-    this._filters[i] = [...vals];
+    if (this._ignoreNextFilterChange.has(i)) {
+      this._ignoreNextFilterChange.delete(i);
+      this._filters[i] = [];
+    } else {
+      const arr = Array.isArray(vals) && vals.length ? vals.filter(Boolean) : [...COMMON_CATS];
+      this._filters[i] = [...arr];
+    }
+
+    // sync visiva del selector e propagazione (mantengo tuo comportamento)
+    const sel = this.renderRoot?.querySelector(`#filter-${i}`);
+    if (sel) sel.value = [...this._filters[i]];
+
     this._emit('subbutton_filters', this._filters);
+  }
+    
+  // Clear: svuota chips, setta il flag e dispatcha value-changed([]) al selector
+  _clearFilter(i) {
+    this._filters[i] = [];
+    const sel = this.renderRoot?.querySelector(`#filter-${i}`);
+    if (sel) {
+      this._ignoreNextFilterChange.add(i);
+      sel.value = [];
+      sel.dispatchEvent(new CustomEvent('value-changed', {
+        detail: { value: [] }, bubbles: true, composed: true
+      }));
+    } else {
+      // fallback: comunque emetti stato vuoto
+      this._emit('subbutton_filters', this._filters);
+    }
   }
     
   _onEntity(i, ent) {
@@ -335,8 +405,7 @@ export class SubButtonPanel extends LitElement {
     if (!this.config.subbuttons[i]) this.config.subbuttons[i] = {};
     this.config.subbuttons[i].entity_id = ent;
     
-    // Se non c'è già un'icona, assegnala in automatico:
-    // 1) usa attributes.icon dello stato; 2) fallback resolveEntityIcon
+    // auto-icona
     if (!this.config.subbuttons[i].icon && this.hass) {
       const st = this.hass.states?.[ent];
       const iconFromState = st?.attributes?.icon;
@@ -364,7 +433,7 @@ export class SubButtonPanel extends LitElement {
     
   _reset() {
     this._expanded = Array(4).fill(false);
-    this._filters = Array(4).fill().map(() => [...COMMON_CATS]);
+    this._filters  = Array(4).fill().map(() => [...COMMON_CATS]);
     this._entities = Array(4).fill('');
     this.config.subbuttons = Array(4).fill().map(() => ({}));
     this._emit('subbutton_filters', this._filters);
