@@ -372,14 +372,20 @@ export class SubButtonPanel extends LitElement {
       this._ignoreNextFilterChange.delete(i);
       this._filters[i] = [];
     } else {
-      const arr = Array.isArray(vals) && vals.length ? vals.filter(Boolean) : [...COMMON_CATS];
+      const arr = Array.isArray(vals) && vals.length ?
+        vals.filter(Boolean) :
+        [...COMMON_CATS];
       this._filters[i] = [...arr];
     }
-
-    // sync visiva del selector e propagazione (mantengo tuo comportamento)
+    
+    // forza il rerender così _renderSubButton ricalcola 'cands'
+    this.requestUpdate('_filters');
+    
+    // aggiorna visivamente il selector dei filtri
     const sel = this.renderRoot?.querySelector(`#filter-${i}`);
     if (sel) sel.value = [...this._filters[i]];
-
+    
+    // propaga i filtri aggiornati
     this._emit('subbutton_filters', this._filters);
   }
     
