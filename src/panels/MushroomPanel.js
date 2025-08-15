@@ -33,6 +33,7 @@ export class MushroomPanel extends LitElement {
     this._icons    = Array(5).fill('');
 
     this._syncingFromConfig = false; // evita side effects durante la sync
+    this._ignoreNextFilterChange = new Set(); // per clear intenzional
   }
 
   updated(changed) {
@@ -223,6 +224,23 @@ export class MushroomPanel extends LitElement {
       background: rgba(255, 255, 255, 0.08);
       color: #fff;
     } 
+    
+    .clear - button {
+      +margin - top: 6 px;
+      border: 1.5 px solid #ff4c6a;
+      background: transparent;
+      color: #ff4c6a;
+      font - size: 0.85 rem;
+      font - weight: 600;
+      padding: 4 px 10 px;
+      border - radius: 12 px;
+      cursor: pointer;
+      transition: all 0.2 s ease;
+    }
+    .clear - button: hover {
+      +background: rgba(255, 76, 106, 0.15);
+      color: #fff;
+    }
   `;
 
   render() {
@@ -412,7 +430,18 @@ export class MushroomPanel extends LitElement {
   }
 
   _onFilter(i, values) {
-    this._filters[i] = [...values];
+    if (this._ignoreNextFilterChange.has(i)) {
+      this._ignoreNextFilterChange.delete(i);
+      return;
+    }
+
+    if (values.length === 0 && this._filters[i].length > 0) {
+      // rimozione manuale di tutti → ripristino default
+      this._filters[i] = [...COMMON_CATS];
+    } else {
+      this._filters[i] = [...values];
+    }
+
     if (this._syncingFromConfig) return;
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: 'mushroom_filters', val: this._filters },
@@ -420,6 +449,7 @@ export class MushroomPanel extends LitElement {
     }));
   }
   _clearFilter(i) {
+    this._ignoreNextFilterChange.add(i);
     this._filters[i] = [];
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: 'mushroom_filters', val: this._filters },
