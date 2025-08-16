@@ -454,32 +454,40 @@ export class MushroomPanel extends LitElement {
       }));
     }
   }
-  _onEntity(i, ent) {
-    this._entities[i] = ent;
+_onEntity(i, ent) {
+  const key = `mushroom${i+1}`;
+  this._entities[i] = ent || '';
 
-    if (!this._syncingFromConfig) {
-      // salva l’entità
-      this.dispatchEvent(new CustomEvent('panel-changed', {
-        detail: { prop: `entities.mushroom${i+1}.entity`, val: ent },
-        bubbles: true, composed: true,
-      }));
+  if (this._syncingFromConfig) return;
 
-      // se l’icona è vuota → imposta subito auto-icona (stato → fallback)
-      const currentIcon = this.config?.entities?.[`mushroom${i+1}`]?.icon || '';
-      if (!currentIcon) {
-        const st = this.hass?.states?.[ent];
-        const iconFromState = st?.attributes?.icon;
-        const autoIco = iconFromState || resolveEntityIcon(ent, this.hass);
-        if (autoIco) {
-          this._icons[i] = autoIco;
-          this.dispatchEvent(new CustomEvent('panel-changed', {
-            detail: { prop: `entities.mushroom${i+1}.icon`, val: autoIco },
-            bubbles: true, composed: true,
-          }));
-        }
-      }
-    }
+  // salva l’entità
+  this.dispatchEvent(new CustomEvent('panel-changed', {
+    detail: { prop: `entities.${key}.entity`, val: this._entities[i] },
+    bubbles: true, composed: true,
+  }));
+
+  // se l’entità è stata svuotata → svuota anche l’icona
+  if (!this._entities[i]) {
+    this._icons[i] = '';
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: `entities.${key}.icon`, val: '' },
+      bubbles: true, composed: true,
+    }));
+    return;
   }
+
+  // comportamento come SubButtonPanel: ricalcola SEMPRE l’icona alla variazione entità
+  const st = this.hass?.states?.[this._entities[i]];
+  const iconFromState = st?.attributes?.icon;
+  const autoIco = iconFromState || resolveEntityIcon(this._entities[i], this.hass) || '';
+
+  this._icons[i] = autoIco;
+  this.dispatchEvent(new CustomEvent('panel-changed', {
+    detail: { prop: `entities.${key}.icon`, val: autoIco },
+    bubbles: true, composed: true,
+  }));
+}
+
 
   _onIcon(i, icon) {
     this._icons[i] = icon || '';
