@@ -339,43 +339,27 @@ export class SubButtonPanel extends LitElement {
   }
 
   // Filtri: singolo chip e Clear (one-shot)
-  _onFilter(i, values) {
-    // Se il prossimo change arriva dal Clear, consumalo e resta vuoto
+  // identico a MushroomPanel: niente .value forzato
+  _onFilter(i, vals) {
     if (this._ignoreNextFilterChange.has(i)) {
       this._ignoreNextFilterChange.delete(i);
       this._filters[i] = [];
     } else {
-      const arr = Array.isArray(values) ? values.filter(Boolean) : [];
-      this._filters[i] = [...arr];
+      this._filters[i] = Array.isArray(vals) ? vals.filter(Boolean) : [];
     }
-
-    // Re-sync visivo del selector (evita stati interni “sporchi”)
-    const sel = this.renderRoot?.querySelector(`#filter-${i}`);
-    if (sel) sel.value = [...this._filters[i]];
-
-    // Notifica e ricalcola i candidati
-    if (!this._syncingFromConfig) {
-      this._emit('subbutton_filters', this._filters);
-    }
+    
     this.requestUpdate('_filters');
+    this._emit('subbutton_filters', this._filters);
   }
-
+  
+  // Clear: reset locale, niente manipolazione diretta di sel.value
   _clearFilter(i) {
     this._filters[i] = [];
-    const sel = this.renderRoot?.querySelector(`#filter-${i}`);
-    if (sel) {
-      // segnala che il prossimo value-changed([]) è “da Clear”
-      this._ignoreNextFilterChange.add(i);
-      sel.value = [];
-      sel.dispatchEvent(new CustomEvent('value-changed', {
-        detail: { value: [] }, bubbles: true, composed: true
-      }));
-    } else {
-      // se per qualsiasi motivo non trovi il selector, emetti comunque
-      this._emit('subbutton_filters', this._filters);
-    }
+    this._ignoreNextFilterChange.add(i);
     this.requestUpdate('_filters');
+    this._emit('subbutton_filters', this._filters);
   }
+
 
   _onEntity(i, ent) {
     this._entities[i] = ent || '';
