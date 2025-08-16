@@ -3,12 +3,12 @@
 [![Community Forum](https://img.shields.io/badge/Forum-Home%20Assistant-blue?logo=home-assistant)](https://community.home-assistant.io/t/bubble-room/856230?u=ipilla)
 [![Reddit](https://img.shields.io/badge/Reddit-Discussion-orange?logo=reddit)](https://www.reddit.com/r/homeassistant/s/Qgz9acN7Mr)
 ![Bubble Room](img/bubble-room-v3.png)
-# 🫧 Bubble Card v5
+# 🫧 Lovelace Bubble Room v5
 ---
 
-## 🚀 Bubble Card v5 is here!
+## 🚀 Lovelace Bubble Room v5 is here!
 
-Bubble Card v5 brings a completely redesigned experience, keeping the original style but adding powerful new options and full modularity. 
+Lovelace Bubble Room v5 brings a completely redesigned experience, keeping the original style but adding powerful new options and full modularity. 
 
 ⚠️ **Important note**: If you were using v4, you will need to **recreate the card from scratch**, since the internal structure has been rebuilt to provide better performance and more features.
 
@@ -25,7 +25,7 @@ Bubble Card v5 brings a completely redesigned experience, keeping the original s
 ---
 
 ## 🧩 Available panels
-Bubble Card v5 introduces specialized panels that you can freely combine:  
+Lovelace Bubble Room v5 introduces specialized panels that you can freely combine:  
 
 - **🎛️ Sub-Button Panel** → up to 4 additional buttons around the bubble, each with entity, icon, and customizable actions.  
 - **🍄 Mushroom Panel** → up to 5 extra entities (lights, switches, media players, etc.) for quick access.  
