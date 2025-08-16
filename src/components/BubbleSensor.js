@@ -499,8 +499,9 @@ export class BubbleSensor extends LitElement {
         ${sensors.map(sensor => {
           const entityId = sensor.entity || sensor.entity_id || '';
           const title = entityId
-            ? `Mostra grafico storico: ${entityId}`
-            : 'Mostra grafico storico';
+            ? `Show history graph: ${entityId}`
+            : 'Show history graph';
+
           return html`
             <div
               class="sensor-pill"

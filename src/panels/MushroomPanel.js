@@ -399,7 +399,7 @@ export class MushroomPanel extends LitElement {
     }
     if (act === 'call-service') {
       return html`
-        <input type="text" placeholder="Service (es. light.turn_on)"
+        <input type="text" placeholder="Service"
           .value=${cfg[`${type}_action`]?.service || ''}
           @input=${e => this._onAction(i, type, 'service', e.target.value)}
         />

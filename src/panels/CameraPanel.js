@@ -174,7 +174,7 @@ export class CameraPanel extends LitElement {
         </div>
         
         <div class="input-group">
-          <label>Entità Presenza/Motion (binary_sensor):</label>
+          <label>Presence/Motion Entity:</label>
           <ha-selector
             .hass=${this.hass}
             .value=${this._presence}

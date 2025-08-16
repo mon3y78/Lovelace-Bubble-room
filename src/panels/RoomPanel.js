@@ -439,7 +439,7 @@ export class RoomPanel extends LitElement {
                 />
               ` : ''}
               ${tapCfg.action === 'call-service' ? html`
-                <input type="text" placeholder="service (es. light.turn_on)"
+                <input type="text" placeholder="service"
                   .value=${tapCfg.service || ''}
                   @input=${e => this._fire('tap_action.service', e.target.value)}
                 />
@@ -498,14 +498,14 @@ export class RoomPanel extends LitElement {
               @click=${() => this._onLayoutClick('tall')}
             >
               <ha-icon icon="mdi:cellphone"></ha-icon>
-              <span>Stretto</span>
+              <span>Tall</span>
             </button>
             <button
               class="toggle-btn ${this.layout === 'wide' ? 'active' : ''}"
               @click=${() => this._onLayoutClick('wide')}
             >
               <ha-icon icon="mdi:tablet"></ha-icon> 
-              <span>Largo</span> 
+              <span>Wide</span> 
             </button>
           </div>
         </div>
