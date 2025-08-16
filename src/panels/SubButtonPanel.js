@@ -30,6 +30,9 @@ export class SubButtonPanel extends LitElement {
 
     // come SensorPanel/MushroomPanel: serve per il Clear
     this._ignoreNextFilterChange = new Set();
+
+    // NEW: idrata i filtri da config SOLO una volta
+    this._filtersHydrated = false;
   }
   
   updated(changed) {
@@ -46,9 +49,14 @@ export class SubButtonPanel extends LitElement {
       if (!Array.isArray(this.config.subbuttons))
         this.config.subbuttons = Array(4).fill().map(() => ({}));
       
-      const cfgFilters = this.config.subbutton_filters;
-      if (Array.isArray(cfgFilters) && cfgFilters.length === 4)
-        this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...COMMON_CATS]);
+      // PATCH: idrata i filtri da YAML una sola volta (evita di sovrascrivere quelli scelti dall'utente)
+      if (!this._filtersHydrated) {
+        const cfgFilters = this.config.subbutton_filters;
+        if (Array.isArray(cfgFilters) && cfgFilters.length === 4) {
+          this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...COMMON_CATS]);
+        }
+        this._filtersHydrated = true;
+      }
       
       for (let i = 0; i < 4; i++) {
         const ent = this.config.subbuttons[i]?.entity_id || '';
@@ -258,8 +266,9 @@ export class SubButtonPanel extends LitElement {
     if (adOn) {
       cands = candidatesFor(this.hass, this.config, 'subbutton', types) || [];
     } else {
-      const allowed = new Set(['light','switch','scene','script','input_boolean','lock','cover','fan','media_player']);
-      cands = Object.keys(this.hass?.states || {}).filter((id) => allowed.has(id.split('.')[0]));
+      // PATCH: AD OFF → rispetta i filtri, ma senza scoping area
+      const cfgNoArea = { ...this.config, area: undefined, area_id: undefined };
+      cands = candidatesFor(this.hass, cfgNoArea, 'subbutton', types) || [];
     }
     if (ent && !cands.includes(ent)) cands = [ent, ...cands];
 
@@ -365,6 +374,7 @@ export class SubButtonPanel extends LitElement {
     this._expanded = this._expanded.map((v, k) => k === i ? !v : false);
   }
     
+  // identico a Sensor/Mushroom: se arriva da Clear → resta vuoto
   _onFilter(i, vals) {
     if (this._ignoreNextFilterChange.has(i)) {
       this._ignoreNextFilterChange.delete(i);
@@ -376,14 +386,18 @@ export class SubButtonPanel extends LitElement {
       this._filters[i] = [...arr];
     }
     
+    // forza il rerender così _renderSubButton ricalcola 'cands'
     this.requestUpdate('_filters');
     
+    // aggiorna visivamente il selector dei filtri
     const sel = this.renderRoot?.querySelector(`#filter-${i}`);
     if (sel) sel.value = [...this._filters[i]];
     
+    // propaga i filtri aggiornati (se hai bisogno che il parent li conosca)
     this._emit('subbutton_filters', this._filters);
   }
     
+  // Clear: svuota chips, setta il flag e dispatcha value-changed([]) al selector
   _clearFilter(i) {
     this._filters[i] = [];
     const sel = this.renderRoot?.querySelector(`#filter-${i}`);
@@ -394,6 +408,7 @@ export class SubButtonPanel extends LitElement {
         detail: { value: [] }, bubbles: true, composed: true
       }));
     } else {
+      // fallback: comunque emetti stato vuoto
       this._emit('subbutton_filters', this._filters);
     }
   }
@@ -404,6 +419,7 @@ export class SubButtonPanel extends LitElement {
     if (!this.config.subbuttons[i]) this.config.subbuttons[i] = {};
     this.config.subbuttons[i].entity_id = ent;
     
+    // auto-icona
     if (!this.config.subbuttons[i].icon && this.hass) {
       const st = this.hass.states?.[ent];
       const iconFromState = st?.attributes?.icon;
