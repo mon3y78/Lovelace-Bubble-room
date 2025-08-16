@@ -114,19 +114,24 @@ export const FILTERS = {
       return cats.includes(domain);
     },
   }),
-
   subbutton: (cats = []) => ({
     includeDomains: COMMON_CATS,
     entityFilter: (id, hass) => {
-      if (!cats.length) {
-        return COMMON_CATS.includes(id.split('.')[0]);
-      }
       const [domain] = id.split('.');
+      
+      // Se nessun chip selezionato → mostra tutti i domini consentiti
+      if (!cats.length) {
+        return COMMON_CATS.includes(domain);
+      }
+      
+      // Se è un binary_sensor → filtra per device_class (chip come: motion, occupancy, ecc.)
       if (domain === 'binary_sensor') {
         const dc = hass.states[id]?.attributes?.device_class ?? '';
         return cats.includes(dc);
       }
-      return COMMON_CATS.includes(domain);
+      
+      // Altrimenti → filtra per dominio in base ai chip selezionati (fan, light, scene, ecc.)
+      return cats.includes(domain);
     },
   }),
 
