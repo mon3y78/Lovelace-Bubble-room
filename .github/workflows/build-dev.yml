@@ -21,16 +21,23 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        env:
-          npm_config_ignore_optional: true
 
       - name: Build bundle
         run: npm run build
 
-      - name: Commit and Push build file
+      - name: Commit build file
         run: |
-          git config --global user.name  "github-actions"
-          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
           git add lovelace-bubble-room.js
-          git commit -m "Auto-build: build bundle" || echo "Nothing to commit"
-          git push origin HEAD:main
+          git commit -m "Auto-build: add lovelace-bubble-room.js" || echo "No changes to commit"
+
+      - name: Push build file to current branch
+        run: |
+          git push origin HEAD:${{ github.ref_name }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bubble-room-bundle
+          path: lovelace-bubble-room.js
