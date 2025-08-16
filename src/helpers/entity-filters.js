@@ -15,9 +15,7 @@ export const FILTER_LABELS = {
   script: 'Script',
   siren: 'Sirena',
   vacuum: 'Aspirapolvere',
-  motion: 'Movimento',
-  occupancy: 'Occupazione',
-  presence: 'Presenza',
+  // device_class binary_sensor
   motion: 'Movimento',
   occupancy: 'Occupazione',
   presence: 'Presenza',
@@ -37,7 +35,6 @@ export const FILTER_LABELS = {
   heat: 'Caldo',
   light_level: 'Luce (livello)',
   connectivity: 'Connettività',
-  lock_dc: 'Serratura (stato)', // opzionale se lo usi come DC
   plug: 'Presa',
   power: 'Alimentazione',
   problem: 'Problema',
@@ -45,6 +42,7 @@ export const FILTER_LABELS = {
   safety: 'Sicurezza',
   tamper: 'Manomissione',
   update: 'Aggiornamento',
+  // altri domini
   switch: 'Pulsante',
   input_boolean: 'Interruttore',
 };
@@ -70,11 +68,11 @@ export const COMMON_CATS = [
 
 /* —— device_class comuni dei binary_sensor rese selezionabili in UI —— */
 export const BINARY_SENSOR_CATS = [
-  'motion','occupancy','presence','moving',
-  'door','window','opening','garage_door',
-  'vibration','sound','moisture','water','smoke','gas','carbon_monoxide',
-  'cold','heat','light_level','connectivity',
-  'plug','power','problem','running','safety','tamper','update'
+  'motion', 'occupancy', 'presence', 'moving',
+  'door', 'window', 'opening', 'garage_door',
+  'vibration', 'sound', 'moisture', 'water', 'smoke', 'gas', 'carbon_monoxide',
+  'cold', 'heat', 'light_level', 'connectivity',
+  'plug', 'power', 'problem', 'running', 'safety', 'tamper', 'update'
 ];
 
 /* ───────────── filtri di sezione (criteri dominio/device_class; niente area qui) ───────────── */
@@ -91,7 +89,7 @@ export const FILTERS = {
       return cats.includes(domain);
     },
   }),
-
+  
   sensor: (cats = []) => ({
     includeDomains: ['sensor'],
     entityFilter: (id, hass) => {
@@ -100,7 +98,7 @@ export const FILTERS = {
       return cats.includes(dc);
     },
   }),
-
+  
   mushroom: (cats = []) => ({
     includeDomains: COMMON_CATS,
     entityFilter: (id, hass) => {
@@ -116,36 +114,28 @@ export const FILTERS = {
       return cats.includes(domain);
     },
   }),
+  
   subbutton: (cats = []) => ({
     includeDomains: COMMON_CATS,
     entityFilter: (id, hass) => {
       const [domain] = id.split('.');
-      
-      // Se nessun chip selezionato → mostra tutti i domini consentiti
-      if (!cats.length) {
-        return COMMON_CATS.includes(domain);
-      }
-      
-      // Se è un binary_sensor → filtra per device_class (chip come: motion, occupancy, ecc.)
+      // Nessun chip → tutti i domini consentiti
+      if (!cats.length) return COMMON_CATS.includes(domain);
+      // Binary sensor → filtro per device_class
       if (domain === 'binary_sensor') {
         const dc = hass.states[id]?.attributes?.device_class ?? '';
         return cats.includes(dc);
       }
-      
-      // Altrimenti → filtra per dominio in base ai chip selezionati (fan, light, scene, ecc.)
+      // Altri domini → filtro per dominio
       return cats.includes(domain);
     },
   }),
-
+  
   camera: (cats = []) => ({
     includeDomains: ['camera'],
-    entityFilter: (id, hass) => {
-      if (!cats.length) return true;
-      const dc = hass.states[id]?.attributes?.device_class ?? '';
-      return cats.includes(dc);
-    },
+    entityFilter: (_id, _hass) => true, // eventuali 'cats' poco usati sulle camere
   }),
-
+  
   climate: (_cats = []) => ({
     includeDomains: ['climate'],
     entityFilter: (_id, _hass) => true,
@@ -183,24 +173,24 @@ function _isValidAreaId(areaId) {
 /** Verifica se una entity è nell'area indicata (solo confronti su area_id). */
 function _matchAreaId(hass, entityId, areaId) {
   if (!_isValidAreaId(areaId)) return true;
-
+  
   const entReg = _toEntityMap(hass?.entities);
   const devReg = _toDeviceMap(hass?.devices);
-
+  
   // 1) entity registry → area_id
   const regEnt = entReg[entityId];
   if (regEnt?.area_id === areaId) return true;
-
+  
   // 2) entity registry → device_id → device.area_id
   const devId = regEnt?.device_id || regEnt?.deviceId;
   if (devId && devReg[devId]?.area_id === areaId) return true;
-
+  
   // 3) stato → attributes.area_id
   const attrAreaId = hass?.states?.[entityId]?.attributes?.area_id;
   return attrAreaId === areaId;
 }
 
-/* ───────────── keep‑selected uniforme ───────────── */
+/* ───────────── keep-selected uniforme ───────────── */
 function _keepSelectedFirst(list, selected) {
   const out = Array.from(new Set(list));
   const sel = Array.isArray(selected) ? selected : (selected ? [selected] : []);
@@ -238,53 +228,42 @@ export function entitiesInArea(hass, areaId) {
   return Object.keys(hass.states).filter((eid) => _matchAreaId(hass, eid, areaId));
 }
 
-/* ───────────── candidatesFor: lista per i selector (area‑aware + keep‑selected) ─────────────
+/* ───────────── candidatesFor: lista per i selector (area-aware + keep-selected) ─────────────
    Regole:
-   - Se c’è area_id (in config.area_id o config.area) → prova a filtrare per area (fallback se vuoto).
+   - Se c’è area_id → applica filtro per area.
+     • Se autodiscovery **attivo** per quella sezione ⇒ NESSUN fallback ad altre aree.
+     • Se autodiscovery **disattivo** ⇒ fallback a tutte le aree se vuoto.
    - Metti SEMPRE in testa le entità già selezionate in quella sezione (qualsiasi struttura).
 */
 export function candidatesFor(hass, config, section, cats = []) {
   if (!hass?.states) return [];
-
+  
   // 1) filtri base per sezione
-  let desc;
-  if (section === 'presence') {
-    desc = FILTERS.presence(cats);
-  } else if (section === 'sensor') {
-    desc = FILTERS.sensor(cats);
-  } else if (section === 'mushroom') {
-    desc = FILTERS.mushroom(cats);
-  } else if (section === 'subbutton') {
-    desc = FILTERS.subbutton(cats);
-  } else if (section === 'camera') {
-    desc = FILTERS.camera(cats);
-  } else if (section === 'climate') {
-    desc = FILTERS.climate(cats);
-  }
-
+  const desc = FILTERS[section]?.(cats);
   if (!desc) return [];
-
+  
   // 2) filtro per dominio
   const byDomain = Object.keys(hass.states).filter((id) =>
     desc.includeDomains.includes(id.split('.')[0])
   );
-
+  
   // 3) filtro specifico (device_class/domains)
   const byDesc = byDomain.filter((id) => desc.entityFilter(id, hass));
-
-  // 4) scoping per area (SOLO area_id) con fallback
+  
+  // 4) scoping per area (con comportamento diverso se AD on/off)
   let scoped = byDesc;
   const areaId = typeof config?.area_id === 'string' ? config.area_id : config?.area;
   if (_isValidAreaId(areaId)) {
     const inArea = entitiesInArea(hass, areaId);
     const filtered = byDesc.filter((id) => inArea.includes(id));
-    if (filtered.length) scoped = filtered; // fallback automatico se vuoto
+    const adOn = !!(config?.auto_discovery_sections?.[section]);
+    scoped = adOn ? filtered : (filtered.length ? filtered : byDesc);
   }
-
-  // 5) keep‑selected per TUTTE le sezioni
-  const sectionCfg = section === 'subbutton'
-    ? config?.subbuttons
-    : config?.entities?.[section];
+  
+  // 5) keep-selected per TUTTE le sezioni (subbutton sta in config.subbuttons)
+  const sectionCfg = section === 'subbutton' ?
+    config?.subbuttons :
+    config?.entities?.[section];
   const selectedAll = _extractSelectedEntities(sectionCfg);
   return _keepSelectedFirst(scoped, selectedAll);
 }

@@ -28,16 +28,15 @@ export class SubButtonPanel extends LitElement {
     this._filters  = Array(4).fill().map(() => [...COMMON_CATS]);
     this._entities = Array(4).fill('');
 
-    // come SensorPanel/MushroomPanel: serve per il Clear
+    // gestisce il "Clear" per evitare ricariche automatiche dal selector
     this._ignoreNextFilterChange = new Set();
-
-    // Idrata i filtri da YAML solo una volta (evita di sovrascrivere la scelta utente)
+    // idrata i filtri da YAML una sola volta
     this._filtersHydrated = false;
   }
   
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // Autodiscovery area-based (selezionata la stanza)
+      // Autodiscovery se è stata selezionata un’area
       if (this.config?.area || this.config?.area_id) {
         const next = maybeAutoDiscover(this.hass, this.config, 'area', false);
         if (next && next !== this.config) {
@@ -47,10 +46,12 @@ export class SubButtonPanel extends LitElement {
         }
       }
       
-      if (!Array.isArray(this.config.subbuttons))
+      // struttura subbuttons
+      if (!Array.isArray(this.config.subbuttons)) {
         this.config.subbuttons = Array(4).fill().map(() => ({}));
+      }
       
-      // 🔒 Idrata da YAML solo al primo passaggio
+      // idrata filtri da YAML solo al primo giro
       if (!this._filtersHydrated) {
         const cfgFilters = this.config.subbutton_filters;
         if (Array.isArray(cfgFilters) && cfgFilters.length === 4) {
@@ -158,7 +159,7 @@ export class SubButtonPanel extends LitElement {
       min-height: 40px;
     }
 
-    /* ——— stile Clear (allineato al label, identico a Sensor/Mushroom) ——— */
+    /* ——— stile Clear allineato al label (come Sensor/Mushroom) ——— */
     .filter-row {
       display: flex;
       align-items: center;
@@ -258,19 +259,21 @@ export class SubButtonPanel extends LitElement {
     `;
   }
     
-  _renderSubButton(i, open, _options) {
+  _renderSubButton(i, open, options) {
     const types = this._filters[i];
     const ent = this._entities[i];
     const adOn = this.config?.auto_discovery_sections?.subbutton ?? false;
 
     let cands;
     if (adOn) {
+      // AD ON: pipeline standard (area-aware e senza fallback extra-area)
       cands = candidatesFor(this.hass, this.config, 'subbutton', types) || [];
     } else {
-      // AD OFF → rispetta i filtri selezionati, ma senza scoping per area
+      // AD OFF: stessa pipeline ma senza scoping area (rispetta i chip)
       const cfgNoArea = { ...this.config, area: undefined, area_id: undefined };
       cands = candidatesFor(this.hass, cfgNoArea, 'subbutton', types) || [];
     }
+    // mantieni l’entità scelta in testa
     if (ent && !cands.includes(ent)) cands = [ent, ...cands];
 
     const cfg = this.config.subbuttons?.[i] || {};
@@ -298,10 +301,7 @@ export class SubButtonPanel extends LitElement {
                 id="filter-${i}"
                 .hass=${this.hass}
                 .value=${types}
-                .selector=${{select:{multiple:true,mode:'box',options: COMMON_CATS.map(cat => ({
-                  value: cat,
-                  label: FILTER_LABELS[cat] || (cat.charAt(0).toUpperCase() + cat.slice(1)),
-                }))}}}
+                .selector=${{ select: { multiple: true, mode: 'box', options } }}
                 @value-changed=${e => this._onFilter(i, e.detail.value)}
               ></ha-selector>
             </div>
@@ -378,9 +378,7 @@ export class SubButtonPanel extends LitElement {
     this._expanded = this._expanded.map((v, k) => k === i ? !v : false);
   }
     
-  // ✅ Gestione filtri/chips:
-  // - rimozione singola: se l’array diventa vuoto, resta vuoto (niente reset a COMMON_CATS)
-  // - dopo Clear: i successivi value-changed vengono accettati e salvati
+  // Chips: rimozione singola e Clear
   _onFilter(i, vals) {
     if (this._ignoreNextFilterChange.has(i)) {
       this._ignoreNextFilterChange.delete(i);
@@ -389,12 +387,14 @@ export class SubButtonPanel extends LitElement {
       const arr = Array.isArray(vals) ? vals.filter(Boolean) : [];
       this._filters[i] = [...arr];
     }
-    // Aggiorna subito lista candidati
+
+    // Ricalcola candidati
     this.requestUpdate('_filters');
-    // Propaga per persistenza nello YAML/editor
+
+    // Salva/persiste (l’editor aggiorna eventualmente subbutton_filters)
     this._emit('subbutton_filters', this._filters);
   }
-  // ✅ Clear: svuota i chip, informa _onFilter di NON reintrodurre default
+
   _clearFilter(i) {
     this._filters[i] = [];
     const sel = this.renderRoot?.querySelector(`#filter-${i}`);
@@ -405,7 +405,7 @@ export class SubButtonPanel extends LitElement {
         detail: { value: [] }, bubbles: true, composed: true
       }));
     }
-    // Propaga subito i filtri vuoti (persistenza)
+    // Propaga subito i filtri vuoti
     this._emit('subbutton_filters', this._filters);
     this.requestUpdate('_filters');
   }
