@@ -31,12 +31,13 @@ export class SubButtonPanel extends LitElement {
     // come SensorPanel/MushroomPanel: serve per il Clear
     this._ignoreNextFilterChange = new Set();
 
-    // NEW: idrata i filtri da config SOLO una volta
+    // Idrata i filtri da YAML solo una volta (evita di sovrascrivere la scelta utente)
     this._filtersHydrated = false;
   }
   
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
+      // Autodiscovery area-based (selezionata la stanza)
       if (this.config?.area || this.config?.area_id) {
         const next = maybeAutoDiscover(this.hass, this.config, 'area', false);
         if (next && next !== this.config) {
@@ -49,7 +50,7 @@ export class SubButtonPanel extends LitElement {
       if (!Array.isArray(this.config.subbuttons))
         this.config.subbuttons = Array(4).fill().map(() => ({}));
       
-      // PATCH: idrata i filtri da YAML una sola volta (evita di sovrascrivere quelli scelti dall'utente)
+      // 🔒 Idrata da YAML solo al primo passaggio
       if (!this._filtersHydrated) {
         const cfgFilters = this.config.subbutton_filters;
         if (Array.isArray(cfgFilters) && cfgFilters.length === 4) {
@@ -257,7 +258,7 @@ export class SubButtonPanel extends LitElement {
     `;
   }
     
-  _renderSubButton(i, open, options) {
+  _renderSubButton(i, open, _options) {
     const types = this._filters[i];
     const ent = this._entities[i];
     const adOn = this.config?.auto_discovery_sections?.subbutton ?? false;
@@ -266,7 +267,7 @@ export class SubButtonPanel extends LitElement {
     if (adOn) {
       cands = candidatesFor(this.hass, this.config, 'subbutton', types) || [];
     } else {
-      // PATCH: AD OFF → rispetta i filtri, ma senza scoping area
+      // AD OFF → rispetta i filtri selezionati, ma senza scoping per area
       const cfgNoArea = { ...this.config, area: undefined, area_id: undefined };
       cands = candidatesFor(this.hass, cfgNoArea, 'subbutton', types) || [];
     }
@@ -297,7 +298,10 @@ export class SubButtonPanel extends LitElement {
                 id="filter-${i}"
                 .hass=${this.hass}
                 .value=${types}
-                .selector=${{select:{multiple:true,mode:'box',options}}}
+                .selector=${{select:{multiple:true,mode:'box',options: COMMON_CATS.map(cat => ({
+                  value: cat,
+                  label: FILTER_LABELS[cat] || (cat.charAt(0).toUpperCase() + cat.slice(1)),
+                }))}}}
                 @value-changed=${e => this._onFilter(i, e.detail.value)}
               ></ha-selector>
             </div>
@@ -374,30 +378,27 @@ export class SubButtonPanel extends LitElement {
     this._expanded = this._expanded.map((v, k) => k === i ? !v : false);
   }
     
-  // identico a Sensor/Mushroom: se arriva da Clear → resta vuoto
+  // ✅ Gestione filtri/chips:
+  // - rimozione singola: se l’array diventa vuoto, resta vuoto (niente reset a COMMON_CATS)
+  // - dopo Clear: i successivi value-changed vengono accettati e salvati
   _onFilter(i, vals) {
     if (this._ignoreNextFilterChange.has(i)) {
+      // Consuma il flag solo per questo giro: mantieni vuoto senza ripristini
       this._ignoreNextFilterChange.delete(i);
       this._filters[i] = [];
     } else {
-      const arr = Array.isArray(vals) && vals.length ?
-        vals.filter(Boolean) :
-        [...COMMON_CATS];
+      const arr = Array.isArray(vals) ? vals.filter(Boolean) : [];
       this._filters[i] = [...arr];
     }
-    
-    // forza il rerender così _renderSubButton ricalcola 'cands'
+
+    // Rerender per ricalcolare i candidati e aggiornare il selector Entity
     this.requestUpdate('_filters');
-    
-    // aggiorna visivamente il selector dei filtri
-    const sel = this.renderRoot?.querySelector(`#filter-${i}`);
-    if (sel) sel.value = [...this._filters[i]];
-    
-    // propaga i filtri aggiornati (se hai bisogno che il parent li conosca)
+
+    // Propaga subito (così si salva davvero)
     this._emit('subbutton_filters', this._filters);
   }
-    
-  // Clear: svuota chips, setta il flag e dispatcha value-changed([]) al selector
+
+  // ✅ Clear: svuota i chip, informa _onFilter di NON reintrodurre default
   _clearFilter(i) {
     this._filters[i] = [];
     const sel = this.renderRoot?.querySelector(`#filter-${i}`);
@@ -407,10 +408,10 @@ export class SubButtonPanel extends LitElement {
       sel.dispatchEvent(new CustomEvent('value-changed', {
         detail: { value: [] }, bubbles: true, composed: true
       }));
-    } else {
-      // fallback: comunque emetti stato vuoto
-      this._emit('subbutton_filters', this._filters);
     }
+    // Propaga subito i filtri vuoti (persistenza)
+    this._emit('subbutton_filters', this._filters);
+    this.requestUpdate('_filters');
   }
     
   _onEntity(i, ent) {
