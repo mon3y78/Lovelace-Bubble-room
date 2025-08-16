@@ -1,9 +1,9 @@
 // src/elements/BubbleIcon.js
-import { html, css, LitElement } from 'lit';
+import { LitElement, html, css } from 'lit';
 
 export class BubbleIcon extends LitElement {
   static properties = {
-    // stato/tema icona principale
+    // presentazione/stato
     icon: { type: String },
     active: { type: Boolean },
     colorActive: { type: String },
@@ -11,18 +11,15 @@ export class BubbleIcon extends LitElement {
     backgroundActive: { type: String },
     backgroundInactive: { type: String },
     
-    // azioni & contesto (come Mushroom/SubButton)
-    hass: { type: Object },
-    entity_id: { type: String }, // entità associata alla main icon (per more-info/toggle)
-    tap_action: { type: Object }, // es. { action: 'navigate', navigation_path: '/lovelace/xyz' }
-    hold_action: { type: Object }, // es. { action: 'call-service', service: 'light.turn_on', ... }
-    double_tap_action: { type: Object } // opzionale
+    // azioni/contesto (stessa logica di BubbleSubButton)
+    entity_id: { type: String },
+    tap_action: { type: Object },
+    hold_action: { type: Object },
   };
   
   constructor() {
     super();
-    
-    // valori di default (coerenti con stile UI)
+    // UI
     this.icon = '';
     this.active = false;
     this.colorActive = '#21df73';
@@ -30,152 +27,106 @@ export class BubbleIcon extends LitElement {
     this.backgroundActive = 'rgba(33,223,115,0.12)';
     this.backgroundInactive = 'rgba(23,60,22,0.08)';
     
-    // azioni di default (stessa UX degli altri pannelli)
-    this.hass = null;
+    // Azioni (default coerenti con SubButton)
     this.entity_id = '';
     this.tap_action = { action: 'more-info' };
     this.hold_action = { action: 'none' };
-    this.double_tap_action = { action: 'none' };
+    
+    // Gestione hold come SubButton
+    this._holdThreshold = 500; // ms
+    this._holdTimer = null;
+    this._holdFired = false;
   }
   
   static styles = css`
     :host {
-      position: absolute;   /* reference = .icon-mushroom-area */
-      inset: 0;
+      display: block;
+      height: 100%;
+      width: 100%;
       box-sizing: border-box;
     }
-    .main-icon-container {
+    .container {
       box-sizing: border-box;
-      background: var(--main-icon-bg, rgba(33,223,115,0.12));
-      border-radius: 0 70% 70% 0; /* shape identica alla card */
+      border-radius: 0 70% 70% 0;
       display: flex;
       width: 100%;
       height: 100%;
       justify-content: center;
       align-items: center;
+      cursor: pointer;
       user-select: none;
       -webkit-user-select: none;
-      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
     }
-    .main-icon {
+    .container:active .icon {
+      transform: scale(0.98);
+    }
+    .icon {
       --mdc-icon-size: var(--main-icon-size, 160px);
       width: var(--mdc-icon-size);
       height: var(--mdc-icon-size);
       transform: translateX(var(--icon-shift-x, -20%));
       transition: transform .18s ease, opacity .18s ease;
     }
-    .main-icon-container:active .main-icon {
-      transform: translateX(var(--icon-shift-x, -20%)) scale(0.98);
-    }
   `;
   
   render() {
-    const iconColor = this.active ? this.colorActive : this.colorInactive;
-    const iconColorBg = this.active ? this.backgroundActive : this.backgroundInactive;
+    const fg = this.active ? this.colorActive : this.colorInactive;
+    const bg = this.active ? this.backgroundActive : this.backgroundInactive;
     
     return html`
       <div
-        class="main-icon-container"
-        style="background:${iconColorBg}"
-        @click=${(e) => this._handleGesture(e, 'tap')}
-        @dblclick=${(e) => this._handleGesture(e, 'double_tap')}
-        @contextmenu=${(e) => { e.preventDefault(); this._handleGesture(e, 'hold'); }}
-        role="button"
-        tabindex="0"
+        class="container"
+        style="background:${bg}"
+        @pointerdown=${this._onDown}
+        @pointerup=${this._onUp}
+        @pointerleave=${this._clearHoldTimer}
+        @pointercancel=${this._clearHoldTimer}
       >
-        <ha-icon
-          class="main-icon"
-          .icon="${this.icon || 'mdi:checkbox-blank-circle-outline'}"
-          style="color:${iconColor}"
-        ></ha-icon>
+        <ha-icon class="icon" icon="${this.icon || 'mdi:checkbox-blank-circle-outline'}" style="color:${fg}"></ha-icon>
       </div>
     `;
   }
   
-  /* ────────────────────────── GESTIONE AZIONI ────────────────────────── */
+  /* ───────────── GESTURE: identiche a BubbleSubButton ───────────── */
   
-  _handleGesture(ev, which /* 'tap' | 'double_tap' | 'hold' */ ) {
-    const actionCfg =
-      which === 'hold' ? (this.hold_action || { action: 'none' }) :
-      which === 'double_tap' ? (this.double_tap_action || { action: 'none' }) :
-      (this.tap_action || { action: 'more-info' });
-    
-    // evento legacy (non rimuovo per compatibilità pre-patch)
-    this.dispatchEvent(new CustomEvent('main-icon-click', {
-      detail: { type: which },
-      bubbles: true,
-      composed: true,
-    }));
-    
-    if (!actionCfg || actionCfg.action === 'none') return;
-    
-    // Caso speciale: navigate → molti container preferiscono l'evento standard
-    if (actionCfg.action === 'navigate' && actionCfg.navigation_path) {
-      this.dispatchEvent(new CustomEvent('hass-navigate', {
-        detail: { navigation_path: actionCfg.navigation_path },
-        bubbles: true,
-        composed: true,
-      }));
-      return;
+  _onDown = () => {
+    this._holdFired = false;
+    this._holdTimer = window.setTimeout(() => {
+      this._holdFired = true;
+      this._fireHassAction('hold');
+    }, this._holdThreshold);
+  };
+  
+  _onUp = () => {
+    this._clearHoldTimer();
+    if (!this._holdFired) this._fireHassAction('tap');
+  };
+  
+  _clearHoldTimer = () => {
+    if (this._holdTimer) {
+      clearTimeout(this._holdTimer);
+      this._holdTimer = null;
     }
+  };
+  
+  /* ───────────── Evento emesso: stesso payload di BubbleSubButton ───────────── */
+  
+  _fireHassAction(actionType /* 'tap' | 'hold' */ ) {
+    if (!this.entity_id) return;
     
-    // Emissione unificata — come BubbleMushroom / BubbleSubButton
-    const detail = {
-      entity: this.entity_id || '',
+    const actionConfig = {
+      entity: this.entity_id,
       tap_action: this.tap_action || { action: 'more-info' },
       hold_action: this.hold_action || { action: 'none' },
-      double_tap_action: this.double_tap_action || { action: 'none' },
-      action: which, // 'tap' | 'double_tap' | 'hold'
     };
     
-    this.dispatchEvent(new CustomEvent('hass-action', {
-      detail,
-      bubbles: true,
-      composed: true,
-    }));
-    
-    // Fallback basico: se nessuno gestisce hass-action a monte,
-    // eseguiamo qui alcune azioni comuni per sicurezza.
-    this._fallbackDo(actionCfg);
-  }
-  
-  _fallbackDo(cfg) {
-    if (!cfg || cfg.action === 'none') return;
-    
-    const hass = this.hass;
-    
-    switch (cfg.action) {
-      case 'more-info':
-        if (this.entity_id) {
-          this.dispatchEvent(new CustomEvent('hass-more-info', {
-            detail: { entityId: this.entity_id },
-            bubbles: true,
-            composed: true,
-          }));
-        }
-        break;
-        
-      case 'toggle':
-        if (hass && this.entity_id) {
-          hass.callService('homeassistant', 'toggle', { entity_id: this.entity_id });
-        }
-        break;
-        
-      case 'call-service':
-        if (hass && cfg.service) {
-          const [domain, service] = String(cfg.service).split('.');
-          if (domain && service) {
-            const data = cfg.service_data || {};
-            hass.callService(domain, service, data);
-          }
-        }
-        break;
-        
-        // 'navigate' gestito sopra via hass-navigate
-      default:
-        // no-op
-        break;
-    }
+    const evt = new Event('hass-action', { bubbles: true, composed: true });
+    evt.detail = {
+      config: actionConfig,
+      action: actionType,
+    };
+    this.dispatchEvent(evt);
   }
 }
 
