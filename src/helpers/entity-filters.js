@@ -119,21 +119,26 @@ export const FILTERS = {
     includeDomains: COMMON_CATS,
     entityFilter: (id, hass) => {
       const [domain] = id.split('.');
-      // Nessun chip → tutti i domini consentiti
-      if (!cats.length) return COMMON_CATS.includes(domain);
-      // Binary sensor → filtro per device_class
+      
+      // Nessun chip selezionato → mostra tutti i domini consentiti
+      if (!cats.length) {
+        return COMMON_CATS.includes(domain);
+      }
+      
+      // binary_sensor → filtra per device_class
       if (domain === 'binary_sensor') {
         const dc = hass.states[id]?.attributes?.device_class ?? '';
         return cats.includes(dc);
       }
-      // Altri domini → filtro per dominio
+      
+      // altri domini
       return cats.includes(domain);
     },
   }),
   
-  camera: (cats = []) => ({
+  camera: (_cats = []) => ({
     includeDomains: ['camera'],
-    entityFilter: (_id, _hass) => true, // eventuali 'cats' poco usati sulle camere
+    entityFilter: (_id, _hass) => true,
   }),
   
   climate: (_cats = []) => ({
@@ -145,7 +150,7 @@ export const FILTERS = {
 /* ───────────── helpers: normalizza registri che possono essere array o mappe ───────────── */
 function _toEntityMap(entities) {
   if (!entities) return {};
-  if (!Array.isArray(entities)) return entities; // già mappa {entity_id: {...}}
+  if (!Array.isArray(entities)) return entities;
   const map = {};
   for (const e of entities) {
     const id = e?.entity_id || e?.id;
@@ -156,7 +161,7 @@ function _toEntityMap(entities) {
 
 function _toDeviceMap(devices) {
   if (!devices) return {};
-  if (!Array.isArray(devices)) return devices; // già mappa {device_id: {...}} o {id: {...}}
+  if (!Array.isArray(devices)) return devices;
   const map = {};
   for (const d of devices) {
     const id = d?.id || d?.device_id;
@@ -165,32 +170,26 @@ function _toDeviceMap(devices) {
   return map;
 }
 
-/* ───────────── helpers area (SOLO area_id, qualsiasi stringa non vuota) ───────────── */
 function _isValidAreaId(areaId) {
   return typeof areaId === 'string' && areaId.trim().length > 0;
 }
 
-/** Verifica se una entity è nell'area indicata (solo confronti su area_id). */
 function _matchAreaId(hass, entityId, areaId) {
   if (!_isValidAreaId(areaId)) return true;
   
   const entReg = _toEntityMap(hass?.entities);
   const devReg = _toDeviceMap(hass?.devices);
   
-  // 1) entity registry → area_id
   const regEnt = entReg[entityId];
   if (regEnt?.area_id === areaId) return true;
   
-  // 2) entity registry → device_id → device.area_id
   const devId = regEnt?.device_id || regEnt?.deviceId;
   if (devId && devReg[devId]?.area_id === areaId) return true;
   
-  // 3) stato → attributes.area_id
   const attrAreaId = hass?.states?.[entityId]?.attributes?.area_id;
   return attrAreaId === areaId;
 }
 
-/* ───────────── keep-selected uniforme ───────────── */
 function _keepSelectedFirst(list, selected) {
   const out = Array.from(new Set(list));
   const sel = Array.isArray(selected) ? selected : (selected ? [selected] : []);
@@ -201,7 +200,6 @@ function _keepSelectedFirst(list, selected) {
   return out;
 }
 
-/** estrae TUTTE le entity già selezionate in una sezione (ricorsivo) */
 function _extractSelectedEntities(sectionConfig) {
   const acc = new Set();
   const walk = (v) => {
@@ -228,29 +226,24 @@ export function entitiesInArea(hass, areaId) {
   return Object.keys(hass.states).filter((eid) => _matchAreaId(hass, eid, areaId));
 }
 
-/* ───────────── candidatesFor: lista per i selector (area-aware + keep-selected) ─────────────
+/* ───────────── candidatesFor: lista per i selector ─────────────
    Regole:
-   - Se c’è area_id → applica filtro per area.
-     • Se autodiscovery **attivo** per quella sezione ⇒ NESSUN fallback ad altre aree.
-     • Se autodiscovery **disattivo** ⇒ fallback a tutte le aree se vuoto.
-   - Metti SEMPRE in testa le entità già selezionate in quella sezione (qualsiasi struttura).
-*/
+   - Se c’è area_id (in config.area_id o config.area) → prova a filtrare per area.
+     - con AD ON: nessun fallback → mostra solo se in area.
+     - con AD OFF: fallback → se area vuota, mostra comunque entità globali.
+   - Keep-selected: sempre in testa. */
 export function candidatesFor(hass, config, section, cats = []) {
   if (!hass?.states) return [];
   
-  // 1) filtri base per sezione
   const desc = FILTERS[section]?.(cats);
   if (!desc) return [];
   
-  // 2) filtro per dominio
   const byDomain = Object.keys(hass.states).filter((id) =>
     desc.includeDomains.includes(id.split('.')[0])
   );
   
-  // 3) filtro specifico (device_class/domains)
   const byDesc = byDomain.filter((id) => desc.entityFilter(id, hass));
   
-  // 4) scoping per area (con comportamento diverso se AD on/off)
   let scoped = byDesc;
   const areaId = typeof config?.area_id === 'string' ? config.area_id : config?.area;
   if (_isValidAreaId(areaId)) {
@@ -260,10 +253,10 @@ export function candidatesFor(hass, config, section, cats = []) {
     scoped = adOn ? filtered : (filtered.length ? filtered : byDesc);
   }
   
-  // 5) keep-selected per TUTTE le sezioni (subbutton sta in config.subbuttons)
   const sectionCfg = section === 'subbutton' ?
     config?.subbuttons :
     config?.entities?.[section];
   const selectedAll = _extractSelectedEntities(sectionCfg);
+  
   return _keepSelectedFirst(scoped, selectedAll);
 }

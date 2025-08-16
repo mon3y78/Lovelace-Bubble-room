@@ -6,7 +6,7 @@ import {
   COMMON_CATS,
   FILTER_LABELS,
 } from '../helpers/entity-filters.js';
-import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // ← path corretto
+import { resolveEntityIcon } from '../helpers/icon-mapping.js';
 
 export class SubButtonPanel extends LitElement {
   static properties = {
@@ -17,7 +17,7 @@ export class SubButtonPanel extends LitElement {
     _filters: { type: Array, state: true },
     _entities: { type: Array, state: true },
   };
-  
+
   constructor() {
     super();
     this.hass = {};
@@ -28,51 +28,60 @@ export class SubButtonPanel extends LitElement {
     this._filters  = Array(4).fill().map(() => [...COMMON_CATS]);
     this._entities = Array(4).fill('');
 
-    // gestisce il "Clear" per evitare ricariche automatiche dal selector
-    this._ignoreNextFilterChange = new Set();
-    // idrata i filtri da YAML una sola volta
+    this._ignoreNextFilterChange = new Set(); // one-shot per Clear
     this._filtersHydrated = false;
+    this._syncingFromConfig = false;          // evita side-effects
   }
-  
-  updated(changed) {
-    if (changed.has('config') || changed.has('hass')) {
-      // Autodiscovery se è stata selezionata un’area
-      if (this.config?.area || this.config?.area_id) {
-        const next = maybeAutoDiscover(this.hass, this.config, 'area', false);
-        if (next && next !== this.config) {
-          this.dispatchEvent(new CustomEvent('config-changed', {
-            detail: { config: next }, bubbles: true, composed: true,
-          }));
-        }
-      }
-      
-      // struttura subbuttons
-      if (!Array.isArray(this.config.subbuttons)) {
-        this.config.subbuttons = Array(4).fill().map(() => ({}));
-      }
-      
-      // idrata filtri da YAML solo al primo giro
-      if (!this._filtersHydrated) {
-        const cfgFilters = this.config.subbutton_filters;
-        if (Array.isArray(cfgFilters) && cfgFilters.length === 4) {
-          this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...COMMON_CATS]);
-        }
-        this._filtersHydrated = true;
-      }
-      
-      for (let i = 0; i < 4; i++) {
-        const ent = this.config.subbuttons[i]?.entity_id || '';
-        this._entities[i] = ent;
 
-        // Auto-icona al load: se ho entity e l'icona è vuota, popolala ora
-        if (ent && !this.config.subbuttons[i].icon && this.hass) {
-          const st = this.hass.states?.[ent];
-          const iconFromState = st?.attributes?.icon;
-          const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
-          if (autoIcon) this.config.subbuttons[i].icon = autoIcon;
+  updated(changed) {
+    if (!changed.has('config') && !changed.has('hass')) return;
+
+    this._syncingFromConfig = true;
+
+    // Autodiscovery area-aware (non muta la config localmente)
+    if (this.config?.area || this.config?.area_id) {
+      const next = maybeAutoDiscover(this.hass, this.config, 'area', false);
+      if (next && next !== this.config) {
+        this.dispatchEvent(new CustomEvent('config-changed', {
+          detail: { config: next }, bubbles: true, composed: true,
+        }));
+      }
+    }
+
+    // Non mutare mai this.config qui. Assicura però la struttura letta.
+    const list = Array.isArray(this.config?.subbuttons) ? this.config.subbuttons : [];
+    if (list.length) {
+      for (let i = 0; i < Math.min(4, list.length); i++) {
+        const ent = list[i]?.entity_id || '';
+        this._entities[i] = ent;
+        // auto-icona (solo dispatch, non scrivere this.config)
+        if (ent) {
+          const existing = list[i]?.icon;
+          if (!existing) {
+            const st = this.hass?.states?.[ent];
+            const iconFromState = st?.attributes?.icon;
+            const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
+            if (autoIcon) {
+              this.dispatchEvent(new CustomEvent('panel-changed', {
+                detail: { prop: `subbuttons.${i}.icon`, val: autoIcon },
+                bubbles: true, composed: true,
+              }));
+            }
+          }
         }
       }
     }
+
+    // idrata filtri da YAML SOLO la prima volta
+    if (!this._filtersHydrated) {
+      const cfgFilters = this.config?.subbutton_filters;
+      if (Array.isArray(cfgFilters) && cfgFilters.length === 4) {
+        this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...COMMON_CATS]);
+      }
+      this._filtersHydrated = true;
+    }
+
+    this._syncingFromConfig = false;
   }
 
   static styles = css`
@@ -113,9 +122,7 @@ export class SubButtonPanel extends LitElement {
       display: flex; align-items: center; gap: 8px;
     }
     .input-group.autodiscover input { margin-right: 8px; }
-    .input-group.autodiscover label {
-      margin: 0; font-weight: 700; color: #fff;
-    }
+    .input-group.autodiscover label { margin: 0; font-weight: 700; color: #fff; }
 
     .mini-pill {
       background: rgba(44,70,100,0.23);
@@ -132,34 +139,17 @@ export class SubButtonPanel extends LitElement {
       cursor: pointer; user-select: none;
       font-weight: 700; color: #b28fff;
     }
-    .mini-pill-header .chevron {
-      margin-left: auto; transition: transform 0.2s;
-    }
-    .mini-pill.expanded .mini-pill-header .chevron {
-      transform: rotate(90deg);
-    }
-    .mini-pill-content {
-      padding: 12px 16px 16px;
-      animation: pill-expand 0.2s ease-out both;
-    }
-    @keyframes pill-expand {
-      from { opacity: 0; transform: translateY(-8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    .mini-pill-header .chevron { margin-left: auto; transition: transform 0.2s; }
+    .mini-pill.expanded .mini-pill-header .chevron { transform: rotate(90deg); }
+    .mini-pill-content { padding: 12px 16px 16px; animation: pill-expand 0.2s ease-out both; }
+    @keyframes pill-expand { from {opacity:0;transform:translateY(-8px);} to {opacity:1;transform:translateY(0);} }
 
     .input-group { margin-bottom: 12px; }
-    .input-group label {
-      display: block; font-weight: 600;
-      margin-bottom: 6px; color: #b28fff;
-    }
-    ha-selector, ha-icon-picker {
-      width: 100%; box-sizing: border-box;
-    }
-    ha-selector::part(combobox) {
-      min-height: 40px;
-    }
+    .input-group label { display: block; font-weight: 600; margin-bottom: 6px; color: #b28fff; }
+    ha-selector, ha-icon-picker { width: 100%; box-sizing: border-box; }
+    ha-selector::part(combobox) { min-height: 40px; }
 
-    /* ——— stile Clear allineato al label (come Sensor/Mushroom) ——— */
+    /* ——— stile Clear (allineato al label, come Sensor/Mushroom) ——— */
     .filter-row {
       display: flex;
       align-items: center;
@@ -187,57 +177,29 @@ export class SubButtonPanel extends LitElement {
     }
 
     /* === STYLE TAP/HOLD like RoomPanel === */
-    .pill-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 6px;
-    }
+    .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
     .pill-button {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #555;
-      cursor: pointer;
-      background: transparent;
-      font-weight: 600;
-      transition: background 0.18s, border-color 0.18s, color 0.18s;
+      padding: 6px 10px; border-radius: 999px; border: 1px solid #555; cursor: pointer;
+      background: transparent; font-weight: 600; transition: background 0.18s, border-color 0.18s, color 0.18s;
     }
-    .pill-button.active {
-      border-color: #b28fff;
-      color: #b28fff;
-    }
-    .pill-button:hover:not(.active) {
-      background: rgba(178,143,255,0.1);
-    }
+    .pill-button.active { border-color: #b28fff; color: #b28fff; }
+    .pill-button:hover:not(.active) { background: rgba(178,143,255,0.1); }
 
     .reset-button {
-      border: 3.5px solid #ff4c6a;
-      color: #ff4c6a;
-      border-radius: 24px;
-      padding: 12px 38px;
-      background: transparent;
-      cursor: pointer;
-      display: block;
-      margin: 20px auto;
-      font-size: 1.15rem;
-      font-weight: 700;
-      box-shadow: 0 2px 24px #ff4c6a44;
-      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+      border: 3.5px solid #ff4c6a; color: #ff4c6a; border-radius: 24px; padding: 12px 38px;
+      background: transparent; cursor: pointer; display: block; margin: 20px auto;
+      font-size: 1.15rem; font-weight: 700; box-shadow: 0 2px 24px #ff4c6a44; transition: background 0.18s, color 0.18s, box-shadow 0.18s;
     }
-    .reset-button:hover {
-      background: rgba(255,76,106,0.18);
-      color: #fff;
-      box-shadow: 0 6px 32px #ff4c6abf;
-    }
+    .reset-button:hover { background: rgba(255,76,106,0.18); color: #fff; box-shadow: 0 6px 32px #ff4c6abf; }
   `;
 
   render() {
-    const autoDisc = this.config.auto_discovery_sections?.subbutton ?? false;
+    const autoDisc = this.config?.auto_discovery_sections?.subbutton ?? false;
     const options = COMMON_CATS.map(cat => ({
       value: cat,
       label: FILTER_LABELS[cat] || cat.charAt(0).toUpperCase() + cat.slice(1),
     }));
-    
+
     return html`
       <ha-expansion-panel
         class="glass-panel"
@@ -258,7 +220,7 @@ export class SubButtonPanel extends LitElement {
       </ha-expansion-panel>
     `;
   }
-    
+
   _renderSubButton(i, open, options) {
     const types = this._filters[i];
     const ent = this._entities[i];
@@ -266,19 +228,16 @@ export class SubButtonPanel extends LitElement {
 
     let cands;
     if (adOn) {
-      // AD ON: pipeline standard (area-aware e senza fallback extra-area)
       cands = candidatesFor(this.hass, this.config, 'subbutton', types) || [];
     } else {
-      // AD OFF: stessa pipeline ma senza scoping area (rispetta i chip)
       const cfgNoArea = { ...this.config, area: undefined, area_id: undefined };
       cands = candidatesFor(this.hass, cfgNoArea, 'subbutton', types) || [];
     }
-    // mantieni l’entità scelta in testa
     if (ent && !cands.includes(ent)) cands = [ent, ...cands];
 
-    const cfg = this.config.subbuttons?.[i] || {};
+    const cfg = Array.isArray(this.config?.subbuttons) ? (this.config.subbuttons[i] || {}) : {};
     const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
-    
+
     return html`
       <div class="mini-pill ${open ? 'expanded' : ''}">
         <div class="mini-pill-header" @click=${() => this._togglePill(i)}>
@@ -289,13 +248,9 @@ export class SubButtonPanel extends LitElement {
             <div class="input-group">
               <div class="filter-row">
                 <label for="filter-${i}">Filter category:</label>
-                <button
-                  class="clear-chip"
-                  type="button"
-                  @click=${() => this._clearFilter(i)}
-                  title="Clear filter category">
-                  Clear
-                </button>
+                <button class="clear-chip" type="button"
+                        @click=${() => this._clearFilter(i)}
+                        title="Clear filter category">Clear</button>
               </div>
               <ha-selector
                 id="filter-${i}"
@@ -308,8 +263,10 @@ export class SubButtonPanel extends LitElement {
 
             <div class="input-group">
               <label>Entity:</label>
-              <ha-selector .hass=${this.hass} .value=${ent}
-                .selector=${{entity:{include_entities:cands,multiple:false}}}
+              <ha-selector
+                .hass=${this.hass}
+                .value=${ent}
+                .selector=${{ entity: { include_entities: cands, multiple: false } }}
                 allow-custom-entity
                 @value-changed=${e => this._onEntity(i, e.detail.value)}
               ></ha-selector>
@@ -317,7 +274,9 @@ export class SubButtonPanel extends LitElement {
 
             <div class="input-group">
               <label>Icon:</label>
-              <ha-icon-picker .hass=${this.hass} .value=${cfg.icon || ''}
+              <ha-icon-picker
+                .hass=${this.hass}
+                .value=${cfg.icon || ''}
                 allow-custom-icon
                 @value-changed=${e => this._onIcon(i, e.detail.value)}
               ></ha-icon-picker>
@@ -329,7 +288,7 @@ export class SubButtonPanel extends LitElement {
                 <div class="pill-group">
                   ${actions.map(a => html`
                     <button
-                      class="pill-button ${cfg[`${type}_action`] ?.action === a ? 'active' : ''}"
+                      class="pill-button ${cfg[`${type}_action`]?.action === a ? 'active' : ''}"
                       @click=${() => this._onAction(i, type, 'action', a)}
                     >${a}</button>
                   `)}
@@ -342,13 +301,13 @@ export class SubButtonPanel extends LitElement {
       </div>
     `;
   }
-    
+
   _extraFields(i, type, cfg) {
-    const act = cfg[`${type}_action`]?.action;
+    const act = cfg?.[`${type}_action`]?.action;
     if (act === 'navigate') {
       return html`
         <input type="text" placeholder="Path"
-          .value=${cfg[`${type}_action`] ?.navigation_path || ''}
+          .value=${cfg?.[`${type}_action`]?.navigation_path || ''}
           @input=${e => this._onAction(i, type, 'navigation_path', e.target.value)}
         />
       `;
@@ -356,101 +315,109 @@ export class SubButtonPanel extends LitElement {
     if (act === 'call-service') {
       return html`
         <input type="text" placeholder="Service"
-          .value=${cfg[`${type}_action`] ?.service || ''}
+          .value=${cfg?.[`${type}_action`]?.service || ''}
           @input=${e => this._onAction(i, type, 'service', e.target.value)}
         />
         <input type="text" placeholder='Service Data (JSON)'
-          .value=${cfg[`${type}_action`] ?.service_data ? JSON.stringify(cfg[`${type}_action`].service_data) : ''}
+          .value=${cfg?.[`${type}_action`]?.service_data ? JSON.stringify(cfg[`${type}_action`].service_data) : ''}
           @input=${e => this._onAction(i, type, 'service_data', this._safeJson(e.target.value))}
         />
       `;
     }
     return '';
   }
-    
+
   _safeJson(txt) { try { return JSON.parse(txt); } catch { return {}; } }
-    
+
   _toggleAuto(on) {
+    if (this._syncingFromConfig) return;
     this._emit('auto_discovery_sections.subbutton', on);
   }
-    
+
   _togglePill(i) {
-    this._expanded = this._expanded.map((v, k) => k === i ? !v : false);
+    this._expanded = this._expanded.map((v, k) => (k === i ? !v : false));
   }
-    
-  // Chips: rimozione singola e Clear
-  _onFilter(i, vals) {
+
+  // Filtri: singolo chip e Clear (one-shot)
+  _onFilter(i, values) {
+    // Se il prossimo change arriva dal Clear, consumalo e resta vuoto
     if (this._ignoreNextFilterChange.has(i)) {
       this._ignoreNextFilterChange.delete(i);
       this._filters[i] = [];
     } else {
-      const arr = Array.isArray(vals) ? vals.filter(Boolean) : [];
+      const arr = Array.isArray(values) ? values.filter(Boolean) : [];
       this._filters[i] = [...arr];
     }
 
-    // Ricalcola candidati
-    this.requestUpdate('_filters');
+    // Re-sync visivo del selector (evita stati interni “sporchi”)
+    const sel = this.renderRoot?.querySelector(`#filter-${i}`);
+    if (sel) sel.value = [...this._filters[i]];
 
-    // Salva/persiste (l’editor aggiorna eventualmente subbutton_filters)
-    this._emit('subbutton_filters', this._filters);
+    // Notifica e ricalcola i candidati
+    if (!this._syncingFromConfig) {
+      this._emit('subbutton_filters', this._filters);
+    }
+    this.requestUpdate('_filters');
   }
 
   _clearFilter(i) {
     this._filters[i] = [];
     const sel = this.renderRoot?.querySelector(`#filter-${i}`);
     if (sel) {
+      // segnala che il prossimo value-changed([]) è “da Clear”
       this._ignoreNextFilterChange.add(i);
       sel.value = [];
       sel.dispatchEvent(new CustomEvent('value-changed', {
         detail: { value: [] }, bubbles: true, composed: true
       }));
+    } else {
+      // se per qualsiasi motivo non trovi il selector, emetti comunque
+      this._emit('subbutton_filters', this._filters);
     }
-    // Propaga subito i filtri vuoti
-    this._emit('subbutton_filters', this._filters);
     this.requestUpdate('_filters');
   }
-    
+
   _onEntity(i, ent) {
-    this._entities[i] = ent;
-    
-    if (!this.config.subbuttons[i]) this.config.subbuttons[i] = {};
-    this.config.subbuttons[i].entity_id = ent;
-    
-    // auto-icona
-    if (!this.config.subbuttons[i].icon && this.hass) {
-      const st = this.hass.states?.[ent];
+    this._entities[i] = ent || '';
+    if (this._syncingFromConfig) return;
+
+    // Salva l’entità selezionata
+    this._emit(`subbuttons.${i}.entity_id`, this._entities[i]);
+
+    // Auto-icona: se non impostata
+    if (this._entities[i]) {
+      const st = this.hass?.states?.[this._entities[i]];
       const iconFromState = st?.attributes?.icon;
-      const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
-      if (autoIcon) this.config.subbuttons[i].icon = autoIcon;
+      const autoIcon = iconFromState || resolveEntityIcon(this._entities[i], this.hass);
+      if (autoIcon) {
+        this._emit(`subbuttons.${i}.icon`, autoIcon);
+      }
     }
-    
-    this._emit('subbuttons', this.config.subbuttons);
   }
-    
+
   _onIcon(i, icon) {
-    if (!this.config.subbuttons[i]) this.config.subbuttons[i] = {};
-    this.config.subbuttons[i].icon = icon;
-    this._emit('subbuttons', this.config.subbuttons);
+    if (this._syncingFromConfig) return;
+    this._emit(`subbuttons.${i}.icon`, icon || '');
   }
-    
+
   _onAction(i, type, field, val) {
-    if (!this.config.subbuttons[i]) this.config.subbuttons[i] = {};
-    this.config.subbuttons[i][`${type}_action`] = {
-      ...this.config.subbuttons[i][`${type}_action`],
-      [field]: val
-    };
-    this._emit('subbuttons', this.config.subbuttons);
+    if (this._syncingFromConfig) return;
+    const patch = { ...((this.config?.subbuttons?.[i] || {})[`${type}_action`] || {}), [field]: val };
+    this._emit(`subbuttons.${i}.${type}_action`, patch);
   }
-    
+
   _reset() {
     this._expanded = Array(4).fill(false);
     this._filters  = Array(4).fill().map(() => [...COMMON_CATS]);
     this._entities = Array(4).fill('');
-    this.config.subbuttons = Array(4).fill().map(() => ({}));
+
+    // Propaga reset: filtri ed entità
     this._emit('subbutton_filters', this._filters);
-    this._emit('subbuttons', this.config.subbuttons);
+    for (let i = 0; i < 4; i++) {
+      this._emit(`subbuttons.${i}`, {}); // svuota ogni subbutton
+    }
   }
-    
+
   _emit(prop, val) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop, val },
@@ -459,5 +426,5 @@ export class SubButtonPanel extends LitElement {
     }));
   }
 }
-  
+
 customElements.define('sub-button-panel', SubButtonPanel);
