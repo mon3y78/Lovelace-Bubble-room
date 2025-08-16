@@ -341,21 +341,28 @@ export class SubButtonPanel extends LitElement {
   // Filtri: singolo chip e Clear (one-shot)
   // identico a MushroomPanel: niente .value forzato
   _onFilter(i, vals) {
+    let newFilters;
+    
     if (this._ignoreNextFilterChange.has(i)) {
       this._ignoreNextFilterChange.delete(i);
-      this._filters[i] = [];
+      newFilters = [];
     } else {
-      this._filters[i] = Array.isArray(vals) ? vals.filter(Boolean) : [];
+      newFilters = Array.isArray(vals) ? vals.filter(Boolean) : [];
     }
+    
+    // crea un nuovo array per triggerare il re-render
+    this._filters = this._filters.map((f, idx) => idx === i ? [...newFilters] : f);
     
     this.requestUpdate('_filters');
     this._emit('subbutton_filters', this._filters);
   }
   
-  // Clear: reset locale, niente manipolazione diretta di sel.value
   _clearFilter(i) {
-    this._filters[i] = [];
     this._ignoreNextFilterChange.add(i);
+    
+    // crea nuovo array vuoto nella posizione i
+    this._filters = this._filters.map((f, idx) => idx === i ? [] : f);
+    
     this.requestUpdate('_filters');
     this._emit('subbutton_filters', this._filters);
   }
