@@ -46,6 +46,7 @@ export const FILTER_LABELS = {
   tamper: 'Manomissione',
   update: 'Aggiornamento',
   switch: 'Pulsante',
+  input_boolean: 'Interruttore',
 };
 
 /* ───────────── domini comuni (senza “sensor”) ───────────── */
@@ -56,6 +57,7 @@ export const COMMON_CATS = [
   'climate',
   'cover',
   'fan',
+  'input_boolean',
   'light',
   'lock',
   'media_player',
@@ -280,7 +282,9 @@ export function candidatesFor(hass, config, section, cats = []) {
   }
 
   // 5) keep‑selected per TUTTE le sezioni
-  const sectionCfg = config?.entities?.[section];
+  const sectionCfg = section === 'subbutton'
+    ? config?.subbuttons
+    : config?.entities?.[section];
   const selectedAll = _extractSelectedEntities(sectionCfg);
   return _keepSelectedFirst(scoped, selectedAll);
 }

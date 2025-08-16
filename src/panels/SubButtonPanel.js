@@ -383,21 +383,17 @@ export class SubButtonPanel extends LitElement {
   // - dopo Clear: i successivi value-changed vengono accettati e salvati
   _onFilter(i, vals) {
     if (this._ignoreNextFilterChange.has(i)) {
-      // Consuma il flag solo per questo giro: mantieni vuoto senza ripristini
       this._ignoreNextFilterChange.delete(i);
       this._filters[i] = [];
     } else {
       const arr = Array.isArray(vals) ? vals.filter(Boolean) : [];
       this._filters[i] = [...arr];
     }
-
-    // Rerender per ricalcolare i candidati e aggiornare il selector Entity
+    // Aggiorna subito lista candidati
     this.requestUpdate('_filters');
-
-    // Propaga subito (così si salva davvero)
+    // Propaga per persistenza nello YAML/editor
     this._emit('subbutton_filters', this._filters);
   }
-
   // ✅ Clear: svuota i chip, informa _onFilter di NON reintrodurre default
   _clearFilter(i) {
     this._filters[i] = [];
