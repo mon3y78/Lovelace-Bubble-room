@@ -45,6 +45,7 @@ export class BubbleRoom extends LitElement {
       this.requestUpdate?.();
     }
   }
+
   static getStubConfig() {
     return {
       type: 'custom:bubble-room',
@@ -170,9 +171,11 @@ export class BubbleRoom extends LitElement {
     }
     return result;
   }
+
   _getState(entityId) {
     return entityId ? this.hass?.states?.[entityId] : undefined;
   }
+
   /* ───────────── mushroom ───────────── */
   _getMushrooms() {
     const entities = this._entities || {};
@@ -231,8 +234,7 @@ export class BubbleRoom extends LitElement {
       });
     }
   
-    // 7) CLIMATE: lasciato com’è (non lo tocchiamo ora)
-    // CLIMATE (fisso via kind:'climate')
+    // 7) CLIMATE (fisso via kind:'climate')
     const cliCfg = this._entities?.climate || {};
     const cliId = cliCfg.entity;
     if (cliId && this.hass.states?.[cliId]) {
@@ -258,7 +260,7 @@ export class BubbleRoom extends LitElement {
   }
   
   /* stub click */
-  _onMushroomClick(ev) {
+  _onMushroomClick(_ev) {
     /* puoi gestire altri eventi qui */
   }
 
@@ -276,6 +278,11 @@ export class BubbleRoom extends LitElement {
     const iconBgInactive    = this.config.colors?.room?.background_inactive ?? 'rgba(23,60,22,0.12)';
     const textColorActive   = this.config.colors?.room?.text_active   ?? '#ffffff';
     const textColorInactive = this.config.colors?.room?.text_inactive ?? 'rgba(255,255,255,0.5)';
+
+    // Azioni per la main icon: uso quelle della card (tap/hold) e come fallback entity la "presence"
+    const mainEntity = this.config?.entities?.presence?.entity || '';
+    const tapAct     = this.config?.tap_action  || { action: 'more-info' };
+    const holdAct    = this.config?.hold_action || { action: 'none' };
 
     return html`
       <div class="bubble-room-grid ${layout}">
@@ -308,6 +315,10 @@ export class BubbleRoom extends LitElement {
                   --main-icon-size:${mainIconSize}px;
                   --icon-shift-x:-20%;
                 "
+                .entity_id=${mainEntity}
+                .tap_action=${tapAct}
+                .hold_action=${holdAct}
+                @hass-action=${this._onMainIconAction}
               ></bubble-icon>
 
               <bubble-mushroom
@@ -325,6 +336,64 @@ export class BubbleRoom extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  /* ───────────── esecuzione azioni main icon (come SubButton) ───────────── */
+  _onMainIconAction = (e) => {
+    // e.detail = { config:{ entity, tap_action, hold_action }, action: 'tap'|'hold' }
+    const { config, action } = e.detail || {};
+    if (!config) return;
+
+    const actCfg = action === 'hold'
+      ? (config.hold_action || { action: 'none' })
+      : (config.tap_action  || { action: 'none' });
+
+    this._runAction(actCfg, config.entity);
+  };
+
+  _runAction(actionCfg, fallbackEntity) {
+    const act = actionCfg?.action || 'none';
+    if (act === 'none') return;
+
+    switch (act) {
+      case 'navigate': {
+        const path = actionCfg.navigation_path || actionCfg.navigationPath;
+        if (path) {
+          window.history.pushState({}, '', path);
+          window.dispatchEvent(new Event('location-changed'));
+        }
+        break;
+      }
+      case 'more-info': {
+        const entityId = actionCfg.entity || fallbackEntity;
+        if (entityId) {
+          this.dispatchEvent(new CustomEvent('hass-more-info', {
+            detail: { entityId }, bubbles: true, composed: true
+          }));
+        }
+        break;
+      }
+      case 'toggle': {
+        const entityId = actionCfg.entity || fallbackEntity;
+        if (entityId && this.hass?.callService) {
+          this.hass.callService('homeassistant', 'toggle', { entity_id: entityId });
+        }
+        break;
+      }
+      case 'call-service': {
+        const srv = actionCfg.service || '';
+        const [domain, service] = srv.split('.');
+        if (domain && service && this.hass?.callService) {
+          const data = { ...(actionCfg.service_data || actionCfg.data || {}) };
+          if (!data.entity_id && fallbackEntity) data.entity_id = fallbackEntity;
+          this.hass.callService(domain, service, data);
+        }
+        break;
+      }
+      default:
+        // no-op
+        break;
+    }
   }
 
   /* ───────────── stili originali ───────────── */
