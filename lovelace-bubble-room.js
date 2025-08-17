@@ -1806,6 +1806,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       height: 100%;
       position: relative;
       contain: strict;
+      z-index: 2;
     }
     .mushroom-entity {
       position: absolute;
