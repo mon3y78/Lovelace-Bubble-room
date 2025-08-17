@@ -113,22 +113,31 @@ export class BubbleIcon extends LitElement {
   
   /* ───────────── Evento emesso: stesso payload di BubbleSubButton ───────────── */
   
+  /* ───────────── Evento emesso: stesso payload di BubbleSubButton ───────────── */
   _fireHassAction(actionType /* 'tap' | 'hold' */ ) {
-    if (!this.entity_id) return;
+    // Prendi la config dell'azione corrente (tap/hold)
+    const cfg = (actionType === 'hold' ? this.hold_action : this.tap_action) || { action: 'more-info' };
+    const action = cfg.action || 'more-info';
     
-    const actionConfig = {
-      entity: this.entity_id,
-      tap_action: this.tap_action || { action: 'more-info' },
-      hold_action: this.hold_action || { action: 'none' },
-    };
+    // Alcune azioni richiedono l'entità; altre no.
+    const needsEntity = action === 'toggle' || action === 'call-service' || action === 'more-info';
     
+    // Se l'azione richiede entity ma non c'è, non fare nulla;
+    // MA se è 'navigate' (o qualunque azione che non richiede entity), procedi comunque.
+    if (needsEntity && !this.entity_id) {
+      return;
+    }
+    
+    // Emetti l'evento come fa BubbleSubButton (anche se entity_id è vuota per "navigate").
     const evt = new Event('hass-action', { bubbles: true, composed: true });
     evt.detail = {
-      config: actionConfig,
+      config: {
+        entity: this.entity_id, // può essere undefined/'' per 'navigate'
+        tap_action: this.tap_action || { action: 'more-info' },
+        hold_action: this.hold_action || { action: 'none' },
+      },
       action: actionType,
     };
     this.dispatchEvent(evt);
   }
-}
-
 customElements.define('bubble-icon', BubbleIcon);
