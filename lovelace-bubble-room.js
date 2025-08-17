@@ -1842,8 +1842,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
     :host {
       position: absolute;
       display: block;
-      height: 100%;
-      width: 100%;
+      inset: 0;
       box-sizing: border-box;
     }
     .container {
