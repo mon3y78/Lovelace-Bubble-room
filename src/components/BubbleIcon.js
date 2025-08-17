@@ -44,7 +44,7 @@ export class BubbleIcon extends LitElement {
       display: block;
       inset: 0;
       box-sizing: border-box;
-      z-index: 3;
+      z-index: 1;
     }
     .container {
       box-sizing: border-box;
