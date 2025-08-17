@@ -131,6 +131,7 @@ export class BubbleMushroom extends LitElement {
       height: 100%;
       position: relative;
       contain: strict;
+      z-index: 2;
     }
     .mushroom-entity {
       position: absolute;
