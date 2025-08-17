@@ -129,9 +129,11 @@ export class BubbleMushroom extends LitElement {
       display: block;
       width: 100%;
       height: 100%;
-      position: relative;
+      position: absolute;
+      inset: 0;
       contain: strict;
-      z-index: 2;
+      z-index: 3;
+      pointer-events: none;
     }
     .mushroom-entity {
       position: absolute;
@@ -140,7 +142,7 @@ export class BubbleMushroom extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 2;
+      z-index: 3;
       pointer-events: auto;
     }
     .mushroom-entity ha-icon { display: block; }
