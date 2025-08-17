@@ -1814,7 +1814,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 1;
+      z-index: 2;
       pointer-events: auto;
     }
     .mushroom-entity ha-icon { display: block; }
@@ -1844,7 +1844,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       display: block;
       inset: 0;
       box-sizing: border-box;
-      z-index: 0;
+      z-index: 1;
     }
     .container {
       box-sizing: border-box;
