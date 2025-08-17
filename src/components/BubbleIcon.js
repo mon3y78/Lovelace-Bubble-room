@@ -140,4 +140,6 @@ export class BubbleIcon extends LitElement {
     };
     this.dispatchEvent(evt);
   }
+}
+
 customElements.define('bubble-icon', BubbleIcon);
