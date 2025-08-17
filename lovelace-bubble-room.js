@@ -1844,6 +1844,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       display: block;
       inset: 0;
       box-sizing: border-box;
+      z-index: 3;
     }
     .container {
       box-sizing: border-box;
