@@ -42,8 +42,7 @@ export class BubbleIcon extends LitElement {
     :host {
       position: absolute;
       display: block;
-      height: 100%;
-      width: 100%;
+      inset: 0;
       box-sizing: border-box;
     }
     .container {
