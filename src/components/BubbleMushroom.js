@@ -139,7 +139,7 @@ export class BubbleMushroom extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 1;
+      z-index: 2;
       pointer-events: auto;
     }
     .mushroom-entity ha-icon { display: block; }
