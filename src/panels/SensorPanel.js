@@ -21,7 +21,7 @@ export class SensorPanel extends LitElement {
     this.expanded  = false;
     this._expanded = Array(5).fill(false);
 
-    const allTypes = Object.keys(SENSOR_TYPE_MAP);
+    const allTypes = Object.keys(SENSOR_TYPE_MAP).filter(k => !k.startsWith('_'));
     // Stato locale dei filtri: default = TUTTI i tipi (non scritto nel YAML)
     this._filters  = Array(5).fill().map(() => [...allTypes]);
     this._entities = Array(5).fill('');
@@ -198,7 +198,7 @@ export class SensorPanel extends LitElement {
     const autoDisc = this.config?.auto_discovery_sections?.sensor ?? false;
 
     const options = Object.entries(SENSOR_TYPE_MAP)
-      .filter(([type]) => type !== '_fallback')
+      .filter(([key]) => !key.startsWith('_')) // esclude _fallback / _nameFallbacks
       .map(([type, info]) => {
         const niceLabel = info.label ||
           type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -303,11 +303,24 @@ export class SensorPanel extends LitElement {
             ${ent ? (() => {
               const stateObj = this.hass.states[ent];
               const dc       = stateObj?.attributes?.device_class;
-              const info     = SENSOR_TYPE_MAP[dc] || {};
-              const emoji    = info.emoji || '❓';
-              const unit     = stateObj?.attributes?.unit_of_measurement
-                               || (info.units?.[0] ?? '');
-              const val      = stateObj?.state ?? '-';
+
+              // 1) prova con device_class
+              let typeKey = dc || '';
+
+              // 2) fallback dal nome (se manca dc)
+              if (!typeKey) {
+                const name = String(ent).split('.').slice(1).join('.');
+                typeKey = this._inferTypeFromName(name) || '';
+              }
+
+              const info  = typeKey ? (SENSOR_TYPE_MAP[typeKey] || {}) : {};
+              const emoji = info.emoji || '❓';
+              const unit  = stateObj?.attributes?.unit_of_measurement
+                            || info.unit
+                            || (Array.isArray(info.units) ? info.units[0] : '')
+                            || '';
+
+              const val   = stateObj?.state ?? '-';
               return html`
                 <div class="preview">
                   <span class="emoji">${emoji}</span>
@@ -319,6 +332,15 @@ export class SensorPanel extends LitElement {
         ` : ''}
       </div>
     `;
+  }
+
+  // Inferenza “soft” dal nome entità usando la tabella _nameFallbacks del mapping
+  _inferTypeFromName(name) {
+    const list = SENSOR_TYPE_MAP?._nameFallbacks;
+    if (!Array.isArray(list) || !name) return null;
+    const low = String(name).toLowerCase();
+    const hit = list.find(f => low.includes(f.pattern));
+    return hit ? hit.type : null;
   }
 
   _toggleAuto(on) {
@@ -336,7 +358,7 @@ export class SensorPanel extends LitElement {
   // Se rimuovi manualmente tutti i chip => ricrea la lista completa.
   // Se arriva da "Clear" (flag attivo) => resta vuoto.
   _onFilter(i, values) {
-    const all = Object.keys(SENSOR_TYPE_MAP);
+    const all = Object.keys(SENSOR_TYPE_MAP).filter(k => !k.startsWith('_'));
 
     if (this._ignoreNextFilterChange.has(i)) {
       // Cambio generato dal bottone Clear: mantieni vuoto e consuma il flag
@@ -381,7 +403,7 @@ export class SensorPanel extends LitElement {
 
   _reset() {
     this._expanded = Array(5).fill(false);
-    const allTypes = Object.keys(SENSOR_TYPE_MAP);
+    const allTypes = Object.keys(SENSOR_TYPE_MAP).filter(k => !k.startsWith('_'));
     this._filters  = Array(5).fill().map(() => [...allTypes]);
     this._entities = Array(5).fill('');
 
