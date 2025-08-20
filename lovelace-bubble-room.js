@@ -351,144 +351,108 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       </ha-expansion-panel>
     `}}customElements.define("room-panel",St);const Et={temperature:{label:"Temperature",emoji:"🌡️",units:["°C","°F"]},apparent_temperature:{label:"Feels Like",emoji:"🥵",units:["°C","°F"]},humidity:{label:"Humidity",emoji:"💧",units:["%"]},pressure:{label:"Pressure",emoji:"🧭",units:["hPa","mbar","kPa"]},illuminance:{label:"Illuminance",emoji:"🔆",units:["lx"]},sound_pressure:{label:"Sound Pressure",emoji:"🔊",units:["dB"]},pm1:{label:"PM1",emoji:"🌫️",units:["µg/m³"]},pm2_5:{label:"PM2.5",emoji:"🌫️",units:["µg/m³"]},pm10:{label:"PM10",emoji:"🌫️",units:["µg/m³"]},co2:{label:"CO₂",emoji:"🫁",units:["ppm"]},uv_index:{label:"UV Index",emoji:"☀️",units:["UV index"]},irradiance:{label:"Irradiance",emoji:"🌞",units:["W/m²"]},wind_speed:{label:"Wind Speed",emoji:"🌀",units:["km/h","m/s","mph","kn"],formatter:(t,e)=>{const i=Number(t);return isNaN(i)?{value:t,unit:e}:"m/s"===e?{value:(3.6*i).toFixed(0),unit:"km/h"}:"mph"===e?{value:(1.60934*i).toFixed(0),unit:"km/h"}:"kn"===e?{value:(1.852*i).toFixed(0),unit:"km/h"}:{value:i.toFixed(0),unit:e||"km/h"}}},speed:{label:"Speed",emoji:"🌀",units:["km/h","m/s","mph","kn"]},wind_gust:{label:"Wind Gust",emoji:"🌬️",units:["km/h","m/s","mph","kn"]},wind_bearing:{label:"Wind Direction",emoji:"🧭",units:["°","cardinal"]},precipitation:{label:"Precipitation",emoji:"🌧️",units:["mm","cm","in"]},precipitation_intensity:{label:"Precipitation Intensity",emoji:"🌦️",units:["mm/h","in/h"]},precipitation_probability:{label:"Rain Probability",emoji:"☔",units:["%"]},cloud_coverage:{label:"Cloud Coverage",emoji:"☁️",units:["%"]},visibility:{label:"Visibility",emoji:"👁️",units:["km","m","mi"]},dew_point:{label:"Dew Point",emoji:"💧",units:["°C","°F"]},power:{label:"Power",emoji:"⚡",units:["kW","W","MW"],formatter:(t,e)=>{const i=Number(t);return isNaN(i)?{value:t,unit:e}:"W"===e?{value:(i/1e3).toFixed(i>=100?0:1),unit:"kW"}:"MW"===e?{value:(1e3*i).toFixed(0),unit:"kW"}:{value:i,unit:e||"kW"}}},energy:{label:"Energy",emoji:"🔌",units:["kWh","Wh","MWh"],formatter:(t,e)=>{const i=Number(t);return isNaN(i)?{value:t,unit:e}:"Wh"===e?{value:(i/1e3).toFixed(i>=1e3?0:1),unit:"kWh"}:"MWh"===e?{value:(1e3*i).toFixed(0),unit:"kWh"}:{value:i,unit:e||"kWh"}}},power_factor:{label:"Power Factor",emoji:"📐",units:["%","ratio"]},voltage:{label:"Voltage",emoji:"⚙️",units:["V"]},current:{label:"Current",emoji:"🧲",units:["A","mA"]},frequency:{label:"Frequency",emoji:"〰️",units:["Hz"]},apparent_power:{label:"Apparent Power",emoji:"🧮",units:["VA","kVA"]},reactive_power:{label:"Reactive Power",emoji:"🧮",units:["var","kvar"]},monetary:{label:"Cost",emoji:"💶",units:["€","EUR","$"]},gas:{label:"Gas",emoji:"🔥",units:["m³","Nm³","kWh"]},water:{label:"Water",emoji:"🚿",units:["m³","L"]},battery:{label:"Battery",emoji:"🔋",units:["%"]},signal_strength:{label:"Signal Strength",emoji:"📶",units:["dBm"]},_fallback:{label:"Other",emoji:"❓",units:[""]}};class zt extends st{static properties={hass:{type:Object},config:{type:Object},expanded:{type:Boolean},_expanded:{type:Array,state:!0},_filters:{type:Array,state:!0},_entities:{type:Array,state:!0}};constructor(){super(),this.hass={},this.config={},this.expanded=!1,this._expanded=Array(5).fill(!1);const t=Object.keys(Et).filter(t=>!t.startsWith("_"));this._filters=Array(5).fill().map(()=>[...t]),this._entities=Array(5).fill(""),this._ignoreNextFilterChange=new Set}updated(t){if(t.has("config")||t.has("hass")){const t=_t(this.hass,this.config,"auto_discovery_sections.sensor");t&&t!==this.config&&this.dispatchEvent(new CustomEvent("config-changed",{detail:{config:t},bubbles:!0,composed:!0}));for(let t=0;t<5;t++){const e=`sensor${t+1}`,i=this.config?.sensor_filters?.[t],s=this.config?.entities?.[e]?.entity;Array.isArray(i)&&(this._filters[t]=[...i]),s&&(this._entities[t]=s)}}}static styles=o`
     :host { display: block; }
-
     .glass-panel {
-      margin: 0 !important;
-      width: 100%;
-      box-sizing: border-box;
-      border-radius: 40px;
-      position: relative;
-      background: var(--glass-bg, rgba(167,255,175,0.22));
-      box-shadow: var(--glass-shadow, 0 2px 24px rgba(167,255,175,0.13));
+      background: var(--ha-card-background, rgba(255, 255, 255, 0.05));
+      border-radius: 16px;
+      margin: 4px 0;
       overflow: hidden;
-    }
-    .glass-panel::after {
-      content: '';
-      position: absolute; inset: 0;
-      border-radius: inherit;
-      background: var(--glass-sheen,
-        linear-gradient(120deg,rgba(255,255,255,0.11),
-        rgba(255,255,255,0.07) 70%,transparent 100%));
-      pointer-events: none;
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .glass-header {
-      padding: 22px 0;
-      text-align: center;
-      font-size: 1.12rem;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .input-group.autodiscover {
-      margin: 0 16px 13px;
-      padding: 14px 18px 10px;
-      background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.13);
-      box-shadow: 0 2px 14px rgba(70,120,220,0.10);
-      border-radius: 18px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .input-group.autodiscover input { margin-right: 8px; }
-    .input-group.autodiscover label {
-      margin: 0; font-weight: 700; color: #fff;
-    }
-
-    .mini-pill {
-      background: rgba(44,70,100,0.23);
-      border: 1.5px solid rgba(255,255,255,0.13);
-      box-shadow: 0 2px 14px rgba(70,120,220,0.10);
-      backdrop-filter: blur(7px) saturate(1.2);
-      border-radius: 24px;
-      margin: 8px 16px;
-      overflow: hidden;
-    }
-    .mini-pill-header {
-      display: flex; align-items: center;
-      padding: 12px 16px;
-      cursor: pointer; user-select: none;
-      font-weight: 700; color: #8cff8a;
-    }
-    .mini-pill-header .chevron {
-      margin-left: auto; transition: transform 0.2s;
-    }
-    .mini-pill.expanded .mini-pill-header .chevron {
-      transform: rotate(90deg);
-    }
-    .mini-pill-content {
-      padding: 12px 16px 16px;
-      animation: pill-expand 0.2s ease-out both;
-    }
-    @keyframes pill-expand {
-      from { opacity: 0; transform: translateY(-8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .input-group { margin-bottom: 12px; }
-    .input-group label {
-      display: block; font-weight: 600;
-      margin-bottom: 6px; color: #8cff8a;
-    }
-    ha-selector { width: 100%; box-sizing: border-box; }
-    ha-selector::part(combobox) { min-height: 40px; }
-
-    /* layout Clear */
-    .filter-row {
+      padding: 12px;
+      font-weight: 500;
+      font-size: 1.05em;
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 8px;
-      margin-bottom: 6px;
     }
-    .clear-chip {
-      border: 2px solid var(--warning-color, #ff8a65);
-      color: var(--warning-color, #ff8a65);
-      background: transparent;
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 0.9rem;
-      font-weight: 800;
+    .mini-pill {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .mini-pill-header {
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       cursor: pointer;
-      transition: background .15s, color .15s, box-shadow .15s, border-color .15s;
-      box-shadow: 0 1px 10px rgba(255,138,101,0.25);
+      font-weight: 500;
+      font-size: 0.95em;
     }
-    .clear-chip:hover {
-      background: rgba(255,138,101,0.18);
-      color: #fff;
-      border-color: #ff8a65;
-      box-shadow: 0 3px 16px rgba(255,138,101,0.45);
+    .mini-pill.expanded .mini-pill-header {
+      background: rgba(255, 255, 255, 0.05);
     }
-
-    .preview {
-      display: flex; align-items: center; gap: 12px;
-      padding: 0 16px 16px;
+    .mini-pill-content {
+      padding: 10px 14px;
+      display: grid;
+      gap: 12px;
+      font-size: 0.9em;
     }
-    .preview .emoji {
-      font-size: 1.8rem;
-      line-height: 1;
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
-    .preview .state {
-      font-size: 1.2rem;
-      color: #fff;
+    label {
+      font-size: 0.8em;
+      opacity: 0.8;
     }
-
     .reset-button {
-      border: 3.5px solid #ff4c6a;
-      color: #ff4c6a;
-      border-radius: 24px;
-      padding: 12px 38px;
-      background: transparent;
-      cursor: pointer;
+      margin: 10px auto 14px auto;
       display: block;
-      margin: 20px auto;
-      font-size: 1.15rem;
-      font-weight: 700;
-      box-shadow: 0 2px 24px #ff4c6a44;
-      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85em;
+      cursor: pointer;
     }
     .reset-button:hover {
-      background: rgba(255,76,106,0.18);
-      color: #fff;
-      box-shadow: 0 6px 32px #ff4c6abf;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .chevron {
+      opacity: 0.6;
+      font-size: 0.8em;
+    }
+    .filter-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .clear-chip {
+      font-size: 0.7em;
+      padding: 2px 6px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .clear-chip:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .preview {
+      margin-top: 6px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .preview .emoji {
+      font-size: 1.2em;
+    }
+    .preview .state {
+      font-size: 0.9em;
+      font-weight: 500;
+    }
+    .autodiscover {
+      margin: 8px 14px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.9em;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
   `;render(){const t=this.config?.auto_discovery_sections?.sensor??!1,e=Object.entries(Et).filter(([t])=>!t.startsWith("_")).map(([t,e])=>{const i=e.label||t.replace(/_/g," ").replace(/\b\w/g,t=>t.toUpperCase());return{value:t,label:`${e.emoji||""} ${i}`.trim()}});return R`
       <ha-expansion-panel
@@ -513,7 +477,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
           🧹 Reset Sensors
         </button>
       </ha-expansion-panel>
-    `}_renderSensor(t,e,i){const s=this._filters[t],n=this._entities[t];let o;if(this.config?.auto_discovery_sections?.sensor??!1)o=ft(this.hass,this.config,"sensor",s)||[];else{const t=this.hass?.states||{},e=Object.keys(t),i=Array.isArray(s)&&s.length>0,n=i?new Set(s):null;o=e.filter(e=>{const s=e.split(".")[0];if("sensor"!==s&&"binary_sensor"!==s)return!1;if(!i)return!0;const o=t[e]?.attributes?.device_class;return!!o&&n.has(o)})}return n&&!o.includes(n)&&(o=[n,...o]),R`
+    `}_renderSensor(t,e,i){const s=this._filters[t],n=this._entities[t];let o;if(this.config?.auto_discovery_sections?.sensor??!1)o=ft(this.hass,this.config,"sensor",s)||[];else{const t=this.hass?.states||{},e=Object.keys(t),i=Array.isArray(s)&&s.length>0,n=i?new Set(s):null;o=e.filter(e=>{const s=e.split(".")[0];if("sensor"!==s&&"binary_sensor"!==s)return!1;if(!i)return!0;const o=t[e]?.attributes?.device_class;if(o&&n.has(o))return!0;if(!o){const t=String(e).split(".").slice(1).join("."),i=this._inferTypeFromName(t);if(i&&n.has(i))return!0}return!1})}return n&&!o.includes(n)&&(o=[n,...o]),R`
       <div class="mini-pill ${e?"expanded":""}">
         <div class="mini-pill-header" @click=${()=>this._togglePill(t)}>
           Sensor ${t+1}
