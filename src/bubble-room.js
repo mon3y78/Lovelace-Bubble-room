@@ -431,6 +431,6 @@ window.customCards.push({
   type: 'bubble-room',
   name: 'Bubble Room',
   description: 'All‑in‑one room card: control entities, see sensors, and tweak colors & layout.',
-  preview: true,
+  preview: false,
   documentationURL: 'https://github.com/mon3y78/Lovelace-Bubble-room',
 });
