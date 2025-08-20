@@ -1,104 +1,181 @@
 // src/helpers/sensor-mapping.js
+// ------------------------------------------------------------
+// Mappa dei tipi di sensori usati in UI (etichette + emoji).
+// Include un fallback “_fallback” e regole di inferenza per
+// sensori senza device_class (es. UV Index Ecowitt).
+// I commenti restano in italiano.
+// ------------------------------------------------------------
 
+/**
+ * Mappa principale: chiave = "tipo" (di norma device_class HA)
+ * Valori mostrati in UI (label + emoji) e, quando utile, alias.
+ */
 export const SENSOR_TYPE_MAP = {
-  // —— ENVIRONMENT / AIR QUALITY ——
+  // --- Meteo / ambientali ---
   temperature: { label: 'Temperature', emoji: '🌡️', units: ['°C', '°F'] },
-  apparent_temperature: { label: 'Feels Like', emoji: '🥵', units: ['°C', '°F'] },
   humidity: { label: 'Humidity', emoji: '💧', units: ['%'] },
-  pressure: { label: 'Pressure', emoji: '🧭', units: ['hPa', 'mbar', 'kPa'] },
-  illuminance: { label: 'Illuminance', emoji: '🔆', units: ['lx'] },
-  sound_pressure: { label: 'Sound Pressure', emoji: '🔊', units: ['dB'] },
-  pm1: { label: 'PM1', emoji: '🌫️', units: ['µg/m³'] },
-  pm2_5: { label: 'PM2.5', emoji: '🌫️', units: ['µg/m³'] },
-  pm10: { label: 'PM10', emoji: '🌫️', units: ['µg/m³'] },
-  co2: { label: 'CO₂', emoji: '🫁', units: ['ppm'] },
-  
-  // —— WEATHER ——
-  uv_index: { label: 'UV Index', emoji: '☀️', units: ['UV index'] },
+  pressure: { label: 'Pressure', emoji: '🧭', units: ['hPa', 'mbar', 'bar', 'kPa'] },
+  illuminance: { label: 'Illuminance', emoji: '☀️', units: ['lx'] },
+  uv_index: { label: 'UV Index', emoji: '🌞', units: ['UV', 'UV index', 'index'] }, // fallback per UV senza device_class
   irradiance: { label: 'Irradiance', emoji: '🌞', units: ['W/m²'] },
-  
-  wind_speed: {
-    label: 'Wind Speed',
-    emoji: '🌀',
-    units: ['km/h', 'm/s', 'mph', 'kn'],
-    formatter: (value, unit) => {
-      const v = Number(value);
-      if (isNaN(v)) return { value, unit };
-      if (unit === 'm/s') return { value: (v * 3.6).toFixed(0), unit: 'km/h' };
-      if (unit === 'mph') return { value: (v * 1.60934).toFixed(0), unit: 'km/h' };
-      if (unit === 'kn') return { value: (v * 1.852).toFixed(0), unit: 'km/h' };
-      return { value: v.toFixed(0), unit: unit || 'km/h' };
-    }
-  },
-  speed: { label: 'Speed', emoji: '🌀', units: ['km/h', 'm/s', 'mph', 'kn'] },
-  wind_gust: { label: 'Wind Gust', emoji: '🌬️', units: ['km/h', 'm/s', 'mph', 'kn'] },
-  wind_bearing: { label: 'Wind Direction', emoji: '🧭', units: ['°', 'cardinal'] },
-  
-  precipitation: { label: 'Precipitation', emoji: '🌧️', units: ['mm', 'cm', 'in'] },
-  precipitation_intensity: { label: 'Precipitation Intensity', emoji: '🌦️', units: ['mm/h', 'in/h'] },
-  precipitation_probability: { label: 'Rain Probability', emoji: '☔', units: ['%'] },
-  
+  dew_point: { label: 'Dew Point', emoji: '💠', units: ['°C', '°F'] },
+  visibility: { label: 'Visibility', emoji: '👁️', units: ['km', 'mi', 'm'] },
   cloud_coverage: { label: 'Cloud Coverage', emoji: '☁️', units: ['%'] },
-  visibility: { label: 'Visibility', emoji: '👁️', units: ['km', 'm', 'mi'] },
-  dew_point: { label: 'Dew Point', emoji: '💧', units: ['°C', '°F'] },
+  precipitation: { label: 'Precipitation', emoji: '🌧️', units: ['mm', 'in'] },
+  precipitation_intensity: { label: 'Precipitation Intensity', emoji: '🌧️', units: ['mm/h', 'in/h'] },
+  rain_probability: { label: 'Rain Probability', emoji: '🌂', units: ['%'] },
+  wind_speed: { label: 'Wind Speed', emoji: '💨', units: ['m/s', 'km/h', 'mph', 'kn'] },
+  wind_gust: { label: 'Wind Gust', emoji: '🌬️', units: ['m/s', 'km/h', 'mph', 'kn'] },
+  wind_direction: { label: 'Wind Direction', emoji: '🧭', units: ['°', 'deg'] },
+  feels_like: { label: 'Feels Like', emoji: '🥵', units: ['°C', '°F'] },
   
-  // —— ELECTRICITY ——
-  power: {
-    label: 'Power',
-    emoji: '⚡',
-    units: ['kW', 'W', 'MW'],
-    formatter: (value, unit) => {
-      const v = Number(value);
-      if (isNaN(v)) return { value, unit };
-      if (unit === 'W') return { value: (v / 1000).toFixed(v >= 100 ? 0 : 1), unit: 'kW' };
-      if (unit === 'MW') return { value: (v * 1000).toFixed(0), unit: 'kW' };
-      return { value: v, unit: unit || 'kW' };
-    },
-  },
-  energy: {
-    label: 'Energy',
-    emoji: '🔌',
-    units: ['kWh', 'Wh', 'MWh'],
-    formatter: (value, unit) => {
-      const v = Number(value);
-      if (isNaN(v)) return { value, unit };
-      if (unit === 'Wh') return { value: (v / 1000).toFixed(v >= 1000 ? 0 : 1), unit: 'kWh' };
-      if (unit === 'MWh') return { value: (v * 1000).toFixed(0), unit: 'kWh' };
-      return { value: v, unit: unit || 'kWh' };
-    },
-  },
-  power_factor: { label: 'Power Factor', emoji: '📐', units: ['%', 'ratio'] },
-  voltage: { label: 'Voltage', emoji: '⚙️', units: ['V'] },
+  // --- Qualità aria / particolato ---
+  co2: { label: 'CO₂', emoji: '🫁', units: ['ppm'] },
+  pm1: { label: 'PM1', emoji: '🟤', units: ['µg/m³'] },
+  pm25: { label: 'PM2.5', emoji: '⚫️', units: ['µg/m³'] },
+  pm10: { label: 'PM10', emoji: '⚪️', units: ['µg/m³'] },
+  volatile_organic_compounds: { label: 'VOCs', emoji: '🧪', units: ['ppb', 'ppm', 'mg/m³'] },
+  air_quality: { label: 'Air Quality', emoji: '🌫️' },
+  
+  // --- Acustica ---
+  sound_pressure: { label: 'Sound Pressure', emoji: '🔊', units: ['dB', 'dBA'] },
+  noise: { label: 'Noise', emoji: '🔊', units: ['dB', 'dBA'] },
+  
+  // --- Elettrico / energia ---
+  power: { label: 'Power', emoji: '⚡️', units: ['W', 'kW'] },
+  apparent_power: { label: 'Apparent Power', emoji: '🧲', units: ['VA', 'kVA'] },
+  reactive_power: { label: 'Reactive Power', emoji: '🌀', units: ['var', 'kvar'] },
+  energy: { label: 'Energy', emoji: '🔋', units: ['Wh', 'kWh', 'MWh'] },
+  voltage: { label: 'Voltage', emoji: '🔌', units: ['V'] },
   current: { label: 'Current', emoji: '🧲', units: ['A', 'mA'] },
-  frequency: { label: 'Frequency', emoji: '〰️', units: ['Hz'] },
-  apparent_power: { label: 'Apparent Power', emoji: '🧮', units: ['VA', 'kVA'] },
-  reactive_power: { label: 'Reactive Power', emoji: '🧮', units: ['var', 'kvar'] },
+  frequency: { label: 'Frequency', emoji: '📶', units: ['Hz'] },
+  power_factor: { label: 'Power Factor', emoji: '📐' },
   
-  // —— COST / UTILITIES ——
-  monetary: { label: 'Cost', emoji: '💶', units: ['€', 'EUR', '$'] },
-  gas: { label: 'Gas', emoji: '🔥', units: ['m³', 'Nm³', 'kWh'] },
-  water: { label: 'Water', emoji: '🚿', units: ['m³', 'L'] },
+  // --- Varie ---
+  battery: { label: 'Battery', emoji: '🔋', units: ['%', 'V'] },
+  signal_strength: { label: 'Signal Strength', emoji: '📡', units: ['dBm', '%'] },
+  speed: { label: 'Speed', emoji: '🌀', units: ['m/s', 'km/h', 'mph'] },
   
-  // —— STATUS / OTHER ——
-  battery: { label: 'Battery', emoji: '🔋', units: ['%'] },
-  signal_strength: { label: 'Signal Strength', emoji: '📶', units: ['dBm'] },
-  
-  // Fallback generic
-  _fallback: { label: 'Other', emoji: '❓', units: [''] },
+  // --- Fallback generale (non mostrato nei chip dell’editor) ---
+  _fallback: { label: 'Other', emoji: '❓' },
 };
 
-// —— Utility functions ——
-export function formatByDeviceClass(deviceClass, value, unit) {
-  const m = SENSOR_TYPE_MAP[deviceClass];
-  if (!m?.formatter) return { value, unit };
-  try { return m.formatter(value, unit); } catch { return { value, unit }; }
+/* ────────────────────────────────
+ * Heuristics: inferenza tipo quando manca device_class
+ * (usato per casi come Ecowitt UV Index, ecc.)
+ * Puoi usare detectSensorType(entityId, stateObj) dove serve.
+ * SensorPanel già usa SENSOR_TYPE_MAP per i chip.
+ * ──────────────────────────────── */
+
+/** normalizza stringa */
+const _norm = (s) => (typeof s === 'string' ? s.toLowerCase() : '');
+
+/** prova a inferire il tipo dal nome dell'entità e dalle unità */
+export function inferTypeFromState(entityId, stateObj = {}) {
+  const id = _norm(entityId);
+  const unit = _norm(stateObj?.attributes?.unit_of_measurement || stateObj?.attributes?.unit);
+  const name = _norm(stateObj?.attributes?.friendly_name);
+  
+  // --- UV Index (nessun device_class in molti integrazioni) ---
+  if (id.includes('uv') || name?.includes('uv') || unit.includes('uv')) {
+    return 'uv_index';
+  }
+  
+  // --- Illuminance ---
+  if (unit === 'lx' || id.includes('lux') || name?.includes('lux')) {
+    return 'illuminance';
+  }
+  
+  // --- Pressione ---
+  if (['hpa', 'mbar', 'bar', 'kpa'].some(u => unit.includes(u))) {
+    return 'pressure';
+  }
+  
+  // --- Temperatura ---
+  if (['°c', '°f'].some(u => unit.includes(u)) && (id.includes('temp') || name?.includes('temp'))) {
+    return 'temperature';
+  }
+  
+  // --- Umidità ---
+  if (unit === '%' && (id.includes('hum') || name?.includes('hum'))) {
+    return 'humidity';
+  }
+  
+  // --- CO2 / VOC / aria ---
+  if (unit === 'ppm' && (id.includes('co2') || name?.includes('co2'))) {
+    return 'co2';
+  }
+  if ((unit === 'ppb' || unit === 'ppm') && (id.includes('voc') || name?.includes('voc'))) {
+    return 'volatile_organic_compounds';
+  }
+  
+  // --- Rumore ---
+  if (unit.startsWith('db') || id.includes('noise') || name?.includes('noise')) {
+    return 'noise';
+  }
+  
+  // --- Irradianza ---
+  if (unit.includes('w/m') || id.includes('irradiance') || name?.includes('irradiance')) {
+    return 'irradiance';
+  }
+  
+  // --- Vento ---
+  if (['m/s', 'km/h', 'mph', 'kn'].some(u => unit.includes(u)) && (id.includes('wind') || name?.includes('wind'))) {
+    if (id.includes('gust') || name?.includes('gust')) return 'wind_gust';
+    if (id.includes('dir') || name?.includes('direction')) return 'wind_direction';
+    return 'wind_speed';
+  }
+  
+  // --- Elettrico ---
+  if (unit === 'w' || unit === 'kw') return 'power';
+  if (unit === 'wh' || unit === 'kwh' || unit === 'mwh') return 'energy';
+  if (unit === 'v') return 'voltage';
+  if (unit === 'a' || unit === 'ma') return 'current';
+  if (unit === 'hz') return 'frequency';
+  
+  // --- Batteria / segnale ---
+  if (unit === '%' && (id.includes('batt') || name?.includes('batt'))) return 'battery';
+  if ((unit === 'dbm' || unit === '%') && (id.includes('signal') || name?.includes('signal'))) return 'signal_strength';
+  
+  // --- Precipitazioni ---
+  if ((unit === 'mm' || unit === 'in') && (id.includes('precip') || name?.includes('precip'))) {
+    return id.includes('intensity') || name?.includes('intensity') ?
+      'precipitation_intensity' :
+      'precipitation';
+  }
+  if (unit === '%' && (id.includes('rain') || name?.includes('rain'))) {
+    return 'rain_probability';
+  }
+  
+  // --- Visibilità / nuvolosità ---
+  if ((unit === 'km' || unit === 'mi' || unit === 'm') && (id.includes('visib') || name?.includes('visib'))) {
+    return 'visibility';
+  }
+  if (unit === '%' && (id.includes('cloud') || name?.includes('cloud'))) {
+    return 'cloud_coverage';
+  }
+  
+  // se non riconosciuto
+  return '_fallback';
 }
 
-export function defaultEmoji(deviceClass) {
-  return (SENSOR_TYPE_MAP[deviceClass]?.emoji) ?? SENSOR_TYPE_MAP._fallback.emoji;
+/**
+ * Ritorna un "tipo" utilizzabile come chiave in SENSOR_TYPE_MAP.
+ * Ordine: device_class → inferenza euristica → _fallback.
+ */
+export function detectSensorType(entityId, stateObj = {}) {
+  const dc = _norm(stateObj?.attributes?.device_class);
+  if (dc && SENSOR_TYPE_MAP[dc]) return dc;
+  const inferred = inferTypeFromState(entityId, stateObj);
+  return SENSOR_TYPE_MAP[inferred] ? inferred : '_fallback';
 }
 
-export function defaultUnit(deviceClass) {
-  const list = SENSOR_TYPE_MAP[deviceClass]?.units || SENSOR_TYPE_MAP._fallback.units;
-  return list[0] || '';
+/** Utilità piccola: etichetta “bella” di un tipo */
+export function labelFor(type) {
+  return SENSOR_TYPE_MAP[type]?.label || SENSOR_TYPE_MAP._fallback.label;
+}
+
+/** Emoji opzionale per un tipo */
+export function emojiFor(type) {
+  return SENSOR_TYPE_MAP[type]?.emoji || SENSOR_TYPE_MAP._fallback.emoji;
 }

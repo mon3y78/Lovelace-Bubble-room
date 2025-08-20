@@ -67,11 +67,11 @@ export const COMMON_CATS = [
 
 /* —— device_class comuni dei binary_sensor rese selezionabili in UI —— */
 export const BINARY_SENSOR_CATS = [
-  'motion','occupancy','presence','moving',
-  'door','window','opening','garage_door',
-  'vibration','sound','moisture','water','smoke','gas','carbon_monoxide',
-  'cold','heat','light_level','connectivity',
-  'plug','power','problem','running','safety','tamper','update'
+  'motion', 'occupancy', 'presence', 'moving',
+  'door', 'window', 'opening', 'garage_door',
+  'vibration', 'sound', 'moisture', 'water', 'smoke', 'gas', 'carbon_monoxide',
+  'cold', 'heat', 'light_level', 'connectivity',
+  'plug', 'power', 'problem', 'running', 'safety', 'tamper', 'update'
 ];
 
 /* ───────────── filtri di sezione (criteri dominio/device_class; niente area qui) ───────────── */
@@ -88,16 +88,18 @@ export const FILTERS = {
       return cats.includes(domain);
     },
   }),
-
+  
   sensor: (cats = []) => ({
     includeDomains: ['sensor'],
     entityFilter: (id, hass) => {
       if (!cats.length) return true;
-      const dc = hass.states[id]?.attributes?.device_class ?? '';
+      const dc = hass.states[id]?.attributes?.device_class;
+      // PATCH: se non ha device_class → includilo lo stesso
+      if (!dc) return true;
       return cats.includes(dc);
     },
   }),
-
+  
   mushroom: (cats = []) => ({
     includeDomains: COMMON_CATS,
     entityFilter: (id, hass) => {
@@ -133,7 +135,7 @@ export const FILTERS = {
       return cats.includes(domain);
     },
   }),
-
+  
   camera: (cats = []) => ({
     includeDomains: ['camera'],
     entityFilter: (id, hass) => {
@@ -142,7 +144,7 @@ export const FILTERS = {
       return cats.includes(dc);
     },
   }),
-
+  
   climate: (_cats = []) => ({
     includeDomains: ['climate'],
     entityFilter: (_id, _hass) => true,
@@ -180,18 +182,18 @@ function _isValidAreaId(areaId) {
 /** Verifica se una entity è nell'area indicata (solo confronti su area_id). */
 function _matchAreaId(hass, entityId, areaId) {
   if (!_isValidAreaId(areaId)) return true;
-
+  
   const entReg = _toEntityMap(hass?.entities);
   const devReg = _toDeviceMap(hass?.devices);
-
+  
   // 1) entity registry → area_id
   const regEnt = entReg[entityId];
   if (regEnt?.area_id === areaId) return true;
-
+  
   // 2) entity registry → device_id → device.area_id
   const devId = regEnt?.device_id || regEnt?.deviceId;
   if (devId && devReg[devId]?.area_id === areaId) return true;
-
+  
   // 3) stato → attributes.area_id
   const attrAreaId = hass?.states?.[entityId]?.attributes?.area_id;
   return attrAreaId === areaId;
@@ -242,7 +244,7 @@ export function entitiesInArea(hass, areaId) {
 */
 export function candidatesFor(hass, config, section, cats = []) {
   if (!hass?.states) return [];
-
+  
   // 1) filtri base per sezione
   let desc;
   if (section === 'presence') {
@@ -258,17 +260,17 @@ export function candidatesFor(hass, config, section, cats = []) {
   } else if (section === 'climate') {
     desc = FILTERS.climate(cats);
   }
-
+  
   if (!desc) return [];
-
+  
   // 2) filtro per dominio
   const byDomain = Object.keys(hass.states).filter((id) =>
     desc.includeDomains.includes(id.split('.')[0])
   );
-
+  
   // 3) filtro specifico (device_class/domains)
   const byDesc = byDomain.filter((id) => desc.entityFilter(id, hass));
-
+  
   // 4) scoping per area (SOLO area_id) con fallback
   let scoped = byDesc;
   const areaId = typeof config?.area_id === 'string' ? config.area_id : config?.area;
@@ -277,11 +279,11 @@ export function candidatesFor(hass, config, section, cats = []) {
     const filtered = byDesc.filter((id) => inArea.includes(id));
     if (filtered.length) scoped = filtered; // fallback automatico se vuoto
   }
-
+  
   // 5) keep-selected per TUTTE le sezioni
-  const sectionCfg = section === 'subbutton'
-    ? config?.subbuttons
-    : config?.entities?.[section];
+  const sectionCfg = section === 'subbutton' ?
+    config?.subbuttons :
+    config?.entities?.[section];
   const selectedAll = _extractSelectedEntities(sectionCfg);
   return _keepSelectedFirst(scoped, selectedAll);
 }
