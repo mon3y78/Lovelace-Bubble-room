@@ -371,21 +371,24 @@ export class SubButtonPanel extends LitElement {
   _onEntity(i, ent) {
     this._entities[i] = ent || '';
     if (this._syncingFromConfig) return;
-
-    // Salva l’entità selezionata
+    
+    // Salva l’entità selezionata (anche vuota)
     this._emit(`subbuttons.${i}.entity_id`, this._entities[i]);
-
-    // Auto-icona: se non impostata
-    if (this._entities[i]) {
-      const st = this.hass?.states?.[this._entities[i]];
-      const iconFromState = st?.attributes?.icon;
-      const autoIcon = iconFromState || resolveEntityIcon(this._entities[i], this.hass);
-      if (autoIcon) {
-        this._emit(`subbuttons.${i}.icon`, autoIcon);
-      }
+    
+    // Se l'entità è stata cancellata → cancella anche l'icona (comportamento come MushroomPanel)
+    if (!this._entities[i]) {
+      this._emit(`subbuttons.${i}.icon`, '');
+      return;
+    }
+    
+    // Entità presente → ricalcola SEMPRE l’icona (stato → fallback mapping)
+    const st = this.hass?.states?.[this._entities[i]];
+    const iconFromState = st?.attributes?.icon;
+    const autoIcon = iconFromState || resolveEntityIcon(this._entities[i], this.hass);
+    if (autoIcon) {
+      this._emit(`subbuttons.${i}.icon`, autoIcon);
     }
   }
-
   _onIcon(i, icon) {
     if (this._syncingFromConfig) return;
     this._emit(`subbuttons.${i}.icon`, icon || '');

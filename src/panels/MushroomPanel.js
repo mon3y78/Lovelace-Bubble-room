@@ -5,7 +5,7 @@ import {
   candidatesFor,
   COMMON_CATS,
   FILTER_LABELS,
-  BINARY_SENSOR_CATS,
+  BINARY_SENSOR_CATS, // ← aggiunto: includiamo anche le device_class dei binary_sensor
 } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
 
@@ -27,13 +27,17 @@ export class MushroomPanel extends LitElement {
     this.config    = {};
     this.expanded  = false;
 
+    // Tutte le categorie disponibili: domini comuni + device_class dei binary_sensor
+    this._ALL_CATS = Array.from(new Set([...COMMON_CATS, ...BINARY_SENSOR_CATS]));
+
     this._expanded = Array(5).fill(false);
-    this._filters  = Array(5).fill().map(() => [...COMMON_CATS]);
+    // Default: tutte le categorie disponibili (non solo COMMON_CATS)
+    this._filters  = Array(5).fill().map(() => [...this._ALL_CATS]);
     this._entities = Array(5).fill('');
     this._icons    = Array(5).fill('');
 
-    this._syncingFromConfig = false; // evita side effects durante la sync
-    this._ignoreNextFilterChange = new Set(); // per clear intenzional
+    this._syncingFromConfig = false;        // evita side effects durante la sync
+    this._ignoreNextFilterChange = new Set(); // per “Clear” intenzionale
   }
 
   updated(changed) {
@@ -54,7 +58,10 @@ export class MushroomPanel extends LitElement {
     // 2) sincronizza filtri da config (se presenti)
     const cfgFilters = this.config?.mushroom_filters;
     if (Array.isArray(cfgFilters) && cfgFilters.length === 5) {
-      this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...COMMON_CATS]);
+      this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...this._ALL_CATS]);
+    } else {
+      // se non c’è nulla in config, assicurati di avere il default completo
+      this._filters = Array(5).fill().map(() => [...this._ALL_CATS]);
     }
 
     // 3) sincronizza entity + icon da config.entities
@@ -173,6 +180,33 @@ export class MushroomPanel extends LitElement {
     ha-selector, ha-icon-picker { width: 100%; box-sizing: border-box; }
     ha-selector::part(combobox) { min-height: 40px; }
 
+    /* ——— stile Clear (allineato al label, identico a SensorPanel) ——— */
+    .filter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .clear-chip {
+      border: 2px solid var(--warning-color, #ff8a65);
+      color: var(--warning-color, #ff8a65);
+      background: transparent;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background .15s, color .15s, box-shadow .15s, border-color .15s;
+      box-shadow: 0 1px 10px rgba(255,138,101,0.25);
+    }
+    .clear-chip:hover {
+      background: rgba(255,138,101,0.18);
+      color: #fff;
+      border-color: #ff8a65;
+      box-shadow: 0 3px 16px rgba(255,138,101,0.45);
+    }
+
     /* === stile bottoni azione (come SubButtonPanel) === */
     .pill-group {
       display: flex;
@@ -210,40 +244,13 @@ export class MushroomPanel extends LitElement {
       background: rgba(255,76,106,0.18);
       color: #fff; box-shadow: 0 6px 32px #ff4c6abf;
     }
-     /* —— stile Clear identico a SensorPanel ——————————————— */
-    .filter-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8 px;
-      margin-bottom: 6px;
-    }
-    .clear-chip {
-      border: 2px solid var(--warning-color, #ff8a65);
-      color: var(--warning-color, #ff8a65);
-      background: transparent;
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 0.9rem;
-      font-weight: 800;
-      cursor: pointer;
-      transition: background .15s, color .15s, box-shadow .15s, border-color .15s;
-      box-shadow: 0 1px 10px rgba(255,138,101,0.25);
-    }
-    .clear-chip:hover {
-      background: rgba(255,138,101,0.18);
-      color: #fff;
-      border-color: #ff8a65;
-      box-shadow: 0 3px 16px rgba(255,138,101,0.45);
-    }
   `;
 
   render() {
     const autoDisc = this.config?.auto_discovery_sections?.mushroom ?? false;
 
-    // Unione: domini comuni + device_class dei binary_sensor
-    const allCats = Array.from(new Set([...COMMON_CATS, ...BINARY_SENSOR_CATS]));
-    const options = allCats.map(cat => ({
+    // Opzioni: tutte le categorie (domini + device_class)
+    const options = this._ALL_CATS.map(cat => ({
       value: cat,
       label: FILTER_LABELS[cat] || (cat.charAt(0).toUpperCase() + cat.slice(1)),
     }));
@@ -286,14 +293,12 @@ export class MushroomPanel extends LitElement {
 
     // Candidati:
     // - AD ON  ⇒ pipeline standard (filtrata per area) via candidatesFor
-    // - AD OFF ⇒ lista "no-area" direttamente da hass.states (solo domini selezionati)
+    // - AD OFF ⇒ stessa pipeline ma senza area (così funzionano anche le device_class)
     const autoDisc = this.config?.auto_discovery_sections?.mushroom ?? false;
     let cands;
     if (autoDisc) {
-      // AD ON: pipeline standard (filtrata per area)
       cands = candidatesFor(this.hass, this.config, 'mushroom', types) || [];
     } else {
-      // AD OFF: rimuovi area e riusa la stessa pipeline (così funzionano anche le device_class)
       const cfgNoArea = { ...this.config, area: undefined, area_id: undefined };
       cands = candidatesFor(this.hass, cfgNoArea, 'mushroom', types) || [];
     }
@@ -399,7 +404,7 @@ export class MushroomPanel extends LitElement {
     }
     if (act === 'call-service') {
       return html`
-        <input type="text" placeholder="Service"
+        <input type="text" placeholder="Service (es. light.turn_on)"
           .value=${cfg[`${type}_action`]?.service || ''}
           @input=${e => this._onAction(i, type, 'service', e.target.value)}
         />
@@ -429,18 +434,21 @@ export class MushroomPanel extends LitElement {
   }
 
   _onFilter(i, values) {
-    // Replica 1:1 la logica di SensorPanel
+    // stessa logica di SensorPanel ma con default = _ALL_CATS
     if (this._ignoreNextFilterChange.has(i)) {
       this._ignoreNextFilterChange.delete(i);
       this._filters[i] = [];
     } else {
-      const arr = Array.isArray(values) && values.length ? values.filter(Boolean) : [...COMMON_CATS];
+      const arr = Array.isArray(values) && values.length
+        ? values.filter(Boolean)
+        : [...this._ALL_CATS];
       this._filters[i] = [...arr];
     }
-    // Sync visuale del selector (come SensorPanel)
+    // Sync visuale del selector
     const sel = this.renderRoot?.querySelector(`#filter-${i}`);
     if (sel) sel.value = [...this._filters[i]];
   }
+
   // Clear identico a SensorPanel: svuota, setta il flag, dispatch value-changed([])
   _clearFilter(i) {
     this._filters[i] = [];
@@ -454,40 +462,33 @@ export class MushroomPanel extends LitElement {
       }));
     }
   }
-_onEntity(i, ent) {
-  const key = `mushroom${i+1}`;
-  this._entities[i] = ent || '';
 
-  if (this._syncingFromConfig) return;
+  _onEntity(i, ent) {
+    this._entities[i] = ent;
 
-  // salva l’entità
-  this.dispatchEvent(new CustomEvent('panel-changed', {
-    detail: { prop: `entities.${key}.entity`, val: this._entities[i] },
-    bubbles: true, composed: true,
-  }));
+    if (!this._syncingFromConfig) {
+      // salva l’entità
+      this.dispatchEvent(new CustomEvent('panel-changed', {
+        detail: { prop: `entities.mushroom${i+1}.entity`, val: ent },
+        bubbles: true, composed: true,
+      }));
 
-  // se l’entità è stata svuotata → svuota anche l’icona
-  if (!this._entities[i]) {
-    this._icons[i] = '';
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: `entities.${key}.icon`, val: '' },
-      bubbles: true, composed: true,
-    }));
-    return;
+      // se l’icona è vuota → imposta subito auto-icona (stato → fallback)
+      const currentIcon = this.config?.entities?.[`mushroom${i+1}`]?.icon || '';
+      if (!currentIcon) {
+        const st = this.hass?.states?.[ent];
+        const iconFromState = st?.attributes?.icon;
+        const autoIco = iconFromState || resolveEntityIcon(ent, this.hass);
+        if (autoIco) {
+          this._icons[i] = autoIco;
+          this.dispatchEvent(new CustomEvent('panel-changed', {
+            detail: { prop: `entities.mushroom${i+1}.icon`, val: autoIco },
+            bubbles: true, composed: true,
+          }));
+        }
+      }
+    }
   }
-
-  // comportamento come SubButtonPanel: ricalcola SEMPRE l’icona alla variazione entità
-  const st = this.hass?.states?.[this._entities[i]];
-  const iconFromState = st?.attributes?.icon;
-  const autoIco = iconFromState || resolveEntityIcon(this._entities[i], this.hass) || '';
-
-  this._icons[i] = autoIco;
-  this.dispatchEvent(new CustomEvent('panel-changed', {
-    detail: { prop: `entities.${key}.icon`, val: autoIco },
-    bubbles: true, composed: true,
-  }));
-}
-
 
   _onIcon(i, icon) {
     this._icons[i] = icon || '';
@@ -511,7 +512,7 @@ _onEntity(i, ent) {
 
   _reset() {
     this._expanded = Array(5).fill(false);
-    this._filters  = Array(5).fill().map(() => [...COMMON_CATS]);
+    this._filters  = Array(5).fill().map(() => [...this._ALL_CATS]);
     this._entities = Array(5).fill('');
     this._icons    = Array(5).fill('');
 

@@ -182,28 +182,38 @@ export class ClimatePanel extends LitElement {
     }));
   }
 
-  _onEntity(ent) {
-    this._entity = ent || '';
+  _onEntity(i, ent) {
+    const key = `camera${i+1}`;   // o climate${i+1} a seconda del pannello
+    this._entities[i] = ent || '';
+  
     if (this._syncingFromConfig) return;
-
+  
+    // salva l’entità
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'entities.climate.entity', val: this._entity },
+      detail: { prop: `entities.${key}.entity`, val: this._entities[i] },
       bubbles: true, composed: true,
     }));
-
-    const currentIcon = this.config?.entities?.climate?.icon || '';
-    if (!currentIcon && this._entity) {
-      const st = this.hass?.states?.[this._entity];
-      const iconFromState = st?.attributes?.icon;
-      const autoIcon = iconFromState || resolveEntityIcon(this._entity, this.hass);
-      if (autoIcon) {
-        this._icon = autoIcon;
-        this.dispatchEvent(new CustomEvent('panel-changed', {
-          detail: { prop: 'entities.climate.icon', val: autoIcon },
-          bubbles: true, composed: true,
-        }));
-      }
+  
+    // se l’entità è stata svuotata → svuota anche l’icona
+    if (!this._entities[i]) {
+      this._icons[i] = '';
+      this.dispatchEvent(new CustomEvent('panel-changed', {
+        detail: { prop: `entities.${key}.icon`, val: '' },
+        bubbles: true, composed: true,
+      }));
+      return;
     }
+  
+    // altrimenti calcola auto-icona come già fai
+    const st = this.hass?.states?.[this._entities[i]];
+    const iconFromState = st?.attributes?.icon;
+    const autoIco = iconFromState || resolveEntityIcon(this._entities[i], this.hass) || '';
+  
+    this._icons[i] = autoIco;
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: `entities.${key}.icon`, val: autoIco },
+      bubbles: true, composed: true,
+    }));
   }
 
   _onIcon(icon) {
