@@ -21,15 +21,18 @@ export class SensorPanel extends LitElement {
     this.expanded  = false;
     this._expanded = Array(5).fill(false);
 
-    const allTypes = Object.keys(SENSOR_TYPE_MAP).filter(k => !k.startsWith('_'));
+    const allTypes = Object.keys(SENSOR_TYPE_MAP);
+    // Stato locale dei filtri: default = TUTTI i tipi (non scritto nel YAML)
     this._filters  = Array(5).fill().map(() => [...allTypes]);
     this._entities = Array(5).fill('');
 
-    this._ignoreNextFilterChange = new Set();
+    // Flag per distinguere i change generati dal tasto Clear
+    this._ignoreNextFilterChange = new Set(); // indici -> ignora il prossimo value-changed
   }
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
+      // Auto-discover: usa il valore di ritorno e propaga la nuova config (se serve)
       const next = maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
       if (next && next !== this.config) {
         this.dispatchEvent(new CustomEvent('config-changed', {
@@ -37,6 +40,7 @@ export class SensorPanel extends LitElement {
         }));
       }
 
+      // Se esiste in config, carica ma NON riscrivere mai sensor_filters nel YAML
       for (let i = 0; i < 5; i++) {
         const key = `sensor${i + 1}`;
         const cfgFilter = this.config?.sensor_filters?.[i];
@@ -49,108 +53,144 @@ export class SensorPanel extends LitElement {
 
   static styles = css`
     :host { display: block; }
+
     .glass-panel {
-      background: var(--ha-card-background, rgba(255, 255, 255, 0.05));
-      border-radius: 16px;
-      margin: 4px 0;
+      margin: 0 !important;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 40px;
+      position: relative;
+      background: var(--glass-bg, rgba(167,255,175,0.22));
+      box-shadow: var(--glass-shadow, 0 2px 24px rgba(167,255,175,0.13));
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-panel::after {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      background: var(--glass-sheen,
+        linear-gradient(120deg,rgba(255,255,255,0.11),
+        rgba(255,255,255,0.07) 70%,transparent 100%));
+      pointer-events: none;
     }
     .glass-header {
-      padding: 12px;
-      font-weight: 500;
-      font-size: 1.05em;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      padding: 22px 0;
+      text-align: center;
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: #fff;
     }
+
+    .input-group.autodiscover {
+      margin: 0 16px 13px;
+      padding: 14px 18px 10px;
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.13);
+      box-shadow: 0 2px 14px rgba(70,120,220,0.10);
+      border-radius: 18px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .input-group.autodiscover input { margin-right: 8px; }
+    .input-group.autodiscover label {
+      margin: 0; font-weight: 700; color: #fff;
+    }
+
     .mini-pill {
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(44,70,100,0.23);
+      border: 1.5px solid rgba(255,255,255,0.13);
+      box-shadow: 0 2px 14px rgba(70,120,220,0.10);
+      backdrop-filter: blur(7px) saturate(1.2);
+      border-radius: 24px;
+      margin: 8px 16px;
+      overflow: hidden;
     }
     .mini-pill-header {
-      padding: 10px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      font-weight: 500;
-      font-size: 0.95em;
+      display: flex; align-items: center;
+      padding: 12px 16px;
+      cursor: pointer; user-select: none;
+      font-weight: 700; color: #8cff8a;
     }
-    .mini-pill.expanded .mini-pill-header {
-      background: rgba(255, 255, 255, 0.05);
+    .mini-pill-header .chevron {
+      margin-left: auto; transition: transform 0.2s;
+    }
+    .mini-pill.expanded .mini-pill-header .chevron {
+      transform: rotate(90deg);
     }
     .mini-pill-content {
-      padding: 10px 14px;
-      display: grid;
-      gap: 12px;
-      font-size: 0.9em;
+      padding: 12px 16px 16px;
+      animation: pill-expand 0.2s ease-out both;
     }
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    @keyframes pill-expand {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-    label {
-      font-size: 0.8em;
-      opacity: 0.8;
+
+    .input-group { margin-bottom: 12px; }
+    .input-group label {
+      display: block; font-weight: 600;
+      margin-bottom: 6px; color: #8cff8a;
     }
-    .reset-button {
-      margin: 10px auto 14px auto;
-      display: block;
-      padding: 6px 12px;
-      background: rgba(255, 255, 255, 0.06);
-      border: none;
-      border-radius: 8px;
-      font-size: 0.85em;
-      cursor: pointer;
-    }
-    .reset-button:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-    .chevron {
-      opacity: 0.6;
-      font-size: 0.8em;
-    }
+    ha-selector { width: 100%; box-sizing: border-box; }
+    ha-selector::part(combobox) { min-height: 40px; }
+
+    /* layout Clear */
     .filter-row {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
     }
     .clear-chip {
-      font-size: 0.7em;
-      padding: 2px 6px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 6px;
+      border: 2px solid var(--warning-color, #ff8a65);
+      color: var(--warning-color, #ff8a65);
+      background: transparent;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      font-weight: 800;
       cursor: pointer;
+      transition: background .15s, color .15s, box-shadow .15s, border-color .15s;
+      box-shadow: 0 1px 10px rgba(255,138,101,0.25);
     }
     .clear-chip:hover {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,138,101,0.18);
+      color: #fff;
+      border-color: #ff8a65;
+      box-shadow: 0 3px 16px rgba(255,138,101,0.45);
     }
+
     .preview {
-      margin-top: 6px;
-      padding: 8px;
-      background: rgba(255, 255, 255, 0.04);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 16px 16px;
     }
     .preview .emoji {
-      font-size: 1.2em;
+      font-size: 1.8rem;
+      line-height: 1;
     }
     .preview .state {
-      font-size: 0.9em;
-      font-weight: 500;
+      font-size: 1.2rem;
+      color: #fff;
     }
-    .autodiscover {
-      margin: 8px 14px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      font-size: 0.9em;
-      padding-bottom: 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+
+    .reset-button {
+      border: 3.5px solid #ff4c6a;
+      color: #ff4c6a;
+      border-radius: 24px;
+      padding: 12px 38px;
+      background: transparent;
+      cursor: pointer;
+      display: block;
+      margin: 20px auto;
+      font-size: 1.15rem;
+      font-weight: 700;
+      box-shadow: 0 2px 24px #ff4c6a44;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    }
+    .reset-button:hover {
+      background: rgba(255,76,106,0.18);
+      color: #fff;
+      box-shadow: 0 6px 32px #ff4c6abf;
     }
   `;
 
@@ -158,7 +198,7 @@ export class SensorPanel extends LitElement {
     const autoDisc = this.config?.auto_discovery_sections?.sensor ?? false;
 
     const options = Object.entries(SENSOR_TYPE_MAP)
-      .filter(([key]) => !key.startsWith('_'))
+      .filter(([type]) => type !== '_fallback')
       .map(([type, info]) => {
         const niceLabel = info.label ||
           type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -197,12 +237,15 @@ export class SensorPanel extends LitElement {
   _renderSensor(i, open, options) {
     const types = this._filters[i];
     const ent   = this._entities[i];
+
+    // AD ON ⇒ filtrato per area; AD OFF ⇒ nessun filtro area (per device_class)
     const adOn = this.config?.auto_discovery_sections?.sensor ?? false;
     let cands;
-
     if (adOn) {
       cands = candidatesFor(this.hass, this.config, 'sensor', types) || [];
     } else {
+      // bypass area: prendi tutti i sensor/binary_sensor e, se presenti "types",
+      // filtra per device_class (non per dominio!)
       const states = this.hass?.states || {};
       const allIds = Object.keys(states);
       const hasTypes = Array.isArray(types) && types.length > 0;
@@ -211,17 +254,8 @@ export class SensorPanel extends LitElement {
         const domain = id.split('.')[0];
         if (domain !== 'sensor' && domain !== 'binary_sensor') return false;
         if (!hasTypes) return true;
-
         const dc = states[id]?.attributes?.device_class;
-        if (dc && typeSet.has(dc)) return true;
-
-        // PATCH: fallback per sensori senza device_class
-        if (!dc) {
-          const name = String(id).split('.').slice(1).join('.');
-          const inferred = this._inferTypeFromName(name);
-          if (inferred && typeSet.has(inferred)) return true;
-        }
-        return false;
+        return dc ? typeSet.has(dc) : false;
       });
     }
 
@@ -269,21 +303,11 @@ export class SensorPanel extends LitElement {
             ${ent ? (() => {
               const stateObj = this.hass.states[ent];
               const dc       = stateObj?.attributes?.device_class;
-
-              let typeKey = dc || '';
-              if (!typeKey) {
-                const name = String(ent).split('.').slice(1).join('.');
-                typeKey = this._inferTypeFromName(name) || '';
-              }
-
-              const info  = typeKey ? (SENSOR_TYPE_MAP[typeKey] || {}) : {};
-              const emoji = info.emoji || '❓';
-              const unit  = stateObj?.attributes?.unit_of_measurement
-                            || info.unit
-                            || (Array.isArray(info.units) ? info.units[0] : '')
-                            || '';
-
-              const val   = stateObj?.state ?? '-';
+              const info     = SENSOR_TYPE_MAP[dc] || {};
+              const emoji    = info.emoji || '❓';
+              const unit     = stateObj?.attributes?.unit_of_measurement
+                               || (info.units?.[0] ?? '');
+              const val      = stateObj?.state ?? '-';
               return html`
                 <div class="preview">
                   <span class="emoji">${emoji}</span>
@@ -295,14 +319,6 @@ export class SensorPanel extends LitElement {
         ` : ''}
       </div>
     `;
-  }
-
-  _inferTypeFromName(name) {
-    const list = SENSOR_TYPE_MAP?._nameFallbacks;
-    if (!Array.isArray(list) || !name) return null;
-    const low = String(name).toLowerCase();
-    const hit = list.find(f => low.includes(f.pattern));
-    return hit ? hit.type : null;
   }
 
   _toggleAuto(on) {
@@ -317,25 +333,36 @@ export class SensorPanel extends LitElement {
     this.requestUpdate();
   }
 
+  // Se rimuovi manualmente tutti i chip => ricrea la lista completa.
+  // Se arriva da "Clear" (flag attivo) => resta vuoto.
   _onFilter(i, values) {
-    const all = Object.keys(SENSOR_TYPE_MAP).filter(k => !k.startsWith('_'));
+    const all = Object.keys(SENSOR_TYPE_MAP);
+
     if (this._ignoreNextFilterChange.has(i)) {
+      // Cambio generato dal bottone Clear: mantieni vuoto e consuma il flag
       this._ignoreNextFilterChange.delete(i);
       this._filters[i] = [];
     } else {
+      // Cambio manuale: se l'array è vuoto/undefined => ripristina tutti
       const arr = Array.isArray(values) && values.length ? values.filter(Boolean) : all;
       this._filters[i] = [...arr];
     }
+
     this.requestUpdate('_filters');
+
+    // Sincronizza visivamente il selector
     const sel = this.renderRoot?.querySelector(`#filter-${i}`);
     if (sel) sel.value = [...this._filters[i]];
   }
 
+  // Clear: svuota davvero l'elenco e informa _onFilter di NON ricrearlo
   _clearFilter(i) {
     this._filters[i] = [];
     this.requestUpdate('_filters');
+
     const sel = this.renderRoot?.querySelector(`#filter-${i}`);
     if (sel) {
+      // Attiva il flag: il prossimo value-changed ([]) non verrà "riempito"
       this._ignoreNextFilterChange.add(i);
       sel.value = [];
       sel.dispatchEvent(new CustomEvent('value-changed', {
@@ -354,9 +381,11 @@ export class SensorPanel extends LitElement {
 
   _reset() {
     this._expanded = Array(5).fill(false);
-    const allTypes = Object.keys(SENSOR_TYPE_MAP).filter(k => !k.startsWith('_'));
+    const allTypes = Object.keys(SENSOR_TYPE_MAP);
     this._filters  = Array(5).fill().map(() => [...allTypes]);
     this._entities = Array(5).fill('');
+
+    // Reset solo delle entità nel YAML; i filtri restano locali
     for (let i = 1; i <= 5; i++) {
       this.dispatchEvent(new CustomEvent('panel-changed', {
         detail: { prop: `entities.sensor${i}.entity`, val: '' },

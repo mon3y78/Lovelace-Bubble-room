@@ -93,9 +93,7 @@ export const FILTERS = {
     includeDomains: ['sensor'],
     entityFilter: (id, hass) => {
       if (!cats.length) return true;
-      const dc = hass.states[id]?.attributes?.device_class;
-      // PATCH: se non ha device_class → includilo lo stesso
-      if (!dc) return true;
+      const dc = hass.states[id]?.attributes?.device_class ?? '';
       return cats.includes(dc);
     },
   }),
