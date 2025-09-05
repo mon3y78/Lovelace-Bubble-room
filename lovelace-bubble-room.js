@@ -1839,7 +1839,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
             @pointerleave=${this._onPointerCancel}
             @contextmenu=${t=>t.preventDefault()}
           >
-            <ha-icon icon="${i.icon}" style="--mdc-icon-size:${r}px;"></ha-icon>
+            <ha-icon icon="${i.icon||kt(i.entity_id,this.hass)}" style="--mdc-icon-size:${r}px;"></ha-icon>
           </div>
         `})}
     `}}customElements.define("bubble-mushroom",Ht);class Lt extends st{static properties={icon:{type:String},active:{type:Boolean},colorActive:{type:String},colorInactive:{type:String},backgroundActive:{type:String},backgroundInactive:{type:String},entity_id:{type:String},tap_action:{type:Object},hold_action:{type:Object}};constructor(){super(),this.icon="",this.active=!1,this.colorActive="#21df73",this.colorInactive="#173c16",this.backgroundActive="rgba(33,223,115,0.12)",this.backgroundInactive="rgba(23,60,22,0.08)",this.entity_id="",this.tap_action={action:"more-info"},this.hold_action={action:"none"},this._holdThreshold=500,this._holdTimer=null,this._holdFired=!1}static styles=n`
@@ -1905,7 +1905,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
           <div class="row2">
             <div class="icon-mushroom-area">
               <bubble-icon
-                .icon="${this.config.icon}"
+                .icon="${this.config.icon||kt(this.config.entity,this.hass)}"
                 .active=${s}
                 .colorActive="${o}"
                 .colorInactive="${n}"
