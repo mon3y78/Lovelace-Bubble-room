@@ -91,12 +91,21 @@ export function resolveEntityIcon(a, b) {
   const attrs = st?.attributes || {};
   const domain = _domain(entityId);
 
-  // 1) icona definita sull'entità
-  const iconFromState = attrs.icon;
-  if (iconFromState) {
-    _cache?.set?.(entityId, iconFromState);
-    return iconFromState;
+  // 1) Usa l'attributo icon se è stato esplicitamente definito
+  if (attrs.icon) {
+    _cache?.set?.(entityId, attrs.icon);
+    return attrs.icon;
   }
+
+  // 2) Se esiste device_class, usa la logica dinamica come nel core
+  if (attrs.device_class) {
+    const icon = _deviceClassIcon(attrs.device_class, st?.state);
+    if (icon) {
+      _cache?.set?.(entityId, icon);
+      return icon;
+    }
+  }
+
 
   // 2) device_class on/off
   const devClassIcon = attrs.device_class ? _deviceClassIcon(attrs.device_class, st?.state) : null;
