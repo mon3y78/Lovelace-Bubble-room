@@ -305,7 +305,7 @@ export class BubbleRoom extends LitElement {
           <div class="row2">
             <div class="icon-mushroom-area">
               <bubble-icon
-                .icon="${this.config.icon}"
+                .icon="${this.config.icon || resolveEntityIcon(this.config.entity, this.hass)}"
                 .active=${isActive}
                 .colorActive="${iconColorActive}"
                 .colorInactive="${iconColorInactive}"

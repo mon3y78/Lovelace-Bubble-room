@@ -1,5 +1,7 @@
 // src/components/BubbleMushroom.js
 import { LitElement, html, css } from 'lit';
+import { resolveEntityIcon } from '../helpers/icon-mapping.js';
+
 
 export class BubbleMushroom extends LitElement {
   static properties = {
@@ -270,7 +272,7 @@ export class BubbleMushroom extends LitElement {
             @pointerleave=${this._onPointerCancel}
             @contextmenu=${(ev) => ev.preventDefault()}
           >
-            <ha-icon icon="${e.icon}" style="--mdc-icon-size:${iconSize}px;"></ha-icon>
+            <ha-icon icon="${e.icon || resolveEntityIcon(e.entity_id, this.hass)}" style="--mdc-icon-size:${iconSize}px;"></ha-icon>
           </div>
         `;
       })}
