@@ -21,7 +21,6 @@ export const DOMAIN_ICON_MAP = {
   switch: 'mdi:toggle-switch',
   fan: 'mdi:fan',
   climate: 'mdi:thermostat',
-  cover: 'mdi:window-shutter',
   media_player: 'mdi:play-circle',
   script: 'mdi:script-text',
   scene: 'mdi:palette',
