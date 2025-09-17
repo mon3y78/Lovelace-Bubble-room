@@ -335,6 +335,16 @@ export class MushroomPanel extends LitElement {
         : [...this._ALL_CATS];
       this._filters[i] = [...arr];
     }
+    this.requestUpdate('_filters');
+
+    if (!this._syncingFromConfig) {
+      const nextFilters = this._filters.map(list => [...list]);
+      this.dispatchEvent(new CustomEvent('panel-changed', {
+        detail: { prop: 'mushroom_filters', val: nextFilters },
+        bubbles: true, composed: true,
+      }));
+    }
+
     // Sync visuale del selector
     const sel = this.renderRoot?.querySelector(`#filter-${i}`);
     if (sel) sel.value = [...this._filters[i]];
