@@ -172,10 +172,6 @@ export class BubbleRoom extends LitElement {
     return result;
   }
 
-  _getState(entityId) {
-    return entityId ? this.hass?.states?.[entityId] : undefined;
-  }
-
   /* ───────────── mushroom ───────────── */
   _getMushrooms() {
     const entities = this._entities || {};

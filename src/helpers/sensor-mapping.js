@@ -87,7 +87,7 @@ export const SENSOR_TYPE_MAP = {
   _fallback: { label: 'Other', emoji: '❓', units: [''] },
 };
 
-// —— Utility functions ——
+// —— Utility functions mantenute per compat legacy ——
 export function formatByDeviceClass(deviceClass, value, unit) {
   const m = SENSOR_TYPE_MAP[deviceClass];
   if (!m?.formatter) return { value, unit };

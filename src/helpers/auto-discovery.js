@@ -61,7 +61,7 @@ function filterByAreaKeepSelected(hass, list, areaRef, selected) {
   if ((areaId || areaName) && filtered.length === 0) {
     filtered = [];
   }
-  
+
   if (selected && !filtered.includes(selected)) filtered.unshift(selected);
   return Array.from(new Set(filtered));
 }
@@ -307,7 +307,16 @@ export function maybeAutoDiscover(hass, config, changedProp, debug = false) {
   const isADChange   = changedProp && String(changedProp).startsWith('auto_discovery_sections.');
   // ⚠️ Non mutiamo più la config: l’autodiscovery resta solo “suggeritore” lato UI.
   if ((debug || DEBUG) && typeof window !== 'undefined') {
-    console.info('[AutoDiscovery] (no-op) after', changedProp, { sections: ad });
+    console.info('[AutoDiscovery] (no-op) after', changedProp, { sections: ad, isAreaChange, isADChange });
   }
   return config;
 }
+
+// Manteniamo export legacy per compatibilità con script esterni.
+export const __deprecated = {
+  resolveAreaRef,
+  matchArea,
+  filterByAreaKeepSelected,
+  gatherCandidates,
+  pickFirstFree,
+};
