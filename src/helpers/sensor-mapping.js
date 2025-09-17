@@ -86,19 +86,3 @@ export const SENSOR_TYPE_MAP = {
   // Fallback generic
   _fallback: { label: 'Other', emoji: '❓', units: [''] },
 };
-
-// —— Utility functions ——
-export function formatByDeviceClass(deviceClass, value, unit) {
-  const m = SENSOR_TYPE_MAP[deviceClass];
-  if (!m?.formatter) return { value, unit };
-  try { return m.formatter(value, unit); } catch { return { value, unit }; }
-}
-
-export function defaultEmoji(deviceClass) {
-  return (SENSOR_TYPE_MAP[deviceClass]?.emoji) ?? SENSOR_TYPE_MAP._fallback.emoji;
-}
-
-export function defaultUnit(deviceClass) {
-  const list = SENSOR_TYPE_MAP[deviceClass]?.units || SENSOR_TYPE_MAP._fallback.units;
-  return list[0] || '';
-}
