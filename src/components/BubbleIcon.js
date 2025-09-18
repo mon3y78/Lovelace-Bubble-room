@@ -99,7 +99,9 @@ export class BubbleIcon extends LitElement {
     const parsed = BubbleIcon._parseColor(color);
     if (!parsed) return null;
     const { r, g, b } = parsed;
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    const format = (value) => (typeof value === 'number' && !Number.isInteger(value) ? Number(value.toFixed(3)) : value);
+    const formatAlpha = (value) => (typeof value === 'number' ? Number(value.toFixed(3)) : value);
+    return `rgba(${format(r)}, ${format(g)}, ${format(b)}, ${formatAlpha(alpha)})`;
   }
 
   static _parseColor(color) {
@@ -111,6 +113,11 @@ export class BubbleIcon extends LitElement {
       return null;
     }
 
+    const cache = BubbleIcon._colorCache ?? (BubbleIcon._colorCache = new Map());
+    if (cache.has(color)) {
+      return cache.get(color);
+    }
+
     if (!BubbleIcon._colorCanvas) {
       const canvas = document.createElement('canvas');
       canvas.width = canvas.height = 1;
@@ -120,6 +127,7 @@ export class BubbleIcon extends LitElement {
 
     const ctx = BubbleIcon._colorCtx;
     if (!ctx) {
+      cache.set(color, null);
       return null;
     }
 
@@ -127,16 +135,110 @@ export class BubbleIcon extends LitElement {
       ctx.fillStyle = '#000';
       ctx.fillStyle = color;
     } catch (_err) {
+      cache.set(color, null);
       return null;
     }
 
     const normalized = ctx.fillStyle;
-    ctx.clearRect(0, 0, 1, 1);
-    ctx.fillStyle = normalized;
-    ctx.fillRect(0, 0, 1, 1);
+    if (cache.has(normalized)) {
+      const cached = cache.get(normalized);
+      cache.set(color, cached);
+      return cached;
+    }
 
-    const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
-    return { r, g, b, a: a / 255 };
+    const hexMatch = normalized.match(/^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i);
+    if (hexMatch) {
+      let value = hexMatch[1];
+      if (value.length === 3 || value.length === 4) {
+        value = value.split('').map((ch) => ch + ch).join('');
+      }
+
+      const hasAlpha = value.length === 8;
+      const r = parseInt(value.slice(0, 2), 16);
+      const g = parseInt(value.slice(2, 4), 16);
+      const b = parseInt(value.slice(4, 6), 16);
+      const a = hasAlpha ? parseInt(value.slice(6, 8), 16) / 255 : 1;
+
+      const parsed = { r, g, b, a };
+      cache.set(color, parsed);
+      cache.set(normalized, parsed);
+      return parsed;
+    }
+
+    const rgbaMatch = normalized.match(/^rgba?\((.*)\)$/i);
+    if (rgbaMatch) {
+      const body = rgbaMatch[1].trim();
+
+      const splitComponents = (input) => {
+        if (input.includes(',')) {
+          return input.split(',').map((part) => part.trim()).filter(Boolean);
+        }
+
+        const slashIndex = input.indexOf('/');
+        if (slashIndex !== -1) {
+          const rgbPart = input.slice(0, slashIndex).trim();
+          const alphaPart = input.slice(slashIndex + 1).trim();
+          return [...rgbPart.split(/\s+/).filter(Boolean), alphaPart];
+        }
+
+        return input.split(/\s+/).filter(Boolean);
+      };
+
+      const components = splitComponents(body);
+      if (components.length < 3) {
+        cache.set(color, null);
+        cache.set(normalized, null);
+        return null;
+      }
+
+      const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+      const parseRgbComponent = (value) => {
+        const trimmed = value.trim();
+        const number = Number.parseFloat(trimmed);
+        if (Number.isNaN(number)) {
+          return null;
+        }
+        const scaled = trimmed.endsWith('%') ? (number / 100) * 255 : number;
+        return clamp(scaled, 0, 255);
+      };
+
+      const parseAlphaComponent = (value) => {
+        const trimmed = value.trim();
+        if (trimmed === '') {
+          return 1;
+        }
+        const number = Number.parseFloat(trimmed);
+        if (Number.isNaN(number)) {
+          return 1;
+        }
+        const normalizedAlpha = trimmed.endsWith('%') ? number / 100 : number;
+        return clamp(normalizedAlpha, 0, 1);
+      };
+
+      const r = parseRgbComponent(components[0]);
+      const g = parseRgbComponent(components[1]);
+      const b = parseRgbComponent(components[2]);
+
+      if (r === null || g === null || b === null) {
+        cache.set(color, null);
+        cache.set(normalized, null);
+        return null;
+      }
+
+      let a = 1;
+      if (components.length >= 4) {
+        a = parseAlphaComponent(components[3]);
+      }
+
+      const parsed = { r, g, b, a };
+      cache.set(color, parsed);
+      cache.set(normalized, parsed);
+      return parsed;
+    }
+
+    cache.set(color, null);
+    cache.set(normalized, null);
+    return null;
   }
 
   /* ───────────── GESTURE: identiche a BubbleSubButton ───────────── */
@@ -194,5 +296,6 @@ export class BubbleIcon extends LitElement {
 
 BubbleIcon._colorCanvas = null;
 BubbleIcon._colorCtx = null;
+BubbleIcon._colorCache = null;
 
 customElements.define('bubble-icon', BubbleIcon);
