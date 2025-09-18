@@ -24,8 +24,8 @@ export class BubbleIcon extends LitElement {
     this.active = false;
     this.colorActive = '#21df73';
     this.colorInactive = '#173c16';
-    this.backgroundActive = 'rgba(33,223,115,0.12)';
-    this.backgroundInactive = 'rgba(23,60,22,0.08)';
+    this.backgroundActive = 'rgba(33,223,115,0.1)';
+    this.backgroundInactive = 'rgba(23,60,22,0.1)';
     
     // Azioni (default coerenti con SubButton)
     this.entity_id = '';
@@ -73,8 +73,10 @@ export class BubbleIcon extends LitElement {
   
   render() {
     const fg = this.active ? this.colorActive : this.colorInactive;
-    const bg = this.active ? this.backgroundActive : this.backgroundInactive;
-    
+    const rawBg = this.active ? this.backgroundActive : this.backgroundInactive;
+    const bg = this._withOpacity(rawBg, 0.1) ?? rawBg;
+    const iconOpacity = this.active ? 0.9 : 0.8;
+
     return html`
       <div
         class="container"
@@ -84,11 +86,59 @@ export class BubbleIcon extends LitElement {
         @pointerleave=${this._clearHoldTimer}
         @pointercancel=${this._clearHoldTimer}
       >
-        <ha-icon class="icon" icon="${this.icon || 'mdi:checkbox-blank-circle-outline'}" style="color:${fg}"></ha-icon>
+        <ha-icon
+          class="icon"
+          icon="${this.icon || 'mdi:checkbox-blank-circle-outline'}"
+          style="color:${fg};opacity:${iconOpacity}"
+        ></ha-icon>
       </div>
     `;
   }
-  
+
+  _withOpacity(color, alpha) {
+    const parsed = BubbleIcon._parseColor(color);
+    if (!parsed) return null;
+    const { r, g, b } = parsed;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  static _parseColor(color) {
+    if (!color || typeof color !== 'string' || color.startsWith('var(')) {
+      return null;
+    }
+
+    if (typeof document === 'undefined') {
+      return null;
+    }
+
+    if (!BubbleIcon._colorCanvas) {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 1;
+      BubbleIcon._colorCanvas = canvas;
+      BubbleIcon._colorCtx = canvas.getContext('2d', { willReadFrequently: true }) || canvas.getContext('2d');
+    }
+
+    const ctx = BubbleIcon._colorCtx;
+    if (!ctx) {
+      return null;
+    }
+
+    try {
+      ctx.fillStyle = '#000';
+      ctx.fillStyle = color;
+    } catch (_err) {
+      return null;
+    }
+
+    const normalized = ctx.fillStyle;
+    ctx.clearRect(0, 0, 1, 1);
+    ctx.fillStyle = normalized;
+    ctx.fillRect(0, 0, 1, 1);
+
+    const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+    return { r, g, b, a: a / 255 };
+  }
+
   /* ───────────── GESTURE: identiche a BubbleSubButton ───────────── */
   
   _onDown = () => {
@@ -141,5 +191,8 @@ export class BubbleIcon extends LitElement {
     this.dispatchEvent(evt);
   }
 }
+
+BubbleIcon._colorCanvas = null;
+BubbleIcon._colorCtx = null;
 
 customElements.define('bubble-icon', BubbleIcon);
