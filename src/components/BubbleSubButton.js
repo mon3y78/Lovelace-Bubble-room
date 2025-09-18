@@ -45,18 +45,18 @@ export class BubbleSubButton extends LitElement {
       min-height: 0;
       color: var(--bubble-subbutton-color, #fff);
       background:
-        radial-gradient(circle at 18% 18%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.68)), rgba(255, 255, 255, 0) 62%),
-        linear-gradient(140deg, var(--bubble-subbutton-glass-highlight, rgba(255, 255, 255, 0.45)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.08) 58%),
-        linear-gradient(200deg, var(--bubble-subbutton-glass-soft, rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.18)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.36) 82%),
-        var(--bubble-subbutton-glass-base, var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.16)));
+        radial-gradient(circle at 18% 18%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.42)), rgba(255, 255, 255, 0) 64%),
+        linear-gradient(140deg, var(--bubble-subbutton-glass-highlight, rgba(255, 255, 255, 0.22)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.04) 60%),
+        linear-gradient(200deg, var(--bubble-subbutton-glass-soft, rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.1)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.14) 84%),
+        var(--bubble-subbutton-glass-base, var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.05)));
       background-blend-mode: screen, lighten, overlay, normal;
       box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.45),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.12),
-        0 12px 22px var(--bubble-subbutton-glass-shadow, rgba(13, 22, 41, 0.28));
-      border: 1px solid rgba(255, 255, 255, 0.38);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+        inset 0 1px 0 rgba(255, 255, 255, 0.28),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+        0 10px 18px var(--bubble-subbutton-glass-shadow, rgba(13, 22, 41, 0.16));
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.18s ease;
       isolation: isolate;
     }
@@ -72,16 +72,16 @@ export class BubbleSubButton extends LitElement {
     .sub-button:active {
       transform: scale(0.96);
       box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.35),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-        0 6px 14px var(--bubble-subbutton-glass-shadow-active, rgba(13, 22, 41, 0.28));
+        inset 0 1px 0 rgba(255, 255, 255, 0.28),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+        0 6px 14px var(--bubble-subbutton-glass-shadow-active, rgba(13, 22, 41, 0.2));
     }
 
     .sub-button:hover {
       box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.55),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.18),
-        0 16px 28px var(--bubble-subbutton-glass-shadow-hover, rgba(13, 22, 41, 0.32));
+        inset 0 1px 0 rgba(255, 255, 255, 0.34),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+        0 14px 22px var(--bubble-subbutton-glass-shadow-hover, rgba(13, 22, 41, 0.2));
     }
 
     .sub-button::before,
@@ -94,19 +94,19 @@ export class BubbleSubButton extends LitElement {
     }
 
     .sub-button::before {
-      background: radial-gradient(circle at 20% -10%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.85)), rgba(255, 255, 255, 0));
-      opacity: 0.7;
+      background: radial-gradient(circle at 20% -10%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.58)), rgba(255, 255, 255, 0));
+      opacity: 0.44;
       transform: translateY(-6%);
     }
 
     .sub-button::after {
-      background: linear-gradient(205deg, var(--bubble-subbutton-glass-accent, rgba(255, 255, 255, 0.18)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0) 60%);
-      opacity: 0.45;
+      background: linear-gradient(205deg, var(--bubble-subbutton-glass-accent, rgba(255, 255, 255, 0.1)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0) 60%);
+      opacity: 0.18;
       mix-blend-mode: soft-light;
     }
 
     .sub-button:hover::before {
-      opacity: 0.85;
+      opacity: 0.64;
     }
 
     /* 👇 Icona scalabile al contenitore */
@@ -115,8 +115,8 @@ export class BubbleSubButton extends LitElement {
       height: 80%;
       color: inherit;
       filter:
-        drop-shadow(0 6px 12px rgba(var(--bubble-subbutton-glass-shadow-rgb, 13, 22, 41), 0.38))
-        drop-shadow(0 1px 0 rgba(255, 255, 255, 0.45));
+        drop-shadow(0 5px 11px rgba(var(--bubble-subbutton-glass-shadow-rgb, 13, 22, 41), 0.18))
+        drop-shadow(0 1px 0 rgba(255, 255, 255, 0.3));
     }
     
     /* 👇 (Opzionale) Rende l'icona SVG responsiva */
@@ -205,20 +205,28 @@ export class BubbleSubButton extends LitElement {
     const { r, g, b } = rgb;
     const rgbString = `${r}, ${g}, ${b}`;
 
-    const base = `rgba(${rgbString}, 0.22)`;
-    const highlight = `rgba(${rgbString}, 0.46)`;
-    const soft = `rgba(${rgbString}, 0.28)`;
-    const sheen = `rgba(${rgbString}, 0.72)`;
-    const accent = `rgba(${rgbString}, 0.2)`;
+    const mixWithWhite = (weight) => {
+      const blend = (channel) => Math.round(channel + (255 - channel) * weight);
+      return `${blend(r)}, ${blend(g)}, ${blend(b)}`;
+    };
 
-    const shadowR = Math.max(0, Math.round(r * 0.35));
-    const shadowG = Math.max(0, Math.round(g * 0.35));
-    const shadowB = Math.max(0, Math.round(b * 0.35));
+    const rgba = (channels, alpha) => `rgba(${channels}, ${alpha})`;
+
+    const base = rgba(mixWithWhite(0.18), 0.08);
+    const highlight = rgba(mixWithWhite(0.72), 0.22);
+    const soft = rgba(mixWithWhite(0.36), 0.12);
+    const sheen = rgba(mixWithWhite(0.86), 0.36);
+    const accent = rgba(mixWithWhite(0.28), 0.1);
+
+    const shadowFactor = 0.14;
+    const shadowR = Math.max(0, Math.round(r * shadowFactor));
+    const shadowG = Math.max(0, Math.round(g * shadowFactor));
+    const shadowB = Math.max(0, Math.round(b * shadowFactor));
     const shadowRgb = `${shadowR}, ${shadowG}, ${shadowB}`;
 
-    const shadow = `rgba(${shadowRgb}, 0.36)`;
-    const shadowHover = `rgba(${shadowRgb}, 0.44)`;
-    const shadowActive = `rgba(${shadowRgb}, 0.4)`;
+    const shadow = `rgba(${shadowRgb}, 0.16)`;
+    const shadowHover = `rgba(${shadowRgb}, 0.22)`;
+    const shadowActive = `rgba(${shadowRgb}, 0.18)`;
 
     return {
       rgb: rgbString,
