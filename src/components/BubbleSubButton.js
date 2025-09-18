@@ -45,15 +45,15 @@ export class BubbleSubButton extends LitElement {
       min-height: 0;
       color: var(--bubble-subbutton-color, #fff);
       background:
-        radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0) 60%),
-        linear-gradient(140deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 55%),
-        linear-gradient(200deg, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.25) 75%),
-        var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.16));
+        radial-gradient(circle at 18% 18%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.68)), rgba(255, 255, 255, 0) 62%),
+        linear-gradient(140deg, var(--bubble-subbutton-glass-highlight, rgba(255, 255, 255, 0.45)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.08) 58%),
+        linear-gradient(200deg, var(--bubble-subbutton-glass-soft, rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.18)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.36) 82%),
+        var(--bubble-subbutton-glass-base, var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.16)));
       background-blend-mode: screen, lighten, overlay, normal;
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.45),
         inset 0 -1px 0 rgba(255, 255, 255, 0.12),
-        0 12px 22px rgba(13, 22, 41, 0.28);
+        0 12px 22px var(--bubble-subbutton-glass-shadow, rgba(13, 22, 41, 0.28));
       border: 1px solid rgba(255, 255, 255, 0.38);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
@@ -74,14 +74,14 @@ export class BubbleSubButton extends LitElement {
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.35),
         inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-        0 6px 14px rgba(13, 22, 41, 0.28);
+        0 6px 14px var(--bubble-subbutton-glass-shadow-active, rgba(13, 22, 41, 0.28));
     }
 
     .sub-button:hover {
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.55),
         inset 0 -1px 0 rgba(255, 255, 255, 0.18),
-        0 16px 28px rgba(13, 22, 41, 0.32);
+        0 16px 28px var(--bubble-subbutton-glass-shadow-hover, rgba(13, 22, 41, 0.32));
     }
 
     .sub-button::before,
@@ -94,13 +94,13 @@ export class BubbleSubButton extends LitElement {
     }
 
     .sub-button::before {
-      background: radial-gradient(circle at 20% -10%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+      background: radial-gradient(circle at 20% -10%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.85)), rgba(255, 255, 255, 0));
       opacity: 0.7;
       transform: translateY(-6%);
     }
 
     .sub-button::after {
-      background: linear-gradient(200deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 55%);
+      background: linear-gradient(205deg, var(--bubble-subbutton-glass-accent, rgba(255, 255, 255, 0.18)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0) 60%);
       opacity: 0.45;
       mix-blend-mode: soft-light;
     }
@@ -115,7 +115,7 @@ export class BubbleSubButton extends LitElement {
       height: 80%;
       color: inherit;
       filter:
-        drop-shadow(0 6px 12px rgba(13, 22, 41, 0.35))
+        drop-shadow(0 6px 12px rgba(var(--bubble-subbutton-glass-shadow-rgb, 13, 22, 41), 0.38))
         drop-shadow(0 1px 0 rgba(255, 255, 255, 0.45));
     }
     
@@ -134,12 +134,34 @@ export class BubbleSubButton extends LitElement {
     return html`
       <div class="container">
         ${this.subbuttons.map((btn, idx) => {
-          const bg    = btn.active ? btn.colorOn  : btn.colorOff;
-          const color = btn.active ? btn.iconOn   : btn.iconOff;
+          const bg = btn.active ? btn.colorOn : btn.colorOff;
+          const color = btn.active ? btn.iconOn : btn.iconOff;
+          const glass = this._computeGlassColors(bg);
+
+          const styleVars = [
+            `--bubble-subbutton-bg:${bg}`,
+            `--bubble-subbutton-color:${color}`,
+          ];
+
+          if (glass) {
+            styleVars.push(`--bubble-subbutton-glass-base:${glass.base}`);
+            styleVars.push(`--bubble-subbutton-glass-highlight:${glass.highlight}`);
+            styleVars.push(`--bubble-subbutton-glass-soft:${glass.soft}`);
+            styleVars.push(`--bubble-subbutton-glass-sheen:${glass.sheen}`);
+            styleVars.push(`--bubble-subbutton-glass-accent:${glass.accent}`);
+            styleVars.push(`--bubble-subbutton-tint:${glass.rgb}`);
+            styleVars.push(`--bubble-subbutton-glass-shadow:${glass.shadow}`);
+            styleVars.push(`--bubble-subbutton-glass-shadow-hover:${glass.shadowHover}`);
+            styleVars.push(`--bubble-subbutton-glass-shadow-active:${glass.shadowActive}`);
+            styleVars.push(`--bubble-subbutton-glass-shadow-rgb:${glass.shadowRgb}`);
+          }
+
+          const styleAttr = styleVars.join(';');
+
           return html`
             <div
               class="sub-button"
-              style="--bubble-subbutton-bg:${bg};--bubble-subbutton-color:${color};"
+              style="${styleAttr}"
               @pointerdown=${() => this._onDown(idx)}
               @pointerup=${() => this._onUp(idx)}
               @pointerleave=${() => this._clearHoldTimer()}
@@ -175,7 +197,85 @@ export class BubbleSubButton extends LitElement {
       this._holdTimer = null;
     }
   }
-  
+
+  _computeGlassColors(color) {
+    const rgb = this._colorToRgb(color);
+    if (!rgb) return null;
+
+    const { r, g, b } = rgb;
+    const rgbString = `${r}, ${g}, ${b}`;
+
+    const base = `rgba(${rgbString}, 0.22)`;
+    const highlight = `rgba(${rgbString}, 0.46)`;
+    const soft = `rgba(${rgbString}, 0.28)`;
+    const sheen = `rgba(${rgbString}, 0.72)`;
+    const accent = `rgba(${rgbString}, 0.2)`;
+
+    const shadowR = Math.max(0, Math.round(r * 0.35));
+    const shadowG = Math.max(0, Math.round(g * 0.35));
+    const shadowB = Math.max(0, Math.round(b * 0.35));
+    const shadowRgb = `${shadowR}, ${shadowG}, ${shadowB}`;
+
+    const shadow = `rgba(${shadowRgb}, 0.36)`;
+    const shadowHover = `rgba(${shadowRgb}, 0.44)`;
+    const shadowActive = `rgba(${shadowRgb}, 0.4)`;
+
+    return {
+      rgb: rgbString,
+      base,
+      highlight,
+      soft,
+      sheen,
+      accent,
+      shadow,
+      shadowHover,
+      shadowActive,
+      shadowRgb,
+    };
+  }
+
+  _colorToRgb(color) {
+    if (!color || typeof color !== 'string' || color.startsWith('var(')) {
+      return null;
+    }
+
+    if (typeof document === 'undefined') {
+      return null;
+    }
+
+    if (!BubbleSubButton._colorCanvas) {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 1;
+      BubbleSubButton._colorCanvas = canvas;
+      BubbleSubButton._colorCtx = canvas.getContext('2d', { willReadFrequently: true }) || canvas.getContext('2d');
+    }
+
+    const ctx = BubbleSubButton._colorCtx;
+    if (!ctx) {
+      return null;
+    }
+
+    try {
+      ctx.fillStyle = '#000';
+      ctx.fillStyle = color;
+    } catch (err) {
+      return null;
+    }
+
+    const normalized = ctx.fillStyle;
+    ctx.clearRect(0, 0, 1, 1);
+    ctx.fillStyle = normalized;
+    ctx.fillRect(0, 0, 1, 1);
+
+    const data = ctx.getImageData(0, 0, 1, 1).data;
+    return {
+      r: data[0],
+      g: data[1],
+      b: data[2],
+      a: data[3] / 255,
+    };
+  }
+
   _fireHassAction(idx, actionType) {
     const cfg = this.subbuttons?.[idx];
     if (!cfg || !cfg.entity_id) return;
@@ -194,5 +294,8 @@ export class BubbleSubButton extends LitElement {
     this.dispatchEvent(evt);
   }
 }
+
+BubbleSubButton._colorCanvas = null;
+BubbleSubButton._colorCtx = null;
 
 customElements.define('bubble-subbutton', BubbleSubButton);
