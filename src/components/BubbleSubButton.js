@@ -45,10 +45,10 @@ export class BubbleSubButton extends LitElement {
       min-height: 0;
       color: var(--bubble-subbutton-color, #fff);
       background:
-        radial-gradient(circle at 18% 18%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.18)), rgba(255, 255, 255, 0) 62%),
-        linear-gradient(140deg, var(--bubble-subbutton-glass-highlight, rgba(255, 255, 255, 0.09)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.016) 58%),
-        linear-gradient(200deg, var(--bubble-subbutton-glass-soft, rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.04)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.07) 82%),
-        var(--bubble-subbutton-glass-base, var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.02)));
+        radial-gradient(circle at 18% 18%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.12)), rgba(255, 255, 255, 0) 62%),
+        linear-gradient(140deg, var(--bubble-subbutton-glass-highlight, rgba(255, 255, 255, 0.06)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.01) 58%),
+        linear-gradient(200deg, var(--bubble-subbutton-glass-soft, rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.025)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.045) 82%),
+        var(--bubble-subbutton-glass-base, var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.01)));
       background-blend-mode: screen, lighten, overlay, normal;
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.14),
@@ -103,19 +103,19 @@ export class BubbleSubButton extends LitElement {
     }
 
     .sub-button::before {
-      background: radial-gradient(circle at 20% -10%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.32)), rgba(255, 255, 255, 0));
-      opacity: 0.24;
+      background: radial-gradient(circle at 20% -10%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.22)), rgba(255, 255, 255, 0));
+      opacity: 0.16;
       transform: translateY(-6%);
     }
 
     .sub-button::after {
-      background: linear-gradient(205deg, var(--bubble-subbutton-glass-accent, rgba(255, 255, 255, 0.05)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0) 60%);
-      opacity: 0.1;
+      background: linear-gradient(205deg, var(--bubble-subbutton-glass-accent, rgba(255, 255, 255, 0.035)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0) 60%);
+      opacity: 0.06;
       mix-blend-mode: soft-light;
     }
 
     .sub-button:hover::before {
-      opacity: 0.5;
+      opacity: 0.36;
     }
 
     /* 👇 Icona scalabile al contenitore */
@@ -229,15 +229,15 @@ export class BubbleSubButton extends LitElement {
     const softened = this._mixWithWhite(rgb, 0.65);
     const softenedString = `${softened.r}, ${softened.g}, ${softened.b}`;
 
-    const surface = `rgba(${softenedString}, 0.08)`;
-    const base = `rgba(${softenedString}, 0.06)`;
-    const highlight = `rgba(${softenedString}, 0.12)`;
-    const soft = `rgba(${softenedString}, 0.07)`;
-    const sheen = `rgba(${softenedString}, 0.26)`;
-    const accent = `rgba(${softenedString}, 0.05)`;
-    const border = `rgba(${softenedString}, 0.32)`;
-    const borderHover = `rgba(${softenedString}, 0.44)`;
-    const borderActive = `rgba(${softenedString}, 0.38)`;
+    const surface = `rgba(${softenedString}, 0.05)`;
+    const base = `rgba(${softenedString}, 0.035)`;
+    const highlight = `rgba(${softenedString}, 0.09)`;
+    const soft = `rgba(${softenedString}, 0.045)`;
+    const sheen = `rgba(${softenedString}, 0.18)`;
+    const accent = `rgba(${softenedString}, 0.035)`;
+    const border = `rgba(${softenedString}, 0.24)`;
+    const borderHover = `rgba(${softenedString}, 0.34)`;
+    const borderActive = `rgba(${softenedString}, 0.28)`;
 
     const shadowFactor = 0.2;
     const shadowR = Math.max(0, Math.round(r * shadowFactor));
@@ -275,9 +275,9 @@ export class BubbleSubButton extends LitElement {
     const softenedString = `${softened.r}, ${softened.g}, ${softened.b}`;
 
     return {
-      base: `rgba(${softenedString}, 0.32)`,
-      hover: `rgba(${softenedString}, 0.44)`,
-      active: `rgba(${softenedString}, 0.38)`,
+      base: `rgba(${softenedString}, 0.24)`,
+      hover: `rgba(${softenedString}, 0.34)`,
+      active: `rgba(${softenedString}, 0.28)`,
     };
   }
 
