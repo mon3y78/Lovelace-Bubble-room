@@ -45,16 +45,16 @@ export class BubbleSubButton extends LitElement {
       min-height: 0;
       color: var(--bubble-subbutton-color, #fff);
       background:
-        radial-gradient(circle at 18% 18%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.36)), rgba(255, 255, 255, 0) 62%),
-        linear-gradient(140deg, var(--bubble-subbutton-glass-highlight, rgba(255, 255, 255, 0.22)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.04) 58%),
-        linear-gradient(200deg, var(--bubble-subbutton-glass-soft, rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.1)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.16) 82%),
-        var(--bubble-subbutton-glass-base, var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.06)));
+        radial-gradient(circle at 18% 18%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.22)), rgba(255, 255, 255, 0) 62%),
+        linear-gradient(140deg, var(--bubble-subbutton-glass-highlight, rgba(255, 255, 255, 0.14)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.02) 58%),
+        linear-gradient(200deg, var(--bubble-subbutton-glass-soft, rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.06)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.1) 82%),
+        var(--bubble-subbutton-glass-base, var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.03)));
       background-blend-mode: screen, lighten, overlay, normal;
       box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.32),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.06),
-        0 12px 20px var(--bubble-subbutton-glass-shadow, rgba(13, 22, 41, 0.16));
-      border: 1px solid rgba(255, 255, 255, 0.18);
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+        0 12px 20px var(--bubble-subbutton-glass-shadow, rgba(13, 22, 41, 0.12));
+      border: 1px solid rgba(255, 255, 255, 0.12);
       backdrop-filter: blur(22px);
       -webkit-backdrop-filter: blur(22px);
       transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.18s ease;
@@ -79,9 +79,9 @@ export class BubbleSubButton extends LitElement {
 
     .sub-button:hover {
       box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.36),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-        0 16px 26px var(--bubble-subbutton-glass-shadow-hover, rgba(13, 22, 41, 0.2));
+        inset 0 1px 0 rgba(255, 255, 255, 0.24),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+        0 16px 26px var(--bubble-subbutton-glass-shadow-hover, rgba(13, 22, 41, 0.16));
     }
 
     .sub-button::before,
@@ -94,14 +94,14 @@ export class BubbleSubButton extends LitElement {
     }
 
     .sub-button::before {
-      background: radial-gradient(circle at 20% -10%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.52)), rgba(255, 255, 255, 0));
-      opacity: 0.45;
+      background: radial-gradient(circle at 20% -10%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.32)), rgba(255, 255, 255, 0));
+      opacity: 0.3;
       transform: translateY(-6%);
     }
 
     .sub-button::after {
-      background: linear-gradient(205deg, var(--bubble-subbutton-glass-accent, rgba(255, 255, 255, 0.08)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0) 60%);
-      opacity: 0.22;
+      background: linear-gradient(205deg, var(--bubble-subbutton-glass-accent, rgba(255, 255, 255, 0.05)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0) 60%);
+      opacity: 0.14;
       mix-blend-mode: soft-light;
     }
 
@@ -205,11 +205,11 @@ export class BubbleSubButton extends LitElement {
     const { r, g, b } = rgb;
     const rgbString = `${r}, ${g}, ${b}`;
 
-    const base = `rgba(${rgbString}, 0.12)`;
-    const highlight = `rgba(${rgbString}, 0.24)`;
-    const soft = `rgba(${rgbString}, 0.16)`;
-    const sheen = `rgba(${rgbString}, 0.42)`;
-    const accent = `rgba(${rgbString}, 0.1)`;
+    const base = `rgba(${rgbString}, 0.08)`;
+    const highlight = `rgba(${rgbString}, 0.18)`;
+    const soft = `rgba(${rgbString}, 0.1)`;
+    const sheen = `rgba(${rgbString}, 0.28)`;
+    const accent = `rgba(${rgbString}, 0.06)`;
 
     const shadowFactor = 0.24;
     const shadowR = Math.max(0, Math.round(r * shadowFactor));
@@ -217,9 +217,9 @@ export class BubbleSubButton extends LitElement {
     const shadowB = Math.max(0, Math.round(b * shadowFactor));
     const shadowRgb = `${shadowR}, ${shadowG}, ${shadowB}`;
 
-    const shadow = `rgba(${shadowRgb}, 0.18)`;
-    const shadowHover = `rgba(${shadowRgb}, 0.24)`;
-    const shadowActive = `rgba(${shadowRgb}, 0.2)`;
+    const shadow = `rgba(${shadowRgb}, 0.12)`;
+    const shadowHover = `rgba(${shadowRgb}, 0.16)`;
+    const shadowActive = `rgba(${shadowRgb}, 0.14)`;
 
     return {
       rgb: rgbString,
