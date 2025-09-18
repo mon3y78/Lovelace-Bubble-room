@@ -1482,20 +1482,33 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
       min-height: 0;
       color: var(--bubble-subbutton-color, #fff);
       background:
-        radial-gradient(circle at 18% 18%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.12)), rgba(255, 255, 255, 0) 62%),
-        linear-gradient(140deg, var(--bubble-subbutton-glass-highlight, rgba(255, 255, 255, 0.06)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.01) 58%),
-        linear-gradient(200deg, var(--bubble-subbutton-glass-soft, rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.025)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.045) 82%),
-        var(--bubble-subbutton-glass-base, var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.01)));
-      background-blend-mode: screen, lighten, overlay, normal;
+        radial-gradient(
+          140% 120% at 50% -20%,
+          var(--bubble-subbutton-glass-glow, rgba(255, 255, 255, 0.25)),
+          rgba(255, 255, 255, 0) 68%
+        ),
+        linear-gradient(
+          180deg,
+          var(--bubble-subbutton-glass-highlight, rgba(255, 255, 255, 0.12)) 0%,
+          rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.02) 52%,
+          rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.12) 100%
+        ),
+        linear-gradient(
+          150deg,
+          var(--bubble-subbutton-glass-soft, rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.045)) 0%,
+          rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0) 58%
+        ),
+        var(--bubble-subbutton-glass-base, var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.04)));
+      background-blend-mode: screen, normal, screen, normal;
       box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.14),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.032),
-        0 10px 18px var(--bubble-subbutton-glass-shadow, rgba(13, 22, 41, 0.1));
-      border: 1.5px solid var(--bubble-subbutton-border, rgba(255, 255, 255, 0.1));
+        inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.42),
+        inset -0.5px -0.5px 1px rgba(255, 255, 255, 0.08),
+        0 18px 32px var(--bubble-subbutton-glass-shadow, rgba(13, 22, 41, 0.14));
+      border: 1.4px solid var(--bubble-subbutton-border, rgba(255, 255, 255, 0.16));
       backdrop-filter: blur(22px);
       -webkit-backdrop-filter: blur(22px);
       transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.18s ease,
-        border-color 0.3s ease;
+        border-color 0.3s ease, filter 0.35s ease;
       isolation: isolate;
     }
 
@@ -1508,25 +1521,25 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
     }
     
     .sub-button:active {
-      transform: scale(0.96);
+      transform: scale(0.97);
       box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.22),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.05),
-        0 6px 14px var(--bubble-subbutton-glass-shadow-active, rgba(13, 22, 41, 0.14));
+        inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.48),
+        inset -0.5px -0.5px 1.1px rgba(255, 255, 255, 0.12),
+        0 14px 26px var(--bubble-subbutton-glass-shadow-active, rgba(13, 22, 41, 0.17));
       border-color: var(
         --bubble-subbutton-border-active,
-        var(--bubble-subbutton-border-hover, var(--bubble-subbutton-border, rgba(255, 255, 255, 0.18)))
+        var(--bubble-subbutton-border-hover, var(--bubble-subbutton-border, rgba(255, 255, 255, 0.22)))
       );
     }
 
     .sub-button:hover {
       box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.2),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.06),
-        0 16px 26px var(--bubble-subbutton-glass-shadow-hover, rgba(13, 22, 41, 0.13));
+        inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.48),
+        inset -0.5px -0.5px 1px rgba(255, 255, 255, 0.12),
+        0 22px 38px var(--bubble-subbutton-glass-shadow-hover, rgba(13, 22, 41, 0.16));
       border-color: var(
         --bubble-subbutton-border-hover,
-        var(--bubble-subbutton-border, rgba(255, 255, 255, 0.14))
+        var(--bubble-subbutton-border, rgba(255, 255, 255, 0.18))
       );
     }
 
@@ -1540,19 +1553,43 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
     }
 
     .sub-button::before {
-      background: radial-gradient(circle at 20% -10%, var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.22)), rgba(255, 255, 255, 0));
-      opacity: 0.16;
-      transform: translateY(-6%);
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.6) 0%,
+          rgba(255, 255, 255, 0.22) 38%,
+          rgba(255, 255, 255, 0) 64%
+        ),
+        radial-gradient(
+          140% 120% at 50% -20%,
+          var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.22)),
+          rgba(255, 255, 255, 0) 70%
+        );
+      opacity: 0.32;
+      mix-blend-mode: screen;
+      transform: translateY(-8%);
     }
 
     .sub-button::after {
-      background: linear-gradient(205deg, var(--bubble-subbutton-glass-accent, rgba(255, 255, 255, 0.035)), rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0) 60%);
-      opacity: 0.06;
-      mix-blend-mode: soft-light;
+      border-radius: inherit;
+      border: 1px solid var(--bubble-subbutton-glass-rim, rgba(255, 255, 255, 0.42));
+      box-shadow:
+        inset 0 0 0 1px var(--bubble-subbutton-glass-rim-soft, rgba(255, 255, 255, 0.16)),
+        inset 0 -18px 32px -24px var(--bubble-subbutton-glass-rim-shadow, rgba(13, 22, 41, 0.28));
+      opacity: 0.42;
+      mix-blend-mode: screen;
     }
 
     .sub-button:hover::before {
-      opacity: 0.36;
+      opacity: 0.62;
+    }
+
+    .sub-button:hover::after {
+      opacity: 0.66;
+    }
+
+    .sub-button:active::after {
+      opacity: 0.78;
     }
 
     /* 👇 Icona scalabile al contenitore */
@@ -1575,10 +1612,10 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
     }
   `;render(){return I`
       <div class="container">
-        ${this.subbuttons.map((t,e)=>{const i=t.active?t.colorOn:t.colorOff,s=t.active?t.iconOn:t.iconOff,o=this._computeGlassColors(i),n=[`--bubble-subbutton-color:${s}`];let a=null;o?(n.push(`--bubble-subbutton-bg:${o.surface}`),n.push(`--bubble-subbutton-glass-base:${o.base}`),n.push(`--bubble-subbutton-glass-highlight:${o.highlight}`),n.push(`--bubble-subbutton-glass-soft:${o.soft}`),n.push(`--bubble-subbutton-glass-sheen:${o.sheen}`),n.push(`--bubble-subbutton-glass-accent:${o.accent}`),n.push(`--bubble-subbutton-tint:${o.rgb}`),n.push(`--bubble-subbutton-glass-shadow:${o.shadow}`),n.push(`--bubble-subbutton-glass-shadow-hover:${o.shadowHover}`),n.push(`--bubble-subbutton-glass-shadow-active:${o.shadowActive}`),n.push(`--bubble-subbutton-glass-shadow-rgb:${o.shadowRgb}`),a={base:o.border,hover:o.borderHover,active:o.borderActive}):(n.push(`--bubble-subbutton-bg:${i}`),a=this._computeBorderColors(i)),a&&(n.push(`--bubble-subbutton-border:${a.base}`),n.push(`--bubble-subbutton-border-hover:${a.hover}`),n.push(`--bubble-subbutton-border-active:${a.active}`));const r=n.join(";");return I`
+        ${this.subbuttons.map((t,e)=>{const i=t.active?t.colorOn:t.colorOff,s=t.active?t.iconOn:t.iconOff,o=this._computeGlassColors(i),n=[`--bubble-subbutton-color:${s}`];let a=null,r=null;o?(n.push(`--bubble-subbutton-bg:${o.surface}`),n.push(`--bubble-subbutton-glass-base:${o.base}`),n.push(`--bubble-subbutton-glass-highlight:${o.highlight}`),n.push(`--bubble-subbutton-glass-soft:${o.soft}`),n.push(`--bubble-subbutton-glass-sheen:${o.sheen}`),n.push(`--bubble-subbutton-glass-accent:${o.accent}`),n.push(`--bubble-subbutton-tint:${o.rgb}`),n.push(`--bubble-subbutton-glass-shadow:${o.shadow}`),n.push(`--bubble-subbutton-glass-shadow-hover:${o.shadowHover}`),n.push(`--bubble-subbutton-glass-shadow-active:${o.shadowActive}`),n.push(`--bubble-subbutton-glass-shadow-rgb:${o.shadowRgb}`),a={base:o.border,hover:o.borderHover,active:o.borderActive},r={glow:o.glow,rim:o.rim,rimSoft:o.rimSoft,rimShadow:o.rimShadow}):(n.push(`--bubble-subbutton-bg:${i}`),a=this._computeBorderColors(i),r=this._computeGlowPalette(i)),a&&(n.push(`--bubble-subbutton-border:${a.base}`),n.push(`--bubble-subbutton-border-hover:${a.hover}`),n.push(`--bubble-subbutton-border-active:${a.active}`)),r&&(n.push(`--bubble-subbutton-glass-glow:${r.glow}`),n.push(`--bubble-subbutton-glass-rim:${r.rim}`),n.push(`--bubble-subbutton-glass-rim-soft:${r.rimSoft}`),n.push(`--bubble-subbutton-glass-rim-shadow:${r.rimShadow}`));const l=n.join(";");return I`
             <div
               class="sub-button"
-              style="${r}"
+              style="${l}"
               @pointerdown=${()=>this._onDown(e)}
               @pointerup=${()=>this._onUp(e)}
               @pointerleave=${()=>this._clearHoldTimer()}
@@ -1588,7 +1625,7 @@ var et,it;class st extends f{constructor(){super(...arguments),this.renderOption
             </div>
           `})}
       </div>
-    `}_onDown(t){this._holdFired=!1,this._currentIndex=t,this._holdTimer=window.setTimeout(()=>{this._holdFired=!0,this._fireHassAction(t,"hold")},this._holdThreshold)}_onUp(t){this._clearHoldTimer(),this._holdFired||this._currentIndex!==t||this._fireHassAction(t,"tap")}_clearHoldTimer(){this._holdTimer&&(clearTimeout(this._holdTimer),this._holdTimer=null)}_computeGlassColors(t){const e=this._colorToRgb(t);if(!e)return null;const{r:i,g:s,b:o}=e,n=`${i}, ${s}, ${o}`,a=this._mixWithWhite(e,.65),r=`${a.r}, ${a.g}, ${a.b}`,l=`rgba(${r}, 0.05)`,c=`rgba(${r}, 0.035)`,d=`rgba(${r}, 0.09)`,h=`rgba(${r}, 0.045)`,u=`rgba(${r}, 0.18)`,p=`rgba(${r}, 0.035)`,b=`rgba(${r}, 0.24)`,g=`rgba(${r}, 0.34)`,f=`rgba(${r}, 0.28)`,m=`${Math.max(0,Math.round(.2*i))}, ${Math.max(0,Math.round(.2*s))}, ${Math.max(0,Math.round(.2*o))}`;return{rgb:n,surface:l,base:c,highlight:d,soft:h,sheen:u,accent:p,shadow:`rgba(${m}, 0.1)`,shadowHover:`rgba(${m}, 0.14)`,shadowActive:`rgba(${m}, 0.12)`,shadowRgb:m,border:b,borderHover:g,borderActive:f}}_computeBorderColors(t){const e=this._colorToRgb(t);if(!e)return null;const i=this._mixWithWhite(e,.65),s=`${i.r}, ${i.g}, ${i.b}`;return{base:`rgba(${s}, 0.24)`,hover:`rgba(${s}, 0.34)`,active:`rgba(${s}, 0.28)`}}_mixWithWhite({r:t,g:e,b:i},s=.5){const o=Math.min(Math.max(s,0),1),n=t=>Math.round(t+(255-t)*o);return{r:n(t),g:n(e),b:n(i)}}_colorToRgb(t){if(!t||"string"!=typeof t||t.startsWith("var("))return null;if("undefined"==typeof document)return null;if(!Ut._colorCanvas){const t=document.createElement("canvas");t.width=t.height=1,Ut._colorCanvas=t,Ut._colorCtx=t.getContext("2d",{willReadFrequently:!0})||t.getContext("2d")}const e=Ut._colorCtx;if(!e)return null;try{e.fillStyle="#000",e.fillStyle=t}catch(t){return null}const i=e.fillStyle;e.clearRect(0,0,1,1),e.fillStyle=i,e.fillRect(0,0,1,1);const s=e.getImageData(0,0,1,1).data;return{r:s[0],g:s[1],b:s[2],a:s[3]/255}}_fireHassAction(t,e){const i=this.subbuttons?.[t];if(!i||!i.entity_id)return;const s={entity:i.entity_id,tap_action:i.tap_action||{action:"toggle"},hold_action:i.hold_action||{action:"more-info"}},o=new Event("hass-action",{bubbles:!0,composed:!0});o.detail={config:s,action:e},this.dispatchEvent(o)}}Ut._colorCanvas=null,Ut._colorCtx=null,customElements.define("bubble-subbutton",Ut);class Ht extends st{static properties={hass:{type:Object},name:{type:String},area:{type:String},config:{type:Object},container:{type:Object},fitMode:{type:String},stretchY:{type:Number}};constructor(){super(),this.name="",this.fitMode="height",this.stretchY=1.12,this._raf=null,this._resizeObs=null,this._lastScale=null,this._lastBox=null}_ensureFonts(){const t=this.renderRoot||this.shadowRoot;if(!t)return;if(t.querySelector('link[data-bubble-fonts="1"]'))return;const e=document.createElement("link");e.rel="preconnect",e.href="https://fonts.gstatic.com",e.crossOrigin="anonymous",e.setAttribute("data-bubble-fonts","1"),t.appendChild(e);const i=document.createElement("link");i.rel="stylesheet",i.href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;700&family=Roboto+Condensed:wght@400;700&display=swap",i.setAttribute("data-bubble-fonts","1"),i.addEventListener("load",()=>{requestAnimationFrame(()=>this._scheduleScale())}),t.appendChild(i)}firstUpdated(){this._ensureFonts(),this._scheduleScale(),this._resizeObs=new ResizeObserver(t=>{const e=t[0];let i=0,s=0;if(e?.contentBoxSize){const t=Array.isArray(e.contentBoxSize)?e.contentBoxSize[0]:e.contentBoxSize;i=Math.round(t.inlineSize),s=Math.round(t.blockSize)}else{const t=this.getBoundingClientRect();i=Math.round(t.width),s=Math.round(t.height)}(!this._lastBox||Math.abs(i-this._lastBox.w)>2||Math.abs(s-this._lastBox.h)>2)&&(this._lastBox={w:i,h:s},this._scheduleScale())}),this._resizeObs.observe(this),window.addEventListener("resize",this._scheduleScale,{passive:!0})}updated(t){(t.has("name")||t.has("config")||t.has("container")||t.has("fitMode")||t.has("stretchY"))&&this._scheduleScale()}disconnectedCallback(){super.disconnectedCallback(),this._resizeObs?.disconnect(),window.removeEventListener("resize",this._scheduleScale)}_scheduleScale=()=>{this._raf||(this._raf=requestAnimationFrame(()=>{this._raf=null,this._autoScaleFont()}))};_autoScaleFont(){const t=this.renderRoot.querySelector(".bubble-name"),e=this.container||this.parentElement||this;if(!t||!e)return;const i=this.name??"",s=Math.max(0,Math.round(e.clientWidth)),o=Math.max(0,Math.round(e.clientHeight));if(this._lastScale&&this._lastScale.text===i&&this._lastScale.w===s&&this._lastScale.h===o&&this._lastScale.fitMode===this.fitMode&&this._lastScale.stretchY===this.stretchY)return;this._resizeObs.disconnect(),t.style.fontSize="10px",t.style.transform="none";const n=240;let a;if("height"===this.fitMode){let e=8,i=n;for(let s=0;s<9&&e<=i;s++){const s=e+i>>1;t.style.fontSize=`${s}px`;t.scrollHeight<=o?e=s+1:i=s-1}a=Math.max(8,Math.min(n,i)),t.style.fontSize=`${a}px`;const r=t.scrollWidth;if(r>s&&r>0){const t=s/r;a=Math.floor(a*t)}}else{let e=8,i=n;for(let n=0;n<8&&e<=i;n++){const n=e+i>>1;t.style.fontSize=`${n}px`,t.scrollWidth<=s&&t.scrollHeight<=o?e=n+1:i=n-1}a=Math.max(8,Math.min(n,i))}t.style.fontSize=`${a}px`,this.stretchY&&1!==this.stretchY?(t.style.transform=`scaleY(${this.stretchY})`,t.style.transformOrigin="center"):t.style.transform="none",this._lastScale={text:i,w:s,h:o,fitMode:this.fitMode,stretchY:this.stretchY},this._resizeObs.observe(this)}render(){return I`
+    `}_onDown(t){this._holdFired=!1,this._currentIndex=t,this._holdTimer=window.setTimeout(()=>{this._holdFired=!0,this._fireHassAction(t,"hold")},this._holdThreshold)}_onUp(t){this._clearHoldTimer(),this._holdFired||this._currentIndex!==t||this._fireHassAction(t,"tap")}_clearHoldTimer(){this._holdTimer&&(clearTimeout(this._holdTimer),this._holdTimer=null)}_computeGlassColors(t){const e=this._colorToRgb(t);if(!e)return null;const{r:i,g:s,b:o}=e,n=`${i}, ${s}, ${o}`,a=this._mixWithWhite(e,.65),r=`${a.r}, ${a.g}, ${a.b}`,l=`rgba(${r}, 0.05)`,c=`rgba(${r}, 0.035)`,d=`rgba(${r}, 0.09)`,h=`rgba(${r}, 0.045)`,u=`rgba(${r}, 0.18)`,p=`rgba(${r}, 0.035)`,b=`rgba(${r}, 0.24)`,g=`rgba(${r}, 0.34)`,f=`rgba(${r}, 0.28)`,m=`${Math.max(0,Math.round(.2*i))}, ${Math.max(0,Math.round(.2*s))}, ${Math.max(0,Math.round(.2*o))}`;return{rgb:n,surface:l,base:c,highlight:d,soft:h,sheen:u,accent:p,shadow:`rgba(${m}, 0.1)`,shadowHover:`rgba(${m}, 0.14)`,shadowActive:`rgba(${m}, 0.12)`,shadowRgb:m,border:b,borderHover:g,borderActive:f,glow:`rgba(${r}, 0.26)`,rim:`rgba(${r}, 0.48)`,rimSoft:`rgba(${r}, 0.18)`,rimShadow:`rgba(${m}, 0.32)`}}_computeBorderColors(t){const e=this._colorToRgb(t);if(!e)return null;const i=this._mixWithWhite(e,.65),s=`${i.r}, ${i.g}, ${i.b}`;return{base:`rgba(${s}, 0.24)`,hover:`rgba(${s}, 0.34)`,active:`rgba(${s}, 0.28)`}}_computeGlowPalette(t){const e=this._colorToRgb(t);if(!e)return null;const i=this._mixWithWhite(e,.62),s=`${i.r}, ${i.g}, ${i.b}`,o=.22;return{glow:`rgba(${s}, 0.24)`,rim:`rgba(${s}, 0.42)`,rimSoft:`rgba(${s}, 0.16)`,rimShadow:`rgba(${`${Math.max(0,Math.round(e.r*o))}, ${Math.max(0,Math.round(e.g*o))}, ${Math.max(0,Math.round(e.b*o))}`}, 0.28)`}}_mixWithWhite({r:t,g:e,b:i},s=.5){const o=Math.min(Math.max(s,0),1),n=t=>Math.round(t+(255-t)*o);return{r:n(t),g:n(e),b:n(i)}}_colorToRgb(t){if(!t||"string"!=typeof t||t.startsWith("var("))return null;if("undefined"==typeof document)return null;if(!Ut._colorCanvas){const t=document.createElement("canvas");t.width=t.height=1,Ut._colorCanvas=t,Ut._colorCtx=t.getContext("2d",{willReadFrequently:!0})||t.getContext("2d")}const e=Ut._colorCtx;if(!e)return null;try{e.fillStyle="#000",e.fillStyle=t}catch(t){return null}const i=e.fillStyle;e.clearRect(0,0,1,1),e.fillStyle=i,e.fillRect(0,0,1,1);const s=e.getImageData(0,0,1,1).data;return{r:s[0],g:s[1],b:s[2],a:s[3]/255}}_fireHassAction(t,e){const i=this.subbuttons?.[t];if(!i||!i.entity_id)return;const s={entity:i.entity_id,tap_action:i.tap_action||{action:"toggle"},hold_action:i.hold_action||{action:"more-info"}},o=new Event("hass-action",{bubbles:!0,composed:!0});o.detail={config:s,action:e},this.dispatchEvent(o)}}Ut._colorCanvas=null,Ut._colorCtx=null,customElements.define("bubble-subbutton",Ut);class Ht extends st{static properties={hass:{type:Object},name:{type:String},area:{type:String},config:{type:Object},container:{type:Object},fitMode:{type:String},stretchY:{type:Number}};constructor(){super(),this.name="",this.fitMode="height",this.stretchY=1.12,this._raf=null,this._resizeObs=null,this._lastScale=null,this._lastBox=null}_ensureFonts(){const t=this.renderRoot||this.shadowRoot;if(!t)return;if(t.querySelector('link[data-bubble-fonts="1"]'))return;const e=document.createElement("link");e.rel="preconnect",e.href="https://fonts.gstatic.com",e.crossOrigin="anonymous",e.setAttribute("data-bubble-fonts","1"),t.appendChild(e);const i=document.createElement("link");i.rel="stylesheet",i.href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;700&family=Roboto+Condensed:wght@400;700&display=swap",i.setAttribute("data-bubble-fonts","1"),i.addEventListener("load",()=>{requestAnimationFrame(()=>this._scheduleScale())}),t.appendChild(i)}firstUpdated(){this._ensureFonts(),this._scheduleScale(),this._resizeObs=new ResizeObserver(t=>{const e=t[0];let i=0,s=0;if(e?.contentBoxSize){const t=Array.isArray(e.contentBoxSize)?e.contentBoxSize[0]:e.contentBoxSize;i=Math.round(t.inlineSize),s=Math.round(t.blockSize)}else{const t=this.getBoundingClientRect();i=Math.round(t.width),s=Math.round(t.height)}(!this._lastBox||Math.abs(i-this._lastBox.w)>2||Math.abs(s-this._lastBox.h)>2)&&(this._lastBox={w:i,h:s},this._scheduleScale())}),this._resizeObs.observe(this),window.addEventListener("resize",this._scheduleScale,{passive:!0})}updated(t){(t.has("name")||t.has("config")||t.has("container")||t.has("fitMode")||t.has("stretchY"))&&this._scheduleScale()}disconnectedCallback(){super.disconnectedCallback(),this._resizeObs?.disconnect(),window.removeEventListener("resize",this._scheduleScale)}_scheduleScale=()=>{this._raf||(this._raf=requestAnimationFrame(()=>{this._raf=null,this._autoScaleFont()}))};_autoScaleFont(){const t=this.renderRoot.querySelector(".bubble-name"),e=this.container||this.parentElement||this;if(!t||!e)return;const i=this.name??"",s=Math.max(0,Math.round(e.clientWidth)),o=Math.max(0,Math.round(e.clientHeight));if(this._lastScale&&this._lastScale.text===i&&this._lastScale.w===s&&this._lastScale.h===o&&this._lastScale.fitMode===this.fitMode&&this._lastScale.stretchY===this.stretchY)return;this._resizeObs.disconnect(),t.style.fontSize="10px",t.style.transform="none";const n=240;let a;if("height"===this.fitMode){let e=8,i=n;for(let s=0;s<9&&e<=i;s++){const s=e+i>>1;t.style.fontSize=`${s}px`;t.scrollHeight<=o?e=s+1:i=s-1}a=Math.max(8,Math.min(n,i)),t.style.fontSize=`${a}px`;const r=t.scrollWidth;if(r>s&&r>0){const t=s/r;a=Math.floor(a*t)}}else{let e=8,i=n;for(let n=0;n<8&&e<=i;n++){const n=e+i>>1;t.style.fontSize=`${n}px`,t.scrollWidth<=s&&t.scrollHeight<=o?e=n+1:i=n-1}a=Math.max(8,Math.min(n,i))}t.style.fontSize=`${a}px`,this.stretchY&&1!==this.stretchY?(t.style.transform=`scaleY(${this.stretchY})`,t.style.transformOrigin="center"):t.style.transform="none",this._lastScale={text:i,w:s,h:o,fitMode:this.fitMode,stretchY:this.stretchY},this._resizeObs.observe(this)}render(){return I`
       <div class="bubble-name" title="${this.name||""}">
         ${this.name}
       </div>
