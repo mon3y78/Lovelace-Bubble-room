@@ -54,10 +54,11 @@ export class BubbleSubButton extends LitElement {
         inset 0 1px 0 rgba(255, 255, 255, 0.14),
         inset 0 -1px 0 rgba(255, 255, 255, 0.032),
         0 10px 18px var(--bubble-subbutton-glass-shadow, rgba(13, 22, 41, 0.1));
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1.5px solid var(--bubble-subbutton-border, rgba(255, 255, 255, 0.1));
       backdrop-filter: blur(22px);
       -webkit-backdrop-filter: blur(22px);
-      transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.18s ease;
+      transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.18s ease,
+        border-color 0.3s ease;
       isolation: isolate;
     }
 
@@ -75,6 +76,10 @@ export class BubbleSubButton extends LitElement {
         inset 0 1px 0 rgba(255, 255, 255, 0.22),
         inset 0 -1px 0 rgba(255, 255, 255, 0.05),
         0 6px 14px var(--bubble-subbutton-glass-shadow-active, rgba(13, 22, 41, 0.14));
+      border-color: var(
+        --bubble-subbutton-border-active,
+        var(--bubble-subbutton-border-hover, var(--bubble-subbutton-border, rgba(255, 255, 255, 0.18)))
+      );
     }
 
     .sub-button:hover {
@@ -82,6 +87,10 @@ export class BubbleSubButton extends LitElement {
         inset 0 1px 0 rgba(255, 255, 255, 0.2),
         inset 0 -1px 0 rgba(255, 255, 255, 0.06),
         0 16px 26px var(--bubble-subbutton-glass-shadow-hover, rgba(13, 22, 41, 0.13));
+      border-color: var(
+        --bubble-subbutton-border-hover,
+        var(--bubble-subbutton-border, rgba(255, 255, 255, 0.14))
+      );
     }
 
     .sub-button::before,
@@ -115,8 +124,7 @@ export class BubbleSubButton extends LitElement {
       height: 80%;
       color: inherit;
       filter:
-        drop-shadow(0 6px 12px rgba(var(--bubble-subbutton-glass-shadow-rgb, 13, 22, 41), 0.14))
-        drop-shadow(0 1px 0 rgba(255, 255, 255, 0.24));
+        drop-shadow(0 6px 12px rgba(var(--bubble-subbutton-glass-shadow-rgb, 13, 22, 41), 0.14));
     }
     
     /* 👇 (Opzionale) Rende l'icona SVG responsiva */
@@ -140,6 +148,8 @@ export class BubbleSubButton extends LitElement {
 
           const styleVars = [`--bubble-subbutton-color:${color}`];
 
+          let borderPalette = null;
+
           if (glass) {
             styleVars.push(`--bubble-subbutton-bg:${glass.surface}`);
             styleVars.push(`--bubble-subbutton-glass-base:${glass.base}`);
@@ -152,8 +162,20 @@ export class BubbleSubButton extends LitElement {
             styleVars.push(`--bubble-subbutton-glass-shadow-hover:${glass.shadowHover}`);
             styleVars.push(`--bubble-subbutton-glass-shadow-active:${glass.shadowActive}`);
             styleVars.push(`--bubble-subbutton-glass-shadow-rgb:${glass.shadowRgb}`);
+            borderPalette = {
+              base: glass.border,
+              hover: glass.borderHover,
+              active: glass.borderActive,
+            };
           } else {
             styleVars.push(`--bubble-subbutton-bg:${bg}`);
+            borderPalette = this._computeBorderColors(bg);
+          }
+
+          if (borderPalette) {
+            styleVars.push(`--bubble-subbutton-border:${borderPalette.base}`);
+            styleVars.push(`--bubble-subbutton-border-hover:${borderPalette.hover}`);
+            styleVars.push(`--bubble-subbutton-border-active:${borderPalette.active}`);
           }
 
           const styleAttr = styleVars.join(';');
@@ -211,8 +233,11 @@ export class BubbleSubButton extends LitElement {
     const base = `rgba(${softenedString}, 0.06)`;
     const highlight = `rgba(${softenedString}, 0.12)`;
     const soft = `rgba(${softenedString}, 0.07)`;
-    const sheen = `rgba(255, 255, 255, 0.24)`;
+    const sheen = `rgba(${softenedString}, 0.26)`;
     const accent = `rgba(${softenedString}, 0.05)`;
+    const border = `rgba(${softenedString}, 0.32)`;
+    const borderHover = `rgba(${softenedString}, 0.44)`;
+    const borderActive = `rgba(${softenedString}, 0.38)`;
 
     const shadowFactor = 0.2;
     const shadowR = Math.max(0, Math.round(r * shadowFactor));
@@ -236,6 +261,23 @@ export class BubbleSubButton extends LitElement {
       shadowHover,
       shadowActive,
       shadowRgb,
+      border,
+      borderHover,
+      borderActive,
+    };
+  }
+
+  _computeBorderColors(color) {
+    const rgb = this._colorToRgb(color);
+    if (!rgb) return null;
+
+    const softened = this._mixWithWhite(rgb, 0.65);
+    const softenedString = `${softened.r}, ${softened.g}, ${softened.b}`;
+
+    return {
+      base: `rgba(${softenedString}, 0.32)`,
+      hover: `rgba(${softenedString}, 0.44)`,
+      active: `rgba(${softenedString}, 0.38)`,
     };
   }
 
