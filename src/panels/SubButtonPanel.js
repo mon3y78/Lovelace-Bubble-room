@@ -124,7 +124,6 @@ export class SubButtonPanel extends LitElement {
 
   render() {
     const autoDisc = this.config?.auto_discovery_sections?.subbutton ?? false;
-    const stylePreset = this.config?.subbutton_style || 'standard';
     const options = COMMON_CATS.map(cat => ({
       value: cat,
       label: FILTER_LABELS[cat] || cat.charAt(0).toUpperCase() + cat.slice(1),
@@ -144,35 +143,11 @@ export class SubButtonPanel extends LitElement {
           <label>🪄 Auto-discover Subbuttons</label>
         </div>
 
-        <div class="input-group">
-          <label for="subbutton-style">Style:</label>
-          <ha-selector
-            id="subbutton-style"
-            .hass=${this.hass}
-            .value=${stylePreset}
-            .selector=${{
-              select: {
-                options: [
-                  { value: 'standard', label: 'Standard (v5.0.6)' },
-                  { value: 'liquid-glass', label: 'Liquid Glass' },
-                ],
-              },
-            }}
-            @value-changed=${e => this._onStylePreset(e.detail.value)}
-          ></ha-selector>
-        </div>
-
         ${this._expanded.map((open, i) => this._renderSubButton(i, open, options))}
 
         <button class="reset-button" @click=${() => this._reset()}>🧹 Reset Sub-buttons</button>
       </ha-expansion-panel>
     `;
-  }
-
-  _onStylePreset(val) {
-    if (this._syncingFromConfig) return;
-    const next = val || 'standard';
-    this._emit('subbutton_style', next);
   }
 
   _renderSubButton(i, open, options) {
