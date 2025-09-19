@@ -15,6 +15,7 @@ export class ColorPanel extends LitElement {
 
     _selectedPreset:  { type: String,  state: true },
     _expandedColors:  { type: Array,   state: true }, // [room, subbutton, mushroom]
+    _subbuttonStyle:  { type: String,  state: true },
   };
 
   constructor() {
@@ -32,6 +33,7 @@ export class ColorPanel extends LitElement {
     // UI state
     this._selectedPreset = 'green';
     this._expandedColors = [false, false, false];
+    this._subbuttonStyle = 'standard';
   }
 
   updated(changed) {
@@ -59,6 +61,8 @@ export class ColorPanel extends LitElement {
         sensor_active:   c.sensor?.sensor_active   ?? '',
         sensor_inactive: c.sensor?.sensor_inactive ?? '',
       };
+
+      this._subbuttonStyle = this.config?.subbutton_style || 'standard';
     }
   }
 
@@ -264,6 +268,60 @@ export class ColorPanel extends LitElement {
       padding: 8px 16px 2px 16px;
       box-sizing: border-box;
     }
+    .style-section {
+      padding: 0 16px 12px 16px;
+      box-sizing: border-box;
+    }
+    .style-heading {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #e9f8ff;
+      text-align: center;
+      margin: 4px 0 10px 0;
+    }
+    .style-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+    .style-card {
+      position: relative;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(24,32,40,0.45);
+      padding: 14px 16px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+      outline: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: center;
+      min-height: 98px;
+    }
+    .style-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      border-color: rgba(255,255,255,0.28);
+    }
+    .style-card.selected {
+      border-color: #73f6e5;
+      box-shadow: 0 0 0 2px inset rgba(115,246,229,0.35);
+    }
+    .style-card:focus-visible {
+      box-shadow: 0 0 0 3px rgba(115,246,229,0.55);
+    }
+    .style-name {
+      font-weight: 800;
+      font-size: 1.0rem;
+      color: #e9f8ff;
+    }
+    .style-desc {
+      font-size: 0.88rem;
+      color: rgba(233,248,255,0.75);
+      line-height: 1.35;
+    }
     .preset-card {
       position: relative;
       border-radius: 14px;
@@ -449,6 +507,8 @@ export class ColorPanel extends LitElement {
       >
         <div slot="header" class="glass-header">🎨 Colors & Presets</div>
 
+        ${this._renderStyleChooser()}
+
         <!-- Preset chooser -->
         ${this._renderPresetChooser()}
 
@@ -521,6 +581,48 @@ export class ColorPanel extends LitElement {
   }
 
   // ─────────────────── UI helpers ───────────────────
+  _renderStyleChooser() {
+    const options = [
+      {
+        key: 'standard',
+        label: 'Standard (v5.0.6)',
+        description: 'Aspetto classico con pillole solide e contrastate.',
+      },
+      {
+        key: 'liquid-glass',
+        label: 'Liquid Glass',
+        description: 'Effetto vetro liquido con trasparenze morbide.',
+      },
+    ];
+
+    return html`
+      <div class="style-section">
+        <div class="style-heading">Subbutton Style</div>
+        <div class="style-bar">
+          ${options.map(opt => this._renderStyleCard(opt))}
+        </div>
+      </div>
+    `;
+  }
+
+  _renderStyleCard({ key, label, description }) {
+    const isSelected = this._subbuttonStyle === key;
+    const selectedClass = isSelected ? 'selected' : '';
+    return html`
+      <div
+        class="style-card ${selectedClass}"
+        role="button"
+        tabindex="0"
+        aria-pressed=${isSelected ? 'true' : 'false'}
+        @click=${() => this._selectStyle(key)}
+        @keydown=${e => this._onStyleKeydown(e, key)}
+      >
+        <div class="style-name">${label}</div>
+        <div class="style-desc">${description}</div>
+      </div>
+    `;
+  }
+
   _renderPresetChooser() {
     const keys = Object.keys(this.PRESETS);
     return html`
@@ -666,6 +768,19 @@ export class ColorPanel extends LitElement {
 
   _updateColorRaw(section, key, raw) {
     this._emit(`colors.${section}.${key}`, raw);
+  }
+
+  _selectStyle(style) {
+    if (this._subbuttonStyle === style) return;
+    this._subbuttonStyle = style;
+    this._emit('subbutton_style', style);
+  }
+
+  _onStyleKeydown(event, style) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this._selectStyle(style);
+    }
   }
 
   _emit(prop, val) {
