@@ -202,7 +202,7 @@ export class BubbleSubButton extends LitElement {
             styleVars.push(`--bubble-subbutton-glass-shadow-active:${glass.shadowActive}`);
             styleVars.push(`--bubble-subbutton-glass-shadow-rgb:${glass.shadowRgb}`);
           } else if (bg) {
-            const brightened = btn.active ? this._lightenColor(bg, 0.35) : null;
+            const brightened = btn.active ? this._lightenColor(bg, 0.5) : null;
             styleVars.push(`--bubble-subbutton-bg:${brightened || bg}`);
           }
 
@@ -291,9 +291,10 @@ export class BubbleSubButton extends LitElement {
     const rgb = this._colorToRgb(color);
     if (!rgb) return null;
 
-    const { r, g, b } = rgb;
+    const intensified = isActive ? this._boostColorIntensity(rgb, 0.2) : rgb;
+    const { r, g, b } = intensified;
     const rgbString = `${r}, ${g}, ${b}`;
-    const softened = this._mixWithWhite(rgb, isActive ? 0.78 : 0.65);
+    const softened = this._mixWithWhite(intensified, isActive ? 0.6 : 0.68);
     const softenedString = `${softened.r}, ${softened.g}, ${softened.b}`;
 
     const alphas = isActive
@@ -400,20 +401,21 @@ export class BubbleSubButton extends LitElement {
     const rgb = this._colorToRgb(color);
     if (!rgb) return null;
 
-    const softened = this._mixWithWhite(rgb, isActive ? 0.58 : 0.45);
+    const intensified = isActive ? this._boostColorIntensity(rgb, 0.2) : rgb;
+    const softened = this._mixWithWhite(intensified, isActive ? 0.48 : 0.58);
     const softenedString = `${softened.r}, ${softened.g}, ${softened.b}`;
 
     const shadowFactor = 0.2;
-    const shadowR = Math.max(0, Math.round(rgb.r * shadowFactor));
-    const shadowG = Math.max(0, Math.round(rgb.g * shadowFactor));
-    const shadowB = Math.max(0, Math.round(rgb.b * shadowFactor));
+    const shadowR = Math.max(0, Math.round(intensified.r * shadowFactor));
+    const shadowG = Math.max(0, Math.round(intensified.g * shadowFactor));
+    const shadowB = Math.max(0, Math.round(intensified.b * shadowFactor));
     const shadowRgb = `${shadowR}, ${shadowG}, ${shadowB}`;
 
     return {
-      glow: `rgba(${softenedString}, ${isActive ? 0.36 : 0.28})`,
-      rim: `rgba(${softenedString}, ${isActive ? 0.54 : 0.46})`,
-      rimSoft: `rgba(${softenedString}, ${isActive ? 0.24 : 0.18})`,
-      rimShadow: `rgba(${shadowRgb}, ${isActive ? 0.32 : 0.26})`,
+      glow: `rgba(${softenedString}, ${isActive ? 0.4 : 0.3})`,
+      rim: `rgba(${softenedString}, ${isActive ? 0.58 : 0.48})`,
+      rimSoft: `rgba(${softenedString}, ${isActive ? 0.26 : 0.2})`,
+      rimShadow: `rgba(${shadowRgb}, ${isActive ? 0.34 : 0.26})`,
     };
   }
 
@@ -425,6 +427,22 @@ export class BubbleSubButton extends LitElement {
       g: mix(g),
       b: mix(b),
     };
+  }
+
+  _boostColorIntensity({ r, g, b, a }, amount = 0.18) {
+    const factor = 1 + Math.max(amount, 0);
+    const boost = value => Math.min(255, Math.round(value * factor));
+    const boosted = {
+      r: boost(r),
+      g: boost(g),
+      b: boost(b),
+    };
+
+    if (typeof a === 'number') {
+      boosted.a = a;
+    }
+
+    return boosted;
   }
 
   _colorToRgb(color) {
