@@ -3,24 +3,26 @@ import { LitElement, html, css } from 'lit';
 export class BubbleSubButton extends LitElement {
   static properties = {
     subbuttons: { type: Array },
+    preset: { type: String, reflect: true },
   };
-  
+
   constructor() {
     super();
     this.subbuttons = [];
+    this.preset = 'liquid-glass';
     this._holdThreshold = 500;
     this._holdTimer = null;
     this._holdFired = false;
     this._currentIndex = -1;
   }
-  
+
   static styles = css`
     :host {
       display: block;
       height: 100%;
       width: 100%;
     }
-    
+
     .container {
       display: flex;
       flex-direction: column;
@@ -30,8 +32,38 @@ export class BubbleSubButton extends LitElement {
       min-width: 0;
       box-sizing: border-box;
     }
-    
-    .sub-button {
+
+    :host([preset='standard']) .sub-button {
+      flex: 1 1 0%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 2px 0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      min-height: 0;
+    }
+
+    :host([preset='standard']) .sub-button:first-child {
+      margin-top: 0;
+    }
+
+    :host([preset='standard']) .sub-button:last-child {
+      margin-bottom: 0;
+    }
+
+    :host([preset='standard']) .sub-button:active {
+      transform: scale(0.97);
+    }
+
+    :host([preset='standard']) .sub-button ha-icon {
+      width: 80%;
+      height: 80%;
+    }
+
+    :host([preset='liquid-glass']) .sub-button {
       flex: 1 1 0%;
       display: flex;
       flex-direction: column;
@@ -75,15 +107,15 @@ export class BubbleSubButton extends LitElement {
       isolation: isolate;
     }
 
-    .sub-button:first-child {
+    :host([preset='liquid-glass']) .sub-button:first-child {
       margin-top: 0;
     }
-    
-    .sub-button:last-child {
+
+    :host([preset='liquid-glass']) .sub-button:last-child {
       margin-bottom: 0;
     }
-    
-    .sub-button:active {
+
+    :host([preset='liquid-glass']) .sub-button:active {
       transform: scale(0.97);
       box-shadow:
         inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.48),
@@ -95,7 +127,7 @@ export class BubbleSubButton extends LitElement {
       );
     }
 
-    .sub-button:hover {
+    :host([preset='liquid-glass']) .sub-button:hover {
       box-shadow:
         inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.42),
         inset -0.5px -0.5px 1px rgba(255, 255, 255, 0.1),
@@ -106,8 +138,8 @@ export class BubbleSubButton extends LitElement {
       );
     }
 
-    .sub-button::before,
-    .sub-button::after {
+    :host([preset='liquid-glass']) .sub-button::before,
+    :host([preset='liquid-glass']) .sub-button::after {
       content: "";
       position: absolute;
       inset: 0;
@@ -115,7 +147,7 @@ export class BubbleSubButton extends LitElement {
       transition: opacity 0.35s ease;
     }
 
-    .sub-button::before {
+    :host([preset='liquid-glass']) .sub-button::before {
       background:
         linear-gradient(
           135deg,
@@ -133,7 +165,7 @@ export class BubbleSubButton extends LitElement {
       transform: translateY(-8%);
     }
 
-    .sub-button::after {
+    :host([preset='liquid-glass']) .sub-button::after {
       border-radius: inherit;
       border: 1px solid var(--bubble-subbutton-glass-rim, rgba(255, 255, 255, 0.32));
       box-shadow:
@@ -143,27 +175,26 @@ export class BubbleSubButton extends LitElement {
       mix-blend-mode: screen;
     }
 
-    .sub-button:hover::before {
+    :host([preset='liquid-glass']) .sub-button:hover::before {
       opacity: 0.62;
     }
 
-    .sub-button:hover::after {
+    :host([preset='liquid-glass']) .sub-button:hover::after {
       opacity: 0.66;
     }
 
-    .sub-button:active::after {
+    :host([preset='liquid-glass']) .sub-button:active::after {
       opacity: 0.78;
     }
 
-    /* 👇 Icona scalabile al contenitore */
-    .sub-button ha-icon {
+    :host([preset='liquid-glass']) .sub-button ha-icon {
       width: 80%;
       height: 80%;
       color: inherit;
       filter:
         drop-shadow(0 6px 12px rgba(var(--bubble-subbutton-glass-shadow-rgb, 13, 22, 41), 0.14));
     }
-    
+
     /* 👇 (Opzionale) Rende l'icona SVG responsiva */
     ha-icon {
       --mdc-icon-size: 100%;
@@ -176,6 +207,35 @@ export class BubbleSubButton extends LitElement {
   `;
   
   render() {
+    return this.preset === 'standard'
+      ? this._renderStandard()
+      : this._renderLiquidGlass();
+  }
+
+  _renderStandard() {
+    return html`
+      <div class="container">
+        ${this.subbuttons.map((btn, idx) => {
+          const bg = btn.active ? btn.colorOn : btn.colorOff;
+          const color = btn.active ? btn.iconOn : btn.iconOff;
+          return html`
+            <div
+              class="sub-button"
+              style="background:${bg};color:${color};"
+              @pointerdown=${() => this._onDown(idx)}
+              @pointerup=${() => this._onUp(idx)}
+              @pointerleave=${() => this._clearHoldTimer()}
+              @pointercancel=${() => this._clearHoldTimer()}
+            >
+              <ha-icon icon="${btn.icon}"></ha-icon>
+            </div>
+          `;
+        })}
+      </div>
+    `;
+  }
+
+  _renderLiquidGlass() {
     return html`
       <div class="container">
         ${this.subbuttons.map((btn, idx) => {

@@ -265,6 +265,7 @@ export class BubbleRoom extends LitElement {
     const layout        = this.config.layout || 'wide';
     const mainIconSize  = this._getMainIconSize();
     const subbuttons    = this._getSubButtons();
+    const subbuttonMode = this.config?.subbutton_style || 'standard';
     const isActive      = this._isRoomActive();
 
     /* palette */
@@ -328,7 +329,10 @@ export class BubbleRoom extends LitElement {
         </div>
 
         <div class="sidebar">
-          <bubble-subbutton .subbuttons="${subbuttons}"></bubble-subbutton>
+          <bubble-subbutton
+            .subbuttons="${subbuttons}"
+            .preset="${subbuttonMode}"
+          ></bubble-subbutton>
         </div>
       </div>
     `;
