@@ -181,7 +181,7 @@ export class BubbleSubButton extends LitElement {
         ${this.subbuttons.map((btn, idx) => {
           const bg = btn.active ? btn.colorOn : btn.colorOff;
           const color = btn.active ? btn.iconOn : btn.iconOff;
-          const glass = this._computeGlassColors(bg);
+          const glass = this._computeGlassColors(bg, btn.active);
 
           const styleVars = [];
 
@@ -202,10 +202,11 @@ export class BubbleSubButton extends LitElement {
             styleVars.push(`--bubble-subbutton-glass-shadow-active:${glass.shadowActive}`);
             styleVars.push(`--bubble-subbutton-glass-shadow-rgb:${glass.shadowRgb}`);
           } else if (bg) {
-            styleVars.push(`--bubble-subbutton-bg:${bg}`);
+            const brightened = btn.active ? this._lightenColor(bg, 0.35) : null;
+            styleVars.push(`--bubble-subbutton-bg:${brightened || bg}`);
           }
 
-          const borderPalette = this._computeBorderColors(color);
+          const borderPalette = this._computeBorderColors(color, btn.active);
           if (borderPalette) {
             styleVars.push(`--bubble-subbutton-border:${borderPalette.base}`);
             styleVars.push(`--bubble-subbutton-border-hover:${borderPalette.hover}`);
@@ -216,7 +217,7 @@ export class BubbleSubButton extends LitElement {
             styleVars.push(`--bubble-subbutton-border-active:${color}`);
           }
 
-          const rimPalette = this._computeGlowPalette(color);
+          const rimPalette = this._computeGlowPalette(color, btn.active);
           if (rimPalette) {
             styleVars.push(`--bubble-subbutton-glass-glow:${rimPalette.glow}`);
             styleVars.push(`--bubble-subbutton-glass-rim:${rimPalette.rim}`);
@@ -271,24 +272,77 @@ export class BubbleSubButton extends LitElement {
     }
   }
 
-  _computeGlassColors(color) {
+  _lightenColor(color, weight = 0.3) {
+    const rgb = this._colorToRgb(color);
+    if (!rgb) return null;
+
+    const mixRatio = Math.min(Math.max(weight, 0), 1);
+    const mixed = this._mixWithWhite(rgb, mixRatio);
+    const alpha = typeof rgb.a === 'number' ? Math.min(Math.max(Number(rgb.a.toFixed(3)), 0), 1) : 1;
+
+    if (alpha < 1) {
+      return `rgba(${mixed.r}, ${mixed.g}, ${mixed.b}, ${alpha})`;
+    }
+
+    return `rgb(${mixed.r}, ${mixed.g}, ${mixed.b})`;
+  }
+
+  _computeGlassColors(color, isActive = false) {
     const rgb = this._colorToRgb(color);
     if (!rgb) return null;
 
     const { r, g, b } = rgb;
     const rgbString = `${r}, ${g}, ${b}`;
-    const softened = this._mixWithWhite(rgb, 0.65);
+    const softened = this._mixWithWhite(rgb, isActive ? 0.78 : 0.65);
     const softenedString = `${softened.r}, ${softened.g}, ${softened.b}`;
 
-    const surface = `rgba(${softenedString}, 0.032)`;
-    const base = `rgba(${softenedString}, 0.022)`;
-    const highlight = `rgba(${softenedString}, 0.06)`;
-    const soft = `rgba(${softenedString}, 0.028)`;
-    const sheen = `rgba(${softenedString}, 0.12)`;
-    const accent = `rgba(${softenedString}, 0.02)`;
-    const border = `rgba(${softenedString}, 0.18)`;
-    const borderHover = `rgba(${softenedString}, 0.26)`;
-    const borderActive = `rgba(${softenedString}, 0.22)`;
+    const alphas = isActive
+      ? {
+          surface: 0.048,
+          base: 0.028,
+          highlight: 0.085,
+          soft: 0.042,
+          sheen: 0.18,
+          accent: 0.032,
+          border: 0.24,
+          borderHover: 0.34,
+          borderActive: 0.3,
+          shadow: 0.12,
+          shadowHover: 0.18,
+          shadowActive: 0.15,
+          glow: 0.32,
+          rim: 0.52,
+          rimSoft: 0.22,
+          rimShadow: 0.32,
+        }
+      : {
+          surface: 0.032,
+          base: 0.022,
+          highlight: 0.06,
+          soft: 0.028,
+          sheen: 0.12,
+          accent: 0.02,
+          border: 0.18,
+          borderHover: 0.26,
+          borderActive: 0.22,
+          shadow: 0.08,
+          shadowHover: 0.12,
+          shadowActive: 0.1,
+          glow: 0.2,
+          rim: 0.38,
+          rimSoft: 0.14,
+          rimShadow: 0.26,
+        };
+
+    const surface = `rgba(${softenedString}, ${alphas.surface})`;
+    const base = `rgba(${softenedString}, ${alphas.base})`;
+    const highlight = `rgba(${softenedString}, ${alphas.highlight})`;
+    const soft = `rgba(${softenedString}, ${alphas.soft})`;
+    const sheen = `rgba(${softenedString}, ${alphas.sheen})`;
+    const accent = `rgba(${softenedString}, ${alphas.accent})`;
+    const border = `rgba(${softenedString}, ${alphas.border})`;
+    const borderHover = `rgba(${softenedString}, ${alphas.borderHover})`;
+    const borderActive = `rgba(${softenedString}, ${alphas.borderActive})`;
 
     const shadowFactor = 0.2;
     const shadowR = Math.max(0, Math.round(r * shadowFactor));
@@ -296,14 +350,14 @@ export class BubbleSubButton extends LitElement {
     const shadowB = Math.max(0, Math.round(b * shadowFactor));
     const shadowRgb = `${shadowR}, ${shadowG}, ${shadowB}`;
 
-    const shadow = `rgba(${shadowRgb}, 0.08)`;
-    const shadowHover = `rgba(${shadowRgb}, 0.12)`;
-    const shadowActive = `rgba(${shadowRgb}, 0.1)`;
+    const shadow = `rgba(${shadowRgb}, ${alphas.shadow})`;
+    const shadowHover = `rgba(${shadowRgb}, ${alphas.shadowHover})`;
+    const shadowActive = `rgba(${shadowRgb}, ${alphas.shadowActive})`;
 
-    const glow = `rgba(${softenedString}, 0.2)`;
-    const rim = `rgba(${softenedString}, 0.38)`;
-    const rimSoft = `rgba(${softenedString}, 0.14)`;
-    const rimShadow = `rgba(${shadowRgb}, 0.26)`;
+    const glow = `rgba(${softenedString}, ${alphas.glow})`;
+    const rim = `rgba(${softenedString}, ${alphas.rim})`;
+    const rimSoft = `rgba(${softenedString}, ${alphas.rimSoft})`;
+    const rimShadow = `rgba(${shadowRgb}, ${alphas.rimShadow})`;
 
     return {
       rgb: rgbString,
@@ -327,22 +381,26 @@ export class BubbleSubButton extends LitElement {
     };
   }
 
-  _computeBorderColors(color) {
+  _computeBorderColors(color, isActive = false) {
     const rgb = this._colorToRgb(color);
     if (!rgb) return null;
 
-    const base = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.62)`;
-    const hover = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.78)`;
-    const active = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.7)`;
+    const baseAlpha = isActive ? 0.78 : 0.62;
+    const hoverAlpha = isActive ? 0.88 : 0.78;
+    const activeAlpha = isActive ? 0.82 : 0.7;
+
+    const base = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${baseAlpha})`;
+    const hover = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${hoverAlpha})`;
+    const active = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${activeAlpha})`;
 
     return { base, hover, active };
   }
 
-  _computeGlowPalette(color) {
+  _computeGlowPalette(color, isActive = false) {
     const rgb = this._colorToRgb(color);
     if (!rgb) return null;
 
-    const softened = this._mixWithWhite(rgb, 0.45);
+    const softened = this._mixWithWhite(rgb, isActive ? 0.58 : 0.45);
     const softenedString = `${softened.r}, ${softened.g}, ${softened.b}`;
 
     const shadowFactor = 0.2;
@@ -352,10 +410,10 @@ export class BubbleSubButton extends LitElement {
     const shadowRgb = `${shadowR}, ${shadowG}, ${shadowB}`;
 
     return {
-      glow: `rgba(${softenedString}, 0.28)`,
-      rim: `rgba(${softenedString}, 0.46)`,
-      rimSoft: `rgba(${softenedString}, 0.18)`,
-      rimShadow: `rgba(${shadowRgb}, 0.26)`,
+      glow: `rgba(${softenedString}, ${isActive ? 0.36 : 0.28})`,
+      rim: `rgba(${softenedString}, ${isActive ? 0.54 : 0.46})`,
+      rimSoft: `rgba(${softenedString}, ${isActive ? 0.24 : 0.18})`,
+      rimShadow: `rgba(${shadowRgb}, ${isActive ? 0.32 : 0.26})`,
     };
   }
 
