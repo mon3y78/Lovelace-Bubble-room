@@ -105,6 +105,9 @@ export class BubbleSubButton extends LitElement {
       transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.18s ease,
         border-color 0.3s ease, filter 0.35s ease;
       isolation: isolate;
+      filter:
+        saturate(var(--bubble-subbutton-saturation, 1))
+        brightness(var(--bubble-subbutton-luminance, 1));
     }
 
     :host([preset='liquid-glass']) .sub-button:first-child {
@@ -192,7 +195,10 @@ export class BubbleSubButton extends LitElement {
       height: 80%;
       color: inherit;
       filter:
-        drop-shadow(0 6px 12px rgba(var(--bubble-subbutton-glass-shadow-rgb, 13, 22, 41), 0.14));
+        drop-shadow(0 6px 12px rgba(var(--bubble-subbutton-glass-shadow-rgb, 13, 22, 41), 0.14))
+        brightness(var(--bubble-subbutton-icon-brightness, 1))
+        saturate(var(--bubble-subbutton-icon-saturation, 1));
+      transition: filter 0.35s ease, color 0.35s ease;
     }
 
     /* 👇 (Opzionale) Rende l'icona SVG responsiva */
@@ -245,8 +251,9 @@ export class BubbleSubButton extends LitElement {
 
           const styleVars = [];
 
-          if (color) {
-            styleVars.push(`--bubble-subbutton-color:${color}`);
+          const iconTone = this._computeIconTone(color, btn.active);
+          if (iconTone) {
+            styleVars.push(`--bubble-subbutton-color:${iconTone}`);
           }
 
           if (glass) {
@@ -290,11 +297,20 @@ export class BubbleSubButton extends LitElement {
             styleVars.push(`--bubble-subbutton-glass-rim-shadow:${color}`);
           }
 
+          if (btn.active) {
+            styleVars.push(`--bubble-subbutton-saturation:1.28`);
+            styleVars.push(`--bubble-subbutton-luminance:1.08`);
+            styleVars.push(`--bubble-subbutton-icon-brightness:1.4`);
+            styleVars.push(`--bubble-subbutton-icon-saturation:1.22`);
+          }
+
           const styleAttr = styleVars.join(';');
+          const classes = ['sub-button'];
+          if (btn.active) classes.push('is-active');
 
           return html`
             <div
-              class="sub-button"
+              class="${classes.join(' ')}"
               style="${styleAttr}"
               @pointerdown=${() => this._onDown(idx)}
               @pointerup=${() => this._onUp(idx)}
@@ -351,30 +367,30 @@ export class BubbleSubButton extends LitElement {
     const rgb = this._colorToRgb(color);
     if (!rgb) return null;
 
-    const intensified = isActive ? this._boostColorIntensity(rgb, 0.28) : rgb;
+    const intensified = isActive ? this._boostColorIntensity(rgb, 0.42) : rgb;
     const { r, g, b } = intensified;
     const rgbString = `${r}, ${g}, ${b}`;
-    const softened = this._mixWithWhite(intensified, isActive ? 0.48 : 0.68);
+    const softened = this._mixWithWhite(intensified, isActive ? 0.34 : 0.68);
     const softenedString = `${softened.r}, ${softened.g}, ${softened.b}`;
 
     const alphas = isActive
       ? {
-          surface: 0.065,
-          base: 0.042,
-          highlight: 0.11,
-          soft: 0.055,
-          sheen: 0.22,
-          accent: 0.05,
-          border: 0.26,
-          borderHover: 0.36,
-          borderActive: 0.32,
-          shadow: 0.14,
-          shadowHover: 0.2,
-          shadowActive: 0.17,
-          glow: 0.34,
-          rim: 0.56,
-          rimSoft: 0.26,
-          rimShadow: 0.34,
+          surface: 0.12,
+          base: 0.08,
+          highlight: 0.18,
+          soft: 0.1,
+          sheen: 0.28,
+          accent: 0.09,
+          border: 0.42,
+          borderHover: 0.52,
+          borderActive: 0.48,
+          shadow: 0.2,
+          shadowHover: 0.28,
+          shadowActive: 0.24,
+          glow: 0.5,
+          rim: 0.72,
+          rimSoft: 0.34,
+          rimShadow: 0.4,
         }
       : {
           surface: 0.032,
@@ -461,8 +477,8 @@ export class BubbleSubButton extends LitElement {
     const rgb = this._colorToRgb(color);
     if (!rgb) return null;
 
-    const intensified = isActive ? this._boostColorIntensity(rgb, 0.28) : rgb;
-    const softened = this._mixWithWhite(intensified, isActive ? 0.48 : 0.58);
+    const intensified = isActive ? this._boostColorIntensity(rgb, 0.4) : rgb;
+    const softened = this._mixWithWhite(intensified, isActive ? 0.34 : 0.58);
     const softenedString = `${softened.r}, ${softened.g}, ${softened.b}`;
 
     const shadowFactor = 0.2;
@@ -472,11 +488,26 @@ export class BubbleSubButton extends LitElement {
     const shadowRgb = `${shadowR}, ${shadowG}, ${shadowB}`;
 
     return {
-      glow: `rgba(${softenedString}, ${isActive ? 0.4 : 0.3})`,
-      rim: `rgba(${softenedString}, ${isActive ? 0.58 : 0.48})`,
-      rimSoft: `rgba(${softenedString}, ${isActive ? 0.26 : 0.2})`,
-      rimShadow: `rgba(${shadowRgb}, ${isActive ? 0.34 : 0.26})`,
+      glow: `rgba(${softenedString}, ${isActive ? 0.55 : 0.3})`,
+      rim: `rgba(${softenedString}, ${isActive ? 0.74 : 0.48})`,
+      rimSoft: `rgba(${softenedString}, ${isActive ? 0.34 : 0.2})`,
+      rimShadow: `rgba(${shadowRgb}, ${isActive ? 0.42 : 0.26})`,
     };
+  }
+
+  _computeIconTone(color, isActive = false) {
+    if (!color) return color;
+
+    const rgb = this._colorToRgb(color);
+    if (!rgb) return color;
+
+    if (!isActive) {
+      return this._rgbToCss({ r: rgb.r, g: rgb.g, b: rgb.b }, rgb.a);
+    }
+
+    const intensified = this._boostColorIntensity(rgb, 0.35);
+    const luminous = this._mixWithWhite(intensified, 0.2);
+    return this._rgbToCss(luminous, rgb.a);
   }
 
   _mixWithWhite({ r, g, b }, weight = 0.5) {
@@ -503,6 +534,18 @@ export class BubbleSubButton extends LitElement {
     }
 
     return boosted;
+  }
+
+  _rgbToCss({ r, g, b }, alpha = 1) {
+    const clampedAlpha = typeof alpha === 'number'
+      ? Math.min(Math.max(Number(alpha.toFixed(3)), 0), 1)
+      : 1;
+
+    if (clampedAlpha < 1) {
+      return `rgba(${r}, ${g}, ${b}, ${clampedAlpha})`;
+    }
+
+    return `rgb(${r}, ${g}, ${b})`;
   }
 
   _colorToRgb(color) {
