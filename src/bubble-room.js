@@ -308,6 +308,7 @@ export class BubbleRoom extends LitElement {
                 .colorInactive="${iconColorInactive}"
                 .backgroundActive="${iconBgActive}"
                 .backgroundInactive="${iconBgInactive}"
+                .preset="${subbuttonMode}"
                 style="
                   --main-icon-size:${mainIconSize}px;
                   --icon-shift-x:-20%;
