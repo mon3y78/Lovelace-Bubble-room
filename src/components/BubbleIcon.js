@@ -77,7 +77,7 @@ export class BubbleIcon extends LitElement {
 
     :host([preset='liquid-glass']) .container {
       color: var(--bubble-main-icon-color, currentColor);
-      border: 2px solid var(--bubble-main-icon-border, currentColor);
+      border: none;
       background:
         radial-gradient(
           140% 120% at 50% -20%,
@@ -103,8 +103,7 @@ export class BubbleIcon extends LitElement {
         0 28px 54px var(--bubble-main-icon-glass-shadow, rgba(13, 22, 41, 0.18));
       backdrop-filter: blur(28px);
       -webkit-backdrop-filter: blur(28px);
-      transition: background 0.35s ease, box-shadow 0.35s ease, border-color 0.3s ease,
-        filter 0.35s ease;
+      transition: background 0.35s ease, box-shadow 0.35s ease, filter 0.35s ease;
       filter:
         saturate(var(--bubble-main-icon-saturation, 1))
         brightness(var(--bubble-main-icon-luminance, 1));
@@ -161,17 +160,11 @@ export class BubbleIcon extends LitElement {
         inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.44),
         inset -0.5px -0.5px 1.2px rgba(255, 255, 255, 0.16),
         0 24px 46px var(--bubble-main-icon-glass-shadow-active, rgba(13, 22, 41, 0.22));
-      border-color: var(
-        --bubble-main-icon-border-active,
-        var(--bubble-main-icon-border-hover, var(--bubble-main-icon-border, currentColor))
-      );
+      border: none;
     }
 
     :host([preset='liquid-glass']) .container:hover {
-      border-color: var(
-        --bubble-main-icon-border-hover,
-        var(--bubble-main-icon-border, currentColor)
-      );
+      border: none;
     }
 
     :host([preset='liquid-glass']) .icon {
@@ -196,7 +189,9 @@ export class BubbleIcon extends LitElement {
     }
     if (fg) {
       styleChunks.push(`color:${fg}`);
-      styleChunks.push(`--bubble-main-icon-border:${fg}`);
+      if (!isLiquid) {
+        styleChunks.push(`--bubble-main-icon-border:${fg}`);
+      }
       styleChunks.push(`--bubble-main-icon-color:${fg}`);
     }
 

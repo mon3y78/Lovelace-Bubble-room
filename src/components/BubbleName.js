@@ -12,6 +12,7 @@ export class BubbleName extends LitElement {
     // Opzioni di fit
     fitMode:   { type: String },   // 'height' | 'both'
     stretchY:  { type: Number },   // es. 1.05 per allungare un 5%
+    preset:    { type: String, reflect: true },
   };
 
   constructor() {
@@ -19,6 +20,7 @@ export class BubbleName extends LitElement {
     this.name = '';
     this.fitMode = 'height'; // priorità all'altezza
     this.stretchY = 1.12;       // nessuno stretch di default
+    this.preset = 'standard';
     this._raf = null;
     this._resizeObs = null;
     this._lastScale = null;
@@ -85,12 +87,20 @@ export class BubbleName extends LitElement {
   }
 
   updated(changed) {
+    if (changed.has('preset')) {
+      const desiredStretch = this.preset === 'liquid-glass' ? 1.32 : 1.12;
+      if (this.stretchY !== desiredStretch) {
+        this.stretchY = desiredStretch;
+      }
+    }
+
     if (
       changed.has('name') ||
       changed.has('config') ||
       changed.has('container') ||
       changed.has('fitMode') ||
-      changed.has('stretchY')
+      changed.has('stretchY') ||
+      changed.has('preset')
     ) {
       this._scheduleScale();
     }
@@ -234,6 +244,17 @@ export class BubbleName extends LitElement {
       padding: 0;
 
       user-select: none;
+    }
+
+    :host([preset='liquid-glass']) .bubble-name {
+      font-family:
+        "Bebas Neue",
+        "Roboto Condensed",
+        "Arial Narrow",
+        Arial, sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      line-height: 0.9;
     }
   `;
 }

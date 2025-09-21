@@ -294,6 +294,7 @@ export class BubbleRoom extends LitElement {
                 .hass=${this.hass}
                 .config=${this.config}
                 .container=${this.shadowRoot?.getElementById('nameContainer')}
+                .preset="${subbuttonMode}"
                 style="--bubble-room-name-color:${isActive ? textColorActive : textColorInactive}"
               ></bubble-name>
             </div>
