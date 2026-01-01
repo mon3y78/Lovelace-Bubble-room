@@ -210,36 +210,34 @@ export class CameraPanel extends LitElement {
     }));
   }
 
-  _onEntity(i, ent) {
-    const key = `camera${i+1}`;   // o climate${i+1} a seconda del pannello
-    this._entities[i] = ent || '';
-  
+  _onEntity(ent) {
+    this._entity = ent || '';
     if (this._syncingFromConfig) return;
-  
+
     // salva l’entità
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: `entities.${key}.entity`, val: this._entities[i] },
+      detail: { prop: 'entities.camera.entity', val: this._entity },
       bubbles: true, composed: true,
     }));
-  
+
     // se l’entità è stata svuotata → svuota anche l’icona
-    if (!this._entities[i]) {
-      this._icons[i] = '';
+    if (!this._entity) {
+      this._icon = '';
       this.dispatchEvent(new CustomEvent('panel-changed', {
-        detail: { prop: `entities.${key}.icon`, val: '' },
+        detail: { prop: 'entities.camera.icon', val: '' },
         bubbles: true, composed: true,
       }));
       return;
     }
-  
-    // altrimenti calcola auto-icona come già fai
-    const st = this.hass?.states?.[this._entities[i]];
+
+    // altrimenti calcola auto-icona
+    const st = this.hass?.states?.[this._entity];
     const iconFromState = st?.attributes?.icon;
-    const autoIco = iconFromState || resolveEntityIcon(this._entities[i], this.hass) || '';
-  
-    this._icons[i] = autoIco;
+    const autoIco = iconFromState || resolveEntityIcon(this._entity, this.hass) || '';
+
+    this._icon = autoIco;
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: `entities.${key}.icon`, val: autoIco },
+      detail: { prop: 'entities.camera.icon', val: autoIco },
       bubbles: true, composed: true,
     }));
   }
