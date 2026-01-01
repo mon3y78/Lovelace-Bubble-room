@@ -4,6 +4,7 @@ import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor }     from '../helpers/entity-filters.js';
 import { SENSOR_TYPE_MAP }   from '../helpers/sensor-mapping.js';
 import { sharedPanelStyles } from './shared-styles.js';
+import { localize } from '../helpers/i18n.js';
 
 export class SensorPanel extends LitElement {
   static properties = {
@@ -83,6 +84,7 @@ export class SensorPanel extends LitElement {
 
   render() {
     const autoDisc = this.config?.auto_discovery_sections?.sensor ?? false;
+    const t = (key, vars, fallback) => localize(this.hass, key, vars, fallback);
 
     const options = Object.entries(SENSOR_TYPE_MAP)
       .filter(([type]) => type !== '_fallback')
@@ -101,7 +103,7 @@ export class SensorPanel extends LitElement {
           if (this.expanded) this._expanded = Array(5).fill(false);
         }}
       >
-        <div slot="header" class="glass-header">🧭 Sensors</div>
+        <div slot="header" class="glass-header">${t('panel.sensor.title')}</div>
 
         <div class="input-group autodiscover">
           <input
@@ -109,19 +111,20 @@ export class SensorPanel extends LitElement {
             .checked=${autoDisc}
             @change=${e => this._toggleAuto(e.target.checked)}
           />
-          <label>🪄 Auto-discover Sensors</label>
+          <label>${t('panel.sensor.auto_discover')}</label>
         </div>
 
         ${this._expanded.map((open, i) => this._renderSensor(i, open, options))}
 
         <button class="reset-button" @click=${() => this._reset()}>
-          🧹 Reset Sensors
+          ${t('panel.sensor.reset')}
         </button>
       </ha-expansion-panel>
     `;
   }
 
   _renderSensor(i, open, options) {
+    const t = (key, vars, fallback) => localize(this.hass, key, vars, fallback);
     const types = this._filters[i];
     const ent   = this._entities[i];
 
@@ -151,20 +154,20 @@ export class SensorPanel extends LitElement {
     return html`
       <div class="mini-pill ${open ? 'expanded' : ''}">
         <div class="mini-pill-header" @click=${() => this._togglePill(i)}>
-          Sensor ${i+1}
+          ${t('panel.sensor.sensor_item', { index: i + 1 })}
           <span class="chevron">${open ? '▼' : '▶'}</span>
         </div>
         ${open ? html`
           <div class="mini-pill-content">
             <div class="input-group">
               <div class="filter-row">
-                <label for="filter-${i}">Filter category:</label>
+                <label for="filter-${i}">${t('panel.sensor.filter_category')}</label>
                 <button
                   class="clear-chip"
                   type="button"
                   @click=${() => this._clearFilter(i)}
-                  title="Clear filter category">
-                  Clear
+                  title=${t('panel.sensor.clear_filter')}>
+                  ${t('panel.sensor.clear')}
                 </button>
               </div>
               <ha-selector
@@ -177,7 +180,7 @@ export class SensorPanel extends LitElement {
             </div>
 
             <div class="input-group">
-              <label>Entity:</label>
+              <label>${t('panel.sensor.entity')}</label>
               <ha-selector
                 .hass=${this.hass}
                 .value=${ent}

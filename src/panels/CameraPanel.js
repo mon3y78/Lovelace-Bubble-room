@@ -3,6 +3,7 @@ import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
+import { localize } from '../helpers/i18n.js';
 
 export class CameraPanel extends LitElement {
   static properties = {
@@ -131,13 +132,14 @@ export class CameraPanel extends LitElement {
 
   render() {
     const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
+    const t = (key, vars, fallback) => localize(this.hass, key, vars, fallback);
     return html`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
         @expanded-changed=${e => (this.expanded = e.detail.expanded)}
       >
-        <div slot="header" class="glass-header">📷 Camera</div>
+        <div slot="header" class="glass-header">${t('panel.camera.title')}</div>
 
         <div class="input-group autodiscover">
           <input
@@ -145,11 +147,11 @@ export class CameraPanel extends LitElement {
             .checked=${autoDisc}
             @change=${e => this._toggleAuto(e.target.checked)}
           />
-          <label>🪄 Auto-discover</label>
+          <label>${t('panel.camera.auto_discover')}</label>
         </div>
 
         <div class="input-group">
-          <label>Camera (ID):</label>
+          <label>${t('panel.camera.entity')}</label>
           <ha-selector
             .hass=${this.hass}
             .value=${this._entity}
@@ -164,7 +166,7 @@ export class CameraPanel extends LitElement {
         </div>
 
         <div class="input-group">
-          <label>Camera Icon:</label>
+          <label>${t('panel.camera.icon')}</label>
           <ha-icon-picker
             .hass=${this.hass}
             .value=${this._icon}
@@ -174,7 +176,7 @@ export class CameraPanel extends LitElement {
         </div>
         
         <div class="input-group">
-          <label>Presence/Motion Entity:</label>
+          <label>${t('panel.camera.presence')}</label>
           <ha-selector
             .hass=${this.hass}
             .value=${this._presence}
@@ -197,7 +199,7 @@ export class CameraPanel extends LitElement {
               bubbles: true, composed: true,
             }))
           }
-        >🧹 Reset Camera</button>
+        >${t('panel.camera.reset')}</button>
       </ha-expansion-panel>
     `;
   }
