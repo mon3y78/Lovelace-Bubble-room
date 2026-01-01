@@ -1,5 +1,6 @@
 // src/panels/ColorPanel.js
 import { LitElement, html, css } from 'lit';
+import { localize } from '../helpers/i18n.js';
 
 export class ColorPanel extends LitElement {
   static properties = {
@@ -496,6 +497,7 @@ export class ColorPanel extends LitElement {
 
   // ─────────────────── UI ───────────────────
   render() {
+    const t = (key, vars, fallback) => localize(this.hass, key, vars, fallback);
     return html`
       <ha-expansion-panel
         class="glass-panel"
@@ -505,7 +507,7 @@ export class ColorPanel extends LitElement {
           if (this.expanded) this._expandedColors = [false, false, false];
         }}
       >
-        <div slot="header" class="glass-header">🎨 Colors & Presets</div>
+        <div slot="header" class="glass-header">${t('panel.colors.title')}</div>
 
         ${this._renderStyleChooser()}
 
@@ -519,17 +521,17 @@ export class ColorPanel extends LitElement {
             style="--section-accent: #55afff;"
             @click=${() => this._toggleColor(0)}
           >
-            Room Colors
+            ${t('panel.colors.room_section')}
             <span class="chevron">${this._expandedColors[0] ? '▼' : '▶'}</span>
           </div>
           ${this._expandedColors[0] ? html`
             <div class="mini-pill-content">
-              ${this._renderColorField('room', 'background_active',   'Background Active')}
-              ${this._renderColorField('room', 'background_inactive', 'Background Inactive')}
-              ${this._renderColorField('room', 'icon_active',         'Icon Active')}
-              ${this._renderColorField('room', 'icon_inactive',       'Icon Inactive')}
-              ${this._renderColorField('room', 'text_active',         'Text Active')}
-              ${this._renderColorField('room', 'text_inactive',       'Text Inactive')}
+              ${this._renderColorField('room', 'background_active',   t('panel.colors.room.background_active'))}
+              ${this._renderColorField('room', 'background_inactive', t('panel.colors.room.background_inactive'))}
+              ${this._renderColorField('room', 'icon_active',         t('panel.colors.room.icon_active'))}
+              ${this._renderColorField('room', 'icon_inactive',       t('panel.colors.room.icon_inactive'))}
+              ${this._renderColorField('room', 'text_active',         t('panel.colors.room.text_active'))}
+              ${this._renderColorField('room', 'text_inactive',       t('panel.colors.room.text_inactive'))}
             </div>
           ` : ''}
         </div>
@@ -541,15 +543,15 @@ export class ColorPanel extends LitElement {
             style="--section-accent: #b28fff;"
             @click=${() => this._toggleColor(1)}
           >
-            Subbutton Colors
+            ${t('panel.colors.subbutton_section')}
             <span class="chevron">${this._expandedColors[1] ? '▼' : '▶'}</span>
           </div>
           ${this._expandedColors[1] ? html`
             <div class="mini-pill-content">
-              ${this._renderColorField('subbutton', 'background_on',  'Background On')}
-              ${this._renderColorField('subbutton', 'background_off', 'Background Off')}
-              ${this._renderColorField('subbutton', 'icon_on',        'Icon On')}
-              ${this._renderColorField('subbutton', 'icon_off',       'Icon Off')}
+              ${this._renderColorField('subbutton', 'background_on',  t('panel.colors.subbutton.background_on'))}
+              ${this._renderColorField('subbutton', 'background_off', t('panel.colors.subbutton.background_off'))}
+              ${this._renderColorField('subbutton', 'icon_on',        t('panel.colors.subbutton.icon_on'))}
+              ${this._renderColorField('subbutton', 'icon_off',       t('panel.colors.subbutton.icon_off'))}
             </div>
           ` : ''}
         </div>
@@ -561,20 +563,20 @@ export class ColorPanel extends LitElement {
             style="--section-accent: #4bd1b4;"
             @click=${() => this._toggleColor(2)}
           >
-            Mushroom Colors
+            ${t('panel.colors.mushroom_section')}
             <span class="chevron">${this._expandedColors[2] ? '▼' : '▶'}</span>
           </div>
           ${this._expandedColors[2] ? html`
             <div class="mini-pill-content">
-              ${this._renderColorField('mushroom', 'active',   'Active')}
-              ${this._renderColorField('mushroom', 'inactive', 'Inactive')}
+              ${this._renderColorField('mushroom', 'active',   t('panel.colors.mushroom.active'))}
+              ${this._renderColorField('mushroom', 'inactive', t('panel.colors.mushroom.inactive'))}
             </div>
           ` : ''}
         </div>
 
         <!-- Reset -->
         <button class="reset-button" @click=${() => this._resetColors()}>
-          🧹 Reset Colors
+          ${t('panel.colors.reset')}
         </button>
       </ha-expansion-panel>
     `;
@@ -582,22 +584,23 @@ export class ColorPanel extends LitElement {
 
   // ─────────────────── UI helpers ───────────────────
   _renderStyleChooser() {
+    const t = (key, vars, fallback) => localize(this.hass, key, vars, fallback);
     const options = [
       {
         key: 'standard',
-        label: 'Standard (v5.0.6)',
-        description: 'Aspetto classico con pillole solide e contrastate.',
+        label: t('panel.colors.style.standard'),
+        description: t('panel.colors.style.standard_desc'),
       },
       {
         key: 'liquid-glass',
-        label: 'Liquid Glass',
-        description: 'Effetto vetro liquido con trasparenze morbide.',
+        label: t('panel.colors.style.liquid_glass'),
+        description: t('panel.colors.style.liquid_glass_desc'),
       },
     ];
 
     return html`
       <div class="style-section">
-        <div class="style-heading">Subbutton Style</div>
+        <div class="style-heading">${t('panel.colors.subbutton_style')}</div>
         <div class="style-bar">
           ${options.map(opt => this._renderStyleCard(opt))}
         </div>
@@ -625,19 +628,21 @@ export class ColorPanel extends LitElement {
 
   _renderPresetChooser() {
     const keys = Object.keys(this.PRESETS);
+    const t = (key, vars, fallback) => localize(this.hass, key, vars, fallback);
     return html`
       <div class="preset-bar">
         ${keys.map(k => this._renderPresetCard(k, this.PRESETS[k]))}
       </div>
       <div class="apply-row">
         <button class="apply-btn" @click=${this._applySelectedPreset}>
-          Apply Preset
+          ${t('panel.colors.apply_preset')}
         </button>
       </div>
     `;
   }
 
   _renderPresetCard(key, p) {
+    const t = (token, vars, fallback) => localize(this.hass, token, vars, fallback);
     const sel = this._selectedPreset === key ? 'selected' : '';
     const roomA = p.room.background_active;
     const roomI = p.room.background_inactive;
@@ -645,15 +650,15 @@ export class ColorPanel extends LitElement {
     const iconI = p.room.icon_inactive;
     return html`
       <div class="preset-card ${sel}" @click=${() => this._selectedPreset = key}>
-        <div class="preset-name">${p.label}</div>
+        <div class="preset-name">${t(`presets.${key}`)}</div>
         <div class="swatches">
           <div class="swatch" style="background:${roomA}">
             <span class="dot" style="background:${iconA}"></span>
-            <span class="swatch-label">On</span>
+            <span class="swatch-label">${t('panel.colors.on')}</span>
           </div>
           <div class="swatch" style="background:${roomI}">
             <span class="dot" style="background:${iconI}"></span>
-            <span class="swatch-label">Off</span>
+            <span class="swatch-label">${t('panel.colors.off')}</span>
           </div>
         </div>
       </div>

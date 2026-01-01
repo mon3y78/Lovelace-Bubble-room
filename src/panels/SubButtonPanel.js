@@ -8,6 +8,7 @@ import {
 } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
 import { sharedPanelStyles } from './shared-styles.js';
+import { localize } from '../helpers/i18n.js';
 
 export class SubButtonPanel extends LitElement {
   static properties = {
@@ -124,6 +125,7 @@ export class SubButtonPanel extends LitElement {
 
   render() {
     const autoDisc = this.config?.auto_discovery_sections?.subbutton ?? false;
+    const t = (key, vars, fallback) => localize(this.hass, key, vars, fallback);
     const options = COMMON_CATS.map(cat => ({
       value: cat,
       label: FILTER_LABELS[cat] || cat.charAt(0).toUpperCase() + cat.slice(1),
@@ -135,22 +137,25 @@ export class SubButtonPanel extends LitElement {
         .expanded=${this.expanded}
         @expanded-changed=${e => (this.expanded = e.detail.expanded)}
       >
-        <div slot="header" class="glass-header">🎛️ Sub-buttons</div>
+        <div slot="header" class="glass-header">${t('panel.subbutton.title')}</div>
 
         <div class="input-group autodiscover">
           <input type="checkbox" .checked=${autoDisc}
                  @change=${e => this._toggleAuto(e.target.checked)} />
-          <label>🪄 Auto-discover Subbuttons</label>
+          <label>${t('panel.subbutton.auto_discover')}</label>
         </div>
 
         ${this._expanded.map((open, i) => this._renderSubButton(i, open, options))}
 
-        <button class="reset-button" @click=${() => this._reset()}>🧹 Reset Sub-buttons</button>
+        <button class="reset-button" @click=${() => this._reset()}>
+          ${t('panel.subbutton.reset')}
+        </button>
       </ha-expansion-panel>
     `;
   }
 
   _renderSubButton(i, open, options) {
+    const t = (key, vars, fallback) => localize(this.hass, key, vars, fallback);
     const types = this._filters[i];
     const ent = this._entities[i];
     const adOn = this.config?.auto_discovery_sections?.subbutton ?? false;
@@ -166,20 +171,28 @@ export class SubButtonPanel extends LitElement {
 
     const cfg = Array.isArray(this.config?.subbuttons) ? (this.config.subbuttons[i] || {}) : {};
     const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+    const actionLabels = {
+      toggle: t('actions.toggle'),
+      'more-info': t('actions.more-info'),
+      navigate: t('actions.navigate'),
+      'call-service': t('actions.call-service'),
+      none: t('actions.none'),
+    };
 
     return html`
       <div class="mini-pill ${open ? 'expanded' : ''}">
         <div class="mini-pill-header" @click=${() => this._togglePill(i)}>
-          Sub-button ${i + 1}  <span class="chevron">${open ? '▼' : '▶'}</span>
+          ${t('panel.subbutton.item', { index: i + 1 })}
+          <span class="chevron">${open ? '▼' : '▶'}</span>
         </div>
         ${open ? html`
           <div class="mini-pill-content">
             <div class="input-group">
               <div class="filter-row">
-                <label for="filter-${i}">Filter category:</label>
+                <label for="filter-${i}">${t('panel.subbutton.filter_category')}</label>
                 <button class="clear-chip" type="button"
                         @click=${() => this._clearFilter(i)}
-                        title="Clear filter category">Clear</button>
+                        title=${t('panel.subbutton.clear_filter')}>${t('panel.subbutton.clear')}</button>
               </div>
               <ha-selector
                 id="filter-${i}"
@@ -191,7 +204,7 @@ export class SubButtonPanel extends LitElement {
             </div>
 
             <div class="input-group">
-              <label>Entity:</label>
+              <label>${t('panel.subbutton.entity')}</label>
               <ha-selector
                 .hass=${this.hass}
                 .value=${ent}
@@ -202,7 +215,7 @@ export class SubButtonPanel extends LitElement {
             </div>
 
             <div class="input-group">
-              <label>Icon:</label>
+              <label>${t('panel.subbutton.icon')}</label>
               <ha-icon-picker
                 .hass=${this.hass}
                 .value=${cfg.icon || ''}
@@ -213,13 +226,13 @@ export class SubButtonPanel extends LitElement {
 
             ${['tap','hold'].map(type => html`
               <div class="input-group">
-                <label>${type === 'tap' ? 'Tap Action' : 'Hold Action'}:</label>
+                <label>${type === 'tap' ? t('panel.subbutton.tap_action') : t('panel.subbutton.hold_action')}</label>
                 <div class="pill-group">
                   ${actions.map(a => html`
                     <button
                       class="pill-button ${cfg[`${type}_action`]?.action === a ? 'active' : ''}"
                       @click=${() => this._onAction(i, type, 'action', a)}
-                    >${a}</button>
+                    >${actionLabels[a]}</button>
                   `)}
                 </div>
                 ${this._extraFields(i, type, cfg)}
@@ -232,10 +245,11 @@ export class SubButtonPanel extends LitElement {
   }
 
   _extraFields(i, type, cfg) {
+    const t = (key, vars, fallback) => localize(this.hass, key, vars, fallback);
     const act = cfg?.[`${type}_action`]?.action;
     if (act === 'navigate') {
       return html`
-        <input type="text" placeholder="Path"
+        <input type="text" placeholder=${t('panel.subbutton.path')}
           .value=${cfg?.[`${type}_action`]?.navigation_path || ''}
           @input=${e => this._onAction(i, type, 'navigation_path', e.target.value)}
         />
@@ -243,11 +257,11 @@ export class SubButtonPanel extends LitElement {
     }
     if (act === 'call-service') {
       return html`
-        <input type="text" placeholder="Service"
+        <input type="text" placeholder=${t('panel.subbutton.service')}
           .value=${cfg?.[`${type}_action`]?.service || ''}
           @input=${e => this._onAction(i, type, 'service', e.target.value)}
         />
-        <input type="text" placeholder='Service Data (JSON)'
+        <input type="text" placeholder=${t('panel.subbutton.service_data')}
           .value=${cfg?.[`${type}_action`]?.service_data ? JSON.stringify(cfg[`${type}_action`].service_data) : ''}
           @input=${e => this._onAction(i, type, 'service_data', this._safeJson(e.target.value))}
         />

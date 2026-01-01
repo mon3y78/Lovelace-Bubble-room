@@ -4,6 +4,7 @@ import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor }     from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // path corretto
 import { IconCache }         from '../helpers/icon-cache.js';
+import { localize } from '../helpers/i18n.js';
 
 const PRESENCE_CATS = [
   'presence',
@@ -324,6 +325,7 @@ export class RoomPanel extends LitElement {
 
   render() {
     const cfg      = this.config;
+    const t = (key, vars, fallback) => localize(this.hass, key, vars, fallback);
     const autoDisc = cfg.auto_discovery_sections?.presence ?? false;
     const area     = cfg.area ?? '';
     const name     = cfg.name ?? '';
@@ -343,6 +345,13 @@ export class RoomPanel extends LitElement {
 
 
     const actions = ['toggle','more-info','navigate','call-service','none'];
+    const actionLabels = {
+      toggle: t('actions.toggle'),
+      'more-info': t('actions.more-info'),
+      navigate: t('actions.navigate'),
+      'call-service': t('actions.call-service'),
+      none: t('actions.none'),
+    };
     const tapCfg  = this.config?.tap_action  || {};
     const holdCfg = this.config?.hold_action || {};
 
@@ -352,7 +361,7 @@ export class RoomPanel extends LitElement {
         .expanded=${this._expanded}
         @expanded-changed=${e => this._expanded = e.detail.expanded}
       >
-        <div slot="header" class="glass-header">🛋️ Room Settings</div>
+        <div slot="header" class="glass-header">${t('panel.room.title')}</div>
       
         <div class="input-group autodiscover">
           <input
@@ -360,11 +369,11 @@ export class RoomPanel extends LitElement {
             .checked=${autoDisc}
             @change=${e => this._fire('auto_discovery_sections.presence', e.target.checked)}
           />
-          <label>🪄 Auto-discover Presence</label>
+          <label>${t('panel.room.auto_discover_presence')}</label>
         </div>
       
         <div class="input-group">
-          <label>🏷️ Area:</label>
+          <label>${t('panel.room.area')}</label>
           <ha-selector
             .hass=${this.hass}
             .value=${area}
@@ -374,7 +383,7 @@ export class RoomPanel extends LitElement {
         </div>
       
         <div class="input-group">
-          <label>🏠 Room name:</label>
+          <label>${t('panel.room.name')}</label>
           <input
             type="text"
             .value=${name}
@@ -384,11 +393,11 @@ export class RoomPanel extends LitElement {
       
         <!-- 🎭 Icon & Presence -->
         <div class="mini-pill">
-          <div class="mini-pill-header">🎭 Icon & Presence</div>
+          <div class="mini-pill-header">${t('panel.room.icon_presence')}</div>
           <div class="mini-pill-content">
             <!-- Room Icon -->
             <div class="input-group">
-              <label>Icon:</label>
+              <label>${t('panel.room.icon')}</label>
               <ha-icon-picker
                 .hass=${this.hass}
                 .value=${icon}
@@ -400,7 +409,7 @@ export class RoomPanel extends LitElement {
       
             <!-- Filter categories -->
             <div class="input-group">
-              <label>Filter categories:</label>
+              <label>${t('panel.room.filter_categories')}</label>
               <ha-selector
                 .hass=${this.hass}
                 .value=${presFilters}
@@ -411,7 +420,7 @@ export class RoomPanel extends LitElement {
       
             <!-- Presence entity -->
             <div class="input-group">
-              <label>Presence (ID):</label>
+              <label>${t('panel.room.presence_id')}</label>
               <ha-selector
                 .hass=${this.hass}
                 .value=${presEntity}
@@ -423,27 +432,27 @@ export class RoomPanel extends LitElement {
       
             <!-- Actions -->
             <div class="input-group">
-              <label>Tap Action</label>
+              <label>${t('panel.room.tap_action')}</label>
               <div class="pill-group">
                 ${actions.map(a => html`
                   <button
                     class="pill-button ${tapCfg.action === a ? 'active' : ''}"
                     @click=${() => this._fire('tap_action.action', a)}
-                  >${a}</button>
+                  >${actionLabels[a]}</button>
                 `)}
               </div>
               ${tapCfg.action === 'navigate' ? html`
-                <input type="text" placeholder="Path"
+                <input type="text" placeholder=${t('panel.room.path')}
                   .value=${tapCfg.navigation_path || ''}
                   @input=${e => this._fire('tap_action.navigation_path', e.target.value)}
                 />
               ` : ''}
               ${tapCfg.action === 'call-service' ? html`
-                <input type="text" placeholder="service"
+                <input type="text" placeholder=${t('panel.room.service')}
                   .value=${tapCfg.service || ''}
                   @input=${e => this._fire('tap_action.service', e.target.value)}
                 />
-                <input type="text" placeholder='service_data (JSON)'
+                <input type="text" placeholder=${t('panel.room.service_data')}
                   .value=${tapCfg.service_data ? JSON.stringify(tapCfg.service_data) : ''}
                   @input=${e => {
                     let v = e.target.value;
@@ -455,27 +464,27 @@ export class RoomPanel extends LitElement {
             </div>
 
             <div class="input-group">
-              <label>Hold Action</label>
+              <label>${t('panel.room.hold_action')}</label>
               <div class="pill-group">
                 ${actions.map(a => html`
                   <button
                     class="pill-button ${holdCfg.action === a ? 'active' : ''}"
                     @click=${() => this._fire('hold_action.action', a)}
-                  >${a}</button>
+                  >${actionLabels[a]}</button>
                 `)}
               </div>
               ${holdCfg.action === 'navigate' ? html`
-                <input type="text" placeholder="Path"
+                <input type="text" placeholder=${t('panel.room.path')}
                   .value=${holdCfg.navigation_path || ''}
                   @input=${e => this._fire('hold_action.navigation_path', e.target.value)}
                 />
               ` : ''}
               ${holdCfg.action === 'call-service' ? html`
-                <input type="text" placeholder="service (es. light.turn_on)"
+                <input type="text" placeholder=${t('panel.room.service_with_example')}
                   .value=${holdCfg.service || ''}
                   @input=${e => this._fire('hold_action.service', e.target.value)}
                 />
-                <input type="text" placeholder='service_data (JSON)'
+                <input type="text" placeholder=${t('panel.room.service_data')}
                   .value=${holdCfg.service_data ? JSON.stringify(holdCfg.service_data) : ''}
                   @input=${e => {
                     let v = e.target.value;
@@ -490,7 +499,7 @@ export class RoomPanel extends LitElement {
       
         <!-- 📐 Layout -->
         <div class="input-group">
-          <label>📐 Layout:</label>
+          <label>${t('panel.room.layout')}</label>
           <div class="toggle-group">
 
             <button
@@ -498,14 +507,14 @@ export class RoomPanel extends LitElement {
               @click=${() => this._onLayoutClick('tall')}
             >
               <ha-icon icon="mdi:cellphone"></ha-icon>
-              <span>Tall</span>
+              <span>${t('panel.room.layout_tall')}</span>
             </button>
             <button
               class="toggle-btn ${this.layout === 'wide' ? 'active' : ''}"
               @click=${() => this._onLayoutClick('wide')}
             >
               <ha-icon icon="mdi:tablet"></ha-icon> 
-              <span>Wide</span> 
+              <span>${t('panel.room.layout_wide')}</span> 
             </button>
           </div>
         </div>
@@ -513,7 +522,7 @@ export class RoomPanel extends LitElement {
         <!-- Reset (identico a CameraPanel) -->
         <button class="reset-button"
           @click=${() => this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' })}>
-          🧹 Reset Room
+          ${t('panel.room.reset')}
         </button>
       </ha-expansion-panel>
     `;

@@ -3,6 +3,7 @@ import { LitElement, html, css } from 'lit';
 import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
+import { localize } from '../helpers/i18n.js';
 
 export class ClimatePanel extends LitElement {
   static properties = {
@@ -119,13 +120,14 @@ export class ClimatePanel extends LitElement {
 
   render() {
     const autoDisc = this.config?.auto_discovery_sections?.climate ?? false;
+    const t = (key, vars, fallback) => localize(this.hass, key, vars, fallback);
     return html`
       <ha-expansion-panel
         class="glass-panel"
         .expanded=${this.expanded}
         @expanded-changed=${e => (this.expanded = e.detail.expanded)}
       >
-        <div slot="header" class="glass-header">🌡️ Climate</div>
+        <div slot="header" class="glass-header">${t('panel.climate.title')}</div>
 
         <div class="input-group autodiscover">
           <input
@@ -133,11 +135,11 @@ export class ClimatePanel extends LitElement {
             .checked=${autoDisc}
             @change=${e => this._toggleAuto(e.target.checked)}
           />
-          <label>🪄 Auto-discover</label>
+          <label>${t('panel.climate.auto_discover')}</label>
         </div>
 
         <div class="input-group">
-          <label>Climate (ID):</label>
+          <label>${t('panel.climate.entity')}</label>
           <ha-selector
             .hass=${this.hass}
             .value=${this._entity}
@@ -152,7 +154,7 @@ export class ClimatePanel extends LitElement {
         </div>
 
         <div class="input-group">
-          <label>Climate Icon:</label>
+          <label>${t('panel.climate.icon')}</label>
           <ha-icon-picker
             .hass=${this.hass}
             .value=${this._icon}
@@ -169,7 +171,7 @@ export class ClimatePanel extends LitElement {
               bubbles: true, composed: true,
             }))
           }
-        >🧹 Reset Climate</button>
+        >${t('panel.climate.reset')}</button>
       </ha-expansion-panel>
     `;
   }
