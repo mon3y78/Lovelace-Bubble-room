@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+import { createGestureHandler } from '../helpers/gesture-handler.js';
 
 export class BubbleSubButton extends LitElement {
   static properties = {
@@ -10,10 +11,11 @@ export class BubbleSubButton extends LitElement {
     super();
     this.subbuttons = [];
     this.preset = 'liquid-glass';
-    this._holdThreshold = 500;
-    this._holdTimer = null;
-    this._holdFired = false;
-    this._currentIndex = -1;
+    // Gesture logic centralizzata in gesture-handler.js
+    this._gesture = createGestureHandler({
+      onTap:  (idx) => this._fireHassAction(idx, 'tap'),
+      onHold: (idx) => this._fireHassAction(idx, 'hold'),
+    });
   }
 
   static styles = css`
@@ -325,28 +327,9 @@ export class BubbleSubButton extends LitElement {
     `;
   }
   
-  _onDown(idx) {
-    this._holdFired = false;
-    this._currentIndex = idx;
-    this._holdTimer = window.setTimeout(() => {
-      this._holdFired = true;
-      this._fireHassAction(idx, 'hold');
-    }, this._holdThreshold);
-  }
-  
-  _onUp(idx) {
-    this._clearHoldTimer();
-    if (!this._holdFired && this._currentIndex === idx) {
-      this._fireHassAction(idx, 'tap');
-    }
-  }
-  
-  _clearHoldTimer() {
-    if (this._holdTimer) {
-      clearTimeout(this._holdTimer);
-      this._holdTimer = null;
-    }
-  }
+  _onDown(idx) { this._gesture.onDown(idx); }
+  _onUp(idx)   { this._gesture.onUp(idx); }
+  _clearHoldTimer() { this._gesture.clearTimer(); }
 
   _lightenColor(color, weight = 0.3) {
     const rgb = this._colorToRgb(color);

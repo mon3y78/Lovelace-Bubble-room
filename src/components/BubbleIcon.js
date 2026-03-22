@@ -1,5 +1,6 @@
 // src/elements/BubbleIcon.js
 import { LitElement, html, css } from 'lit';
+import { createGestureHandler } from '../helpers/gesture-handler.js';
 
 export class BubbleIcon extends LitElement {
   static properties = {
@@ -34,10 +35,11 @@ export class BubbleIcon extends LitElement {
     this.tap_action = { action: 'more-info' };
     this.hold_action = { action: 'none' };
     
-    // Gestione hold come SubButton
-    this._holdThreshold = 500; // ms
-    this._holdTimer = null;
-    this._holdFired = false;
+    // Gestione hold — logica centralizzata in gesture-handler.js
+    this._gesture = createGestureHandler({
+      onTap:  () => this._fireHassAction('tap'),
+      onHold: () => this._fireHassAction('hold'),
+    });
   }
   
   static styles = css`
@@ -259,27 +261,11 @@ export class BubbleIcon extends LitElement {
     return { r, g, b, a: a / 255 };
   }
 
-  /* ───────────── GESTURE: identiche a BubbleSubButton ───────────── */
-  
-  _onDown = () => {
-    this._holdFired = false;
-    this._holdTimer = window.setTimeout(() => {
-      this._holdFired = true;
-      this._fireHassAction('hold');
-    }, this._holdThreshold);
-  };
-  
-  _onUp = () => {
-    this._clearHoldTimer();
-    if (!this._holdFired) this._fireHassAction('tap');
-  };
-  
-  _clearHoldTimer = () => {
-    if (this._holdTimer) {
-      clearTimeout(this._holdTimer);
-      this._holdTimer = null;
-    }
-  };
+  /* ───────────── GESTURE (via gesture-handler.js) ───────────── */
+
+  _onDown = () => this._gesture.onDown();
+  _onUp   = () => this._gesture.onUp();
+  _clearHoldTimer = () => this._gesture.clearTimer();
   
   /* ───────────── Evento emesso: stesso payload di BubbleSubButton ───────────── */
   

@@ -1,18 +1,8 @@
 
 // src/helpers/icon-mapping.js
 
-// Cache opzionale (se non esiste il modulo, usiamo una Map interna)
-let _cache;
-try {
-  const { IconCache } = await import('./icon-cache.js');
-  _cache = IconCache;
-} catch (_e) {
-  _cache = {
-    _m: new Map(),
-    get(k) { return this._m.get(k); },
-    set(k, v) { this._m.set(k, v); },
-  };
-}
+// Cache locale entità → icona (Map semplice, nessun top-level await necessario)
+const _iconCache = new Map();
 
 export const DEFAULT_ICON = 'mdi:bookmark';
 
@@ -90,7 +80,7 @@ export function resolveEntityIcon(a, b) {
   const { entityId, hass } = _normalizeArgs(a, b);
   if (!entityId) return DEFAULT_ICON;
 
-  const cached = _cache?.get?.(entityId);
+  const cached = _iconCache.get(entityId);
   if (cached) return cached;
 
   const st = hass?.states?.[entityId];
@@ -99,7 +89,7 @@ export function resolveEntityIcon(a, b) {
   const state = st?.state;
 
   if (attrs.icon) {
-    _cache?.set?.(entityId, attrs.icon);
+    _iconCache.set(entityId, attrs.icon);
     return attrs.icon;
   }
 
@@ -108,7 +98,7 @@ export function resolveEntityIcon(a, b) {
     const icon = _stateIsOnLike(state)
       ? DEVICE_CLASS_ICON_MAP[devClass].on
       : DEVICE_CLASS_ICON_MAP[devClass].off;
-    _cache?.set?.(entityId, icon);
+    _iconCache.set(entityId, icon);
     return icon;
   }
 
@@ -131,12 +121,12 @@ export function resolveEntityIcon(a, b) {
   if (domainIconMap[domain]) {
     const [iconOn, iconOff] = domainIconMap[domain];
     const icon = _stateIsOnLike(state) ? iconOn : iconOff;
-    _cache?.set?.(entityId, icon);
+    _iconCache.set(entityId, icon);
     return icon;
   }
 
   const fallback = DOMAIN_ICON_MAP[domain] || DEFAULT_ICON;
-  _cache?.set?.(entityId, fallback);
+  _iconCache.set(entityId, fallback);
   return fallback;
 }
 

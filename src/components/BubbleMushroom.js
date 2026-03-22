@@ -1,6 +1,7 @@
 // src/components/BubbleMushroom.js
 import { LitElement, html, css } from 'lit';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
+import { createGestureHandler } from '../helpers/gesture-handler.js';
 
 
 export class BubbleMushroom extends LitElement {
@@ -31,10 +32,11 @@ export class BubbleMushroom extends LitElement {
     });
 
     // === GESTURE STATE (tap/hold/double_tap) ===
-    this._holdThreshold = 500; // ms
-    this._holdTimer = null;
-    this._holdFired = false;
-    this._lastTapTs = 0; // per double tap
+    this._lastTapTs = 0; // per double tap (logica entity-specifica)
+    this._gesture = createGestureHandler({
+      onTap:  (entity) => this._handleTap(entity),
+      onHold: (entity) => this._dispatchAction(entity, 'hold'),
+    });
   }
 
   connectedCallback() {
@@ -86,44 +88,32 @@ export class BubbleMushroom extends LitElement {
 
   _onPointerDown(ev, entity) {
     ev.preventDefault();
-    this._holdFired = false;
-    clearTimeout(this._holdTimer);
-    this._holdTimer = setTimeout(() => {
-      this._holdFired = true;
-      this._dispatchAction(entity, 'hold');
-    }, this._holdThreshold);
+    this._gesture.onDown(entity);
   }
 
   _onPointerUp(ev, entity) {
     ev.preventDefault();
-    clearTimeout(this._holdTimer);
+    this._gesture.onUp(entity);
+  }
 
-    // se è già partito l'hold, non fare altro
-    if (this._holdFired) {
-      this._holdFired = false;
-      return;
-    }
+  _onPointerCancel() {
+    this._gesture.onCancel();
+  }
 
-    // double tap opzionale
+  // Tap handler con supporto double_tap entity-specifico
+  _handleTap(entity) {
     const now = Date.now();
     if (entity?.double_tap_action && (now - this._lastTapTs) < 300) {
       this._lastTapTs = 0;
       this._dispatchAction(entity, 'double_tap');
       return;
     }
-
-    // tap (piccolo delay per dare priorità al double tap)
     this._lastTapTs = now;
     setTimeout(() => {
       if (Date.now() - this._lastTapTs >= 280) {
         this._dispatchAction(entity, 'tap');
       }
     }, 280);
-  }
-
-  _onPointerCancel() {
-    clearTimeout(this._holdTimer);
-    this._holdFired = false;
   }
 
   static styles = css`

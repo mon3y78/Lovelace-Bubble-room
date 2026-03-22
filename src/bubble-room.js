@@ -262,6 +262,17 @@ export class BubbleRoom extends LitElement {
 
   /* ───────────── render ───────────── */
   render() {
+    try {
+      return this._renderCard();
+    } catch (err) {
+      console.error('[bubble-room] render error:', err);
+      return html`<div style="padding:12px;color:#f87;font-size:0.9rem">
+        bubble-room: errore di rendering — ${err.message}
+      </div>`;
+    }
+  }
+
+  _renderCard() {
     const layout        = this.config.layout || 'wide';
     const mainIconSize  = this._getMainIconSize();
     const subbuttons    = this._getSubButtons();
@@ -357,44 +368,47 @@ export class BubbleRoom extends LitElement {
     const act = actionCfg?.action || 'none';
     if (act === 'none') return;
 
-    switch (act) {
-      case 'navigate': {
-        const path = actionCfg.navigation_path || actionCfg.navigationPath;
-        if (path) {
-          window.history.pushState({}, '', path);
-          window.dispatchEvent(new Event('location-changed'));
+    try {
+      switch (act) {
+        case 'navigate': {
+          const path = actionCfg.navigation_path || actionCfg.navigationPath;
+          if (path) {
+            window.history.pushState({}, '', path);
+            window.dispatchEvent(new Event('location-changed'));
+          }
+          break;
         }
-        break;
-      }
-      case 'more-info': {
-        const entityId = actionCfg.entity || fallbackEntity;
-        if (entityId) {
-          this.dispatchEvent(new CustomEvent('hass-more-info', {
-            detail: { entityId }, bubbles: true, composed: true
-          }));
+        case 'more-info': {
+          const entityId = actionCfg.entity || fallbackEntity;
+          if (entityId) {
+            this.dispatchEvent(new CustomEvent('hass-more-info', {
+              detail: { entityId }, bubbles: true, composed: true
+            }));
+          }
+          break;
         }
-        break;
-      }
-      case 'toggle': {
-        const entityId = actionCfg.entity || fallbackEntity;
-        if (entityId && this.hass?.callService) {
-          this.hass.callService('homeassistant', 'toggle', { entity_id: entityId });
+        case 'toggle': {
+          const entityId = actionCfg.entity || fallbackEntity;
+          if (entityId && this.hass?.callService) {
+            this.hass.callService('homeassistant', 'toggle', { entity_id: entityId });
+          }
+          break;
         }
-        break;
-      }
-      case 'call-service': {
-        const srv = actionCfg.service || '';
-        const [domain, service] = srv.split('.');
-        if (domain && service && this.hass?.callService) {
-          const data = { ...(actionCfg.service_data || actionCfg.data || {}) };
-          if (!data.entity_id && fallbackEntity) data.entity_id = fallbackEntity;
-          this.hass.callService(domain, service, data);
+        case 'call-service': {
+          const srv = actionCfg.service || '';
+          const [domain, service] = srv.split('.');
+          if (domain && service && this.hass?.callService) {
+            const data = { ...(actionCfg.service_data || actionCfg.data || {}) };
+            if (!data.entity_id && fallbackEntity) data.entity_id = fallbackEntity;
+            this.hass.callService(domain, service, data);
+          }
+          break;
         }
-        break;
+        default:
+          break;
       }
-      default:
-        // no-op
-        break;
+    } catch (err) {
+      console.error('[bubble-room] action error:', act, err);
     }
   }
 
