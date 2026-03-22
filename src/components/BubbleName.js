@@ -18,8 +18,8 @@ export class BubbleName extends LitElement {
   constructor() {
     super();
     this.name = '';
-    this.fitMode = 'height'; // priorità all'altezza
-    this.stretchY = 1.12;       // nessuno stretch di default
+    this.fitMode = 'both'; // riempie sia larghezza che altezza
+    this.stretchY = 1.3;       // caratteri più mastodontici
     this.preset = 'standard';
     this._raf = null;
     this._resizeObs = null;
@@ -88,7 +88,7 @@ export class BubbleName extends LitElement {
 
   updated(changed) {
     if (changed.has('preset')) {
-      const desiredStretch = this.preset === 'liquid-glass' ? 1.32 : 1.12;
+      const desiredStretch = this.preset === 'liquid-glass' ? 1.4 : 1.3;
       if (this.stretchY !== desiredStretch) {
         this.stretchY = desiredStretch;
       }
@@ -232,7 +232,7 @@ export class BubbleName extends LitElement {
         Arial, sans-serif;
 
       font-weight: 700;
-      letter-spacing: 0.06em;
+      letter-spacing: 0em;
       font-stretch: condensed;
 
       text-align: center;
