@@ -231,8 +231,8 @@ export class BubbleSensor extends LitElement {
       return;
     }
 
-    // niente padding né bordo: massimizziamo lo spazio interno
-    const PADDING_X = 0;
+    // padding orizzontale (3px per lato) + separatore (1px) + gap tra elementi (2px * 2)
+    const PADDING_X = 10;
     const PADDING_Y = 0;
     const UNIT_ML   = 1; // lieve spazio tra valore e unità
 
@@ -427,14 +427,14 @@ export class BubbleSensor extends LitElement {
       box-sizing: border-box;
       padding: 0;
       margin: 0;
-      gap: 0;                /* nessuno spazio tra le celle */
+      gap: 0;
     }
     .sensor-pill {
       display: flex;
       align-items: center;
-      background: transparent;  /* niente sfondo */
-      border: 0;                /* niente bordo */
-      border-radius: 0;         /* niente raggio, si toccano */
+      background: transparent;
+      border: 0;
+      border-radius: 0;
       font-size: 1em;
       font-family: "Bebas Neue", "Arial Narrow", sans-serif;
       font-weight: 700;
@@ -444,9 +444,15 @@ export class BubbleSensor extends LitElement {
       height: 100%;
       contain: strict;
       cursor: pointer;
-      padding: 0;     
-      justify-content: center;  
-      text-align: center;         
+      padding: 0 3px;
+      justify-content: center;
+      text-align: center;
+      /* separatore sottile a destra per ogni pill tranne l'ultima */
+      border-right: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+      gap: 2px;
+    }
+    .sensor-pill:last-child {
+      border-right: none;
     }
     .sensor-label {
       font-weight: 600;
@@ -454,6 +460,7 @@ export class BubbleSensor extends LitElement {
       line-height: 1;
       display: inline-block;
       flex: 0 0 auto;
+      opacity: 0.85;
     }
     .sensor-value {
       font-weight: 700;
@@ -468,9 +475,9 @@ export class BubbleSensor extends LitElement {
       overflow: hidden;
       text-overflow: ellipsis;
       line-height: 1;
-      margin-left: 1px;         /* separa valore e unità */
+      margin-left: 1px;
       flex: 0 0 auto;
-      opacity: 1;               /* assicurati sia visibile */
+      opacity: 0.75;
     }
   `;
 
