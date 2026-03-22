@@ -136,6 +136,8 @@ export class BubbleMushroom extends LitElement {
       justify-content: center;
       z-index: 3;
       pointer-events: auto;
+      border-radius: 50%;
+      overflow: hidden;
     }
     .mushroom-entity ha-icon { display: block; }
   `;
@@ -225,14 +227,14 @@ export class BubbleMushroom extends LitElement {
 
         // diametro per-ENTITÀ: camera/climate più piccoli (come prima)
         const d = isCam ? dCam : (isCli ? dCli : size);
-        const iconSize = d * 0.95;
+        const iconSize = d * 0.82;
 
         // === POSIZIONI: camera/climate esattamente come nel codice che hai incollato ===
         // camera: { x: width - (dCam / 2), y: (dCam / 2) }
         // climate: { x: (dCli / 2) + touchPad, y: height - (dCli / 2) - touchPad }
         let base;
         if (isCam) {
-          base = { x: (width - (d / 2)), y: (d / 2) }; // alto-destra, come prima (nessun margine extra)
+          base = { x: (width - (d / 2) - 2), y: (d / 2) + 2 }; // alto-destra, 2px di margine dal bordo
         } else if (isCli) {
           base = { x: ((d / 2) + touchPad), y: (height - (d / 2) - touchPad) }; // basso-sinistra, come prima
         } else {

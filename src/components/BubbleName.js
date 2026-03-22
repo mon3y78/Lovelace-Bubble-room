@@ -225,20 +225,25 @@ export class BubbleName extends LitElement {
 
       /* font stack “alto”: caricato automaticamente */
       font-family:
-        "Bebas Neue",
-        "Oswald",
-        "Roboto Condensed",
-        "Arial Narrow",
+        “Bebas Neue”,
+        “Oswald”,
+        “Roboto Condensed”,
+        “Arial Narrow”,
         Arial, sans-serif;
 
       font-weight: 700;
-      letter-spacing: 0.01em;
+      letter-spacing: 0.06em;
       font-stretch: condensed;
 
       text-align: center;
       white-space: nowrap;
       text-transform: uppercase;
       color: var(--bubble-room-name-color, white);
+
+      /* glow leggero che segue il colore del nome */
+      text-shadow:
+        0 0 18px color-mix(in srgb, var(--bubble-room-name-color, white) 55%, transparent),
+        0 1px 3px rgba(0, 0, 0, 0.35);
 
       margin: 0;
       padding: 0;
@@ -248,13 +253,16 @@ export class BubbleName extends LitElement {
 
     :host([preset='liquid-glass']) .bubble-name {
       font-family:
-        "Bebas Neue",
-        "Roboto Condensed",
-        "Arial Narrow",
+        “Bebas Neue”,
+        “Roboto Condensed”,
+        “Arial Narrow”,
         Arial, sans-serif;
       font-weight: 600;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.10em;
       line-height: 0.9;
+      text-shadow:
+        0 0 22px color-mix(in srgb, var(--bubble-room-name-color, white) 60%, transparent),
+        0 2px 6px rgba(0, 0, 0, 0.4);
     }
   `;
 }
