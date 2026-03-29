@@ -231,8 +231,8 @@ export class BubbleSensor extends LitElement {
       return;
     }
 
-    // padding orizzontale (3px per lato) + separatore (1px) + gap tra elementi (2px * 2)
-    const PADDING_X = 10;
+    // 3px padding × 2 lati + 1px border-right = 7px per pill
+    const PADDING_X = 7;
     const PADDING_Y = 0;
     const UNIT_ML   = 1; // lieve spazio tra valore e unità
 
@@ -245,9 +245,8 @@ export class BubbleSensor extends LitElement {
     const maxHeight = Math.max(0, boxH - PADDING_Y);
     if (maxWidth === 0 || maxHeight === 0) return;
 
-    // abbassiamo i minimi e la taglia iniziale: emoji/icon più piccole
-    let lo = 5; // prima era 10
-    let hi = Math.min(40, maxHeight); // leggermente più compatto del 44
+    let lo = 5;
+    let hi = Math.min(40, maxHeight);
     let best = lo;
 
     // rapporti rivisti per avere emoji/unità un po' più piccole

@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { createGestureHandler } from '../helpers/gesture-handler.js';
+import { parseColor } from '../helpers/color-utils.js';
 
 export class BubbleSubButton extends LitElement {
   static properties = {
@@ -532,45 +533,7 @@ export class BubbleSubButton extends LitElement {
   }
 
   _colorToRgb(color) {
-    if (!color || typeof color !== 'string' || color.startsWith('var(')) {
-      return null;
-    }
-
-    if (typeof document === 'undefined') {
-      return null;
-    }
-
-    if (!BubbleSubButton._colorCanvas) {
-      const canvas = document.createElement('canvas');
-      canvas.width = canvas.height = 1;
-      BubbleSubButton._colorCanvas = canvas;
-      BubbleSubButton._colorCtx = canvas.getContext('2d', { willReadFrequently: true }) || canvas.getContext('2d');
-    }
-
-    const ctx = BubbleSubButton._colorCtx;
-    if (!ctx) {
-      return null;
-    }
-
-    try {
-      ctx.fillStyle = '#000';
-      ctx.fillStyle = color;
-    } catch (err) {
-      return null;
-    }
-
-    const normalized = ctx.fillStyle;
-    ctx.clearRect(0, 0, 1, 1);
-    ctx.fillStyle = normalized;
-    ctx.fillRect(0, 0, 1, 1);
-
-    const data = ctx.getImageData(0, 0, 1, 1).data;
-    return {
-      r: data[0],
-      g: data[1],
-      b: data[2],
-      a: data[3] / 255,
-    };
+    return parseColor(color);
   }
 
   _fireHassAction(idx, actionType) {

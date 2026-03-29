@@ -1,6 +1,7 @@
 // src/elements/BubbleIcon.js
 import { LitElement, html, css } from 'lit';
 import { createGestureHandler } from '../helpers/gesture-handler.js';
+import { colorWithOpacity } from '../helpers/color-utils.js';
 
 export class BubbleIcon extends LitElement {
   static properties = {
@@ -218,47 +219,7 @@ export class BubbleIcon extends LitElement {
   }
 
   _withOpacity(color, alpha) {
-    const parsed = BubbleIcon._parseColor(color);
-    if (!parsed) return null;
-    const { r, g, b } = parsed;
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  }
-
-  static _parseColor(color) {
-    if (!color || typeof color !== 'string' || color.startsWith('var(')) {
-      return null;
-    }
-
-    if (typeof document === 'undefined') {
-      return null;
-    }
-
-    if (!BubbleIcon._colorCanvas) {
-      const canvas = document.createElement('canvas');
-      canvas.width = canvas.height = 1;
-      BubbleIcon._colorCanvas = canvas;
-      BubbleIcon._colorCtx = canvas.getContext('2d', { willReadFrequently: true }) || canvas.getContext('2d');
-    }
-
-    const ctx = BubbleIcon._colorCtx;
-    if (!ctx) {
-      return null;
-    }
-
-    try {
-      ctx.fillStyle = '#000';
-      ctx.fillStyle = color;
-    } catch (_err) {
-      return null;
-    }
-
-    const normalized = ctx.fillStyle;
-    ctx.clearRect(0, 0, 1, 1);
-    ctx.fillStyle = normalized;
-    ctx.fillRect(0, 0, 1, 1);
-
-    const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
-    return { r, g, b, a: a / 255 };
+    return colorWithOpacity(color, alpha);
   }
 
   /* ───────────── GESTURE (via gesture-handler.js) ───────────── */
