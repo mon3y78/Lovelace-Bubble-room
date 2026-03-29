@@ -62,7 +62,8 @@ export class BubbleIcon extends LitElement {
       cursor: pointer;
       user-select: none;
       -webkit-user-select: none;
-      transition: background 0.2s, transform 0.1s;
+      /* transizione colore/sfondo al cambio stato presenza */
+      transition: background 0.3s ease, color 0.3s ease, transform 0.1s;
       position: relative;
       overflow: hidden;
       background: var(--bubble-main-icon-bg, transparent);

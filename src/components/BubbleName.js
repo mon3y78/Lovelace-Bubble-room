@@ -12,7 +12,7 @@ export class BubbleName extends LitElement {
     preset:    { type: String, reflect: true },
   };
 
-  // stretchY è derivato da preset — non è uno stato separato
+  // stretchY derivato da preset — nessuno stato separato
   get stretchY() {
     return this.preset === 'liquid-glass' ? 1.4 : 1.3;
   }
@@ -26,7 +26,7 @@ export class BubbleName extends LitElement {
     this._resizeObs = null;
     this._lastScale = null;
     this._lastBox = null;
-    this._scaling = false; // guard per il ResizeObserver durante le misurazioni
+    this._scaling = false;
   }
 
   _ensureFonts() {
@@ -44,7 +44,7 @@ export class BubbleName extends LitElement {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href =
-      'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;700&family=Roboto+Condensed:wght@400;700&display=swap';
+      'https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Bebas+Neue&family=Barlow+Condensed:wght@900&family=Oswald:wght@700&display=swap';
     link.setAttribute('data-bubble-fonts', '1');
     link.addEventListener('load', () => {
       requestAnimationFrame(() => this._scheduleScale());
@@ -57,7 +57,6 @@ export class BubbleName extends LitElement {
     this._scheduleScale();
 
     this._resizeObs = new ResizeObserver((entries) => {
-      // ignora i callback che arrivano durante le nostre misurazioni
       if (this._scaling) return;
 
       const entry = entries[0];
@@ -128,22 +127,26 @@ export class BubbleName extends LitElement {
       this._lastScale.preset === this.preset
     ) return;
 
-    // blocca il ResizeObserver durante le misurazioni (font-size changes triggerebbero callback spuri)
     this._scaling = true;
 
     el.style.fontSize = '10px';
     el.style.transform = 'none';
 
     const MIN = 8;
-    const MAX = 240;
+    const MAX = 300;
+
+    // Il binary search deve trovare la dimensione che, dopo scaleY(stretchY),
+    // riempie esattamente il container in altezza.
+    const effectiveBoxH = stretchY > 1 ? Math.round(boxH / stretchY) : boxH;
+
     let targetPx;
 
     if (this.fitMode === 'height') {
       let lo = MIN, hi = MAX;
-      for (let i = 0; i < 9 && lo <= hi; i++) {
+      for (let i = 0; i < 10 && lo <= hi; i++) {
         const mid = (lo + hi) >> 1;
         el.style.fontSize = `${mid}px`;
-        if (el.scrollHeight <= boxH) lo = mid + 1;
+        if (el.scrollHeight <= effectiveBoxH) lo = mid + 1;
         else hi = mid - 1;
       }
       targetPx = Math.max(MIN, Math.min(MAX, hi));
@@ -154,11 +157,12 @@ export class BubbleName extends LitElement {
         targetPx = Math.floor(targetPx * (boxW / sw));
       }
     } else {
+      // 'both': riempie larghezza E altezza (con compensazione stretchY)
       let lo = MIN, hi = MAX;
-      for (let i = 0; i < 8 && lo <= hi; i++) {
+      for (let i = 0; i < 10 && lo <= hi; i++) {
         const mid = (lo + hi) >> 1;
         el.style.fontSize = `${mid}px`;
-        if (el.scrollWidth <= boxW && el.scrollHeight <= boxH) lo = mid + 1;
+        if (el.scrollWidth <= boxW && el.scrollHeight <= effectiveBoxH) lo = mid + 1;
         else hi = mid - 1;
       }
       targetPx = Math.max(MIN, Math.min(MAX, hi));
@@ -198,23 +202,31 @@ export class BubbleName extends LitElement {
       justify-content: center;
       width: 100%;
       height: 100%;
-      line-height: 0.95;
+      line-height: 0.9;
+
       font-family:
+        "Big Shoulders Display",
+        "Barlow Condensed",
         "Bebas Neue",
         "Oswald",
-        "Roboto Condensed",
         "Arial Narrow",
         Arial, sans-serif;
-      font-weight: 700;
-      letter-spacing: 0em;
+      font-weight: 900;
+      letter-spacing: -0.01em;
       font-stretch: condensed;
+
       text-align: center;
       white-space: nowrap;
       text-transform: uppercase;
       color: var(--bubble-room-name-color, white);
+
+      /* transizione fluida cambio presenza */
+      transition: color 0.3s ease;
+
       text-shadow:
-        0 0 18px color-mix(in srgb, var(--bubble-room-name-color, white) 55%, transparent),
-        0 1px 3px rgba(0, 0, 0, 0.35);
+        0 0 20px color-mix(in srgb, var(--bubble-room-name-color, white) 50%, transparent),
+        0 2px 4px rgba(0, 0, 0, 0.4);
+
       margin: 0;
       padding: 0;
       user-select: none;
@@ -222,16 +234,16 @@ export class BubbleName extends LitElement {
 
     :host([preset='liquid-glass']) .bubble-name {
       font-family:
+        "Big Shoulders Display",
         "Bebas Neue",
-        "Roboto Condensed",
         "Arial Narrow",
         Arial, sans-serif;
-      font-weight: 600;
-      letter-spacing: 0.10em;
-      line-height: 0.9;
+      font-weight: 900;
+      letter-spacing: 0em;
+      line-height: 0.88;
       text-shadow:
-        0 0 22px color-mix(in srgb, var(--bubble-room-name-color, white) 60%, transparent),
-        0 2px 6px rgba(0, 0, 0, 0.4);
+        0 0 28px color-mix(in srgb, var(--bubble-room-name-color, white) 60%, transparent),
+        0 2px 8px rgba(0, 0, 0, 0.45);
     }
   `;
 }

@@ -10,12 +10,12 @@ export class BubbleMushroom extends LitElement {
     entities: { type: Array },
   };
 
-  // BubbleMushroom.js
   constructor() {
     super();
     this.entities = [];
     this._containerSize = { width: 0, height: 0 };
     this._rafSize = null;
+    this._ripplingKeys = new Set();
     this._ro = new ResizeObserver((entries) => {
       const cr = entries[0]?.contentRect;
       if (!cr) return;
@@ -88,6 +88,13 @@ export class BubbleMushroom extends LitElement {
 
   _onPointerDown(ev, entity) {
     ev.preventDefault();
+    const key = entity.entity_id || entity.kind || 'unknown';
+    this._ripplingKeys.add(key);
+    this.requestUpdate();
+    setTimeout(() => {
+      this._ripplingKeys.delete(key);
+      this.requestUpdate();
+    }, 500);
     this._gesture.onDown(entity);
   }
 
@@ -138,8 +145,23 @@ export class BubbleMushroom extends LitElement {
       pointer-events: auto;
       border-radius: 50%;
       overflow: hidden;
+      /* transizione fluida al cambio di stato presenza */
+      transition: color 0.3s ease;
     }
     .mushroom-entity ha-icon { display: block; }
+
+    @keyframes mushroom-ripple {
+      from { transform: scale(0); opacity: 0.55; }
+      to   { transform: scale(2.8); opacity: 0; }
+    }
+    .ripple {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: currentColor;
+      animation: mushroom-ripple 0.45s ease-out forwards;
+      pointer-events: none;
+    }
   `;
 
   render() {
@@ -248,6 +270,9 @@ export class BubbleMushroom extends LitElement {
         const left = base.x + useDx;
         const top  = base.y + useDy;
 
+        const rippleKey = e.entity_id || e.kind || 'unknown';
+        const isRippling = this._ripplingKeys.has(rippleKey);
+
         return html`
           <div
             class="mushroom-entity"
@@ -264,6 +289,7 @@ export class BubbleMushroom extends LitElement {
             @pointerleave=${this._onPointerCancel}
             @contextmenu=${(ev) => ev.preventDefault()}
           >
+            ${isRippling ? html`<span class="ripple"></span>` : ''}
             <ha-icon icon="${e.icon || resolveEntityIcon(e.entity_id, this.hass)}" style="--mdc-icon-size:${iconSize}px;"></ha-icon>
           </div>
         `;
