@@ -160,11 +160,11 @@ export class BubbleSubButton extends LitElement {
       border-radius: inherit;
       pointer-events: none;
       background: radial-gradient(
-        ellipse 90% 55% at 50% 110%,
-        var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.04)),
+        ellipse 100% 60% at 50% 115%,
+        var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.06)),
         transparent 65%
       );
-      opacity: 0.85;
+      opacity: 1.0;
       mix-blend-mode: screen;
       transition: opacity 0.35s ease;
     }
@@ -338,17 +338,17 @@ export class BubbleSubButton extends LitElement {
     const intensified = isActive ? this._boostColorIntensity(rgb, 0.42) : rgb;
     const { r, g, b } = intensified;
     const rgbString = `${r}, ${g}, ${b}`;
-    const softened = this._mixWithWhite(intensified, isActive ? 0.34 : 0.68);
+    const softened = this._mixWithWhite(intensified, isActive ? 0.28 : 0.48);
     const softenedString = `${softened.r}, ${softened.g}, ${softened.b}`;
 
     const alphas = isActive
       ? {
-          surface: 0.12,
-          base: 0.08,
-          highlight: 0.18,
-          soft: 0.1,
-          sheen: 0.28,
-          accent: 0.09,
+          surface: 0.22,
+          base: 0.16,
+          highlight: 0.28,
+          soft: 0.18,
+          sheen: 0.38,
+          accent: 0.14,
           border: 0.42,
           borderHover: 0.52,
           borderActive: 0.48,
@@ -361,12 +361,12 @@ export class BubbleSubButton extends LitElement {
           rimShadow: 0.4,
         }
       : {
-          surface: 0.032,
-          base: 0.022,
-          highlight: 0.06,
-          soft: 0.028,
-          sheen: 0.12,
-          accent: 0.02,
+          surface: 0.10,
+          base: 0.07,
+          highlight: 0.14,
+          soft: 0.08,
+          sheen: 0.20,
+          accent: 0.06,
           border: 0.18,
           borderHover: 0.26,
           borderActive: 0.22,
