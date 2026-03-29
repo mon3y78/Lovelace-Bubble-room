@@ -416,6 +416,7 @@ export class BubbleRoom extends LitElement {
   static styles = css`
     :host { display:block; height:100%; box-sizing:border-box; }
     .bubble-room-grid { display:grid; grid-template-columns:2fr 1fr;
+      gap: 0 6px;
       width:100%; height:100%; box-sizing:border-box; }
     .main-area { display:grid; height:100%; min-height:0; box-sizing:border-box; }
     .row1 { display:grid; min-height:0; box-sizing:border-box;
