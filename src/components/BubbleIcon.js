@@ -82,31 +82,30 @@ export class BubbleIcon extends LitElement {
     :host([preset='liquid-glass']) .container {
       color: var(--bubble-main-icon-color, currentColor);
       border: none;
+
+      /* vetro: riflesso diagonale in alto + tinta dal colore entità in basso */
       background:
+        linear-gradient(
+          132deg,
+          rgba(255, 255, 255, 0.12) 0%,
+          rgba(255, 255, 255, 0.03) 45%,
+          rgba(255, 255, 255, 0) 65%
+        ),
         radial-gradient(
-          140% 120% at 50% -20%,
-          var(--bubble-main-icon-glass-glow, rgba(255, 255, 255, 0.18)),
-          rgba(255, 255, 255, 0) 72%
+          ellipse 100% 55% at 50% 115%,
+          var(--bubble-main-icon-bg, rgba(255, 255, 255, 0.04)),
+          transparent 68%
         ),
-        linear-gradient(
-          180deg,
-          var(--bubble-main-icon-glass-highlight, rgba(255, 255, 255, 0.08)) 0%,
-          rgba(var(--bubble-main-icon-tint, 255, 255, 255), 0.015) 52%,
-          rgba(var(--bubble-main-icon-tint, 255, 255, 255), 0.08) 100%
-        ),
-        linear-gradient(
-          150deg,
-          var(--bubble-main-icon-glass-soft, rgba(var(--bubble-main-icon-tint, 255, 255, 255), 0.028)) 0%,
-          rgba(var(--bubble-main-icon-tint, 255, 255, 255), 0) 58%
-        ),
-        var(--bubble-main-icon-bg, rgba(255, 255, 255, 0.02));
-      background-blend-mode: screen, normal, screen, normal;
+        var(--bubble-main-icon-bg, rgba(255, 255, 255, 0.03));
+      background-blend-mode: screen, normal, normal;
+
+      /* nessun inset bianco — solo profondità esterna */
       box-shadow:
-        inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.38),
-        inset -0.5px -0.5px 1.1px rgba(255, 255, 255, 0.1),
-        0 28px 54px var(--bubble-main-icon-glass-shadow, rgba(13, 22, 41, 0.18));
-      backdrop-filter: blur(28px);
-      -webkit-backdrop-filter: blur(28px);
+        0 10px 40px rgba(0, 0, 0, 0.28),
+        0 2px 10px rgba(0, 0, 0, 0.18);
+
+      backdrop-filter: blur(36px) saturate(1.6);
+      -webkit-backdrop-filter: blur(36px) saturate(1.6);
       transition: background 0.35s ease, box-shadow 0.35s ease, filter 0.35s ease;
       filter:
         saturate(var(--bubble-main-icon-saturation, 1))
@@ -120,50 +119,44 @@ export class BubbleIcon extends LitElement {
       position: absolute;
       inset: 0;
       pointer-events: none;
+      border-radius: inherit;
       transition: opacity 0.35s ease;
     }
 
+    /* striscia riflessiva diagonale: simula il riflesso del vetro bagnato */
     :host([preset='liquid-glass']) .container::before {
-      background:
-        linear-gradient(
-          140deg,
-          rgba(255, 255, 255, 0.34) 0%,
-          rgba(255, 255, 255, 0.16) 42%,
-          rgba(255, 255, 255, 0) 70%
-        ),
-        radial-gradient(
-          130% 120% at 50% -20%,
-          var(--bubble-main-icon-glass-sheen, rgba(255, 255, 255, 0.18)),
-          rgba(255, 255, 255, 0) 68%
-        );
-      opacity: 0.26;
+      background: linear-gradient(
+        132deg,
+        rgba(255, 255, 255, 0.26) 0%,
+        rgba(255, 255, 255, 0.07) 42%,
+        transparent 62%
+      );
+      opacity: 1;
       mix-blend-mode: screen;
-      transform: translateY(-8%);
     }
 
+    /* glow ambientale dal colore dell'entità sul bordo inferiore */
     :host([preset='liquid-glass']) .container::after {
-      border-radius: inherit;
-      border: 1px solid var(--bubble-main-icon-glass-rim, rgba(255, 255, 255, 0.32));
-      box-shadow:
-        inset 0 0 0 1px var(--bubble-main-icon-glass-rim-soft, rgba(255, 255, 255, 0.12)),
-        inset 0 -18px 32px -24px var(--bubble-main-icon-glass-rim-shadow, rgba(13, 22, 41, 0.24));
-      opacity: 0.4;
-      mix-blend-mode: screen;
+      background: radial-gradient(
+        ellipse 90% 50% at 50% 110%,
+        var(--bubble-main-icon-bg, rgba(255, 255, 255, 0.05)),
+        transparent 65%
+      );
+      opacity: 0.85;
     }
 
     :host([preset='liquid-glass']) .container:hover::before {
-      opacity: 0.6;
+      opacity: 1.0;
     }
 
     :host([preset='liquid-glass']) .container:hover::after {
-      opacity: 0.68;
+      opacity: 1.0;
     }
 
     :host([preset='liquid-glass']) .container:active {
       box-shadow:
-        inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.44),
-        inset -0.5px -0.5px 1.2px rgba(255, 255, 255, 0.16),
-        0 24px 46px var(--bubble-main-icon-glass-shadow-active, rgba(13, 22, 41, 0.22));
+        0 6px 24px rgba(0, 0, 0, 0.32),
+        0 1px 6px rgba(0, 0, 0, 0.22);
       border: none;
     }
 
@@ -259,8 +252,5 @@ export class BubbleIcon extends LitElement {
     this.dispatchEvent(evt);
   }
 }
-
-BubbleIcon._colorCanvas = null;
-BubbleIcon._colorCtx = null;
 
 customElements.define('bubble-icon', BubbleIcon);

@@ -79,32 +79,25 @@ export class BubbleSubButton extends LitElement {
       cursor: pointer;
       min-height: 0;
       color: var(--bubble-subbutton-color, #fff);
+
+      /* riflesso diagonale + tinta dal colore entità */
       background:
-        radial-gradient(
-          140% 120% at 50% -20%,
-          var(--bubble-subbutton-glass-glow, rgba(255, 255, 255, 0.18)),
-          rgba(255, 255, 255, 0) 68%
-        ),
         linear-gradient(
-          180deg,
-          var(--bubble-subbutton-glass-highlight, rgba(255, 255, 255, 0.08)) 0%,
-          rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.015) 52%,
-          rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.08) 100%
+          132deg,
+          rgba(255, 255, 255, 0.10) 0%,
+          rgba(255, 255, 255, 0.02) 45%,
+          rgba(255, 255, 255, 0) 65%
         ),
-        linear-gradient(
-          150deg,
-          var(--bubble-subbutton-glass-soft, rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0.028)) 0%,
-          rgba(var(--bubble-subbutton-tint, 255, 255, 255), 0) 58%
-        ),
-        var(--bubble-subbutton-glass-base, var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.02)));
-      background-blend-mode: screen, normal, screen, normal;
+        var(--bubble-subbutton-glass-base, var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.03)));
+      background-blend-mode: screen, normal;
+
+      /* nessun inset bianco — bordo colorato + ombra esterna */
       box-shadow:
-        inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.38),
-        inset -0.5px -0.5px 1px rgba(255, 255, 255, 0.06),
-        0 18px 32px var(--bubble-subbutton-glass-shadow, rgba(13, 22, 41, 0.12));
+        0 8px 28px var(--bubble-subbutton-glass-shadow, rgba(13, 22, 41, 0.16));
       border: 2px solid var(--bubble-subbutton-border, currentColor);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
+
+      backdrop-filter: blur(26px) saturate(1.5);
+      -webkit-backdrop-filter: blur(26px) saturate(1.5);
       transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.18s ease,
         border-color 0.3s ease, filter 0.35s ease;
       isolation: isolate;
@@ -123,74 +116,41 @@ export class BubbleSubButton extends LitElement {
 
     :host([preset='liquid-glass']) .sub-button:active {
       transform: scale(0.97);
-      box-shadow:
-        inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.48),
-        inset -0.5px -0.5px 1.1px rgba(255, 255, 255, 0.12),
-        0 14px 26px var(--bubble-subbutton-glass-shadow-active, rgba(13, 22, 41, 0.17));
+      box-shadow: 0 4px 16px var(--bubble-subbutton-glass-shadow-active, rgba(13, 22, 41, 0.20));
       border-color: var(
         --bubble-subbutton-border-active,
-        var(--bubble-subbutton-border-hover, var(--bubble-subbutton-border, currentColor))
+        var(--bubble-subbutton-border, currentColor)
       );
     }
 
     :host([preset='liquid-glass']) .sub-button:hover {
-      box-shadow:
-        inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.42),
-        inset -0.5px -0.5px 1px rgba(255, 255, 255, 0.1),
-        0 22px 38px var(--bubble-subbutton-glass-shadow-hover, rgba(13, 22, 41, 0.14));
+      box-shadow: 0 12px 36px var(--bubble-subbutton-glass-shadow-hover, rgba(13, 22, 41, 0.18));
       border-color: var(
         --bubble-subbutton-border-hover,
         var(--bubble-subbutton-border, currentColor)
       );
     }
 
-    :host([preset='liquid-glass']) .sub-button::before,
-    :host([preset='liquid-glass']) .sub-button::after {
+    :host([preset='liquid-glass']) .sub-button::before {
       content: "";
       position: absolute;
       inset: 0;
+      border-radius: inherit;
       pointer-events: none;
+      /* striscia riflessiva diagonale — coerente con BubbleIcon */
+      background: linear-gradient(
+        132deg,
+        rgba(255, 255, 255, 0.32) 0%,
+        rgba(255, 255, 255, 0.08) 40%,
+        transparent 60%
+      );
+      opacity: 0.7;
+      mix-blend-mode: screen;
       transition: opacity 0.35s ease;
     }
 
-    :host([preset='liquid-glass']) .sub-button::before {
-      background:
-        linear-gradient(
-          135deg,
-          rgba(255, 255, 255, 0.42) 0%,
-          rgba(255, 255, 255, 0.18) 38%,
-          rgba(255, 255, 255, 0) 64%
-        ),
-        radial-gradient(
-          140% 120% at 50% -20%,
-          var(--bubble-subbutton-glass-sheen, rgba(255, 255, 255, 0.16)),
-          rgba(255, 255, 255, 0) 70%
-        );
-      opacity: 0.26;
-      mix-blend-mode: screen;
-      transform: translateY(-8%);
-    }
-
-    :host([preset='liquid-glass']) .sub-button::after {
-      border-radius: inherit;
-      border: 1px solid var(--bubble-subbutton-glass-rim, rgba(255, 255, 255, 0.32));
-      box-shadow:
-        inset 0 0 0 1px var(--bubble-subbutton-glass-rim-soft, rgba(255, 255, 255, 0.12)),
-        inset 0 -18px 32px -24px var(--bubble-subbutton-glass-rim-shadow, rgba(13, 22, 41, 0.24));
-      opacity: 0.38;
-      mix-blend-mode: screen;
-    }
-
     :host([preset='liquid-glass']) .sub-button:hover::before {
-      opacity: 0.62;
-    }
-
-    :host([preset='liquid-glass']) .sub-button:hover::after {
-      opacity: 0.66;
-    }
-
-    :host([preset='liquid-glass']) .sub-button:active::after {
-      opacity: 0.78;
+      opacity: 1.0;
     }
 
     :host([preset='liquid-glass']) .sub-button ha-icon {
