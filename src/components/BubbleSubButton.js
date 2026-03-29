@@ -153,6 +153,30 @@ export class BubbleSubButton extends LitElement {
       opacity: 1.0;
     }
 
+    :host([preset='liquid-glass']) .sub-button::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse 90% 55% at 50% 110%,
+        var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.04)),
+        transparent 65%
+      );
+      opacity: 0.85;
+      mix-blend-mode: screen;
+      transition: opacity 0.35s ease;
+    }
+
+    :host([preset='liquid-glass']) .sub-button.is-active::after {
+      opacity: 1.0;
+    }
+
+    :host([preset='liquid-glass']) .sub-button:hover::after {
+      opacity: 1.0;
+    }
+
     :host([preset='liquid-glass']) .sub-button ha-icon {
       width: 80%;
       height: 80%;
