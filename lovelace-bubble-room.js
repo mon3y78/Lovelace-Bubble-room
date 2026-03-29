@@ -2121,6 +2121,7 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
     `}_onMainIconAction=e=>{const{config:t,action:o}=e.detail||{};if(!t)return;const i="hold"===o?t.hold_action||{action:"none"}:t.tap_action||{action:"none"};this._runAction(i,t.entity)};_runAction(e,t){const o=e?.action||"none";if("none"!==o)try{switch(o){case"navigate":{const t=e.navigation_path||e.navigationPath;t&&(window.history.pushState({},"",t),window.dispatchEvent(new Event("location-changed")));break}case"more-info":{const o=e.entity||t;o&&this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:o},bubbles:!0,composed:!0}));break}case"toggle":{const o=e.entity||t;o&&this.hass?.callService&&this.hass.callService("homeassistant","toggle",{entity_id:o});break}case"call-service":{const o=e.service||"",[i,s]=o.split(".");if(i&&s&&this.hass?.callService){const o={...e.service_data||e.data||{}};!o.entity_id&&t&&(o.entity_id=t),this.hass.callService(i,s,o)}break}}}catch(e){console.error("[bubble-room] action error:",o,e)}}static styles=n`
     :host { display:block; height:100%; box-sizing:border-box; }
     .bubble-room-grid { display:grid; grid-template-columns:2fr 1fr;
+      gap: 0 6px;
       width:100%; height:100%; box-sizing:border-box; }
     .main-area { display:grid; height:100%; min-height:0; box-sizing:border-box; }
     .row1 { display:grid; min-height:0; box-sizing:border-box;
