@@ -193,12 +193,7 @@ export class CameraPanel extends LitElement {
 
         <button
           class="reset-button"
-          @click=${() =>
-            this.dispatchEvent(new CustomEvent('__panel_cmd__', {
-              detail: { cmd: 'reset', section: 'camera' },
-              bubbles: true, composed: true,
-            }))
-          }
+          @click=${() => this._reset()}
         >${t('panel.camera.reset')}</button>
       </ha-expansion-panel>
     `;
@@ -261,38 +256,20 @@ export class CameraPanel extends LitElement {
     }));
   }
   
-  // Reset locale  richiesta di reset allo YAML
-  _reset = () => {
-    // 1) feedback immediato sulla UI
+  _reset() {
+    // reset immediato dello stato locale (feedback UI prima della propagazione del config)
     this._entity = '';
     this._icon = '';
-    // se abbiamo reintrodotto presence/motion, puliamola senza errori anche se non esiste
-    if (typeof this._presence !== 'undefined') this._presence = '';
-    if (Array.isArray(this._candidates)) this._candidates = [];
-    if (Array.isArray(this._presenceCandidates)) this._presenceCandidates = [];
+    this._presence = '';
+    this._candidates = [];
+    this._presenceCandidates = [];
 
-    // 2) comanda il reset centralizzato dell'editor (usa resetCamera in backend)
+    // resetCamera() nell'editor rimuove entities.camera dal config
     this.dispatchEvent(new CustomEvent('__panel_cmd__', {
       detail: { cmd: 'reset', section: 'camera' },
       bubbles: true, composed: true,
     }));
-
-    // 3) compatibilità: azzera esplicitamente le chiavi nel YAML
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'entities.camera.entity', val: '' },
-      bubbles: true, composed: true,
-    }));
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'entities.camera.icon', val: '' },
-      bubbles: true, composed: true,
-    }));
-    this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: 'entities.camera.presence.entity', val: '' },
-      bubbles: true, composed: true,
-    }));
   }
-  
-  
 }
 
 customElements.define('camera-panel', CameraPanel);

@@ -19,7 +19,7 @@ export class RoomPanel extends LitElement {
   static properties = {
     hass:          { type: Object },
     config:        { type: Object },
-    _expanded:     { type: Boolean, state: true },
+    expanded:      { type: Boolean },
     activeFilters: { type: Array,  state: true },
     layout:        { type: String },  // 'wide' or 'tall'
   };
@@ -197,7 +197,7 @@ export class RoomPanel extends LitElement {
     super();
     this.hass          = {};
     this.config        = {};
-    this._expanded     = false;
+    this.expanded      = false;
     this.activeFilters = [];
     this.layout        = 'wide';
     this._syncingFromConfig = false;
@@ -358,8 +358,8 @@ export class RoomPanel extends LitElement {
     return html`
       <ha-expansion-panel
         class="glass-panel"
-        .expanded=${this._expanded}
-        @expanded-changed=${e => this._expanded = e.detail.expanded}
+        .expanded=${this.expanded}
+        @expanded-changed=${e => (this.expanded = e.detail.expanded)}
       >
         <div slot="header" class="glass-header">${t('panel.room.title')}</div>
       
@@ -519,9 +519,11 @@ export class RoomPanel extends LitElement {
           </div>
         </div>
       
-        <!-- Reset (identico a CameraPanel) -->
         <button class="reset-button"
-          @click=${() => this._fire('__panel_cmd__', { cmd: 'reset', section: 'room' })}>
+          @click=${() => this.dispatchEvent(new CustomEvent('__panel_cmd__', {
+            detail: { cmd: 'reset', section: 'room' },
+            bubbles: true, composed: true,
+          }))}>
           ${t('panel.room.reset')}
         </button>
       </ha-expansion-panel>
