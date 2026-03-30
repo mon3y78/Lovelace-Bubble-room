@@ -196,6 +196,48 @@ export class BubbleName extends LitElement {
   static styles = css`
     :host { display: block; }
 
+    :host([preset='liquid-glass']) {
+      border-radius: 22px;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+
+      backdrop-filter: blur(36px) saturate(1.6);
+      -webkit-backdrop-filter: blur(36px) saturate(1.6);
+
+      background:
+        linear-gradient(
+          132deg,
+          rgba(255, 255, 255, 0.12) 0%,
+          rgba(255, 255, 255, 0.03) 42%,
+          transparent 62%
+        ),
+        color-mix(in srgb, var(--bubble-room-name-color, white) 8%, rgba(255, 255, 255, 0.04));
+      background-blend-mode: screen, normal;
+
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.22),
+        0 2px 8px rgba(0, 0, 0, 0.12);
+      border: 1.5px solid color-mix(in srgb, var(--bubble-room-name-color, white) 22%, transparent);
+
+      transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    :host([preset='liquid-glass'])::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse 100% 65% at 50% 115%,
+        color-mix(in srgb, var(--bubble-room-name-color, white) 28%, transparent),
+        transparent 65%
+      );
+      opacity: 0.7;
+      z-index: 1;
+    }
+
     .bubble-name {
       display: flex;
       align-items: center;
@@ -203,6 +245,8 @@ export class BubbleName extends LitElement {
       width: 100%;
       height: 100%;
       line-height: 0.9;
+      position: relative;
+      z-index: 2;
 
       font-family:
         "Big Shoulders Display",
