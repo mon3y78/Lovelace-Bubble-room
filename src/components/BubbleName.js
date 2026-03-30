@@ -245,6 +245,9 @@ export class BubbleName extends LitElement {
         0 0 48px color-mix(in srgb, var(--bubble-room-name-color, white) 90%, transparent),
         0 0 20px color-mix(in srgb, var(--bubble-room-name-color, white) 55%, transparent),
         0 2px 8px rgba(0, 0, 0, 0.45);
+      /* luminosità/saturazione uniforme con sub-button: gestita dal colore passato via CSS var */
+      filter: saturate(var(--bubble-room-name-saturation, 1)) brightness(var(--bubble-room-name-brightness, 1));
+      transition: color 0.3s ease, filter 0.3s ease;
     }
   `;
 }

@@ -189,16 +189,16 @@ export class BubbleRoom extends LitElement {
       const st    = this.hass?.states?.[entId];
       if (!entId || !st) continue;
   
+      const mushroomActive = st.state === 'on';
       list.push({
         icon:  conf.icon || st.attributes.icon || resolveEntityIcon(entId, this.hass) || 'mdi:flash',
         state: st.state,
-        color: st.state === 'on' ? activeCol : inactiveCol,
+        active: mushroomActive,
+        color: mushroomActive ? activeCol : inactiveCol,
         dx: conf.dx ?? 0,
         dy: conf.dy ?? 0,
         angle_deg: conf.angle_deg,
         radius_factor: conf.radius_factor,
-
-        // >>> aggiunte per far funzionare le azioni impostate in MushroomPanel
         entity_id: entId,
         tap_action:  conf.tap_action,
         hold_action: conf.hold_action,
@@ -216,8 +216,9 @@ export class BubbleRoom extends LitElement {
       list.push({
         icon: camCfg.icon || st.attributes.icon || resolveEntityIcon(camId, this.hass) || 'mdi:cctv',
         state: st.state,
+        active: presActive,
         color: presActive ? activeCol : inactiveCol,
-        left: 'calc(100% - 12px - 36px)', // fisso in alto-destra
+        left: 'calc(100% - 12px - 36px)',
         top: 12,
         dx: 0,
         dy: 0,
@@ -242,6 +243,7 @@ export class BubbleRoom extends LitElement {
       list.push({
         icon: cliCfg.icon || st.attributes.icon || resolveEntityIcon(cliId, this.hass) || 'mdi:thermostat',
         state: st.state,
+        active: isActive,
         color: isActive ? activeCol : inactiveCol,
         dx: 0,
         dy: 0,
@@ -310,7 +312,11 @@ export class BubbleRoom extends LitElement {
                 .config=${this.config}
                 .container=${this.shadowRoot?.getElementById('nameContainer')}
                 .preset="${subbuttonMode}"
-                style="--bubble-room-name-color:${isActive ? textColorActive : textColorInactive}"
+                style="
+                --bubble-room-name-color:${isActive ? textColorActive : textColorInactive};
+                --bubble-room-name-saturation:${isActive ? '1.15' : '0.85'};
+                --bubble-room-name-brightness:${isActive ? '1.1' : '0.75'};
+              "
               ></bubble-name>
             </div>
           </div>
@@ -337,6 +343,7 @@ export class BubbleRoom extends LitElement {
 
               <bubble-mushroom
                 .entities="${this._getMushrooms()}"
+                .preset="${subbuttonMode}"
                 .containerSize="${{ width: 180, height: 180 }}"
                 @mushroom-entity-click="${this._onMushroomClick}"
               ></bubble-mushroom>
