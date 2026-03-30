@@ -160,12 +160,11 @@ export class BubbleSubButton extends LitElement {
       border-radius: inherit;
       pointer-events: none;
       background: radial-gradient(
-        ellipse 100% 60% at 50% 115%,
-        var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.06)),
+        ellipse 110% 70% at 50% 120%,
+        var(--bubble-subbutton-glow, rgba(255, 255, 255, 0.10)),
         transparent 65%
       );
-      opacity: 1.0;
-      mix-blend-mode: screen;
+      opacity: 0.75;
       transition: opacity 0.35s ease;
     }
 
@@ -174,7 +173,7 @@ export class BubbleSubButton extends LitElement {
     }
 
     :host([preset='liquid-glass']) .sub-button:hover::after {
-      opacity: 1.0;
+      opacity: 0.90;
     }
 
     :host([preset='liquid-glass']) .sub-button ha-icon {
@@ -245,6 +244,7 @@ export class BubbleSubButton extends LitElement {
 
           if (glass) {
             styleVars.push(`--bubble-subbutton-bg:${glass.surface}`);
+            styleVars.push(`--bubble-subbutton-glow:${glass.glow}`);
             styleVars.push(`--bubble-subbutton-glass-base:${glass.base}`);
             styleVars.push(`--bubble-subbutton-glass-highlight:${glass.highlight}`);
             styleVars.push(`--bubble-subbutton-glass-soft:${glass.soft}`);
@@ -338,42 +338,42 @@ export class BubbleSubButton extends LitElement {
     const intensified = isActive ? this._boostColorIntensity(rgb, 0.42) : rgb;
     const { r, g, b } = intensified;
     const rgbString = `${r}, ${g}, ${b}`;
-    const softened = this._mixWithWhite(intensified, isActive ? 0.28 : 0.48);
+    const softened = this._mixWithWhite(intensified, isActive ? 0.14 : 0.28);
     const softenedString = `${softened.r}, ${softened.g}, ${softened.b}`;
 
     const alphas = isActive
       ? {
-          surface: 0.22,
-          base: 0.16,
-          highlight: 0.28,
-          soft: 0.18,
-          sheen: 0.38,
-          accent: 0.14,
+          surface: 0.42,
+          base: 0.30,
+          highlight: 0.38,
+          soft: 0.26,
+          sheen: 0.48,
+          accent: 0.20,
+          glow: 0.55,
           border: 0.42,
           borderHover: 0.52,
           borderActive: 0.48,
           shadow: 0.2,
           shadowHover: 0.28,
           shadowActive: 0.24,
-          glow: 0.5,
           rim: 0.72,
           rimSoft: 0.34,
           rimShadow: 0.4,
         }
       : {
-          surface: 0.10,
-          base: 0.07,
-          highlight: 0.14,
-          soft: 0.08,
-          sheen: 0.20,
-          accent: 0.06,
+          surface: 0.22,
+          base: 0.16,
+          highlight: 0.24,
+          soft: 0.14,
+          sheen: 0.30,
+          accent: 0.10,
+          glow: 0.38,
           border: 0.18,
           borderHover: 0.26,
           borderActive: 0.22,
           shadow: 0.08,
           shadowHover: 0.12,
           shadowActive: 0.1,
-          glow: 0.2,
           rim: 0.38,
           rimSoft: 0.14,
           rimShadow: 0.26,
