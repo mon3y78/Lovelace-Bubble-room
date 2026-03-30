@@ -296,7 +296,11 @@ export class BubbleRoom extends LitElement {
       <div class="bubble-room-grid ${layout}">
         <div class="main-area">
           <div class="row1">
-            <bubble-sensor .sensors="${this._getSensors()}"></bubble-sensor>
+            <bubble-sensor
+              .sensors="${this._getSensors()}"
+              .preset="${subbuttonMode}"
+              style="--bubble-sensor-active-color:${isActive ? textColorActive : textColorInactive}"
+            ></bubble-sensor>
 
             <div class="name-placeholder" id="nameContainer">
               <bubble-name

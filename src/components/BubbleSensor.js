@@ -5,11 +5,13 @@ import { SENSOR_TYPE_MAP } from '../helpers/sensor-mapping.js';
 export class BubbleSensor extends LitElement {
   static properties = {
     sensors: { type: Array },
+    preset:  { type: String, reflect: true },
   };
 
   constructor() {
     super();
     this.sensors = [];
+    this.preset  = 'standard';
     this.rows = 1;
     this.columns = 1;
     this._resizeObserver = null;
@@ -428,6 +430,54 @@ export class BubbleSensor extends LitElement {
       margin: 0;
       gap: 0;
     }
+
+    :host([preset='liquid-glass']) .sensor-grid {
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+
+      backdrop-filter: blur(26px) saturate(1.5);
+      -webkit-backdrop-filter: blur(26px) saturate(1.5);
+
+      background:
+        linear-gradient(
+          132deg,
+          rgba(255, 255, 255, 0.14) 0%,
+          rgba(255, 255, 255, 0.03) 40%,
+          transparent 60%
+        ),
+        color-mix(in srgb, var(--bubble-sensor-active-color, white) 10%, rgba(255, 255, 255, 0.04));
+      background-blend-mode: screen, normal;
+
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16);
+      border: 1.5px solid color-mix(in srgb, var(--bubble-sensor-active-color, white) 24%, transparent);
+
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    :host([preset='liquid-glass']) .sensor-grid::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse 100% 60% at 50% 115%,
+        color-mix(in srgb, var(--bubble-sensor-active-color, white) 22%, transparent),
+        transparent 65%
+      );
+      opacity: 0.75;
+      z-index: 0;
+    }
+
+    :host([preset='liquid-glass']) .sensor-pill {
+      position: relative;
+      z-index: 1;
+      background: transparent;
+      border-right-color: color-mix(in srgb, var(--bubble-sensor-active-color, white) 20%, transparent);
+    }
+
     .sensor-pill {
       display: flex;
       align-items: center;
