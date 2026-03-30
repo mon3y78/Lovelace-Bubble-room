@@ -6,13 +6,15 @@ import { createGestureHandler } from '../helpers/gesture-handler.js';
 
 export class BubbleMushroom extends LitElement {
   static properties = {
-    // Array: { entity_id, icon, color, dx?, dy?, tap_action?, hold_action?, double_tap_action? }
+    // Array: { entity_id, icon, color, active, dx?, dy?, tap_action?, hold_action?, double_tap_action? }
     entities: { type: Array },
+    preset:   { type: String, reflect: true },
   };
 
   constructor() {
     super();
     this.entities = [];
+    this.preset   = 'standard';
     this._containerSize = { width: 0, height: 0 };
     this._rafSize = null;
     this._ripplingKeys = new Set();
@@ -145,8 +147,17 @@ export class BubbleMushroom extends LitElement {
       pointer-events: auto;
       border-radius: 50%;
       overflow: hidden;
-      /* transizione fluida al cambio di stato presenza */
-      transition: color 0.3s ease;
+      transition: color 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
+    }
+
+    :host([preset='liquid-glass']) .mushroom-entity.is-active {
+      filter: saturate(1.28) brightness(1.4);
+      opacity: 1.0;
+    }
+
+    :host([preset='liquid-glass']) .mushroom-entity.is-inactive {
+      filter: saturate(0.85) brightness(0.75);
+      opacity: 0.7;
     }
     .mushroom-entity ha-icon { display: block; }
 
@@ -272,10 +283,13 @@ export class BubbleMushroom extends LitElement {
 
         const rippleKey = e.entity_id || e.kind || 'unknown';
         const isRippling = this._ripplingKeys.has(rippleKey);
+        const activeClass = this.preset === 'liquid-glass'
+          ? (e.active ? 'is-active' : 'is-inactive')
+          : '';
 
         return html`
           <div
-            class="mushroom-entity"
+            class="mushroom-entity ${activeClass}"
             style="
               left:${left}px;
               top:${top}px;

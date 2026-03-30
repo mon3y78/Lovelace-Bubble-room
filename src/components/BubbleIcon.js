@@ -138,11 +138,11 @@ export class BubbleIcon extends LitElement {
     /* glow ambientale dal colore dell'entità sul bordo inferiore */
     :host([preset='liquid-glass']) .container::after {
       background: radial-gradient(
-        ellipse 90% 50% at 50% 110%,
-        var(--bubble-main-icon-bg, rgba(255, 255, 255, 0.05)),
+        ellipse 110% 65% at 50% 115%,
+        var(--bubble-main-icon-bg, rgba(255, 255, 255, 0.08)),
         transparent 65%
       );
-      opacity: 0.85;
+      opacity: 1.0;
     }
 
     :host([preset='liquid-glass']) .container:hover::before {
@@ -177,7 +177,10 @@ export class BubbleIcon extends LitElement {
     const fg = this.active ? this.colorActive : this.colorInactive;
     const rawBg = this.active ? this.backgroundActive : this.backgroundInactive;
     const isLiquid = this.preset === 'liquid-glass';
-    const bg = this._withOpacity(rawBg, isLiquid ? 0.22 : 0.1) ?? rawBg;
+
+    // stessa logica alpha dei sub-button: 0.42 attivo, 0.22 inattivo
+    const bgAlpha = isLiquid ? (this.active ? 0.42 : 0.22) : 0.1;
+    const bg = this._withOpacity(rawBg, bgAlpha) ?? rawBg;
     const iconOpacity = this.active ? 0.9 : 0.8;
 
     const styleChunks = [];
@@ -190,6 +193,12 @@ export class BubbleIcon extends LitElement {
         styleChunks.push(`--bubble-main-icon-border:${fg}`);
       }
       styleChunks.push(`--bubble-main-icon-color:${fg}`);
+    }
+    if (isLiquid && this.active) {
+      styleChunks.push(`--bubble-main-icon-saturation:1.28`);
+      styleChunks.push(`--bubble-main-icon-luminance:1.08`);
+      styleChunks.push(`--bubble-main-icon-icon-brightness:1.4`);
+      styleChunks.push(`--bubble-main-icon-icon-saturation:1.22`);
     }
 
     const containerStyle = styleChunks.map(chunk => `${chunk};`).join(' ');

@@ -443,15 +443,15 @@ export class BubbleSensor extends LitElement {
       background:
         linear-gradient(
           132deg,
-          rgba(255, 255, 255, 0.14) 0%,
-          rgba(255, 255, 255, 0.03) 40%,
+          rgba(255, 255, 255, 0.18) 0%,
+          rgba(255, 255, 255, 0.04) 40%,
           transparent 60%
         ),
-        color-mix(in srgb, var(--bubble-sensor-active-color, white) 10%, rgba(255, 255, 255, 0.04));
+        color-mix(in srgb, var(--bubble-sensor-active-color, white) 18%, rgba(255, 255, 255, 0.05));
       background-blend-mode: screen, normal;
 
       box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16);
-      border: 1.5px solid color-mix(in srgb, var(--bubble-sensor-active-color, white) 24%, transparent);
+      border: 1.5px solid color-mix(in srgb, var(--bubble-sensor-active-color, white) 32%, transparent);
 
       transition: background 0.3s ease, border-color 0.3s ease;
     }
@@ -463,11 +463,11 @@ export class BubbleSensor extends LitElement {
       border-radius: inherit;
       pointer-events: none;
       background: radial-gradient(
-        ellipse 100% 60% at 50% 115%,
-        color-mix(in srgb, var(--bubble-sensor-active-color, white) 22%, transparent),
+        ellipse 110% 65% at 50% 115%,
+        color-mix(in srgb, var(--bubble-sensor-active-color, white) 35%, transparent),
         transparent 65%
       );
-      opacity: 0.75;
+      opacity: 0.9;
       z-index: 0;
     }
 
