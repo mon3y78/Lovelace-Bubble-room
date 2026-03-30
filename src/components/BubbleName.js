@@ -242,7 +242,8 @@ export class BubbleName extends LitElement {
       letter-spacing: 0em;
       line-height: 0.88;
       text-shadow:
-        0 0 28px color-mix(in srgb, var(--bubble-room-name-color, white) 60%, transparent),
+        0 0 48px color-mix(in srgb, var(--bubble-room-name-color, white) 90%, transparent),
+        0 0 20px color-mix(in srgb, var(--bubble-room-name-color, white) 55%, transparent),
         0 2px 8px rgba(0, 0, 0, 0.45);
     }
   `;
