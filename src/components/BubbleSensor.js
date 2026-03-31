@@ -447,11 +447,11 @@ export class BubbleSensor extends LitElement {
           rgba(255, 255, 255, 0.04) 40%,
           transparent 60%
         ),
-        color-mix(in srgb, var(--bubble-sensor-active-color, white) 18%, rgba(255, 255, 255, 0.05));
+        color-mix(in srgb, var(--bubble-sensor-active-color, white) 24%, rgba(255, 255, 255, 0.06));
       background-blend-mode: screen, normal;
 
       box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16);
-      border: 1.5px solid color-mix(in srgb, var(--bubble-sensor-active-color, white) 32%, transparent);
+      border: 1.5px solid color-mix(in srgb, var(--bubble-sensor-active-color, white) 38%, transparent);
 
       transition: background 0.3s ease, border-color 0.3s ease;
     }

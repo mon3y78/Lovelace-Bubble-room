@@ -314,8 +314,8 @@ export class BubbleRoom extends LitElement {
                 .preset="${subbuttonMode}"
                 style="
                 --bubble-room-name-color:${isActive ? textColorActive : textColorInactive};
-                --bubble-room-name-saturation:${isActive ? '1.15' : '0.85'};
-                --bubble-room-name-brightness:${isActive ? '1.1' : '0.75'};
+                --bubble-room-name-saturation:${isActive ? '1.15' : '1.0'};
+                --bubble-room-name-brightness:${isActive ? '1.1' : '1.0'};
               "
               ></bubble-name>
             </div>

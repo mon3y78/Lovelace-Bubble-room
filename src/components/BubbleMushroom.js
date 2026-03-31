@@ -151,13 +151,26 @@ export class BubbleMushroom extends LitElement {
     }
 
     :host([preset='liquid-glass']) .mushroom-entity.is-active {
-      filter: saturate(1.28) brightness(1.4);
+      filter: saturate(1.15) brightness(1.1);
       opacity: 1.0;
     }
 
+    :host([preset='liquid-glass']) .mushroom-entity.is-active ha-icon {
+      filter:
+        drop-shadow(0 0 8px currentColor)
+        drop-shadow(0 1px 4px rgba(0, 0, 0, 0.55));
+    }
+
     :host([preset='liquid-glass']) .mushroom-entity.is-inactive {
-      filter: saturate(0.85) brightness(0.75);
-      opacity: 0.7;
+      filter: saturate(0.9) brightness(0.9);
+      opacity: 0.85;
+    }
+
+    :host([preset='liquid-glass']) .mushroom-entity.is-inactive ha-icon {
+      /* doppio drop-shadow scuro: crea un alone che distacca l'icona da qualsiasi sfondo */
+      filter:
+        drop-shadow(0 0 4px rgba(0, 0, 0, 0.95))
+        drop-shadow(0 0 8px rgba(0, 0, 0, 0.75));
     }
     .mushroom-entity ha-icon { display: block; }
 
