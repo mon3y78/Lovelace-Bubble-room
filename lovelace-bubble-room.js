@@ -1609,7 +1609,7 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
       isolation: isolate;
       filter:
         saturate(var(--bubble-subbutton-saturation, 1))
-        brightness(var(--bubble-subbutton-luminance, 1));
+        brightness(var(--bubble-subbutton-luminance, 1.05));
     }
 
     :host([preset='liquid-glass']) .sub-button:first-child {
@@ -1688,7 +1688,7 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
       color: inherit;
       filter:
         drop-shadow(0 6px 12px rgba(var(--bubble-subbutton-glass-shadow-rgb, 13, 22, 41), 0.14))
-        brightness(var(--bubble-subbutton-icon-brightness, 1))
+        brightness(var(--bubble-subbutton-icon-brightness, 1.1))
         saturate(var(--bubble-subbutton-icon-saturation, 1));
       transition: filter 0.35s ease, color 0.35s ease;
     }
@@ -1719,7 +1719,7 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
       </div>
     `}_renderLiquidGlass(){return T`
       <div class="container">
-        ${this.subbuttons.map((e,t)=>{const o=e.active?e.colorOn:e.colorOff,i=e.active?e.iconOn:e.iconOff,s=this._computeGlassColors(o,e.active),n=[],a=this._computeIconTone(i,e.active);if(a&&n.push(`--bubble-subbutton-color:${a}`),s)n.push(`--bubble-subbutton-bg:${s.surface}`),n.push(`--bubble-subbutton-glow:${s.glow}`),n.push(`--bubble-subbutton-glass-base:${s.base}`),n.push(`--bubble-subbutton-glass-highlight:${s.highlight}`),n.push(`--bubble-subbutton-glass-soft:${s.soft}`),n.push(`--bubble-subbutton-glass-sheen:${s.sheen}`),n.push(`--bubble-subbutton-glass-accent:${s.accent}`),n.push(`--bubble-subbutton-tint:${s.rgb}`),n.push(`--bubble-subbutton-glass-shadow:${s.shadow}`),n.push(`--bubble-subbutton-glass-shadow-hover:${s.shadowHover}`),n.push(`--bubble-subbutton-glass-shadow-active:${s.shadowActive}`),n.push(`--bubble-subbutton-glass-shadow-rgb:${s.shadowRgb}`);else if(o){const t=e.active?this._lightenColor(o,.35):null;n.push(`--bubble-subbutton-bg:${t||o}`)}const r=this._computeBorderColors(i,e.active);r?(n.push(`--bubble-subbutton-border:${r.base}`),n.push(`--bubble-subbutton-border-hover:${r.hover}`),n.push(`--bubble-subbutton-border-active:${r.active}`)):i&&(n.push(`--bubble-subbutton-border:${i}`),n.push(`--bubble-subbutton-border-hover:${i}`),n.push(`--bubble-subbutton-border-active:${i}`));const l=this._computeGlowPalette(i,e.active);l?(n.push(`--bubble-subbutton-glass-glow:${l.glow}`),n.push(`--bubble-subbutton-glass-rim:${l.rim}`),n.push(`--bubble-subbutton-glass-rim-soft:${l.rimSoft}`),n.push(`--bubble-subbutton-glass-rim-shadow:${l.rimShadow}`)):i&&(n.push(`--bubble-subbutton-glass-glow:${i}`),n.push(`--bubble-subbutton-glass-rim:${i}`),n.push(`--bubble-subbutton-glass-rim-soft:${i}`),n.push(`--bubble-subbutton-glass-rim-shadow:${i}`)),e.active&&(n.push("--bubble-subbutton-saturation:1.28"),n.push("--bubble-subbutton-luminance:1.08"),n.push("--bubble-subbutton-icon-brightness:1.4"),n.push("--bubble-subbutton-icon-saturation:1.22"));const c=n.join(";"),d=["sub-button"];return e.active&&d.push("is-active"),T`
+        ${this.subbuttons.map((e,t)=>{const o=e.active?e.colorOn:e.colorOff,i=e.active?e.iconOn:e.iconOff,s=this._computeGlassColors(o,e.active),n=[],a=this._computeIconTone(i,e.active);if(a&&n.push(`--bubble-subbutton-color:${a}`),s)n.push(`--bubble-subbutton-bg:${s.surface}`),n.push(`--bubble-subbutton-glow:${s.glow}`),n.push(`--bubble-subbutton-glass-base:${s.base}`),n.push(`--bubble-subbutton-glass-highlight:${s.highlight}`),n.push(`--bubble-subbutton-glass-soft:${s.soft}`),n.push(`--bubble-subbutton-glass-sheen:${s.sheen}`),n.push(`--bubble-subbutton-glass-accent:${s.accent}`),n.push(`--bubble-subbutton-tint:${s.rgb}`),n.push(`--bubble-subbutton-glass-shadow:${s.shadow}`),n.push(`--bubble-subbutton-glass-shadow-hover:${s.shadowHover}`),n.push(`--bubble-subbutton-glass-shadow-active:${s.shadowActive}`),n.push(`--bubble-subbutton-glass-shadow-rgb:${s.shadowRgb}`);else if(o){const t=e.active?this._lightenColor(o,.35):null;n.push(`--bubble-subbutton-bg:${t||o}`)}const r=this._computeBorderColors(i,e.active);r?(n.push(`--bubble-subbutton-border:${r.base}`),n.push(`--bubble-subbutton-border-hover:${r.hover}`),n.push(`--bubble-subbutton-border-active:${r.active}`)):i&&(n.push(`--bubble-subbutton-border:${i}`),n.push(`--bubble-subbutton-border-hover:${i}`),n.push(`--bubble-subbutton-border-active:${i}`));const l=this._computeGlowPalette(i,e.active);l?(n.push(`--bubble-subbutton-glass-glow:${l.glow}`),n.push(`--bubble-subbutton-glass-rim:${l.rim}`),n.push(`--bubble-subbutton-glass-rim-soft:${l.rimSoft}`),n.push(`--bubble-subbutton-glass-rim-shadow:${l.rimShadow}`)):i&&(n.push(`--bubble-subbutton-glass-glow:${i}`),n.push(`--bubble-subbutton-glass-rim:${i}`),n.push(`--bubble-subbutton-glass-rim-soft:${i}`),n.push(`--bubble-subbutton-glass-rim-shadow:${i}`)),e.active&&(n.push("--bubble-subbutton-saturation:1.15"),n.push("--bubble-subbutton-luminance:1.04"),n.push("--bubble-subbutton-icon-brightness:1.25"),n.push("--bubble-subbutton-icon-saturation:1.15"));const c=n.join(";"),d=["sub-button"];return e.active&&d.push("is-active"),T`
             <div
               class="${d.join(" ")}"
               style="${c}"
@@ -1826,11 +1826,11 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
           rgba(255, 255, 255, 0.04) 40%,
           transparent 60%
         ),
-        color-mix(in srgb, var(--bubble-sensor-active-color, white) 18%, rgba(255, 255, 255, 0.05));
+        color-mix(in srgb, var(--bubble-sensor-active-color, white) 24%, rgba(255, 255, 255, 0.06));
       background-blend-mode: screen, normal;
 
       box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16);
-      border: 1.5px solid color-mix(in srgb, var(--bubble-sensor-active-color, white) 32%, transparent);
+      border: 1.5px solid color-mix(in srgb, var(--bubble-sensor-active-color, white) 38%, transparent);
 
       transition: background 0.3s ease, border-color 0.3s ease;
     }
@@ -1958,13 +1958,26 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
     }
 
     :host([preset='liquid-glass']) .mushroom-entity.is-active {
-      filter: saturate(1.28) brightness(1.4);
+      filter: saturate(1.15) brightness(1.1);
       opacity: 1.0;
     }
 
+    :host([preset='liquid-glass']) .mushroom-entity.is-active ha-icon {
+      filter:
+        drop-shadow(0 0 8px currentColor)
+        drop-shadow(0 1px 4px rgba(0, 0, 0, 0.55));
+    }
+
     :host([preset='liquid-glass']) .mushroom-entity.is-inactive {
-      filter: saturate(0.85) brightness(0.75);
-      opacity: 0.7;
+      filter: saturate(0.9) brightness(0.9);
+      opacity: 0.85;
+    }
+
+    :host([preset='liquid-glass']) .mushroom-entity.is-inactive ha-icon {
+      /* doppio drop-shadow scuro: crea un alone che distacca l'icona da qualsiasi sfondo */
+      filter:
+        drop-shadow(0 0 4px rgba(0, 0, 0, 0.95))
+        drop-shadow(0 0 8px rgba(0, 0, 0, 0.75));
     }
     .mushroom-entity ha-icon { display: block; }
 
@@ -2129,7 +2142,7 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
         saturate(var(--bubble-main-icon-icon-saturation, 1));
       transition: filter 0.35s ease, opacity 0.18s ease, transform 0.18s ease;
     }
-  `;render(){const e=this.active?this.colorActive:this.colorInactive,t=this.active?this.backgroundActive:this.backgroundInactive,o="liquid-glass"===this.preset,i=o?this.active?.42:.22:.1,s=this._withOpacity(t,i)??t,n=this.active?.9:.8,a=[];s&&a.push(`--bubble-main-icon-bg:${s}`),e&&(a.push(`color:${e}`),o||a.push(`--bubble-main-icon-border:${e}`),a.push(`--bubble-main-icon-color:${e}`)),o&&this.active&&(a.push("--bubble-main-icon-saturation:1.28"),a.push("--bubble-main-icon-luminance:1.08"),a.push("--bubble-main-icon-icon-brightness:1.4"),a.push("--bubble-main-icon-icon-saturation:1.22"));const r=a.map(e=>`${e};`).join(" ");return T`
+  `;render(){const e=this.active?this.colorActive:this.colorInactive,t=this.active?this.backgroundActive:this.backgroundInactive,o="liquid-glass"===this.preset,i=o?this.active?.3:.22:.1,s=this._withOpacity(t,i)??t,n=this.active?.9:.8,a=[];s&&a.push(`--bubble-main-icon-bg:${s}`),e&&(a.push(`color:${e}`),o||a.push(`--bubble-main-icon-border:${e}`),a.push(`--bubble-main-icon-color:${e}`)),o&&this.active&&(a.push("--bubble-main-icon-saturation:1.12"),a.push("--bubble-main-icon-luminance:1.04"),a.push("--bubble-main-icon-icon-brightness:1.25"),a.push("--bubble-main-icon-icon-saturation:1.12"));const r=a.map(e=>`${e};`).join(" ");return T`
       <div
         class="container"
         style="${r}"
@@ -2166,8 +2179,8 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
                 .preset="${i}"
                 style="
                 --bubble-room-name-color:${s?c:d};
-                --bubble-room-name-saturation:${s?"1.15":"0.85"};
-                --bubble-room-name-brightness:${s?"1.1":"0.75"};
+                --bubble-room-name-saturation:${s?"1.15":"1.0"};
+                --bubble-room-name-brightness:${s?"1.1":"1.0"};
               "
               ></bubble-name>
             </div>

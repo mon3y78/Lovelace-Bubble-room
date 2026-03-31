@@ -178,8 +178,8 @@ export class BubbleIcon extends LitElement {
     const rawBg = this.active ? this.backgroundActive : this.backgroundInactive;
     const isLiquid = this.preset === 'liquid-glass';
 
-    // stessa logica alpha dei sub-button: 0.42 attivo, 0.22 inattivo
-    const bgAlpha = isLiquid ? (this.active ? 0.42 : 0.22) : 0.1;
+    // alpha attivo ridotto per evitare che il fondo "bruci" i mushroom sovrapposti
+    const bgAlpha = isLiquid ? (this.active ? 0.30 : 0.22) : 0.1;
     const bg = this._withOpacity(rawBg, bgAlpha) ?? rawBg;
     const iconOpacity = this.active ? 0.9 : 0.8;
 
@@ -195,10 +195,10 @@ export class BubbleIcon extends LitElement {
       styleChunks.push(`--bubble-main-icon-color:${fg}`);
     }
     if (isLiquid && this.active) {
-      styleChunks.push(`--bubble-main-icon-saturation:1.28`);
-      styleChunks.push(`--bubble-main-icon-luminance:1.08`);
-      styleChunks.push(`--bubble-main-icon-icon-brightness:1.4`);
-      styleChunks.push(`--bubble-main-icon-icon-saturation:1.22`);
+      styleChunks.push(`--bubble-main-icon-saturation:1.12`);
+      styleChunks.push(`--bubble-main-icon-luminance:1.04`);
+      styleChunks.push(`--bubble-main-icon-icon-brightness:1.25`);
+      styleChunks.push(`--bubble-main-icon-icon-saturation:1.12`);
     }
 
     const containerStyle = styleChunks.map(chunk => `${chunk};`).join(' ');

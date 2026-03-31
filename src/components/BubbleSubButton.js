@@ -103,7 +103,7 @@ export class BubbleSubButton extends LitElement {
       isolation: isolate;
       filter:
         saturate(var(--bubble-subbutton-saturation, 1))
-        brightness(var(--bubble-subbutton-luminance, 1));
+        brightness(var(--bubble-subbutton-luminance, 1.05));
     }
 
     :host([preset='liquid-glass']) .sub-button:first-child {
@@ -182,7 +182,7 @@ export class BubbleSubButton extends LitElement {
       color: inherit;
       filter:
         drop-shadow(0 6px 12px rgba(var(--bubble-subbutton-glass-shadow-rgb, 13, 22, 41), 0.14))
-        brightness(var(--bubble-subbutton-icon-brightness, 1))
+        brightness(var(--bubble-subbutton-icon-brightness, 1.1))
         saturate(var(--bubble-subbutton-icon-saturation, 1));
       transition: filter 0.35s ease, color 0.35s ease;
     }
@@ -285,10 +285,10 @@ export class BubbleSubButton extends LitElement {
           }
 
           if (btn.active) {
-            styleVars.push(`--bubble-subbutton-saturation:1.28`);
-            styleVars.push(`--bubble-subbutton-luminance:1.08`);
-            styleVars.push(`--bubble-subbutton-icon-brightness:1.4`);
-            styleVars.push(`--bubble-subbutton-icon-saturation:1.22`);
+            styleVars.push(`--bubble-subbutton-saturation:1.15`);
+            styleVars.push(`--bubble-subbutton-luminance:1.04`);
+            styleVars.push(`--bubble-subbutton-icon-brightness:1.25`);
+            styleVars.push(`--bubble-subbutton-icon-saturation:1.15`);
           }
 
           const styleAttr = styleVars.join(';');
