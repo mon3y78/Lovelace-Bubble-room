@@ -53,22 +53,79 @@ export class BubbleMushroom extends LitElement {
   _getAnimClass(entity) {
     const icon = (entity?.icon || '').toLowerCase();
     const kind = entity?.kind || '';
-    if (kind === 'camera' || icon.includes('cctv') || icon.includes('camera') || icon.includes('webcam'))
+
+    // --- scan: cameras & video ---
+    if (kind === 'camera' || icon.includes('cctv') || icon.includes('camera') ||
+        icon.includes('webcam') || icon.includes('doorbell') || icon.includes('video-input') ||
+        icon.includes('telescope') || icon.includes('binoculars'))
       return 'anim-scan';
-    if (icon.includes('fan') || icon.includes('propeller') || icon.includes('turbine') || icon.includes('ceiling-fan'))
+
+    // --- spin: rotating/circular motion ---
+    if (icon.includes('fan') || icon.includes('propeller') || icon.includes('turbine') ||
+        icon.includes('ceiling-fan') || icon.includes('wind-turbine') || icon.includes('rotate') ||
+        icon.includes('reload') || icon.includes('refresh') || icon.includes('sync') ||
+        icon.includes('loading') || icon.includes('radar') || icon.includes('disc') ||
+        icon.includes('record') || icon.includes('vinyl') || icon.includes('tire') ||
+        icon.includes('wheel') || icon.includes('circular'))
       return 'anim-spin';
-    if (icon.includes('lightbulb') || icon.includes('lamp') || icon.includes('bulb') || icon.includes('chandelier') || icon.includes('led') || icon.includes('ceiling-light') || icon.includes('floor-lamp'))
+
+    // --- illuminate: lights & glow ---
+    if (icon.includes('lightbulb') || icon.includes('lamp') || icon.includes('bulb') ||
+        icon.includes('chandelier') || icon.includes('led') || icon.includes('ceiling-light') ||
+        icon.includes('floor-lamp') || icon.includes('desk-lamp') || icon.includes('string-lights') ||
+        icon.includes('wall-sconce') || icon.includes('spotlight') || icon.includes('torch') ||
+        icon.includes('flashlight') || icon.includes('candle') || icon.includes('fire') ||
+        icon.includes('flame') || icon.includes('lantern') || icon.includes('lava-lamp') ||
+        icon.includes('neon') || icon.includes('light-recessed') || icon.includes('strip-lights'))
       return 'anim-illuminate';
-    if (icon.includes('bell') || icon.includes('alarm') || icon.includes('siren') || icon.includes('alert'))
+
+    // --- alarm: bells, alerts, warnings ---
+    if (icon.includes('bell') || icon.includes('alarm') || icon.includes('siren') ||
+        icon.includes('alert') || icon.includes('smoke') || icon.includes('fire-alert') ||
+        icon.includes('water-alert') || icon.includes('leak') || icon.includes('vibrate') ||
+        icon.includes('shield-alert') || icon.includes('hazard') || icon.includes('warning') ||
+        icon.includes('flood') || icon.includes('door-open') || icon.includes('window-open'))
       return 'anim-alarm';
-    if (icon.includes('motion') || icon.includes('walk') || icon.includes('run') || icon.includes('human'))
+
+    // --- blink: presence, motion, intermittent signals ---
+    if (icon.includes('motion') || icon.includes('walk') || icon.includes('run') ||
+        icon.includes('human') || icon.includes('account') || icon.includes('presence') ||
+        icon.includes('radar') || icon.includes('wifi') || icon.includes('bluetooth') ||
+        icon.includes('signal') || icon.includes('broadcast') || icon.includes('antenna') ||
+        icon.includes('led-on') || icon.includes('blink') || icon.includes('eye') ||
+        icon.includes('pulse') || icon.includes('network') || icon.includes('access-point'))
       return 'anim-blink';
-    if (icon.includes('speaker') || icon.includes('music') || icon.includes('audio') || icon.includes('subwoofer') || icon.includes('headphone'))
+
+    // --- beat: audio, heart, pumps ---
+    if (icon.includes('speaker') || icon.includes('music') || icon.includes('audio') ||
+        icon.includes('subwoofer') || icon.includes('headphone') || icon.includes('headset') ||
+        icon.includes('microphone') || icon.includes('heart') || icon.includes('pulse') ||
+        icon.includes('waveform') || icon.includes('equalizer') || icon.includes('radio') ||
+        icon.includes('podcast') || icon.includes('piano') || icon.includes('guitar') ||
+        icon.includes('trumpet') || icon.includes('violin') || icon.includes('drum') ||
+        icon.includes('pump') || icon.includes('hydraulic') || icon.includes('pacemaker'))
       return 'anim-beat';
-    if (icon.includes('washing') || icon.includes('dishwasher') || icon.includes('dryer') || icon.includes('tumble') || icon.includes('blender'))
+
+    // --- shake: vibrating/spinning appliances ---
+    if (icon.includes('washing') || icon.includes('dishwasher') || icon.includes('dryer') ||
+        icon.includes('tumble') || icon.includes('blender') || icon.includes('mixer') ||
+        icon.includes('robot-vacuum') || icon.includes('vacuum') || icon.includes('robot') ||
+        icon.includes('drill') || icon.includes('saw') || icon.includes('hammer') ||
+        icon.includes('wrench') || icon.includes('vibration') || icon.includes('controller') ||
+        icon.includes('gamepad') || icon.includes('joystick'))
       return 'anim-shake';
-    if (icon.includes('dog') || icon.includes('cat') || icon.includes('bird') || icon.includes('pet'))
+
+    // --- bounce: living creatures & playful ---
+    if (icon.includes('dog') || icon.includes('cat') || icon.includes('bird') ||
+        icon.includes('pet') || icon.includes('paw') || icon.includes('rabbit') ||
+        icon.includes('fish') || icon.includes('turtle') || icon.includes('horse') ||
+        icon.includes('cow') || icon.includes('pig') || icon.includes('bee') ||
+        icon.includes('butterfly') || icon.includes('bug') || icon.includes('spider') ||
+        icon.includes('emoticon') || icon.includes('sticker') || icon.includes('balloon') ||
+        icon.includes('ball') || icon.includes('basketball') || icon.includes('soccer') ||
+        icon.includes('football') || icon.includes('tennis') || icon.includes('volleyball'))
       return 'anim-bounce';
+
     return '';
   }
 
