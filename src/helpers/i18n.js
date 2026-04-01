@@ -99,6 +99,10 @@ const STRINGS = {
     'panel.colors.mushroom.inactive': 'Icon Color (inactive)',
     'panel.colors.sensor.sensor_active': 'Color (active)',
     'panel.colors.sensor.sensor_inactive': 'Color (inactive)',
+    'panel.colors.card_bg_section': '🃏 Card Background',
+    'panel.colors.card_bg.enabled': 'Enable card background',
+    'panel.colors.card_bg.color': 'Background color',
+    'panel.colors.card_bg.hint': 'Empty = auto from room color (subtle tint).',
 
     'actions.toggle': 'toggle',
     'actions.more-info': 'more-info',
@@ -219,6 +223,11 @@ const STRINGS = {
     // Sensori
     'panel.colors.sensor.sensor_active': 'Colore (attivo)',
     'panel.colors.sensor.sensor_inactive': 'Colore (inattivo)',
+    // Card background
+    'panel.colors.card_bg_section': '🃏 Sfondo card',
+    'panel.colors.card_bg.enabled': 'Abilita sfondo card',
+    'panel.colors.card_bg.color': 'Colore sfondo',
+    'panel.colors.card_bg.hint': 'Vuoto = automatico dal colore della stanza (tint sottile).',
 
     'actions.toggle': 'toggle',
     'actions.more-info': 'more-info',
@@ -335,6 +344,10 @@ const STRINGS = {
     'panel.colors.mushroom.inactive': 'Color icono (inactivo)',
     'panel.colors.sensor.sensor_active': 'Color (activo)',
     'panel.colors.sensor.sensor_inactive': 'Color (inactivo)',
+    'panel.colors.card_bg_section': '🃏 Fondo de tarjeta',
+    'panel.colors.card_bg.enabled': 'Habilitar fondo de tarjeta',
+    'panel.colors.card_bg.color': 'Color de fondo',
+    'panel.colors.card_bg.hint': 'Vacío = automático desde el color de la habitación.',
 
     'actions.toggle': 'toggle',
     'actions.more-info': 'more-info',
@@ -451,6 +464,10 @@ const STRINGS = {
     'panel.colors.mushroom.inactive': 'Couleur icône (inactif)',
     'panel.colors.sensor.sensor_active': 'Couleur (actif)',
     'panel.colors.sensor.sensor_inactive': 'Couleur (inactif)',
+    'panel.colors.card_bg_section': '🃏 Fond de carte',
+    'panel.colors.card_bg.enabled': 'Activer le fond de carte',
+    'panel.colors.card_bg.color': 'Couleur de fond',
+    'panel.colors.card_bg.hint': 'Vide = automatique depuis la couleur de la pièce.',
 
     'actions.toggle': 'toggle',
     'actions.more-info': 'more-info',
@@ -567,6 +584,10 @@ const STRINGS = {
     'panel.colors.mushroom.inactive': 'Symbolfarbe (inaktiv)',
     'panel.colors.sensor.sensor_active': 'Farbe (aktiv)',
     'panel.colors.sensor.sensor_inactive': 'Farbe (inaktiv)',
+    'panel.colors.card_bg_section': '🃏 Karten-Hintergrund',
+    'panel.colors.card_bg.enabled': 'Karten-Hintergrund aktivieren',
+    'panel.colors.card_bg.color': 'Hintergrundfarbe',
+    'panel.colors.card_bg.hint': 'Leer = automatisch von der Raumfarbe.',
 
     'actions.toggle': 'toggle',
     'actions.more-info': 'more-info',
@@ -683,6 +704,10 @@ const STRINGS = {
     'panel.colors.mushroom.inactive': 'Cor do ícone (inativo)',
     'panel.colors.sensor.sensor_active': 'Cor (ativo)',
     'panel.colors.sensor.sensor_inactive': 'Cor (inativo)',
+    'panel.colors.card_bg_section': '🃏 Fundo do cartão',
+    'panel.colors.card_bg.enabled': 'Ativar fundo do cartão',
+    'panel.colors.card_bg.color': 'Cor do fundo',
+    'panel.colors.card_bg.hint': 'Vazio = automático da cor do cômodo.',
 
     'actions.toggle': 'toggle',
     'actions.more-info': 'more-info',

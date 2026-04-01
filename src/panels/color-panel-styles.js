@@ -240,6 +240,84 @@ export const colorPanelStyles = css`
     margin-top: 2px;
   }
 
+  /* ── toggle switch ── */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0 10px;
+  }
+  .toggle-label {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #e9f8ff;
+  }
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  .toggle-switch input {
+    opacity: 0;
+    width: 0; height: 0;
+    position: absolute;
+  }
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    background: rgba(255,255,255,0.14);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    transition: background 0.22s, border-color 0.22s;
+    cursor: pointer;
+  }
+  .toggle-track::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.55);
+    transition: transform 0.22s, background 0.22s;
+  }
+  .toggle-switch input:checked + .toggle-track {
+    background: rgba(115,246,229,0.35);
+    border-color: #73f6e5;
+  }
+  .toggle-switch input:checked + .toggle-track::after {
+    transform: translateX(20px);
+    background: #73f6e5;
+  }
+  /* badge on/off nel mini-pill-header */
+  .toggle-badge {
+    margin-left: auto;
+    margin-right: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+  }
+  .toggle-badge.on {
+    background: rgba(115,246,229,0.22);
+    color: #73f6e5;
+    border: 1px solid rgba(115,246,229,0.4);
+  }
+  .toggle-badge.off {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.45);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  /* hint testo piccolo */
+  .card-bg-hint {
+    font-size: 0.83rem;
+    color: rgba(233,248,255,0.55);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
   /* ── riga bottoni in fondo ── */
   .bottom-actions {
     display: flex;
