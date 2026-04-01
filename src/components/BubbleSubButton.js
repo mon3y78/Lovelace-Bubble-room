@@ -80,24 +80,19 @@ export class BubbleSubButton extends LitElement {
       min-height: 0;
       color: var(--bubble-subbutton-color, #fff);
 
-      /* riflesso diagonale + tinta dal colore entità */
-      background:
-        linear-gradient(
-          132deg,
-          rgba(255, 255, 255, 0.10) 0%,
-          rgba(255, 255, 255, 0.02) 45%,
-          rgba(255, 255, 255, 0) 65%
-        ),
-        var(--bubble-subbutton-glass-base, var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.03)));
-      background-blend-mode: screen, normal;
+      /* colore entità puro come base — no white blend che sbiadisce */
+      background: var(--bubble-subbutton-bg, rgba(255, 255, 255, 0.08));
 
-      /* nessun inset bianco — bordo colorato + ombra esterna */
+      /* catch-light sull'edge superiore + ombra esterna + bordo colorato */
       box-shadow:
-        0 8px 28px var(--bubble-subbutton-glass-shadow, rgba(13, 22, 41, 0.16));
-      border: 2px solid var(--bubble-subbutton-border, currentColor);
+        inset 0 1px 0 rgba(255, 255, 255, 0.32),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.10),
+        0 8px 28px var(--bubble-subbutton-glass-shadow, rgba(0, 0, 0, 0.20));
+      border: 1.5px solid var(--bubble-subbutton-border, currentColor);
 
-      backdrop-filter: blur(26px) saturate(1.5);
-      -webkit-backdrop-filter: blur(26px) saturate(1.5);
+      /* saturate più aggressivo per estrarre i colori reali del backdrop */
+      backdrop-filter: blur(20px) saturate(2.2) brightness(1.05);
+      -webkit-backdrop-filter: blur(20px) saturate(2.2) brightness(1.05);
       transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.18s ease,
         border-color 0.3s ease, filter 0.35s ease;
       isolation: isolate;
@@ -137,15 +132,16 @@ export class BubbleSubButton extends LitElement {
       inset: 0;
       border-radius: inherit;
       pointer-events: none;
-      /* striscia riflessiva diagonale — coerente con BubbleIcon */
+      /* overlay crea il riflesso glossy che interagisce con il colore sottostante
+         (screen lo sbiadisce, overlay lo esalta) */
       background: linear-gradient(
-        132deg,
-        rgba(255, 255, 255, 0.32) 0%,
-        rgba(255, 255, 255, 0.08) 40%,
-        transparent 60%
+        135deg,
+        rgba(255, 255, 255, 0.50) 0%,
+        rgba(255, 255, 255, 0.14) 35%,
+        transparent 55%
       );
-      opacity: 0.7;
-      mix-blend-mode: screen;
+      opacity: 0.75;
+      mix-blend-mode: overlay;
       transition: opacity 0.35s ease;
     }
 
@@ -160,11 +156,12 @@ export class BubbleSubButton extends LitElement {
       border-radius: inherit;
       pointer-events: none;
       background: radial-gradient(
-        ellipse 110% 70% at 50% 120%,
-        var(--bubble-subbutton-glow, rgba(255, 255, 255, 0.10)),
+        ellipse 120% 75% at 50% 118%,
+        var(--bubble-subbutton-glow, rgba(255, 255, 255, 0.12)),
         transparent 65%
       );
-      opacity: 0.75;
+      mix-blend-mode: screen;
+      opacity: 0.90;
       transition: opacity 0.35s ease;
     }
 

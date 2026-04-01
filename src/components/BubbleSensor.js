@@ -437,21 +437,17 @@ export class BubbleSensor extends LitElement {
       position: relative;
       isolation: isolate;
 
-      backdrop-filter: blur(26px) saturate(1.5);
-      -webkit-backdrop-filter: blur(26px) saturate(1.5);
+      backdrop-filter: blur(20px) saturate(2.2) brightness(1.05);
+      -webkit-backdrop-filter: blur(20px) saturate(2.2) brightness(1.05);
 
-      background:
-        linear-gradient(
-          132deg,
-          rgba(255, 255, 255, 0.18) 0%,
-          rgba(255, 255, 255, 0.04) 40%,
-          transparent 60%
-        ),
-        color-mix(in srgb, var(--bubble-sensor-active-color, white) 24%, rgba(255, 255, 255, 0.06));
-      background-blend-mode: screen, normal;
+      /* colore puro della stanza come base */
+      background: color-mix(in srgb, var(--bubble-sensor-active-color, white) 22%, rgba(255, 255, 255, 0.04));
 
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16);
-      border: 1.5px solid color-mix(in srgb, var(--bubble-sensor-active-color, white) 38%, transparent);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.30),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.08),
+        0 6px 24px rgba(0, 0, 0, 0.18);
+      border: 1.5px solid color-mix(in srgb, var(--bubble-sensor-active-color, white) 40%, transparent);
 
       transition: background 0.3s ease, border-color 0.3s ease;
     }
@@ -462,12 +458,21 @@ export class BubbleSensor extends LitElement {
       inset: 0;
       border-radius: inherit;
       pointer-events: none;
-      background: radial-gradient(
-        ellipse 110% 65% at 50% 115%,
-        color-mix(in srgb, var(--bubble-sensor-active-color, white) 35%, transparent),
-        transparent 65%
-      );
-      opacity: 0.9;
+      /* highlight overlay in alto + glow colorato in basso */
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.45) 0%,
+          rgba(255, 255, 255, 0.10) 35%,
+          transparent 55%
+        ),
+        radial-gradient(
+          ellipse 120% 70% at 50% 118%,
+          color-mix(in srgb, var(--bubble-sensor-active-color, white) 40%, transparent),
+          transparent 65%
+        );
+      mix-blend-mode: overlay;
+      opacity: 0.85;
       z-index: 0;
     }
 
