@@ -143,12 +143,12 @@ export class BubbleRoom extends LitElement {
   _getSensors() {
     const entities = this._entities || {};
     const sensorColorActive =
-      this.config.colors?.room?.sensor_active ??
+      this.config.colors?.sensor?.sensor_active ??
       this.config.colors?.room?.text_active ??
       '#21df73';
 
     const sensorColorInactive =
-      this.config.colors?.room?.sensor_inactive ??
+      this.config.colors?.sensor?.sensor_inactive ??
       this.config.colors?.room?.text_inactive ??
       '#173c16';
 
