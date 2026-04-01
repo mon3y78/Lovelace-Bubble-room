@@ -15,9 +15,10 @@ export class ColorPanel extends LitElement {
     _subbutton: { type: Object, state: true },
     _mushroom:  { type: Object, state: true },
     _sensor:    { type: Object, state: true },
+    _cardBg:    { type: Object, state: true },
 
     _selectedPreset:  { type: String,  state: true },
-    _expandedColors:  { type: Array,   state: true }, // [room, subbutton, mushroom]
+    _expandedColors:  { type: Array,   state: true }, // [card, room, subbutton, mushroom, sensor]
     _subbuttonStyle:  { type: String,  state: true },
   };
 
@@ -32,10 +33,11 @@ export class ColorPanel extends LitElement {
     this._subbutton = {};
     this._mushroom = {};
     this._sensor = {};
+    this._cardBg = { enabled: false, color: '' };
 
     // UI state
     this._selectedPreset = 'green';
-    this._expandedColors = [false, false, false];
+    this._expandedColors = [false, false, false, false, false]; // [card, room, subbutton, mushroom, sensor]
     this._subbuttonStyle = 'standard';
   }
 
@@ -66,6 +68,11 @@ export class ColorPanel extends LitElement {
       };
 
       this._subbuttonStyle = this.config?.subbutton_style || 'standard';
+
+      this._cardBg = {
+        enabled: this.config?.card_background?.enabled ?? false,
+        color:   this.config?.card_background?.color   ?? '',
+      };
     }
   }
 
@@ -89,62 +96,95 @@ export class ColorPanel extends LitElement {
 
         ${this._renderStyleChooser()}
 
-        <!-- Preset chooser -->
-        ${this._renderPresetChooser()}
-
-        <!-- Room colors -->
+        <!-- Card background: colore e abilitazione sfondo card -->
         <div class="mini-pill ${this._expandedColors[0] ? 'expanded' : ''}">
           <div
             class="mini-pill-header"
-            style="--section-accent: #55afff;"
+            style="--section-accent: #e0e0e0;"
             @click=${() => this._toggleColor(0)}
           >
-            ${t('panel.colors.room_section')}
+            ${t('panel.colors.card_bg_section')}
+            <span class="toggle-badge ${this._cardBg.enabled ? 'on' : 'off'}">
+              ${this._cardBg.enabled ? t('panel.colors.on') : t('panel.colors.off')}
+            </span>
             <span class="chevron">${this._expandedColors[0] ? '▼' : '▶'}</span>
           </div>
           ${this._expandedColors[0] ? html`
             <div class="mini-pill-content">
-              ${this._renderColorField('room', 'background_active',   t('panel.colors.room.background_active'))}
-              ${this._renderColorField('room', 'background_inactive', t('panel.colors.room.background_inactive'))}
+              <div class="toggle-row">
+                <span class="toggle-label">${t('panel.colors.card_bg.enabled')}</span>
+                <label class="toggle-switch">
+                  <input type="checkbox"
+                    .checked=${this._cardBg.enabled}
+                    @change=${e => this._emit('card_background.enabled', e.target.checked)}
+                  />
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              ${this._cardBg.enabled ? html`
+                <div class="card-bg-hint">${t('panel.colors.card_bg.hint')}</div>
+                ${this._renderColorField('card_background', 'color', t('panel.colors.card_bg.color'))}
+              ` : ''}
+            </div>
+          ` : ''}
+        </div>
+
+        <!-- Preset chooser (cards only, no apply button here) -->
+        ${this._renderPresetChooser()}
+
+        <!-- Room colors: icona principale + sfondo + nome stanza -->
+        <div class="mini-pill ${this._expandedColors[1] ? 'expanded' : ''}">
+          <div
+            class="mini-pill-header"
+            style="--section-accent: #55afff;"
+            @click=${() => this._toggleColor(1)}
+          >
+            ${t('panel.colors.room_section')}
+            <span class="chevron">${this._expandedColors[1] ? '▼' : '▶'}</span>
+          </div>
+          ${this._expandedColors[1] ? html`
+            <div class="mini-pill-content">
               ${this._renderColorField('room', 'icon_active',         t('panel.colors.room.icon_active'))}
               ${this._renderColorField('room', 'icon_inactive',       t('panel.colors.room.icon_inactive'))}
+              ${this._renderColorField('room', 'background_active',   t('panel.colors.room.background_active'))}
+              ${this._renderColorField('room', 'background_inactive', t('panel.colors.room.background_inactive'))}
               ${this._renderColorField('room', 'text_active',         t('panel.colors.room.text_active'))}
               ${this._renderColorField('room', 'text_inactive',       t('panel.colors.room.text_inactive'))}
             </div>
           ` : ''}
         </div>
 
-        <!-- Subbutton colors -->
-        <div class="mini-pill ${this._expandedColors[1] ? 'expanded' : ''}">
+        <!-- Subbutton colors: bottoni entità laterali -->
+        <div class="mini-pill ${this._expandedColors[2] ? 'expanded' : ''}">
           <div
             class="mini-pill-header"
             style="--section-accent: #b28fff;"
-            @click=${() => this._toggleColor(1)}
+            @click=${() => this._toggleColor(2)}
           >
             ${t('panel.colors.subbutton_section')}
             <span class="chevron">${this._expandedColors[1] ? '▼' : '▶'}</span>
           </div>
-          ${this._expandedColors[1] ? html`
+          ${this._expandedColors[2] ? html`
             <div class="mini-pill-content">
-              ${this._renderColorField('subbutton', 'background_on',  t('panel.colors.subbutton.background_on'))}
-              ${this._renderColorField('subbutton', 'background_off', t('panel.colors.subbutton.background_off'))}
               ${this._renderColorField('subbutton', 'icon_on',        t('panel.colors.subbutton.icon_on'))}
               ${this._renderColorField('subbutton', 'icon_off',       t('panel.colors.subbutton.icon_off'))}
+              ${this._renderColorField('subbutton', 'background_on',  t('panel.colors.subbutton.background_on'))}
+              ${this._renderColorField('subbutton', 'background_off', t('panel.colors.subbutton.background_off'))}
             </div>
           ` : ''}
         </div>
 
-        <!-- Mushroom colors -->
-        <div class="mini-pill ${this._expandedColors[2] ? 'expanded' : ''}">
+        <!-- Mushroom colors: icone entità fluttuanti -->
+        <div class="mini-pill ${this._expandedColors[3] ? 'expanded' : ''}">
           <div
             class="mini-pill-header"
             style="--section-accent: #4bd1b4;"
-            @click=${() => this._toggleColor(2)}
+            @click=${() => this._toggleColor(3)}
           >
             ${t('panel.colors.mushroom_section')}
             <span class="chevron">${this._expandedColors[2] ? '▼' : '▶'}</span>
           </div>
-          ${this._expandedColors[2] ? html`
+          ${this._expandedColors[3] ? html`
             <div class="mini-pill-content">
               ${this._renderColorField('mushroom', 'active',   t('panel.colors.mushroom.active'))}
               ${this._renderColorField('mushroom', 'inactive', t('panel.colors.mushroom.inactive'))}
@@ -152,10 +192,33 @@ export class ColorPanel extends LitElement {
           ` : ''}
         </div>
 
-        <!-- Reset -->
-        <button class="reset-button" @click=${() => this._resetColors()}>
-          ${t('panel.colors.reset')}
-        </button>
+        <!-- Sensor colors: riga sensori in basso -->
+        <div class="mini-pill ${this._expandedColors[4] ? 'expanded' : ''}">
+          <div
+            class="mini-pill-header"
+            style="--section-accent: #ffa742;"
+            @click=${() => this._toggleColor(4)}
+          >
+            ${t('panel.colors.sensor_section')}
+            <span class="chevron">${this._expandedColors[4] ? '▼' : '▶'}</span>
+          </div>
+          ${this._expandedColors[4] ? html`
+            <div class="mini-pill-content">
+              ${this._renderColorField('sensor', 'sensor_active',   t('panel.colors.sensor.sensor_active'))}
+              ${this._renderColorField('sensor', 'sensor_inactive', t('panel.colors.sensor.sensor_inactive'))}
+            </div>
+          ` : ''}
+        </div>
+
+        <!-- Actions: Applica preset + Reset (entrambi in fondo) -->
+        <div class="bottom-actions">
+          <button class="apply-btn" @click=${this._applySelectedPreset}>
+            ${t('panel.colors.apply_preset')}
+          </button>
+          <button class="reset-button" @click=${() => this._resetColors()}>
+            ${t('panel.colors.reset')}
+          </button>
+        </div>
       </ha-expansion-panel>
     `;
   }
@@ -206,15 +269,9 @@ export class ColorPanel extends LitElement {
 
   _renderPresetChooser() {
     const keys = Object.keys(this.PRESETS);
-    const t = (key, vars, fallback) => localize(this.hass, key, vars, fallback);
     return html`
       <div class="preset-bar">
         ${keys.map(k => this._renderPresetCard(k, this.PRESETS[k]))}
-      </div>
-      <div class="apply-row">
-        <button class="apply-btn" @click=${this._applySelectedPreset}>
-          ${t('panel.colors.apply_preset')}
-        </button>
       </div>
     `;
   }
@@ -310,7 +367,11 @@ export class ColorPanel extends LitElement {
   };
 
   _resetColors() {
-    this._expandedColors = [false, false, false];
+    this._expandedColors = [false, false, false, false, false];
+    // Reset card background
+    this._emit('card_background.enabled', false);
+    this._emit('card_background.color', '');
+    // Reset all color sections
     const sections = ['room','subbutton','mushroom','sensor'];
     const keys = {
       room:      ['background_active','background_inactive','icon_active','icon_inactive','text_active','text_inactive'],

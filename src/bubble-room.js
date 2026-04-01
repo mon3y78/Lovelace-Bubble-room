@@ -7,6 +7,7 @@ import './components/BubbleSensor.js';
 import './components/BubbleMushroom.js';
 import './components/BubbleIcon.js';
 import { resolveEntityIcon } from './helpers/icon-mapping.js';
+import { parseColor } from './helpers/color-utils.js';
 
 export class BubbleRoom extends LitElement {
   static properties = {
@@ -24,6 +25,30 @@ export class BubbleRoom extends LitElement {
   }
 
   /* ───────────── configurazione ───────────── */
+  updated(changedProps) {
+    if (changedProps.has('config') || changedProps.has('hass')) {
+      this._applyCardBackground();
+    }
+  }
+
+  _applyCardBackground() {
+    const enabled = this.config?.card_background?.enabled ?? false;
+    if (!enabled) {
+      this.style.removeProperty('--ha-card-background');
+      return;
+    }
+    let color = this.config?.card_background?.color || '';
+    if (!color) {
+      // Deriva dal colore icona stanza con alpha bassa (effetto tint sottile)
+      const base = this.config?.colors?.room?.icon_active ?? '#21df73';
+      const rgb = parseColor(base);
+      color = rgb
+        ? `rgba(${rgb.r},${rgb.g},${rgb.b},0.08)`
+        : 'rgba(33,223,115,0.08)';
+    }
+    this.style.setProperty('--ha-card-background', color);
+  }
+
   setConfig(rawConfig) {
     this.config = { layout: 'wide', ...rawConfig };
     this._entities = structuredClone(this.config.entities || {});
@@ -143,12 +168,12 @@ export class BubbleRoom extends LitElement {
   _getSensors() {
     const entities = this._entities || {};
     const sensorColorActive =
-      this.config.colors?.room?.sensor_active ??
+      this.config.colors?.sensor?.sensor_active ??
       this.config.colors?.room?.text_active ??
       '#21df73';
 
     const sensorColorInactive =
-      this.config.colors?.room?.sensor_inactive ??
+      this.config.colors?.sensor?.sensor_inactive ??
       this.config.colors?.room?.text_inactive ??
       '#173c16';
 

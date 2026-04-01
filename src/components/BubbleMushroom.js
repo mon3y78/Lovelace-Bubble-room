@@ -1,6 +1,6 @@
 // src/components/BubbleMushroom.js
 import { LitElement, html, css } from 'lit';
-import { resolveEntityIcon } from '../helpers/icon-mapping.js';
+import { resolveEntityIcon, getIconAnimClass } from '../helpers/icon-mapping.js';
 import { createGestureHandler } from '../helpers/gesture-handler.js';
 
 
@@ -51,25 +51,7 @@ export class BubbleMushroom extends LitElement {
   }
 
   _getAnimClass(entity) {
-    const icon = (entity?.icon || '').toLowerCase();
-    const kind = entity?.kind || '';
-    if (kind === 'camera' || icon.includes('cctv') || icon.includes('camera') || icon.includes('webcam'))
-      return 'anim-scan';
-    if (icon.includes('fan') || icon.includes('propeller') || icon.includes('turbine') || icon.includes('ceiling-fan'))
-      return 'anim-spin';
-    if (icon.includes('lightbulb') || icon.includes('lamp') || icon.includes('bulb') || icon.includes('chandelier') || icon.includes('led') || icon.includes('ceiling-light') || icon.includes('floor-lamp'))
-      return 'anim-illuminate';
-    if (icon.includes('bell') || icon.includes('alarm') || icon.includes('siren') || icon.includes('alert'))
-      return 'anim-alarm';
-    if (icon.includes('motion') || icon.includes('walk') || icon.includes('run') || icon.includes('human'))
-      return 'anim-blink';
-    if (icon.includes('speaker') || icon.includes('music') || icon.includes('audio') || icon.includes('subwoofer') || icon.includes('headphone'))
-      return 'anim-beat';
-    if (icon.includes('washing') || icon.includes('dishwasher') || icon.includes('dryer') || icon.includes('tumble') || icon.includes('blender'))
-      return 'anim-shake';
-    if (icon.includes('dog') || icon.includes('cat') || icon.includes('bird') || icon.includes('pet'))
-      return 'anim-bounce';
-    return '';
+    return getIconAnimClass(entity?.icon, entity?.kind);
   }
 
   _updateSize() {

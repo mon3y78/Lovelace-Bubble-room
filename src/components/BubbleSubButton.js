@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { createGestureHandler } from '../helpers/gesture-handler.js';
 import { parseColor } from '../helpers/color-utils.js';
+import { getIconAnimClass } from '../helpers/icon-mapping.js';
 
 export class BubbleSubButton extends LitElement {
   static properties = {
@@ -188,10 +189,83 @@ export class BubbleSubButton extends LitElement {
     ha-icon {
       --mdc-icon-size: 100%;
     }
-    
+
     ha-icon svg {
       width: 100%;
       height: 100%;
+    }
+
+    /* --- Keyframe animations (same as mushrooms) --- */
+    @keyframes subbutton-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes subbutton-illuminate {
+      0%, 100% { clip-path: inset(0 0 0 0); opacity: 1; }
+      45%       { clip-path: inset(0 0 55% 0); opacity: 0.6; }
+      55%       { clip-path: inset(0 0 0 0); opacity: 1; }
+    }
+    @keyframes subbutton-alarm {
+      0%   { transform: rotate(0deg) translateY(0); }
+      15%  { transform: rotate(18deg) translateY(-2px); }
+      30%  { transform: rotate(-14deg) translateY(-1px); }
+      45%  { transform: rotate(10deg) translateY(-1px); }
+      60%  { transform: rotate(-6deg) translateY(0); }
+      75%  { transform: rotate(3deg) translateY(0); }
+      100% { transform: rotate(0deg) translateY(0); }
+    }
+    @keyframes subbutton-blink {
+      0%, 49%  { opacity: 1; }
+      50%, 100% { opacity: 0.15; }
+    }
+    @keyframes subbutton-beat {
+      0%, 100% { transform: scale(1); }
+      14%      { transform: scale(1.18); }
+      28%      { transform: scale(1); }
+      42%      { transform: scale(1.12); }
+      70%      { transform: scale(1); }
+    }
+    @keyframes subbutton-scan {
+      0%, 100% { transform: rotate(-18deg); }
+      50%      { transform: rotate(18deg); }
+    }
+    @keyframes subbutton-shake {
+      0%, 100% { transform: translateX(0); }
+      20%      { transform: translateX(-3px) rotate(-1deg); }
+      40%      { transform: translateX(3px) rotate(1deg); }
+      60%      { transform: translateX(-2px); }
+      80%      { transform: translateX(2px); }
+    }
+    @keyframes subbutton-bounce {
+      0%, 100% { transform: translateY(0); }
+      40%      { transform: translateY(-5px); }
+      60%      { transform: translateY(-3px); }
+    }
+
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-spin ha-icon {
+      animation: subbutton-spin 1.4s linear infinite;
+    }
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-illuminate ha-icon {
+      animation: subbutton-illuminate 2.5s ease-in-out infinite;
+    }
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-alarm ha-icon {
+      animation: subbutton-alarm 0.9s ease infinite;
+    }
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-blink ha-icon {
+      animation: subbutton-blink 1.1s step-end infinite;
+    }
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-beat ha-icon {
+      animation: subbutton-beat 1.3s ease-out infinite;
+    }
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-scan ha-icon {
+      transform-origin: 90% 80%;
+      animation: subbutton-scan 5s ease-in-out infinite;
+    }
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-shake ha-icon {
+      animation: subbutton-shake 400ms ease-in-out infinite;
+    }
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-bounce ha-icon {
+      animation: subbutton-bounce 0.7s cubic-bezier(0.30, 2.40, 0.85, 2.50) infinite;
     }
   `;
   
@@ -291,6 +365,8 @@ export class BubbleSubButton extends LitElement {
           const styleAttr = styleVars.join(';');
           const classes = ['sub-button'];
           if (btn.active) classes.push('is-active');
+          const animClass = btn.active ? this._getAnimClass(btn.icon) : '';
+          if (animClass) classes.push(animClass);
 
           return html`
             <div
@@ -309,6 +385,10 @@ export class BubbleSubButton extends LitElement {
     `;
   }
   
+  _getAnimClass(icon) {
+    return getIconAnimClass(icon);
+  }
+
   _onDown(idx) { this._gesture.onDown(idx); }
   _onUp(idx)   { this._gesture.onUp(idx); }
   _clearHoldTimer() { this._gesture.clearTimer(); }
