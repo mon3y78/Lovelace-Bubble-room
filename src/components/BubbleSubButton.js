@@ -188,10 +188,83 @@ export class BubbleSubButton extends LitElement {
     ha-icon {
       --mdc-icon-size: 100%;
     }
-    
+
     ha-icon svg {
       width: 100%;
       height: 100%;
+    }
+
+    /* --- Keyframe animations (same as mushrooms) --- */
+    @keyframes subbutton-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes subbutton-illuminate {
+      0%, 100% { clip-path: inset(0 0 0 0); opacity: 1; }
+      45%       { clip-path: inset(0 0 55% 0); opacity: 0.6; }
+      55%       { clip-path: inset(0 0 0 0); opacity: 1; }
+    }
+    @keyframes subbutton-alarm {
+      0%   { transform: rotate(0deg) translateY(0); }
+      15%  { transform: rotate(18deg) translateY(-2px); }
+      30%  { transform: rotate(-14deg) translateY(-1px); }
+      45%  { transform: rotate(10deg) translateY(-1px); }
+      60%  { transform: rotate(-6deg) translateY(0); }
+      75%  { transform: rotate(3deg) translateY(0); }
+      100% { transform: rotate(0deg) translateY(0); }
+    }
+    @keyframes subbutton-blink {
+      0%, 49%  { opacity: 1; }
+      50%, 100% { opacity: 0.15; }
+    }
+    @keyframes subbutton-beat {
+      0%, 100% { transform: scale(1); }
+      14%      { transform: scale(1.18); }
+      28%      { transform: scale(1); }
+      42%      { transform: scale(1.12); }
+      70%      { transform: scale(1); }
+    }
+    @keyframes subbutton-scan {
+      0%, 100% { transform: rotate(-18deg); }
+      50%      { transform: rotate(18deg); }
+    }
+    @keyframes subbutton-shake {
+      0%, 100% { transform: translateX(0); }
+      20%      { transform: translateX(-3px) rotate(-1deg); }
+      40%      { transform: translateX(3px) rotate(1deg); }
+      60%      { transform: translateX(-2px); }
+      80%      { transform: translateX(2px); }
+    }
+    @keyframes subbutton-bounce {
+      0%, 100% { transform: translateY(0); }
+      40%      { transform: translateY(-5px); }
+      60%      { transform: translateY(-3px); }
+    }
+
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-spin ha-icon {
+      animation: subbutton-spin 1.4s linear infinite;
+    }
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-illuminate ha-icon {
+      animation: subbutton-illuminate 2.5s ease-in-out infinite;
+    }
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-alarm ha-icon {
+      animation: subbutton-alarm 0.9s ease infinite;
+    }
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-blink ha-icon {
+      animation: subbutton-blink 1.1s step-end infinite;
+    }
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-beat ha-icon {
+      animation: subbutton-beat 1.3s ease-out infinite;
+    }
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-scan ha-icon {
+      transform-origin: 90% 80%;
+      animation: subbutton-scan 5s ease-in-out infinite;
+    }
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-shake ha-icon {
+      animation: subbutton-shake 400ms ease-in-out infinite;
+    }
+    :host([preset='liquid-glass']) .sub-button.is-active.anim-bounce ha-icon {
+      animation: subbutton-bounce 0.7s cubic-bezier(0.30, 2.40, 0.85, 2.50) infinite;
     }
   `;
   
@@ -291,6 +364,8 @@ export class BubbleSubButton extends LitElement {
           const styleAttr = styleVars.join(';');
           const classes = ['sub-button'];
           if (btn.active) classes.push('is-active');
+          const animClass = btn.active ? this._getAnimClass(btn.icon) : '';
+          if (animClass) classes.push(animClass);
 
           return html`
             <div
@@ -309,6 +384,58 @@ export class BubbleSubButton extends LitElement {
     `;
   }
   
+  _getAnimClass(icon) {
+    const i = (icon || '').toLowerCase();
+    if (i.includes('cctv') || i.includes('camera') || i.includes('webcam') ||
+        i.includes('doorbell') || i.includes('telescope') || i.includes('binoculars'))
+      return 'anim-scan';
+    if (i.includes('fan') || i.includes('propeller') || i.includes('turbine') ||
+        i.includes('ceiling-fan') || i.includes('wind-turbine') || i.includes('rotate') ||
+        i.includes('reload') || i.includes('refresh') || i.includes('sync') ||
+        i.includes('disc') || i.includes('record') || i.includes('vinyl') ||
+        i.includes('wheel') || i.includes('circular'))
+      return 'anim-spin';
+    if (i.includes('lightbulb') || i.includes('lamp') || i.includes('bulb') ||
+        i.includes('chandelier') || i.includes('led') || i.includes('ceiling-light') ||
+        i.includes('floor-lamp') || i.includes('desk-lamp') || i.includes('string-lights') ||
+        i.includes('spotlight') || i.includes('torch') || i.includes('flashlight') ||
+        i.includes('candle') || i.includes('fire') || i.includes('flame') ||
+        i.includes('lantern') || i.includes('strip-lights') || i.includes('wall-sconce'))
+      return 'anim-illuminate';
+    if (i.includes('bell') || i.includes('alarm') || i.includes('siren') ||
+        i.includes('alert') || i.includes('smoke') || i.includes('leak') ||
+        i.includes('vibrate') || i.includes('shield-alert') || i.includes('warning') ||
+        i.includes('flood') || i.includes('door-open') || i.includes('window-open') ||
+        i.includes('water-alert') || i.includes('hazard'))
+      return 'anim-alarm';
+    if (i.includes('motion') || i.includes('walk') || i.includes('run') ||
+        i.includes('human') || i.includes('account') || i.includes('presence') ||
+        i.includes('wifi') || i.includes('bluetooth') || i.includes('signal') ||
+        i.includes('broadcast') || i.includes('antenna') || i.includes('eye') ||
+        i.includes('network') || i.includes('access-point') || i.includes('blink'))
+      return 'anim-blink';
+    if (i.includes('speaker') || i.includes('music') || i.includes('audio') ||
+        i.includes('subwoofer') || i.includes('headphone') || i.includes('headset') ||
+        i.includes('microphone') || i.includes('heart') || i.includes('waveform') ||
+        i.includes('equalizer') || i.includes('radio') || i.includes('podcast') ||
+        i.includes('piano') || i.includes('guitar') || i.includes('drum') ||
+        i.includes('pump') || i.includes('pacemaker'))
+      return 'anim-beat';
+    if (i.includes('washing') || i.includes('dishwasher') || i.includes('dryer') ||
+        i.includes('tumble') || i.includes('blender') || i.includes('mixer') ||
+        i.includes('vacuum') || i.includes('robot') || i.includes('drill') ||
+        i.includes('wrench') || i.includes('hammer') || i.includes('gamepad') ||
+        i.includes('joystick') || i.includes('vibration'))
+      return 'anim-shake';
+    if (i.includes('dog') || i.includes('cat') || i.includes('bird') ||
+        i.includes('pet') || i.includes('paw') || i.includes('rabbit') ||
+        i.includes('fish') || i.includes('bee') || i.includes('butterfly') ||
+        i.includes('emoticon') || i.includes('balloon') || i.includes('ball') ||
+        i.includes('basketball') || i.includes('soccer') || i.includes('football'))
+      return 'anim-bounce';
+    return '';
+  }
+
   _onDown(idx) { this._gesture.onDown(idx); }
   _onUp(idx)   { this._gesture.onUp(idx); }
   _clearHoldTimer() { this._gesture.clearTimer(); }
