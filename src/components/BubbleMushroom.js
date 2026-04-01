@@ -50,18 +50,24 @@ export class BubbleMushroom extends LitElement {
     super.disconnectedCallback();
   }
 
-  _getAnimClass(icon) {
-    if (!icon) return '';
-    const i = icon.toLowerCase();
-    if (i.includes('fan') || i.includes('propeller') || i.includes('turbine') || i.includes('rotate'))
+  _getAnimClass(entity) {
+    const icon = (entity?.icon || '').toLowerCase();
+    const kind = entity?.kind || '';
+    if (kind === 'camera' || icon.includes('cctv') || icon.includes('camera') || icon.includes('webcam'))
+      return 'anim-scan';
+    if (icon.includes('fan') || icon.includes('propeller') || icon.includes('turbine') || icon.includes('ceiling-fan'))
       return 'anim-spin';
-    if (i.includes('light') || i.includes('lamp') || i.includes('bulb') || i.includes('chandelier') || i.includes('led'))
-      return 'anim-pulse';
-    if (i.includes('motion') || i.includes('walk') || i.includes('run') || i.includes('human'))
+    if (icon.includes('lightbulb') || icon.includes('lamp') || icon.includes('bulb') || icon.includes('chandelier') || icon.includes('led') || icon.includes('ceiling-light') || icon.includes('floor-lamp'))
+      return 'anim-illuminate';
+    if (icon.includes('bell') || icon.includes('alarm') || icon.includes('siren') || icon.includes('alert'))
+      return 'anim-alarm';
+    if (icon.includes('motion') || icon.includes('walk') || icon.includes('run') || icon.includes('human'))
       return 'anim-blink';
-    if (i.includes('bell') || i.includes('alarm') || i.includes('alert') || i.includes('siren'))
-      return 'anim-blink';
-    if (i.includes('dog') || i.includes('cat') || i.includes('bird') || i.includes('pet'))
+    if (icon.includes('speaker') || icon.includes('music') || icon.includes('audio') || icon.includes('subwoofer') || icon.includes('headphone'))
+      return 'anim-beat';
+    if (icon.includes('washing') || icon.includes('dishwasher') || icon.includes('dryer') || icon.includes('tumble') || icon.includes('blender'))
+      return 'anim-shake';
+    if (icon.includes('dog') || icon.includes('cat') || icon.includes('bird') || icon.includes('pet'))
       return 'anim-bounce';
     return '';
   }
@@ -183,35 +189,91 @@ export class BubbleMushroom extends LitElement {
     .mushroom-entity ha-icon { display: block; }
 
     /* ── animazioni ── */
+
+    /* ventilatori, eliche, rotori */
     @keyframes mushroom-spin {
       from { transform: rotate(0deg); }
       to   { transform: rotate(360deg); }
     }
-    @keyframes mushroom-pulse {
-      0%, 100% { opacity: 1;    transform: scale(1); }
-      50%       { opacity: 0.65; transform: scale(0.88); }
+
+    /* lampadine, lampade — flash del riflesso */
+    @keyframes mushroom-illuminate {
+      0%, 79%  { clip-path: inset(0 0 0 0); }
+      80%, 100%{ clip-path: polygon(0% 99%, 20% 55%, 22% 37%, 39% 20%, 61% 21%, 77% 35%, 79% 57%, 99% 100%); }
     }
+
+    /* campanelli, allarmi — scuotimento con smorzamento */
+    @keyframes mushroom-alarm {
+      0%, 80%, 100% { transform: translateY(0); }
+      10% { transform: translateY(-2px) rotate(-27deg); }
+      20% { transform: translateY(-2px) rotate(21deg); }
+      30% { transform: translateY(-2px) rotate(-15deg); }
+      40% { transform: translateY(-2px) rotate(9deg); }
+      50% { transform: translateY(0); }
+      60% { transform: translateY(-1.2px); }
+    }
+
+    /* sensori di movimento — blink a passo */
     @keyframes mushroom-blink {
       0%, 100% { opacity: 1; }
-      50%       { opacity: 0.1; }
+      50%       { opacity: 0.08; }
     }
+
+    /* speaker, musica — pulsazione heartbeat */
+    @keyframes mushroom-beat {
+      0%  { transform: scale(1); }
+      10% { transform: scale(1.1); }
+      17% { transform: scale(1.05); }
+      33% { transform: scale(1.25); }
+      60% { transform: scale(1); }
+    }
+
+    /* telecamera — pan/scan laterale */
+    @keyframes mushroom-scan {
+      0%, 100% { transform: rotate(20deg); }
+      50%       { transform: rotate(-15deg); }
+    }
+
+    /* elettrodomestici — vibrazione */
+    @keyframes mushroom-shake {
+      0%, 100% { transform: translate(0, 0) rotate(0); }
+      20%       { transform: translate(0.4px, -0.4px) rotate(-4deg); }
+      40%       { transform: translate(-0.4px,  0.4px) rotate(4deg); }
+      60%       { transform: translate(0.4px,  0.4px) rotate(-4deg); }
+      80%       { transform: translate(-0.4px, -0.4px) rotate(4deg); }
+    }
+
+    /* animali domestici — rimbalzo elastico */
     @keyframes mushroom-bounce {
-      0%, 100% { transform: translateY(0); }
-      40%       { transform: translateY(-20%); }
-      60%       { transform: translateY(-10%); }
+      0%, 100% { transform: translateY(0) scaleY(0.9); }
+      80%       { transform: translateY(-20%) scaleY(1); }
     }
 
     :host([preset='liquid-glass']) .mushroom-entity.is-active.anim-spin ha-icon {
       animation: mushroom-spin 1.4s linear infinite;
     }
-    :host([preset='liquid-glass']) .mushroom-entity.is-active.anim-pulse ha-icon {
-      animation: mushroom-pulse 2.2s ease-in-out infinite;
+    :host([preset='liquid-glass']) .mushroom-entity.is-active.anim-illuminate ha-icon {
+      animation: mushroom-illuminate 2.5s ease-in-out infinite;
+    }
+    :host([preset='liquid-glass']) .mushroom-entity.is-active.anim-alarm ha-icon {
+      animation: mushroom-alarm 0.9s ease infinite;
     }
     :host([preset='liquid-glass']) .mushroom-entity.is-active.anim-blink ha-icon {
       animation: mushroom-blink 1.1s step-end infinite;
     }
+    :host([preset='liquid-glass']) .mushroom-entity.is-active.anim-beat ha-icon {
+      animation: mushroom-beat 1.3s ease-out infinite;
+    }
+    :host([preset='liquid-glass']) .mushroom-entity.is-active.anim-scan ha-icon {
+      animation: mushroom-scan 5s ease-in-out infinite;
+      transform-origin: 90% 80%;
+    }
+    :host([preset='liquid-glass']) .mushroom-entity.is-active.anim-shake ha-icon {
+      animation: mushroom-shake 400ms ease-in-out infinite;
+    }
     :host([preset='liquid-glass']) .mushroom-entity.is-active.anim-bounce ha-icon {
-      animation: mushroom-bounce 1.4s ease-in-out infinite;
+      animation: mushroom-bounce 0.7s cubic-bezier(0.30, 2.40, 0.85, 2.50) infinite;
+      transform-origin: 50% 100%;
     }
 
     @keyframes mushroom-ripple {
@@ -336,7 +398,7 @@ export class BubbleMushroom extends LitElement {
 
         const rippleKey = e.entity_id || e.kind || 'unknown';
         const isRippling = this._ripplingKeys.has(rippleKey);
-        const animClass = e.active ? this._getAnimClass(e.icon) : '';
+        const animClass = e.active ? this._getAnimClass(e) : '';
         const activeClass = this.preset === 'liquid-glass'
           ? (e.active ? `is-active ${animClass}` : 'is-inactive')
           : '';
