@@ -1782,8 +1782,9 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
       letter-spacing: 0em;
       line-height: 0.88;
       text-shadow:
-        0 0 48px color-mix(in srgb, var(--bubble-room-name-color, white) 90%, transparent),
-        0 0 20px color-mix(in srgb, var(--bubble-room-name-color, white) 55%, transparent),
+        0 0 60px color-mix(in srgb, var(--bubble-room-name-color, white) 100%, transparent),
+        0 0 28px color-mix(in srgb, var(--bubble-room-name-color, white) 70%, transparent),
+        0 0 10px color-mix(in srgb, var(--bubble-room-name-color, white) 40%, transparent),
         0 2px 8px rgba(0, 0, 0, 0.45);
       /* luminosità/saturazione uniforme con sub-button: gestita dal colore passato via CSS var */
       filter: saturate(var(--bubble-room-name-saturation, 1)) brightness(var(--bubble-room-name-brightness, 1));
@@ -1962,15 +1963,18 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
     :host([preset='liquid-glass']) .mushroom-entity.is-active {
       filter: saturate(1.15) brightness(1.1);
       opacity: 1.0;
-      background: color-mix(in srgb, currentColor 18%, rgba(0, 0, 0, 0.25));
+      /* alone colorato sottile: dà profondità senza cerchio evidente */
+      box-shadow: 0 0 0 2px color-mix(in srgb, currentColor 30%, transparent);
+      background: color-mix(in srgb, currentColor 12%, rgba(0, 0, 0, 0.15));
     }
 
     :host([preset='liquid-glass']) .mushroom-entity.is-inactive {
-      filter: saturate(0.9) brightness(0.9);
-      opacity: 0.85;
-      /* cerchio scuro: rende l'icona leggibile su qualsiasi sfondo
-         senza il quadrato causato da drop-shadow su ha-icon */
-      background: rgba(0, 0, 0, 0.38);
+      filter: saturate(0.85) brightness(0.85);
+      opacity: 0.80;
+      /* sfondo scurissimo ma con box-shadow invece di background piatto:
+         crea contrasto senza il cerchio definito visibile */
+      background: transparent;
+      box-shadow: inset 0 0 0 100px rgba(0, 0, 0, 0.28);
     }
 
     .mushroom-entity ha-icon { display: block; }
@@ -2252,8 +2256,8 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
                 .preset="${i}"
                 style="
                 --bubble-room-name-color:${s?c:d};
-                --bubble-room-name-saturation:${s?"1.15":"1.0"};
-                --bubble-room-name-brightness:${s?"1.1":"1.0"};
+                --bubble-room-name-saturation:${s?"1.25":"1.0"};
+                --bubble-room-name-brightness:${s?"1.45":"1.0"};
               "
               ></bubble-name>
             </div>

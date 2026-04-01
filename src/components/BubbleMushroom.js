@@ -175,15 +175,18 @@ export class BubbleMushroom extends LitElement {
     :host([preset='liquid-glass']) .mushroom-entity.is-active {
       filter: saturate(1.15) brightness(1.1);
       opacity: 1.0;
-      background: color-mix(in srgb, currentColor 18%, rgba(0, 0, 0, 0.25));
+      /* alone colorato sottile: dà profondità senza cerchio evidente */
+      box-shadow: 0 0 0 2px color-mix(in srgb, currentColor 30%, transparent);
+      background: color-mix(in srgb, currentColor 12%, rgba(0, 0, 0, 0.15));
     }
 
     :host([preset='liquid-glass']) .mushroom-entity.is-inactive {
-      filter: saturate(0.9) brightness(0.9);
-      opacity: 0.85;
-      /* cerchio scuro: rende l'icona leggibile su qualsiasi sfondo
-         senza il quadrato causato da drop-shadow su ha-icon */
-      background: rgba(0, 0, 0, 0.38);
+      filter: saturate(0.85) brightness(0.85);
+      opacity: 0.80;
+      /* sfondo scurissimo ma con box-shadow invece di background piatto:
+         crea contrasto senza il cerchio definito visibile */
+      background: transparent;
+      box-shadow: inset 0 0 0 100px rgba(0, 0, 0, 0.28);
     }
 
     .mushroom-entity ha-icon { display: block; }
