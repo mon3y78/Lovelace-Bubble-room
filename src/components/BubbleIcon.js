@@ -83,29 +83,19 @@ export class BubbleIcon extends LitElement {
       color: var(--bubble-main-icon-color, currentColor);
       border: none;
 
-      /* vetro: riflesso diagonale in alto + tinta dal colore entità in basso */
-      background:
-        linear-gradient(
-          132deg,
-          rgba(255, 255, 255, 0.12) 0%,
-          rgba(255, 255, 255, 0.03) 45%,
-          rgba(255, 255, 255, 0) 65%
-        ),
-        radial-gradient(
-          ellipse 100% 55% at 50% 115%,
-          var(--bubble-main-icon-bg, rgba(255, 255, 255, 0.04)),
-          transparent 68%
-        ),
-        var(--bubble-main-icon-bg, rgba(255, 255, 255, 0.03));
-      background-blend-mode: screen, normal, normal;
+      /* colore entità puro come base — no background-blend che sbiadisce */
+      background: var(--bubble-main-icon-bg, rgba(255, 255, 255, 0.06));
 
-      /* nessun inset bianco — solo profondità esterna */
+      /* catch-light sull'edge superiore */
       box-shadow:
+        inset 0 1.5px 0 rgba(255, 255, 255, 0.35),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.12),
         0 10px 40px rgba(0, 0, 0, 0.28),
         0 2px 10px rgba(0, 0, 0, 0.18);
 
-      backdrop-filter: blur(36px) saturate(1.6);
-      -webkit-backdrop-filter: blur(36px) saturate(1.6);
+      /* saturate più alto: estrae i colori reali dal backdrop */
+      backdrop-filter: blur(32px) saturate(2.4) brightness(1.05);
+      -webkit-backdrop-filter: blur(32px) saturate(2.4) brightness(1.05);
       transition: background 0.35s ease, box-shadow 0.35s ease, filter 0.35s ease;
       filter:
         saturate(var(--bubble-main-icon-saturation, 1))
@@ -123,25 +113,26 @@ export class BubbleIcon extends LitElement {
       transition: opacity 0.35s ease;
     }
 
-    /* striscia riflessiva diagonale: simula il riflesso del vetro bagnato */
+    /* striscia riflessiva: overlay esalta il colore sottostante invece di sbiadirlo */
     :host([preset='liquid-glass']) .container::before {
       background: linear-gradient(
-        132deg,
-        rgba(255, 255, 255, 0.26) 0%,
-        rgba(255, 255, 255, 0.07) 42%,
-        transparent 62%
+        135deg,
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(255, 255, 255, 0.15) 35%,
+        transparent 55%
       );
-      opacity: 1;
-      mix-blend-mode: screen;
+      opacity: 0.85;
+      mix-blend-mode: overlay;
     }
 
-    /* glow ambientale dal colore dell'entità sul bordo inferiore */
+    /* glow ambientale addittivo dal colore dell'entità */
     :host([preset='liquid-glass']) .container::after {
       background: radial-gradient(
-        ellipse 110% 65% at 50% 115%,
-        var(--bubble-main-icon-bg, rgba(255, 255, 255, 0.08)),
+        ellipse 120% 70% at 50% 118%,
+        var(--bubble-main-icon-bg, rgba(255, 255, 255, 0.10)),
         transparent 65%
       );
+      mix-blend-mode: screen;
       opacity: 1.0;
     }
 
