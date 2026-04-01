@@ -50,6 +50,22 @@ export class BubbleMushroom extends LitElement {
     super.disconnectedCallback();
   }
 
+  _getAnimClass(icon) {
+    if (!icon) return '';
+    const i = icon.toLowerCase();
+    if (i.includes('fan') || i.includes('propeller') || i.includes('turbine') || i.includes('rotate'))
+      return 'anim-spin';
+    if (i.includes('light') || i.includes('lamp') || i.includes('bulb') || i.includes('chandelier') || i.includes('led'))
+      return 'anim-pulse';
+    if (i.includes('motion') || i.includes('walk') || i.includes('run') || i.includes('human'))
+      return 'anim-blink';
+    if (i.includes('bell') || i.includes('alarm') || i.includes('alert') || i.includes('siren'))
+      return 'anim-blink';
+    if (i.includes('dog') || i.includes('cat') || i.includes('bird') || i.includes('pet'))
+      return 'anim-bounce';
+    return '';
+  }
+
   _updateSize() {
     const r = this.getBoundingClientRect();
     this._containerSize = { width: r.width, height: r.height };
@@ -153,26 +169,50 @@ export class BubbleMushroom extends LitElement {
     :host([preset='liquid-glass']) .mushroom-entity.is-active {
       filter: saturate(1.15) brightness(1.1);
       opacity: 1.0;
-    }
-
-    :host([preset='liquid-glass']) .mushroom-entity.is-active ha-icon {
-      filter:
-        drop-shadow(0 0 8px currentColor)
-        drop-shadow(0 1px 4px rgba(0, 0, 0, 0.55));
+      background: color-mix(in srgb, currentColor 18%, rgba(0, 0, 0, 0.25));
     }
 
     :host([preset='liquid-glass']) .mushroom-entity.is-inactive {
       filter: saturate(0.9) brightness(0.9);
       opacity: 0.85;
+      /* cerchio scuro: rende l'icona leggibile su qualsiasi sfondo
+         senza il quadrato causato da drop-shadow su ha-icon */
+      background: rgba(0, 0, 0, 0.38);
     }
 
-    :host([preset='liquid-glass']) .mushroom-entity.is-inactive ha-icon {
-      /* doppio drop-shadow scuro: crea un alone che distacca l'icona da qualsiasi sfondo */
-      filter:
-        drop-shadow(0 0 4px rgba(0, 0, 0, 0.95))
-        drop-shadow(0 0 8px rgba(0, 0, 0, 0.75));
-    }
     .mushroom-entity ha-icon { display: block; }
+
+    /* ── animazioni ── */
+    @keyframes mushroom-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes mushroom-pulse {
+      0%, 100% { opacity: 1;    transform: scale(1); }
+      50%       { opacity: 0.65; transform: scale(0.88); }
+    }
+    @keyframes mushroom-blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.1; }
+    }
+    @keyframes mushroom-bounce {
+      0%, 100% { transform: translateY(0); }
+      40%       { transform: translateY(-20%); }
+      60%       { transform: translateY(-10%); }
+    }
+
+    :host([preset='liquid-glass']) .mushroom-entity.is-active.anim-spin ha-icon {
+      animation: mushroom-spin 1.4s linear infinite;
+    }
+    :host([preset='liquid-glass']) .mushroom-entity.is-active.anim-pulse ha-icon {
+      animation: mushroom-pulse 2.2s ease-in-out infinite;
+    }
+    :host([preset='liquid-glass']) .mushroom-entity.is-active.anim-blink ha-icon {
+      animation: mushroom-blink 1.1s step-end infinite;
+    }
+    :host([preset='liquid-glass']) .mushroom-entity.is-active.anim-bounce ha-icon {
+      animation: mushroom-bounce 1.4s ease-in-out infinite;
+    }
 
     @keyframes mushroom-ripple {
       from { transform: scale(0); opacity: 0.55; }
@@ -296,8 +336,9 @@ export class BubbleMushroom extends LitElement {
 
         const rippleKey = e.entity_id || e.kind || 'unknown';
         const isRippling = this._ripplingKeys.has(rippleKey);
+        const animClass = e.active ? this._getAnimClass(e.icon) : '';
         const activeClass = this.preset === 'liquid-glass'
-          ? (e.active ? 'is-active' : 'is-inactive')
+          ? (e.active ? `is-active ${animClass}` : 'is-inactive')
           : '';
 
         return html`
