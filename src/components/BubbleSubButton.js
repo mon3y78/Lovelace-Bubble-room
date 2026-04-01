@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { createGestureHandler } from '../helpers/gesture-handler.js';
 import { parseColor } from '../helpers/color-utils.js';
+import { getIconAnimClass } from '../helpers/icon-mapping.js';
 
 export class BubbleSubButton extends LitElement {
   static properties = {
@@ -385,55 +386,7 @@ export class BubbleSubButton extends LitElement {
   }
   
   _getAnimClass(icon) {
-    const i = (icon || '').toLowerCase();
-    if (i.includes('cctv') || i.includes('camera') || i.includes('webcam') ||
-        i.includes('doorbell') || i.includes('telescope') || i.includes('binoculars'))
-      return 'anim-scan';
-    if (i.includes('fan') || i.includes('propeller') || i.includes('turbine') ||
-        i.includes('ceiling-fan') || i.includes('wind-turbine') || i.includes('rotate') ||
-        i.includes('reload') || i.includes('refresh') || i.includes('sync') ||
-        i.includes('disc') || i.includes('record') || i.includes('vinyl') ||
-        i.includes('wheel') || i.includes('circular'))
-      return 'anim-spin';
-    if (i.includes('lightbulb') || i.includes('lamp') || i.includes('bulb') ||
-        i.includes('chandelier') || i.includes('led') || i.includes('ceiling-light') ||
-        i.includes('floor-lamp') || i.includes('desk-lamp') || i.includes('string-lights') ||
-        i.includes('spotlight') || i.includes('torch') || i.includes('flashlight') ||
-        i.includes('candle') || i.includes('fire') || i.includes('flame') ||
-        i.includes('lantern') || i.includes('strip-lights') || i.includes('wall-sconce'))
-      return 'anim-illuminate';
-    if (i.includes('bell') || i.includes('alarm') || i.includes('siren') ||
-        i.includes('alert') || i.includes('smoke') || i.includes('leak') ||
-        i.includes('vibrate') || i.includes('shield-alert') || i.includes('warning') ||
-        i.includes('flood') || i.includes('door-open') || i.includes('window-open') ||
-        i.includes('water-alert') || i.includes('hazard'))
-      return 'anim-alarm';
-    if (i.includes('motion') || i.includes('walk') || i.includes('run') ||
-        i.includes('human') || i.includes('account') || i.includes('presence') ||
-        i.includes('wifi') || i.includes('bluetooth') || i.includes('signal') ||
-        i.includes('broadcast') || i.includes('antenna') || i.includes('eye') ||
-        i.includes('network') || i.includes('access-point') || i.includes('blink'))
-      return 'anim-blink';
-    if (i.includes('speaker') || i.includes('music') || i.includes('audio') ||
-        i.includes('subwoofer') || i.includes('headphone') || i.includes('headset') ||
-        i.includes('microphone') || i.includes('heart') || i.includes('waveform') ||
-        i.includes('equalizer') || i.includes('radio') || i.includes('podcast') ||
-        i.includes('piano') || i.includes('guitar') || i.includes('drum') ||
-        i.includes('pump') || i.includes('pacemaker'))
-      return 'anim-beat';
-    if (i.includes('washing') || i.includes('dishwasher') || i.includes('dryer') ||
-        i.includes('tumble') || i.includes('blender') || i.includes('mixer') ||
-        i.includes('vacuum') || i.includes('robot') || i.includes('drill') ||
-        i.includes('wrench') || i.includes('hammer') || i.includes('gamepad') ||
-        i.includes('joystick') || i.includes('vibration'))
-      return 'anim-shake';
-    if (i.includes('dog') || i.includes('cat') || i.includes('bird') ||
-        i.includes('pet') || i.includes('paw') || i.includes('rabbit') ||
-        i.includes('fish') || i.includes('bee') || i.includes('butterfly') ||
-        i.includes('emoticon') || i.includes('balloon') || i.includes('ball') ||
-        i.includes('basketball') || i.includes('soccer') || i.includes('football'))
-      return 'anim-bounce';
-    return '';
+    return getIconAnimClass(icon);
   }
 
   _onDown(idx) { this._gesture.onDown(idx); }

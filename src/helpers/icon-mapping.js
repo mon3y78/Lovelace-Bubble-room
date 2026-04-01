@@ -131,3 +131,107 @@ export function resolveEntityIcon(a, b) {
 }
 
 export default resolveEntityIcon;
+
+/**
+ * Ritorna la classe di animazione da applicare all'icona attiva.
+ * Funziona con qualsiasi prefisso di icon set: mdi:, hue:, fas:, fab:, m3o:, phu:, ecc.
+ * Il match avviene solo sul nome dell'icona (dopo il ':').
+ *
+ * @param {string} icon  - stringa icona (es. "mdi:fan", "hue:bloom", "fas:lightbulb")
+ * @param {string} kind  - tipo entità opzionale (es. "camera")
+ * @returns {string} classe CSS animazione o stringa vuota
+ */
+export function getIconAnimClass(icon, kind = '') {
+  // Strip prefix (mdi:, hue:, fas:, fab:, m3o:, phu: …)
+  const raw = (icon || '').toLowerCase();
+  const name = raw.includes(':') ? raw.split(':').pop() : raw;
+
+  // --- scan: telecamere & video ---
+  if (kind === 'camera' || name.includes('cctv') || name.includes('camera') ||
+      name.includes('webcam') || name.includes('doorbell') || name.includes('video') ||
+      name.includes('telescope') || name.includes('binoculars'))
+    return 'anim-scan';
+
+  // --- spin: rotazione continua ---
+  if (name.includes('fan') || name.includes('propeller') || name.includes('turbine') ||
+      name.includes('wind-turbine') || name.includes('rotate') || name.includes('reload') ||
+      name.includes('refresh') || name.includes('sync') || name.includes('loading') ||
+      name.includes('disc') || name.includes('record') || name.includes('vinyl') ||
+      name.includes('wheel') || name.includes('circular') || name.includes('spinner'))
+    return 'anim-spin';
+
+  // --- illuminate: luci e fiamme ---
+  // MDI
+  if (name.includes('lightbulb') || name.includes('lamp') || name.includes('bulb') ||
+      name.includes('chandelier') || name.includes('ceiling-light') || name.includes('floor-lamp') ||
+      name.includes('desk-lamp') || name.includes('string-lights') || name.includes('wall-sconce') ||
+      name.includes('spotlight') || name.includes('spot') || name.includes('torch') ||
+      name.includes('flashlight') || name.includes('candle') || name.includes('fire') ||
+      name.includes('flame') || name.includes('lantern') || name.includes('lava-lamp') ||
+      name.includes('neon') || name.includes('strip-lights') || name.includes('led') ||
+      // Hue icon set (nomi propri lampade Philips Hue)
+      name === 'bloom' || name === 'iris' || name === 'go' || name === 'play' ||
+      name === 'beyond' || name === 'phoenix' || name === 'signe' || name === 'ensis' ||
+      name === 'arc' || name === 'infuse' || name === 'still' || name === 'appear' ||
+      name === 'struana' || name === 'buratto' || name === 'cher' || name === 'econic' ||
+      name === 'fugato' || name === 'amaze' || name === 'aurelle' || name === 'devote' ||
+      name === 'centurion' || name === 'being' || name === 'adore' || name === 'explore' ||
+      name.startsWith('ceiling-') || name.startsWith('floor-') || name.startsWith('table-') ||
+      name.startsWith('wall-') || name.includes('gradient') || name.includes('lightstrip') ||
+      name.includes('filament') || name.includes('ambiance') || name.includes('colour'))
+    return 'anim-illuminate';
+
+  // --- alarm: campanelli, avvisi, aperture ---
+  if (name.includes('bell') || name.includes('alarm') || name.includes('siren') ||
+      name.includes('alert') || name.includes('smoke') || name.includes('fire-alert') ||
+      name.includes('water-alert') || name.includes('leak') || name.includes('vibrate') ||
+      name.includes('shield-alert') || name.includes('hazard') || name.includes('warning') ||
+      name.includes('flood') || name.includes('door-open') || name.includes('window-open') ||
+      name.includes('bullhorn'))
+    return 'anim-alarm';
+
+  // --- blink: presenza, movimento, segnali ---
+  if (name.includes('motion') || name.includes('walk') || name.includes('run') ||
+      name.includes('human') || name.includes('account') || name.includes('presence') ||
+      name.includes('wifi') || name.includes('bluetooth') || name.includes('signal') ||
+      name.includes('broadcast') || name.includes('antenna') || name.includes('eye') ||
+      name.includes('network') || name.includes('access-point') || name.includes('blink') ||
+      name.includes('sensor') || name.includes('radar') || name.includes('sonar') ||
+      // Font Awesome specifici
+      name === 'satellite-dish' || name === 'tower-broadcast' || name === 'satellite')
+    return 'anim-blink';
+
+  // --- beat: audio, cuore, pompe ---
+  if (name.includes('speaker') || name.includes('music') || name.includes('audio') ||
+      name.includes('subwoofer') || name.includes('headphone') || name.includes('headset') ||
+      name.includes('microphone') || name.includes('heart') || name.includes('waveform') ||
+      name.includes('equalizer') || name.includes('radio') || name.includes('podcast') ||
+      name.includes('piano') || name.includes('guitar') || name.includes('drum') ||
+      name.includes('pump') || name.includes('pacemaker') || name.includes('volume') ||
+      // Font Awesome / altri
+      name === 'compact-disc' || name === 'drum' || name === 'guitar' ||
+      name === 'music' || name === 'volume-up' || name === 'volume-high')
+    return 'anim-beat';
+
+  // --- shake: elettrodomestici vibranti ---
+  if (name.includes('washing') || name.includes('dishwasher') || name.includes('dryer') ||
+      name.includes('tumble') || name.includes('blender') || name.includes('mixer') ||
+      name.includes('vacuum') || name.includes('robot') || name.includes('drill') ||
+      name.includes('wrench') || name.includes('hammer') || name.includes('saw') ||
+      name.includes('gamepad') || name.includes('joystick') || name.includes('controller') ||
+      name.includes('vibration'))
+    return 'anim-shake';
+
+  // --- bounce: animali & giochi ---
+  if (name.includes('dog') || name.includes('cat') || name.includes('bird') ||
+      name.includes('pet') || name.includes('paw') || name.includes('rabbit') ||
+      name.includes('fish') || name.includes('turtle') || name.includes('horse') ||
+      name.includes('cow') || name.includes('pig') || name.includes('bee') ||
+      name.includes('butterfly') || name.includes('bug') || name.includes('spider') ||
+      name.includes('emoticon') || name.includes('balloon') || name.includes('ball') ||
+      name.includes('basketball') || name.includes('soccer') || name.includes('football') ||
+      name.includes('tennis') || name.includes('volleyball'))
+    return 'anim-bounce';
+
+  return '';
+}
