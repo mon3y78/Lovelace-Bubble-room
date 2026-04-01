@@ -34,7 +34,7 @@ export class BubbleRoom extends LitElement {
   _applyCardBackground() {
     const enabled = this.config?.card_background?.enabled ?? false;
     if (!enabled) {
-      this.style.removeProperty('--ha-card-background');
+      this.style.removeProperty('--bubble-card-bg');
       return;
     }
     let color = this.config?.card_background?.color || '';
@@ -46,7 +46,7 @@ export class BubbleRoom extends LitElement {
         ? `rgba(${rgb.r},${rgb.g},${rgb.b},0.08)`
         : 'rgba(33,223,115,0.08)';
     }
-    this.style.setProperty('--ha-card-background', color);
+    this.style.setProperty('--bubble-card-bg', color);
   }
 
   setConfig(rawConfig) {
@@ -450,7 +450,7 @@ export class BubbleRoom extends LitElement {
 
   /* ───────────── stili originali ───────────── */
   static styles = css`
-    :host { display:block; height:100%; box-sizing:border-box; }
+    :host { display:block; height:100%; box-sizing:border-box; background: var(--bubble-card-bg, transparent); }
     .bubble-room-grid { display:grid; grid-template-columns:2fr 1fr;
       gap: 0 6px;
       width:100%; height:100%; box-sizing:border-box; }

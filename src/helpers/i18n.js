@@ -73,6 +73,8 @@ const STRINGS = {
 
     'panel.colors.title': '🎨 Colors & Presets',
     'panel.colors.room_section': '🏠 Room',
+    'panel.colors.room_icon_section': '💡 Main Icon',
+    'panel.colors.room_name_section': '🏷️ Room Name',
     'panel.colors.subbutton_section': '🎛️ Sub-button',
     'panel.colors.mushroom_section': '🍄 Mushroom',
     'panel.colors.sensor_section': '📊 Sensors',
@@ -193,6 +195,8 @@ const STRINGS = {
 
     'panel.colors.title': '🎨 Colori e preset',
     'panel.colors.room_section': '🏠 Stanza',
+    'panel.colors.room_icon_section': '💡 Icona principale',
+    'panel.colors.room_name_section': '🏷️ Nome stanza',
     'panel.colors.subbutton_section': '🎛️ Sub-button',
     'panel.colors.mushroom_section': '🍄 Mushroom',
     'panel.colors.sensor_section': '📊 Sensori',
@@ -318,6 +322,8 @@ const STRINGS = {
 
     'panel.colors.title': '🎨 Colores y presets',
     'panel.colors.room_section': '🏠 Habitación',
+    'panel.colors.room_icon_section': '💡 Icono principal',
+    'panel.colors.room_name_section': '🏷️ Nombre habitación',
     'panel.colors.subbutton_section': '🎛️ Sub-button',
     'panel.colors.mushroom_section': '🍄 Mushroom',
     'panel.colors.sensor_section': '📊 Sensores',
@@ -438,6 +444,8 @@ const STRINGS = {
 
     'panel.colors.title': '🎨 Couleurs et préréglages',
     'panel.colors.room_section': '🏠 Pièce',
+    'panel.colors.room_icon_section': '💡 Icône principale',
+    'panel.colors.room_name_section': '🏷️ Nom de la pièce',
     'panel.colors.subbutton_section': '🎛️ Sub-button',
     'panel.colors.mushroom_section': '🍄 Mushroom',
     'panel.colors.sensor_section': '📊 Capteurs',
@@ -558,6 +566,8 @@ const STRINGS = {
 
     'panel.colors.title': '🎨 Farben und Presets',
     'panel.colors.room_section': '🏠 Raum',
+    'panel.colors.room_icon_section': '💡 Hauptsymbol',
+    'panel.colors.room_name_section': '🏷️ Raumname',
     'panel.colors.subbutton_section': '🎛️ Sub-button',
     'panel.colors.mushroom_section': '🍄 Mushroom',
     'panel.colors.sensor_section': '📊 Sensoren',
@@ -678,6 +688,8 @@ const STRINGS = {
 
     'panel.colors.title': '🎨 Cores e presets',
     'panel.colors.room_section': '🏠 Cômodo',
+    'panel.colors.room_icon_section': '💡 Ícone principal',
+    'panel.colors.room_name_section': '🏷️ Nome do cômodo',
     'panel.colors.subbutton_section': '🎛️ Sub-button',
     'panel.colors.mushroom_section': '🍄 Mushroom',
     'panel.colors.sensor_section': '📊 Sensores',

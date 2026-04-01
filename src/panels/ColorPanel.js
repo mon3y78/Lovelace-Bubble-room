@@ -37,7 +37,7 @@ export class ColorPanel extends LitElement {
 
     // UI state
     this._selectedPreset = 'green';
-    this._expandedColors = [false, false, false, false, false]; // [card, room, subbutton, mushroom, sensor]
+    this._expandedColors = [false, false, false, false, false, false]; // [card, icon, name, subbutton, mushroom, sensor]
     this._subbuttonStyle = 'standard';
   }
 
@@ -132,14 +132,11 @@ export class ColorPanel extends LitElement {
         <!-- Preset chooser (cards only, no apply button here) -->
         ${this._renderPresetChooser()}
 
-        <!-- Room colors: icona principale + sfondo + nome stanza -->
+        <!-- [1] Icona principale: colore icona + sfondo bubble -->
         <div class="mini-pill ${this._expandedColors[1] ? 'expanded' : ''}">
-          <div
-            class="mini-pill-header"
-            style="--section-accent: #55afff;"
-            @click=${() => this._toggleColor(1)}
-          >
-            ${t('panel.colors.room_section')}
+          <div class="mini-pill-header" style="--section-accent: #55afff;"
+               @click=${() => this._toggleColor(1)}>
+            ${t('panel.colors.room_icon_section')}
             <span class="chevron">${this._expandedColors[1] ? '▼' : '▶'}</span>
           </div>
           ${this._expandedColors[1] ? html`
@@ -148,23 +145,33 @@ export class ColorPanel extends LitElement {
               ${this._renderColorField('room', 'icon_inactive',       t('panel.colors.room.icon_inactive'))}
               ${this._renderColorField('room', 'background_active',   t('panel.colors.room.background_active'))}
               ${this._renderColorField('room', 'background_inactive', t('panel.colors.room.background_inactive'))}
-              ${this._renderColorField('room', 'text_active',         t('panel.colors.room.text_active'))}
-              ${this._renderColorField('room', 'text_inactive',       t('panel.colors.room.text_inactive'))}
             </div>
           ` : ''}
         </div>
 
-        <!-- Subbutton colors: bottoni entità laterali -->
+        <!-- [2] Nome stanza: colore testo nome -->
         <div class="mini-pill ${this._expandedColors[2] ? 'expanded' : ''}">
-          <div
-            class="mini-pill-header"
-            style="--section-accent: #b28fff;"
-            @click=${() => this._toggleColor(2)}
-          >
-            ${t('panel.colors.subbutton_section')}
-            <span class="chevron">${this._expandedColors[1] ? '▼' : '▶'}</span>
+          <div class="mini-pill-header" style="--section-accent: #80cfff;"
+               @click=${() => this._toggleColor(2)}>
+            ${t('panel.colors.room_name_section')}
+            <span class="chevron">${this._expandedColors[2] ? '▼' : '▶'}</span>
           </div>
           ${this._expandedColors[2] ? html`
+            <div class="mini-pill-content">
+              ${this._renderColorField('room', 'text_active',   t('panel.colors.room.text_active'))}
+              ${this._renderColorField('room', 'text_inactive', t('panel.colors.room.text_inactive'))}
+            </div>
+          ` : ''}
+        </div>
+
+        <!-- [3] Sub-button: bottoni entità laterali -->
+        <div class="mini-pill ${this._expandedColors[3] ? 'expanded' : ''}">
+          <div class="mini-pill-header" style="--section-accent: #b28fff;"
+               @click=${() => this._toggleColor(3)}>
+            ${t('panel.colors.subbutton_section')}
+            <span class="chevron">${this._expandedColors[3] ? '▼' : '▶'}</span>
+          </div>
+          ${this._expandedColors[3] ? html`
             <div class="mini-pill-content">
               ${this._renderColorField('subbutton', 'icon_on',        t('panel.colors.subbutton.icon_on'))}
               ${this._renderColorField('subbutton', 'icon_off',       t('panel.colors.subbutton.icon_off'))}
@@ -174,17 +181,14 @@ export class ColorPanel extends LitElement {
           ` : ''}
         </div>
 
-        <!-- Mushroom colors: icone entità fluttuanti -->
-        <div class="mini-pill ${this._expandedColors[3] ? 'expanded' : ''}">
-          <div
-            class="mini-pill-header"
-            style="--section-accent: #4bd1b4;"
-            @click=${() => this._toggleColor(3)}
-          >
+        <!-- [4] Mushroom: icone entità fluttuanti -->
+        <div class="mini-pill ${this._expandedColors[4] ? 'expanded' : ''}">
+          <div class="mini-pill-header" style="--section-accent: #4bd1b4;"
+               @click=${() => this._toggleColor(4)}>
             ${t('panel.colors.mushroom_section')}
-            <span class="chevron">${this._expandedColors[2] ? '▼' : '▶'}</span>
+            <span class="chevron">${this._expandedColors[4] ? '▼' : '▶'}</span>
           </div>
-          ${this._expandedColors[3] ? html`
+          ${this._expandedColors[4] ? html`
             <div class="mini-pill-content">
               ${this._renderColorField('mushroom', 'active',   t('panel.colors.mushroom.active'))}
               ${this._renderColorField('mushroom', 'inactive', t('panel.colors.mushroom.inactive'))}
@@ -192,17 +196,14 @@ export class ColorPanel extends LitElement {
           ` : ''}
         </div>
 
-        <!-- Sensor colors: riga sensori in basso -->
-        <div class="mini-pill ${this._expandedColors[4] ? 'expanded' : ''}">
-          <div
-            class="mini-pill-header"
-            style="--section-accent: #ffa742;"
-            @click=${() => this._toggleColor(4)}
-          >
+        <!-- [5] Sensori: riga sensori in basso -->
+        <div class="mini-pill ${this._expandedColors[5] ? 'expanded' : ''}">
+          <div class="mini-pill-header" style="--section-accent: #ffa742;"
+               @click=${() => this._toggleColor(5)}>
             ${t('panel.colors.sensor_section')}
-            <span class="chevron">${this._expandedColors[4] ? '▼' : '▶'}</span>
+            <span class="chevron">${this._expandedColors[5] ? '▼' : '▶'}</span>
           </div>
-          ${this._expandedColors[4] ? html`
+          ${this._expandedColors[5] ? html`
             <div class="mini-pill-content">
               ${this._renderColorField('sensor', 'sensor_active',   t('panel.colors.sensor.sensor_active'))}
               ${this._renderColorField('sensor', 'sensor_inactive', t('panel.colors.sensor.sensor_inactive'))}
@@ -367,7 +368,7 @@ export class ColorPanel extends LitElement {
   };
 
   _resetColors() {
-    this._expandedColors = [false, false, false, false, false];
+    this._expandedColors = [false, false, false, false, false, false];
     // Reset card background
     this._emit('card_background.enabled', false);
     this._emit('card_background.color', '');
