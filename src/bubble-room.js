@@ -25,30 +25,6 @@ export class BubbleRoom extends LitElement {
   }
 
   /* ───────────── configurazione ───────────── */
-  updated(changedProps) {
-    if (changedProps.has('config') || changedProps.has('hass')) {
-      this._applyCardBackground();
-    }
-  }
-
-  _applyCardBackground() {
-    const enabled = this.config?.card_background?.enabled ?? true;
-    if (!enabled) {
-      this.style.removeProperty('--bubble-card-bg');
-      return;
-    }
-    let color = this.config?.card_background?.color || '';
-    if (!color) {
-      // Deriva dal colore icona stanza con alpha bassa (effetto tint sottile)
-      const base = this.config?.colors?.room?.icon_active ?? '#21df73';
-      const rgb = parseColor(base);
-      color = rgb
-        ? `rgba(${rgb.r},${rgb.g},${rgb.b},0.08)`
-        : 'rgba(33,223,115,0.08)';
-    }
-    this.style.setProperty('--bubble-card-bg', color);
-  }
-
   setConfig(rawConfig) {
     this.config = { layout: 'wide', ...rawConfig };
     this._entities = structuredClone(this.config.entities || {});
@@ -314,13 +290,26 @@ export class BubbleRoom extends LitElement {
     const textColorActive   = this.config.colors?.room?.text_active   ?? '#ffffff';
     const textColorInactive = this.config.colors?.room?.text_inactive ?? 'rgba(255,255,255,0.5)';
 
+    // Card background
+    const cardBgEnabled = this.config?.card_background?.enabled ?? true;
+    let cardBgColor = '';
+    if (cardBgEnabled) {
+      cardBgColor = this.config?.card_background?.color || '';
+      if (!cardBgColor) {
+        const rgb = parseColor(isActive ? iconColorActive : iconColorInactive);
+        cardBgColor = rgb
+          ? `rgba(${rgb.r},${rgb.g},${rgb.b},0.08)`
+          : 'rgba(33,223,115,0.08)';
+      }
+    }
+
     // Azioni per la main icon: uso quelle della card (tap/hold) e come fallback entity la "presence"
     const mainEntity = this.config?.entities?.presence?.entity || '';
     const tapAct     = this.config?.tap_action  || { action: 'more-info' };
     const holdAct    = this.config?.hold_action || { action: 'none' };
 
     return html`
-      <div class="bubble-room-grid ${layout}">
+      <div class="bubble-room-grid ${layout}" style="${cardBgColor ? `background:${cardBgColor};` : ''}">
         <div class="main-area">
           <div class="row1">
             <bubble-sensor
@@ -450,7 +439,7 @@ export class BubbleRoom extends LitElement {
 
   /* ───────────── stili originali ───────────── */
   static styles = css`
-    :host { display:block; height:100%; box-sizing:border-box; background: var(--bubble-card-bg, transparent); }
+    :host { display:block; height:100%; box-sizing:border-box; }
     .bubble-room-grid { display:grid; grid-template-columns:2fr 1fr;
       gap: 0 6px;
       width:100%; height:100%; box-sizing:border-box; }
