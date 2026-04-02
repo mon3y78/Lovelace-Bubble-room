@@ -69,9 +69,11 @@ export class ColorPanel extends LitElement {
 
       this._subbuttonStyle = this.config?.subbutton_style || 'standard';
 
+      // Sfondo card: attivo di default (se non ancora configurato)
+      const bgEnabled = this.config?.card_background?.enabled ?? true;
       this._cardBg = {
-        enabled: this.config?.card_background?.enabled ?? false,
-        color:   this.config?.card_background?.color   ?? '',
+        enabled: bgEnabled,
+        color:   this.config?.card_background?.color ?? '',
       };
     }
   }
@@ -89,7 +91,7 @@ export class ColorPanel extends LitElement {
         .expanded=${this.expanded}
         @expanded-changed=${e => {
           this.expanded = e.detail.expanded;
-          if (this.expanded) this._expandedColors = [false, false, false];
+          if (this.expanded) this._expandedColors = [false, false, false, false, false, false];
         }}
       >
         <div slot="header" class="glass-header">${t('panel.colors.title')}</div>
@@ -305,8 +307,24 @@ export class ColorPanel extends LitElement {
     this._expandedColors = this._expandedColors.map((v, i) => i === index ? !v : false);
   }
 
+  // Restituisce il valore attuale per un campo colore.
+  // Se section è 'card_background', legge da this.config.card_background.[key].
+  // Altrimenti legge da this.config.colors.[section].[key].
+  _readColorValue(section, key) {
+    if (section === 'card_background') {
+      return this.config?.card_background?.[key] || '';
+    }
+    return this.config?.colors?.[section]?.[key] || '';
+  }
+
+  // Restituisce il path puntato da passare a _emit.
+  _colorEmitPath(section, key) {
+    if (section === 'card_background') return `card_background.${key}`;
+    return `colors.${section}.${key}`;
+  }
+
   _renderColorField(section, key, label) {
-    const rgba = this.config?.colors?.[section]?.[key] || '';
+    const rgba = this._readColorValue(section, key);
     const [r, g, b, a] = this._parseRGBA(rgba);
     const hex = `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
     return html`
@@ -369,8 +387,8 @@ export class ColorPanel extends LitElement {
 
   _resetColors() {
     this._expandedColors = [false, false, false, false, false, false];
-    // Reset card background
-    this._emit('card_background.enabled', false);
+    // Reset card background: riabilita con colore auto
+    this._emit('card_background.enabled', true);
     this._emit('card_background.color', '');
     // Reset all color sections
     const sections = ['room','subbutton','mushroom','sensor'];
@@ -408,11 +426,11 @@ export class ColorPanel extends LitElement {
     const b = parseInt(hex.slice(5,7),16);
     const a = Number(alpha);
     const rgba = `rgba(${r},${g},${b},${isNaN(a) ? 1 : a})`;
-    this._emit(`colors.${section}.${key}`, rgba);
+    this._emit(this._colorEmitPath(section, key), rgba);
   }
 
   _updateColorRaw(section, key, raw) {
-    this._emit(`colors.${section}.${key}`, raw);
+    this._emit(this._colorEmitPath(section, key), raw);
   }
 
   _selectStyle(style) {

@@ -32,7 +32,7 @@ export class BubbleRoom extends LitElement {
   }
 
   _applyCardBackground() {
-    const enabled = this.config?.card_background?.enabled ?? false;
+    const enabled = this.config?.card_background?.enabled ?? true;
     if (!enabled) {
       this.style.removeProperty('--bubble-card-bg');
       return;
