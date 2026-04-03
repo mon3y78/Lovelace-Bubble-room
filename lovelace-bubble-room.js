@@ -2441,7 +2441,7 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
         saturate(var(--bubble-main-icon-icon-saturation, 1));
       transition: filter 0.35s ease, opacity 0.18s ease, transform 0.18s ease;
     }
-  `;render(){const e=this.active?this.colorActive:this.colorInactive,t=this.active?this.backgroundActive:this.backgroundInactive,o="liquid-glass"===this.preset,i=o?this.active?.3:.22:.1,s=this._withOpacity(t,i)??t,n=this.active?.9:.8,a=[];s&&a.push(`--bubble-main-icon-bg:${s}`),e&&(a.push(`color:${e}`),o||a.push(`--bubble-main-icon-border:${e}`),a.push(`--bubble-main-icon-color:${e}`)),o&&this.active?(a.push("--bubble-main-icon-saturation:1.12"),a.push("--bubble-main-icon-luminance:1.04"),a.push("--bubble-main-icon-icon-brightness:1.25"),a.push("--bubble-main-icon-icon-saturation:1.12")):o&&!this.active&&(a.push("--bubble-main-icon-saturation:0.75"),a.push("--bubble-main-icon-luminance:0.88"),a.push("--bubble-main-icon-icon-brightness:1.18"),a.push("--bubble-main-icon-icon-saturation:0.82"),a.push("opacity:0.72"));const r=a.map(e=>`${e};`).join(" ");return j`
+  `;render(){const e=this.active?this.colorActive:this.colorInactive,t=this.active?this.backgroundActive:this.backgroundInactive,o="liquid-glass"===this.preset,i=o?this.active?.3:.22:.1,s=this._withOpacity(t,i)??t,n=this.active?.9:.8,a=[];s&&a.push(`--bubble-main-icon-bg:${s}`),e&&(a.push(`color:${e}`),o||a.push(`--bubble-main-icon-border:${e}`),a.push(`--bubble-main-icon-color:${e}`)),o&&this.active?(a.push("--bubble-main-icon-saturation:1.12"),a.push("--bubble-main-icon-luminance:1.04"),a.push("--bubble-main-icon-icon-brightness:1.25"),a.push("--bubble-main-icon-icon-saturation:1.12")):o&&!this.active&&(a.push("--bubble-main-icon-saturation:0.72"),a.push("--bubble-main-icon-luminance:0.90"),a.push("--bubble-main-icon-icon-brightness:0.92"),a.push("--bubble-main-icon-icon-saturation:0.78"));const r=a.map(e=>`${e};`).join(" ");return j`
       <div
         class="container"
         style="${r}"
@@ -2458,14 +2458,14 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
       </div>
     `}_withOpacity(e,t){return function(e,t){const o=Ve(e);return o?`rgba(${o.r}, ${o.g}, ${o.b}, ${t})`:null}(e,t)}_onDown=()=>this._gesture.onDown();_onUp=()=>this._gesture.onUp();_clearHoldTimer=()=>this._gesture.clearTimer();_fireHassAction(e){const t=(("hold"===e?this.hold_action:this.tap_action)||{action:"more-info"}).action||"more-info";if(("toggle"===t||"call-service"===t||"more-info"===t)&&!this.entity_id)return;const o=new Event("hass-action",{bubbles:!0,composed:!0});o.detail={config:{entity:this.entity_id,tap_action:this.tap_action||{action:"more-info"},hold_action:this.hold_action||{action:"none"}},action:e},this.dispatchEvent(o)}}customElements.define("bubble-icon",Xe);class Ze extends ie{static properties={config:{type:Object},hass:{type:Object}};_entities={};constructor(){super(),this.config={},this.hass={}}setConfig(e){this.config={layout:"wide",...e},this._entities=structuredClone(this.config.entities||{}),this._entities.camera=this._entities.camera||{entity:"",icon:""},this._entities.camera.presence||(this._entities.camera.presence={entity:""}),this._entities.climate=this._entities.climate||{entity:"",icon:""}}get hass(){return this._hass}set hass(e){this._hass=e,e?.states&&this.requestUpdate?.()}static getStubConfig(){return{type:"custom:bubble-room",layout:"wide",name:[],area:[],sensors:[],mushrooms:[],subbuttons:[],colors:{subbutton:{background_on:"rgba(var(--color-blue),1)",background_off:"rgba(var(--color-blue),0.3)",icon_on:"yellow",icon_off:"#666"}}}}static async getConfigElement(){return await Promise.resolve().then(function(){return De}),document.createElement("bubble-room-editor")}connectedCallback(){super.connectedCallback(),this._resizeObs=new ResizeObserver(()=>this.requestUpdate())}firstUpdated(){const e=this.shadowRoot?.querySelector(".icon-mushroom-area");e&&this._resizeObs.observe(e)}disconnectedCallback(){this._resizeObs?.disconnect(),super.disconnectedCallback()}updated(e){e.has("config")&&(this._entities=structuredClone(this.config.entities||{}))}_getSubButtons(){const e=this.config.colors?.subbutton?.background_on??"#00d46d",t=this.config.colors?.subbutton?.background_off??"#999",o=this.config.colors?.subbutton?.icon_on??"yellow",i=this.config.colors?.subbutton?.icon_off??"#666";return(this.config.subbuttons||[]).map(s=>{const n=this.hass.states?.[s.entity_id];return{icon:s.icon||ke(s.entity_id,this.hass),active:"on"===n?.state,colorOn:e,colorOff:t,iconOn:o,iconOff:i,entity_id:s.entity_id,tap_action:s.tap_action,hold_action:s.hold_action}})}_isRoomActive(){const e=this.config?.entities?.presence?.entity;if(!e)return!1;const t=this.hass?.states?.[e]?.state;return["on","home","occupied","motion","detected"].includes(t)}_getMainIconSize(){const e=this.shadowRoot?.querySelector(".icon-mushroom-area");return e?Math.round(.6*Math.min(e.clientWidth,e.clientHeight)):64}_getSensors(){const e=this._entities||{},t=this.config.colors?.sensor?.sensor_active??this.config.colors?.room?.text_active??"#21df73",o=this.config.colors?.sensor?.sensor_inactive??this.config.colors?.room?.text_inactive??"#173c16",i=this._isRoomActive()?t:o,s=[];for(let t=1;t<=6;t++){const o=e[`sensor${t}`]?.entity,n=this.hass?.states?.[o];o&&n&&s.push({icon:n.attributes.icon||"",value:n.state,unit:n.attributes.unit_of_measurement,device_class:n.attributes.device_class,color:i,entity:o})}return s}_getMushrooms(){const e=this._entities||{},t=this.config.colors?.mushroom?.active??"#00e676",o=this.config.colors?.mushroom?.inactive??"#888",i=[];for(let s=1;s<=5;s++){const n=e[`mushroom${s}`]||{},a=n.entity,r=this.hass?.states?.[a];if(!a||!r)continue;const l="on"===r.state;i.push({icon:n.icon||r.attributes.icon||ke(a,this.hass)||"mdi:flash",state:r.state,active:l,color:l?t:o,dx:n.dx??0,dy:n.dy??0,angle_deg:n.angle_deg,radius_factor:n.radius_factor,entity_id:a,tap_action:n.tap_action,hold_action:n.hold_action})}const s=e.camera||{},n=s.entity;if(n&&this.hass.states?.[n]){const e=this.hass?.states?.[n],a=s.presence?.entity,r=a?this.hass?.states?.[a]?.state:void 0,l=!a||["on","home","occupied","motion","detected"].includes(r);i.push({icon:s.icon||e.attributes.icon||ke(n,this.hass)||"mdi:cctv",state:e.state,active:l,color:l?t:o,left:"calc(100% - 12px - 36px)",top:12,dx:0,dy:0,kind:"camera",angle_deg:s.angle_deg,radius_factor:s.radius_factor,entity_id:n,tap_action:{action:"more-info"},hold_action:{action:"none"}})}const a=this._entities?.climate||{},r=a.entity;if(r&&this.hass.states?.[r]){const e=this.hass?.states?.[r],s=e.state&&"off"!==e.state&&"idle"!==e.state||e.attributes?.hvac_action&&"off"!==e.attributes.hvac_action;i.push({icon:a.icon||e.attributes.icon||ke(r,this.hass)||"mdi:thermostat",state:e.state,active:s,color:s?t:o,dx:0,dy:0,angle_deg:a.angle_deg,radius_factor:a.radius_factor,kind:"climate",entity_id:r})}return i}_onMushroomClick(e){}render(){try{return this._renderCard()}catch(e){return console.error("[bubble-room] render error:",e),j`<div style="padding:12px;color:#f87;font-size:0.9rem">
         bubble-room: errore di rendering — ${e.message}
-      </div>`}}_renderCard(){const e=this.config.layout||"wide",t=this._getMainIconSize(),o=this._getSubButtons(),i=this.config?.subbutton_style||"standard",s=this._isRoomActive(),n=this.config.colors?.room?.icon_active??"#21df73",a=this.config.colors?.room?.icon_inactive??"#173c16",r=this.config.colors?.room?.background_active??"rgba(33,223,115,0.12)",l=this.config.colors?.room?.background_inactive??"rgba(23,60,22,0.12)",c=this.config.colors?.room?.text_active??"#ffffff",d=this.config.colors?.room?.text_inactive??"rgba(255,255,255,0.65)";let u="";if(this.config?.card_background?.enabled??!0){const e=this.config?.card_background?.color||"";if(e){const t=Ve(e);if(t){const e=Math.min("number"==typeof t.a?t.a:1,.35);u=`rgba(${t.r},${t.g},${t.b},${e})`}else u=e}else{const e=Ve(s?n:a);u=e?`rgba(${e.r},${e.g},${e.b},0.15)`:"rgba(33,223,115,0.15)"}}const p=this.config?.entities?.presence?.entity||"",h=this.config?.tap_action||{action:"more-info"},b=this.config?.hold_action||{action:"none"};return j`
-      <div class="bubble-room-grid ${e}" style="${u?`background:${u};`:""}">
+      </div>`}}_renderCard(){const e=this.config.layout||"wide",t=this._getMainIconSize(),o=this._getSubButtons(),i=this.config?.subbutton_style||"standard",s=this._isRoomActive(),n=this.config.colors?.room?.icon_active??"#21df73",a=Ve(n),r=this.config.colors?.room?.icon_inactive??(a?`rgba(${a.r},${a.g},${a.b},0.42)`:"rgba(33,223,115,0.42)"),l=this.config.colors?.room?.background_active??"rgba(33,223,115,0.12)",c=this.config.colors?.room?.background_inactive??(a?`rgba(${a.r},${a.g},${a.b},0.06)`:"rgba(33,223,115,0.06)"),d=this.config.colors?.room?.text_active??"#ffffff",u=this.config.colors?.room?.text_inactive??"rgba(255,255,255,0.65)";let p="";if(this.config?.card_background?.enabled??!0){const e=this.config?.card_background?.color||"";let t,o,i,a;if(e){const s=Ve(e);s&&(t=s.r,o=s.g,i=s.b,a=Math.min("number"==typeof s.a?s.a:1,.4))}if(void 0===t){const e=Ve(s?n:r);e&&(t=e.r,o=e.g,i=e.b),a=.22}if(void 0!==t){p=`background:radial-gradient(ellipse 68% 92% at 22% 70%, ${`rgba(${t},${o},${i},${a})`} 0%, ${`rgba(${t},${o},${i},${+(.28*a).toFixed(3)})`} 50%, transparent 80%);`}}const h=this.config?.entities?.presence?.entity||"",b=this.config?.tap_action||{action:"more-info"},m=this.config?.hold_action||{action:"none"};return j`
+      <div class="bubble-room-grid ${e}" style="${p}">
         <div class="main-area">
           <div class="row1">
             <bubble-sensor
               .sensors="${this._getSensors()}"
               .preset="${i}"
-              style="--bubble-sensor-active-color:${s?c:d}"
+              style="--bubble-sensor-active-color:${s?d:u}"
             ></bubble-sensor>
 
             <div class="name-placeholder" id="nameContainer">
@@ -2477,7 +2477,7 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
                 .container=${this.shadowRoot?.getElementById("nameContainer")}
                 .preset="${i}"
                 style="
-                --bubble-room-name-color:${s?c:d};
+                --bubble-room-name-color:${s?d:u};
                 --bubble-room-name-saturation:${s?"1.25":"0.85"};
                 --bubble-room-name-brightness:${s?"1.45":"1.15"};
               "
@@ -2491,17 +2491,17 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
                 .icon="${this.config.icon||ke(this.config.entity,this.hass)}"
                 .active=${s}
                 .colorActive="${n}"
-                .colorInactive="${a}"
-                .backgroundActive="${r}"
-                .backgroundInactive="${l}"
+                .colorInactive="${r}"
+                .backgroundActive="${l}"
+                .backgroundInactive="${c}"
                 .preset="${i}"
                 style="
                   --main-icon-size:${t}px;
                   --icon-shift-x:-20%;
                 "
-                .entity_id=${p}
-                .tap_action=${h}
-                .hold_action=${b}
+                .entity_id=${h}
+                .tap_action=${b}
+                .hold_action=${m}
                 @hass-action=${this._onMainIconAction}
               ></bubble-icon>
 
@@ -2525,9 +2525,9 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
       </div>
     `}_onMainIconAction=e=>{const{config:t,action:o}=e.detail||{};if(!t)return;const i="hold"===o?t.hold_action||{action:"none"}:t.tap_action||{action:"none"};this._runAction(i,t.entity)};_runAction(e,t){const o=e?.action||"none";if("none"!==o)try{switch(o){case"navigate":{const t=e.navigation_path||e.navigationPath;t&&(window.history.pushState({},"",t),window.dispatchEvent(new Event("location-changed")));break}case"more-info":{const o=e.entity||t;o&&this.dispatchEvent(new CustomEvent("hass-more-info",{detail:{entityId:o},bubbles:!0,composed:!0}));break}case"toggle":{const o=e.entity||t;o&&this.hass?.callService&&this.hass.callService("homeassistant","toggle",{entity_id:o});break}case"call-service":{const o=e.service||"",[i,s]=o.split(".");if(i&&s&&this.hass?.callService){const o={...e.service_data||e.data||{}};!o.entity_id&&t&&(o.entity_id=t),this.hass.callService(i,s,o)}break}}}catch(e){console.error("[bubble-room] action error:",o,e)}}static styles=n`
     :host { display:block; height:100%; box-sizing:border-box; }
-    .bubble-room-grid { display:grid; grid-template-columns:2fr 1fr;
+    .bubble-room-grid { display:grid; grid-template-columns:2fr 0.82fr;
       gap: 0 6px;
-      width:100%; height:100%; box-sizing:border-box; }
+      width:100%; height:100%; box-sizing:border-box; padding: 6px 8px 6px 0; }
     .main-area { display:grid; height:100%; min-height:0; box-sizing:border-box; }
     .row1 { display:grid; min-height:0; box-sizing:border-box;
       grid-template-columns:1fr; }
