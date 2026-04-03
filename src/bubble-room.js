@@ -308,10 +308,10 @@ export class BubbleRoom extends LitElement {
         }
       }
       if (r === undefined) {
-        // Auto: deriva dal colore attivo/inattivo
-        const rgb = parseColor(isActive ? iconColorActive : iconColorInactive);
-        if (rgb) { r = rgb.r; g = rgb.g; b = rgb.b; }
-        alpha = 0.22;
+        // Usa _activeRgb direttamente (da hex opaco, senza errori canvas premult)
+        // Per inattivo: stesso colore ma alpha ridotto
+        if (_activeRgb) { r = _activeRgb.r; g = _activeRgb.g; b = _activeRgb.b; }
+        alpha = isActive ? 0.22 : 0.12;
       }
       if (r !== undefined) {
         const strong = `rgba(${r},${g},${b},${alpha})`;
