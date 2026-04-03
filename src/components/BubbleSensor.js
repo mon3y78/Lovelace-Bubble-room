@@ -199,14 +199,14 @@ export class BubbleSensor extends LitElement {
   static styles = css`
     :host {
       display: block;
-      height: auto;
+      height: var(--bubble-sensor-height, 34px);
       width: 100%;
       box-sizing: border-box;
     }
     .sensor-grid {
       display: grid;
       width: 100%;
-      height: auto;
+      height: 100%;
       box-sizing: border-box;
       padding: 0;
       margin: 0;
