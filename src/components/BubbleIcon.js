@@ -190,6 +190,12 @@ export class BubbleIcon extends LitElement {
       styleChunks.push(`--bubble-main-icon-luminance:1.04`);
       styleChunks.push(`--bubble-main-icon-icon-brightness:1.25`);
       styleChunks.push(`--bubble-main-icon-icon-saturation:1.12`);
+    } else if (isLiquid && !this.active) {
+      styleChunks.push(`--bubble-main-icon-saturation:0.75`);
+      styleChunks.push(`--bubble-main-icon-luminance:0.88`);
+      styleChunks.push(`--bubble-main-icon-icon-brightness:1.18`);
+      styleChunks.push(`--bubble-main-icon-icon-saturation:0.82`);
+      styleChunks.push(`opacity:0.72`);
     }
 
     const containerStyle = styleChunks.map(chunk => `${chunk};`).join(' ');

@@ -288,7 +288,7 @@ export class BubbleRoom extends LitElement {
     const iconBgActive      = this.config.colors?.room?.background_active   ?? 'rgba(33,223,115,0.12)';
     const iconBgInactive    = this.config.colors?.room?.background_inactive ?? 'rgba(23,60,22,0.12)';
     const textColorActive   = this.config.colors?.room?.text_active   ?? '#ffffff';
-    const textColorInactive = this.config.colors?.room?.text_inactive ?? 'rgba(255,255,255,0.5)';
+    const textColorInactive = this.config.colors?.room?.text_inactive ?? 'rgba(255,255,255,0.65)';
 
     // Card background
     const cardBgEnabled = this.config?.card_background?.enabled ?? true;
@@ -296,20 +296,20 @@ export class BubbleRoom extends LitElement {
     if (cardBgEnabled) {
       const rawColor = this.config?.card_background?.color || '';
       if (rawColor) {
-        // Clamp alpha a max 0.25 per non rovinare gli elementi sopra
+        // Clamp alpha a max 0.35 per non rovinare gli elementi sopra
         const rgb = parseColor(rawColor);
         if (rgb) {
-          const alpha = Math.min(typeof rgb.a === 'number' ? rgb.a : 1, 0.25);
+          const alpha = Math.min(typeof rgb.a === 'number' ? rgb.a : 1, 0.35);
           cardBgColor = `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
         } else {
           cardBgColor = rawColor;
         }
       } else {
-        // Auto: deriva da icon_active/inactive a 8% alpha
+        // Auto: deriva da icon_active/inactive a 15% alpha (minimo visibile)
         const rgb = parseColor(isActive ? iconColorActive : iconColorInactive);
         cardBgColor = rgb
-          ? `rgba(${rgb.r},${rgb.g},${rgb.b},0.08)`
-          : 'rgba(33,223,115,0.08)';
+          ? `rgba(${rgb.r},${rgb.g},${rgb.b},0.15)`
+          : 'rgba(33,223,115,0.15)';
       }
     }
 
@@ -338,8 +338,8 @@ export class BubbleRoom extends LitElement {
                 .preset="${subbuttonMode}"
                 style="
                 --bubble-room-name-color:${isActive ? textColorActive : textColorInactive};
-                --bubble-room-name-saturation:${isActive ? '1.25' : '1.0'};
-                --bubble-room-name-brightness:${isActive ? '1.45' : '1.0'};
+                --bubble-room-name-saturation:${isActive ? '1.25' : '0.85'};
+                --bubble-room-name-brightness:${isActive ? '1.45' : '1.15'};
               "
               ></bubble-name>
             </div>
