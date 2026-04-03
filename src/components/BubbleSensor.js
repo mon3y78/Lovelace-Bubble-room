@@ -416,15 +416,14 @@ export class BubbleSensor extends LitElement {
   static styles = css`
     :host {
       display: block;
-      height: 100%;
+      height: auto;
       width: 100%;
       box-sizing: border-box;
-      contain: strict;
     }
     .sensor-grid {
       display: grid;
       width: 100%;
-      height: 100%;
+      height: auto;
       box-sizing: border-box;
       padding: 0;
       margin: 0;
@@ -480,7 +479,7 @@ export class BubbleSensor extends LitElement {
       position: relative;
       z-index: 1;
       background: transparent;
-      border-right-color: color-mix(in srgb, var(--bubble-sensor-active-color, white) 20%, transparent);
+      border-right: none;
     }
 
     .sensor-pill {
@@ -501,8 +500,7 @@ export class BubbleSensor extends LitElement {
       padding: 0 3px;
       justify-content: center;
       text-align: center;
-      /* separatore sottile a destra per ogni pill tranne l'ultima */
-      border-right: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+      border-right: none;
       gap: 2px;
     }
     .sensor-pill:last-child {

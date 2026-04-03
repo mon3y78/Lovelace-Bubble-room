@@ -467,7 +467,7 @@ export class BubbleRoom extends LitElement {
     }
     .name-placeholder { display:flex; align-items:center; justify-content:center;
       width:100%; max-width:100%; height:100%; box-sizing:border-box;
-      contain:strict; flex-shrink:1; }
+      overflow:hidden; flex-shrink:1; background:transparent; }
     .icon-mushroom-area { box-sizing:border-box;
       position:relative; width:100%; height:100%; display:flex; align-items:center; }
     .k-space { box-sizing:border-box; }
@@ -475,11 +475,11 @@ export class BubbleRoom extends LitElement {
       box-sizing:border-box; }
 
     .bubble-room-grid.tall .main-area { grid-template-rows:1fr 2fr; }
-    .bubble-room-grid.tall .row1      { grid-template-rows:1fr 2fr; }
+    .bubble-room-grid.tall .row1      { grid-template-rows:auto 1fr; }
     .bubble-room-grid.tall .row2      { grid-template-columns:1fr 0fr; }
 
     .bubble-room-grid.wide .main-area { grid-template-rows:1fr 2fr; }
-    .bubble-room-grid.wide .row1      { grid-template-rows:1fr 2fr; }
+    .bubble-room-grid.wide .row1      { grid-template-rows:auto 1fr; }
     .bubble-room-grid.wide .row2      { grid-template-columns:2fr 1fr; }
   `;
 }

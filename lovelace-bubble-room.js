@@ -2018,15 +2018,14 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
   `}customElements.define("bubble-name",Ye);class Ge extends ie{static properties={sensors:{type:Array},preset:{type:String,reflect:!0}};constructor(){super(),this.sensors=[],this.preset="standard",this.rows=1,this.columns=1,this._resizeObserver=null,this._resizeScheduled=!1,this._autoscaleScheduled=!1,this._lastBox={w:0,h:0},this._pillCache=new WeakMap,this._pendingChanged=null,this._sharedSize=new Map}connectedCallback(){super.connectedCallback(),this._updateLayout(),this._sharedSize.clear(),this._scheduleAutoscale(),this._resizeObserver=new ResizeObserver(e=>{const t=e[0];let o=0,i=0;if(t&&t.contentBoxSize){const e=Array.isArray(t.contentBoxSize)?t.contentBoxSize[0]:t.contentBoxSize;o=Math.round(e.inlineSize),i=Math.round(e.blockSize)}else{const e=this.getBoundingClientRect();o=Math.round(e.width),i=Math.round(e.height)}(Math.abs(o-this._lastBox.w)>2||Math.abs(i-this._lastBox.h)>2)&&(this._lastBox={w:o,h:i},this._sharedSize.clear(),this._scheduleAutoscale())}),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver?.disconnect(),this._resizeObserver=null}updated(e){if(e.has("sensors")){const t=e.get("sensors")||[];this._updateLayout(),this._sharedSize.clear();const o=this._diffChangedSensorIndices(t,this.sensors);if(0===o.size)return;this._scheduleAutoscale(o)}}_updateLayout(){const e=this.sensors?.length||0;this.rows=e>5?2:1,this.columns=e>5?5:e||1}_scheduleAutoscale(e=null){this._autoscaleScheduled?this._pendingChanged=this._mergeChanged(this._pendingChanged,e):(this._pendingChanged=this._mergeChanged(this._pendingChanged,e),this._autoscaleScheduled=!0,requestAnimationFrame(()=>{this._autoscaleScheduled=!1;const e=this._pendingChanged;this._pendingChanged=null,this._autoScaleValues(e)}))}_mergeChanged(e,t){if(!e&&!t)return null;if(!e)return t instanceof Set?new Set(t):null;if(!t)return e instanceof Set?new Set(e):null;const o=new Set(e);for(const e of t)o.add(e);return o}_keyForPill(e){return`${Math.round(e.clientWidth)||0}x${Math.round(e.clientHeight)||0}|u:${!!e.querySelector(".sensor-unit")?.textContent?.trim()?"1":"0"}|l:${!!e.querySelector(".sensor-label")?.textContent?.trim()?"1":"0"}|i:${!!e.querySelector(".sensor-icon")?"1":"0"}`}_textWeight(e){const t=t=>e.querySelector(t)?.textContent??"",o=t(".sensor-value"),i=t(".sensor-unit"),s=t(".sensor-label");return o.length+.8*i.length+1.1*s.length}_measureAndApply(e){this._fitValueAndUnit(e);const t=e.querySelector(".sensor-value"),o=e.querySelector(".sensor-unit"),i=e.querySelector(".sensor-label"),s=e.querySelector(".sensor-icon"),n=parseFloat(getComputedStyle(t).fontSize)||10;return{best:n,unit:o?parseFloat(getComputedStyle(o).fontSize)||Math.round(.5*n):0,label:i?parseFloat(getComputedStyle(i).fontSize)||Math.round(.5*n):0,icon:s?parseFloat(getComputedStyle(s).fontSize)||Math.round(.5*n):0}}_applySharedSize(e,t){const o=e.querySelector(".sensor-value"),i=e.querySelector(".sensor-unit"),s=e.querySelector(".sensor-label"),n=e.querySelector(".sensor-icon");o&&(o.style.fontSize=`${t.best}px`,i&&(i.style.fontSize=`${t.unit}px`),s&&(s.style.fontSize=`${t.label}px`),n&&(n.style.fontSize=`${t.icon}px`),this._pillCache.set(e,{text:o.textContent??"",unitText:i?i.textContent??"":"",labelTxt:s?s.textContent??"":"",iconName:n?.getAttribute("icon")||n?.icon||"",boxW:Math.round(e.clientWidth),boxH:Math.round(e.clientHeight),best:t.best}))}_autoScaleValues(e=null){const t=this.renderRoot?.querySelectorAll(".sensor-pill");if(!t?.length)return;const o=e?Array.from(e).map(e=>t[e]).filter(Boolean):Array.from(t);if(!o.length)return;const i=new Map;for(const e of o){const t=this._keyForPill(e);i.has(t)||i.set(t,[]),i.get(t).push(e)}for(const[e,t]of i.entries()){const o=this._sharedSize.get(e);if(o){for(const e of t)this._applySharedSize(e,o);continue}let i=t[0],s=this._textWeight(i);for(let e=1;e<t.length;e++){const o=this._textWeight(t[e]);o>s&&(s=o,i=t[e])}const n=this._measureAndApply(i);this._sharedSize.set(e,n);for(const e of t)e!==i&&this._applySharedSize(e,n)}}_fitValueAndUnit(e){const t=e.querySelector(".sensor-value"),o=e.querySelector(".sensor-unit"),i=e.querySelector(".sensor-label"),s=e.querySelector(".sensor-icon");if(!t)return;const n=t.textContent??"",a=o?o.textContent??"":"",r=i?i.textContent??"":"",l=s?.getAttribute("icon")||s?.icon||"",c=Math.round(e.clientWidth),d=Math.round(e.clientHeight);if(c<=0||d<=0)return;const u=this._pillCache.get(e);if(u&&u.text===n&&u.unitText===a&&u.labelTxt===r&&u.iconName===l&&u.boxW===c&&u.boxH===d)return;t.style.fontSize="",o&&(o.style.fontSize=""),i&&(i.style.fontSize=""),s&&(s.style.fontSize="");const p=Math.max(0,c-7),h=Math.max(0,d-0);if(0===p||0===h)return;let b=5,m=Math.min(40,h),g=b;for(let e=0;e<8&&b<=m;e++){const e=b+m>>1;t.style.fontSize=`${e}px`,o&&(o.style.fontSize=`${Math.max(5,Math.round(.7*e))}px`),i&&(i.style.fontSize=`${Math.max(5,Math.round(.7*e))}px`),s&&(s.style.fontSize=`${Math.max(5,Math.round(.7*e))}px`);const n=t.offsetWidth,a=t.offsetHeight,r=o?o.offsetWidth:0,l=o?o.offsetHeight:0,c=i?i.offsetWidth:0,d=i?i.offsetHeight:0,u=s?s.offsetWidth:0,f=s?s.offsetHeight:0,_=(u>0?u:0)+c+n+(r>0?1+r:0),v=Math.max(f,d,a,l);_<=p&&v<=h?(g=e,b=e+1):m=e-1}t.style.fontSize=`${g}px`,o&&(o.style.fontSize=`${Math.max(5,Math.round(.7*g))}px`),i&&(i.style.fontSize=`${Math.max(5,Math.round(.7*g))}px`),s&&(s.style.fontSize=`${Math.max(5,Math.round(.7*g))}px`),this._pillCache.set(e,{text:n,unitText:a,labelTxt:r,iconName:l,boxW:c,boxH:d,best:g})}_formatValueForCompare(e){if(null==e)return"--";let t=null;if("number"==typeof e)t=e;else if("string"==typeof e){const o=e.replace(",",".").match(/-?\d+(?:\.\d+)?/);o&&(t=Number(o[0]))}return Number.isFinite(t)?Number.isInteger(t)?String(t):t.toFixed(1):String(e).trim().replace(/\s+/g," ")}_formatValueForDisplay(e,t=1,o=!0){if(null==e)return"--";if("number"==typeof e&&Number.isFinite(e))return o&&Number.isInteger(e)?String(e):e.toFixed(t);if("string"==typeof e){const i=e.replace(",",".").match(/-?\d+(?:\.\d+)?/);if(i){const e=Number(i[0]);if(Number.isFinite(e))return o&&Number.isInteger(e)?String(e):e.toFixed(t)}return e.trim()}return String(e)}_getSensorKey(e,t){return e?.entity||e?.entity_id||`idx:${t}`}_diffChangedSensorIndices(e=[],t=[]){const o=new Set;if((e?.length||0)!==(t?.length||0)){for(let e=0;e<(t?.length||0);e++)o.add(e);return o}const i=new Map(t.map((e,t)=>[this._getSensorKey(e,t),t]));return e.forEach((e,s)=>{const n=this._getSensorKey(e,s),a=i.get(n);if(void 0===a)return void(s<t.length&&o.add(s));const r=t[a];([e?.label??"",this._formatValueForCompare(e?.value),e?.unit??""].join("|")!==[r?.label??"",this._formatValueForCompare(r?.value),r?.unit??""].join("|")||(e?.icon??"")!==(r?.icon??"")||(e?.device_class??"")!==(r?.device_class??"")||(e?.color??"")!==(r?.color??""))&&o.add(a)}),o}_openMoreInfo(e){if(!e||"string"!=typeof e)return;const t=new CustomEvent("hass-more-info",{bubbles:!0,composed:!0,detail:{entityId:e}});(document.querySelector("home-assistant")||this).dispatchEvent(t)}static styles=n`
     :host {
       display: block;
-      height: 100%;
+      height: auto;
       width: 100%;
       box-sizing: border-box;
-      contain: strict;
     }
     .sensor-grid {
       display: grid;
       width: 100%;
-      height: 100%;
+      height: auto;
       box-sizing: border-box;
       padding: 0;
       margin: 0;
@@ -2082,7 +2081,7 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
       position: relative;
       z-index: 1;
       background: transparent;
-      border-right-color: color-mix(in srgb, var(--bubble-sensor-active-color, white) 20%, transparent);
+      border-right: none;
     }
 
     .sensor-pill {
@@ -2103,8 +2102,7 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
       padding: 0 3px;
       justify-content: center;
       text-align: center;
-      /* separatore sottile a destra per ogni pill tranne l'ultima */
-      border-right: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+      border-right: none;
       gap: 2px;
     }
     .sensor-pill:last-child {
@@ -2535,7 +2533,7 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
     }
     .name-placeholder { display:flex; align-items:center; justify-content:center;
       width:100%; max-width:100%; height:100%; box-sizing:border-box;
-      contain:strict; flex-shrink:1; }
+      overflow:hidden; flex-shrink:1; background:transparent; }
     .icon-mushroom-area { box-sizing:border-box;
       position:relative; width:100%; height:100%; display:flex; align-items:center; }
     .k-space { box-sizing:border-box; }
@@ -2543,11 +2541,11 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
       box-sizing:border-box; }
 
     .bubble-room-grid.tall .main-area { grid-template-rows:1fr 2fr; }
-    .bubble-room-grid.tall .row1      { grid-template-rows:1fr 2fr; }
+    .bubble-room-grid.tall .row1      { grid-template-rows:auto 1fr; }
     .bubble-room-grid.tall .row2      { grid-template-columns:1fr 0fr; }
 
     .bubble-room-grid.wide .main-area { grid-template-rows:1fr 2fr; }
-    .bubble-room-grid.wide .row1      { grid-template-rows:1fr 2fr; }
+    .bubble-room-grid.wide .row1      { grid-template-rows:auto 1fr; }
     .bubble-room-grid.wide .row2      { grid-template-columns:2fr 1fr; }
   `}customElements.define("bubble-room",Ze),window.customCards.push({type:"bubble-room",name:"Bubble Room",description:"All‑in‑one room card: control entities, see sensors, and tweak colors & layout.",preview:!1,documentationURL:"https://github.com/mon3y78/Lovelace-Bubble-room"});export{Ze as BubbleRoom};
 //# sourceMappingURL=lovelace-bubble-room.js.map
