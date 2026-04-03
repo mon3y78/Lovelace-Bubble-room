@@ -283,33 +283,40 @@ export class BubbleRoom extends LitElement {
     const isActive      = this._isRoomActive();
 
     /* palette */
-    const iconColorActive   = this.config.colors?.room?.icon_active   ?? '#21df73';
-    const iconColorInactive = this.config.colors?.room?.icon_inactive ?? '#173c16';
-    const iconBgActive      = this.config.colors?.room?.background_active   ?? 'rgba(33,223,115,0.12)';
-    const iconBgInactive    = this.config.colors?.room?.background_inactive ?? 'rgba(23,60,22,0.12)';
+    const iconColorActive = this.config.colors?.room?.icon_active ?? '#21df73';
+    const _activeRgb      = parseColor(iconColorActive);
+    // Se non configurato, inattivo = stesso colore attivo a 42% opacità (come subbutton)
+    const iconColorInactive = this.config.colors?.room?.icon_inactive
+      ?? (_activeRgb ? `rgba(${_activeRgb.r},${_activeRgb.g},${_activeRgb.b},0.42)` : 'rgba(33,223,115,0.42)');
+    const iconBgActive   = this.config.colors?.room?.background_active   ?? 'rgba(33,223,115,0.12)';
+    const iconBgInactive = this.config.colors?.room?.background_inactive
+      ?? (_activeRgb ? `rgba(${_activeRgb.r},${_activeRgb.g},${_activeRgb.b},0.06)` : 'rgba(33,223,115,0.06)');
     const textColorActive   = this.config.colors?.room?.text_active   ?? '#ffffff';
     const textColorInactive = this.config.colors?.room?.text_inactive ?? 'rgba(255,255,255,0.65)';
 
-    // Card background
+    // Card background: radial gradient blob nell'area icona (in basso a sinistra)
     const cardBgEnabled = this.config?.card_background?.enabled ?? true;
-    let cardBgColor = '';
+    let cardBgStyle = '';
     if (cardBgEnabled) {
       const rawColor = this.config?.card_background?.color || '';
+      let r, g, b, alpha;
       if (rawColor) {
-        // Clamp alpha a max 0.35 per non rovinare gli elementi sopra
         const rgb = parseColor(rawColor);
         if (rgb) {
-          const alpha = Math.min(typeof rgb.a === 'number' ? rgb.a : 1, 0.35);
-          cardBgColor = `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
-        } else {
-          cardBgColor = rawColor;
+          r = rgb.r; g = rgb.g; b = rgb.b;
+          alpha = Math.min(typeof rgb.a === 'number' ? rgb.a : 1, 0.40);
         }
-      } else {
-        // Auto: deriva da icon_active/inactive a 15% alpha (minimo visibile)
+      }
+      if (r === undefined) {
+        // Auto: deriva dal colore attivo/inattivo
         const rgb = parseColor(isActive ? iconColorActive : iconColorInactive);
-        cardBgColor = rgb
-          ? `rgba(${rgb.r},${rgb.g},${rgb.b},0.15)`
-          : 'rgba(33,223,115,0.15)';
+        if (rgb) { r = rgb.r; g = rgb.g; b = rgb.b; }
+        alpha = 0.22;
+      }
+      if (r !== undefined) {
+        const strong = `rgba(${r},${g},${b},${alpha})`;
+        const mid    = `rgba(${r},${g},${b},${+(alpha * 0.28).toFixed(3)})`;
+        cardBgStyle  = `background:radial-gradient(ellipse 68% 92% at 22% 70%, ${strong} 0%, ${mid} 50%, transparent 80%);`;
       }
     }
 
@@ -319,7 +326,7 @@ export class BubbleRoom extends LitElement {
     const holdAct    = this.config?.hold_action || { action: 'none' };
 
     return html`
-      <div class="bubble-room-grid ${layout}" style="${cardBgColor ? `background:${cardBgColor};` : ''}">
+      <div class="bubble-room-grid ${layout}" style="${cardBgStyle}">
         <div class="main-area">
           <div class="row1">
             <bubble-sensor
@@ -450,9 +457,9 @@ export class BubbleRoom extends LitElement {
   /* ───────────── stili originali ───────────── */
   static styles = css`
     :host { display:block; height:100%; box-sizing:border-box; }
-    .bubble-room-grid { display:grid; grid-template-columns:2fr 1fr;
+    .bubble-room-grid { display:grid; grid-template-columns:2fr 0.82fr;
       gap: 0 6px;
-      width:100%; height:100%; box-sizing:border-box; }
+      width:100%; height:100%; box-sizing:border-box; padding: 6px 8px 6px 0; }
     .main-area { display:grid; height:100%; min-height:0; box-sizing:border-box; }
     .row1 { display:grid; min-height:0; box-sizing:border-box;
       grid-template-columns:1fr; }
@@ -460,7 +467,7 @@ export class BubbleRoom extends LitElement {
     }
     .name-placeholder { display:flex; align-items:center; justify-content:center;
       width:100%; max-width:100%; height:100%; box-sizing:border-box;
-      contain:strict; flex-shrink:1; }
+      overflow:hidden; flex-shrink:1; background:transparent; }
     .icon-mushroom-area { box-sizing:border-box;
       position:relative; width:100%; height:100%; display:flex; align-items:center; }
     .k-space { box-sizing:border-box; }
@@ -468,11 +475,11 @@ export class BubbleRoom extends LitElement {
       box-sizing:border-box; }
 
     .bubble-room-grid.tall .main-area { grid-template-rows:1fr 2fr; }
-    .bubble-room-grid.tall .row1      { grid-template-rows:1fr 2fr; }
+    .bubble-room-grid.tall .row1      { grid-template-rows:auto 1fr; }
     .bubble-room-grid.tall .row2      { grid-template-columns:1fr 0fr; }
 
     .bubble-room-grid.wide .main-area { grid-template-rows:1fr 2fr; }
-    .bubble-room-grid.wide .row1      { grid-template-rows:1fr 2fr; }
+    .bubble-room-grid.wide .row1      { grid-template-rows:auto 1fr; }
     .bubble-room-grid.wide .row2      { grid-template-columns:2fr 1fr; }
   `;
 }
