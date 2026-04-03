@@ -2018,14 +2018,14 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
   `}customElements.define("bubble-name",Ye);class Ge extends ie{static properties={sensors:{type:Array},preset:{type:String,reflect:!0}};constructor(){super(),this.sensors=[],this.preset="standard",this.rows=1,this.columns=1,this._resizeObserver=null,this._autoscaleScheduled=!1,this._lastBox={w:0,h:0}}connectedCallback(){super.connectedCallback(),this._updateLayout(),this._scheduleAutoscale(),this._resizeObserver=new ResizeObserver(e=>{const t=e[0];let o=0,i=0;if(t&&t.contentBoxSize){const e=Array.isArray(t.contentBoxSize)?t.contentBoxSize[0]:t.contentBoxSize;o=Math.round(e.inlineSize),i=Math.round(e.blockSize)}else{const e=this.getBoundingClientRect();o=Math.round(e.width),i=Math.round(e.height)}(Math.abs(o-this._lastBox.w)>2||Math.abs(i-this._lastBox.h)>2)&&(this._lastBox={w:o,h:i},this._scheduleAutoscale())}),this._resizeObserver.observe(this)}disconnectedCallback(){super.disconnectedCallback(),this._resizeObserver?.disconnect(),this._resizeObserver=null}updated(e){e.has("sensors")&&(this._updateLayout(),this._scheduleAutoscale())}_updateLayout(){const e=this.sensors?.length||0;this.rows=e>5?2:1,this.columns=e>5?5:e||1}_scheduleAutoscale(){this._autoscaleScheduled||(this._autoscaleScheduled=!0,requestAnimationFrame(()=>{this._autoscaleScheduled=!1,this._autoScaleValues()}))}_autoScaleValues(){const e=Array.from(this.renderRoot?.querySelectorAll(".sensor-pill")||[]);if(!e.length)return;let t=e[0],o=0;for(const i of e){const e=i.querySelector(".sensor-value")?.textContent??"",s=i.querySelector(".sensor-unit")?.textContent??"",n=i.querySelector(".sensor-label")?.textContent??"",a=e.length+.8*s.length+1.1*n.length;a>o&&(o=a,t=i)}const i=this._fitByWidth(t),s=Math.max(5,Math.round(.68*i)),n=Math.max(5,Math.round(.68*i)),a=Math.max(5,Math.round(.82*i));for(const t of e){const e=t.querySelector(".sensor-value"),o=t.querySelector(".sensor-unit"),r=t.querySelector(".sensor-label"),l=t.querySelector(".sensor-icon");e&&(e.style.fontSize=`${i}px`,o&&(o.style.fontSize=`${s}px`),r&&(r.style.fontSize=`${n}px`),l&&(l.style.fontSize=`${a}px`,l.style.setProperty("--mdc-icon-size",`${a}px`)))}}_fitByWidth(e){const t=e.querySelector(".sensor-value"),o=e.querySelector(".sensor-unit"),i=e.querySelector(".sensor-label"),s=e.querySelector(".sensor-icon");if(!t)return 10;const n=Math.round(e.clientWidth);if(n<=0)return 10;const a=Math.max(0,n-6);if(a<=0)return 5;let r=5,l=40,c=r;for(let e=0;e<10&&r<=l;e++){const e=r+l>>1;if(t.style.fontSize=`${e}px`,o&&(o.style.fontSize=`${Math.max(5,Math.round(.68*e))}px`),i&&(i.style.fontSize=`${Math.max(5,Math.round(.68*e))}px`),s){const t=Math.max(5,Math.round(.82*e));s.style.fontSize=`${t}px`,s.style.setProperty("--mdc-icon-size",`${t}px`)}const n=t.offsetWidth,d=o?o.offsetWidth:0,u=i?i.offsetWidth:0;(s?s.offsetWidth:0)+u+n+(d>0?1+d:0)<=a?(c=e,r=e+1):l=e-1}return c}_formatValueForDisplay(e,t=1,o=!0){if(null==e)return"--";if("number"==typeof e&&Number.isFinite(e))return o&&Number.isInteger(e)?String(e):e.toFixed(t);if("string"==typeof e){const i=e.replace(",",".").match(/-?\d+(?:\.\d+)?/);if(i){const e=Number(i[0]);if(Number.isFinite(e))return o&&Number.isInteger(e)?String(e):e.toFixed(t)}return e.trim()}return String(e)}_openMoreInfo(e){if(!e||"string"!=typeof e)return;const t=new CustomEvent("hass-more-info",{bubbles:!0,composed:!0,detail:{entityId:e}});(document.querySelector("home-assistant")||this).dispatchEvent(t)}static styles=n`
     :host {
       display: block;
-      height: auto;
+      height: var(--bubble-sensor-height, 34px);
       width: 100%;
       box-sizing: border-box;
     }
     .sensor-grid {
       display: grid;
       width: 100%;
-      height: auto;
+      height: 100%;
       box-sizing: border-box;
       padding: 0;
       margin: 0;
@@ -2476,8 +2476,8 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
                 .preset="${i}"
                 style="
                 --bubble-room-name-color:${s?d:u};
-                --bubble-room-name-saturation:${s?"1.25":"0.85"};
-                --bubble-room-name-brightness:${s?"1.45":"1.15"};
+                --bubble-room-name-saturation:${s?"1.25":"0.55"};
+                --bubble-room-name-brightness:${s?"1.45":"0.68"};
               "
               ></bubble-name>
             </div>
@@ -2533,7 +2533,7 @@ var te,oe;class ie extends g{constructor(){super(...arguments),this.renderOption
     }
     .name-placeholder { display:flex; align-items:center; justify-content:center;
       width:100%; max-width:100%; height:100%; box-sizing:border-box;
-      overflow:hidden; flex-shrink:1; background:transparent; }
+      overflow:visible; flex-shrink:1; background:transparent; }
     .icon-mushroom-area { box-sizing:border-box;
       position:relative; width:100%; height:100%; display:flex; align-items:center; }
     .k-space { box-sizing:border-box; }

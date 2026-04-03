@@ -345,8 +345,8 @@ export class BubbleRoom extends LitElement {
                 .preset="${subbuttonMode}"
                 style="
                 --bubble-room-name-color:${isActive ? textColorActive : textColorInactive};
-                --bubble-room-name-saturation:${isActive ? '1.25' : '0.85'};
-                --bubble-room-name-brightness:${isActive ? '1.45' : '1.15'};
+                --bubble-room-name-saturation:${isActive ? '1.25' : '0.55'};
+                --bubble-room-name-brightness:${isActive ? '1.45' : '0.68'};
               "
               ></bubble-name>
             </div>
@@ -467,7 +467,7 @@ export class BubbleRoom extends LitElement {
     }
     .name-placeholder { display:flex; align-items:center; justify-content:center;
       width:100%; max-width:100%; height:100%; box-sizing:border-box;
-      overflow:hidden; flex-shrink:1; background:transparent; }
+      overflow:visible; flex-shrink:1; background:transparent; }
     .icon-mushroom-area { box-sizing:border-box;
       position:relative; width:100%; height:100%; display:flex; align-items:center; }
     .k-space { box-sizing:border-box; }
