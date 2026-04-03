@@ -294,8 +294,18 @@ export class BubbleRoom extends LitElement {
     const cardBgEnabled = this.config?.card_background?.enabled ?? true;
     let cardBgColor = '';
     if (cardBgEnabled) {
-      cardBgColor = this.config?.card_background?.color || '';
-      if (!cardBgColor) {
+      const rawColor = this.config?.card_background?.color || '';
+      if (rawColor) {
+        // Clamp alpha a max 0.25 per non rovinare gli elementi sopra
+        const rgb = parseColor(rawColor);
+        if (rgb) {
+          const alpha = Math.min(typeof rgb.a === 'number' ? rgb.a : 1, 0.25);
+          cardBgColor = `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
+        } else {
+          cardBgColor = rawColor;
+        }
+      } else {
+        // Auto: deriva da icon_active/inactive a 8% alpha
         const rgb = parseColor(isActive ? iconColorActive : iconColorInactive);
         cardBgColor = rgb
           ? `rgba(${rgb.r},${rgb.g},${rgb.b},0.08)`

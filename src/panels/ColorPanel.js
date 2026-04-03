@@ -325,7 +325,11 @@ export class ColorPanel extends LitElement {
 
   _renderColorField(section, key, label) {
     const rgba = this._readColorValue(section, key);
-    const [r, g, b, a] = this._parseRGBA(rgba);
+    const isCardBg = section === 'card_background';
+    // Per card_background: alpha di default 0.10 se vuoto, max slider 0.30
+    const [r, g, b, a] = this._parseRGBA(rgba || (isCardBg ? 'rgba(33,223,115,0.10)' : ''));
+    const alphaDefault = isCardBg ? (rgba ? a : 0.10) : a;
+    const alphaMax     = isCardBg ? '0.30' : '1';
     const hex = `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
     return html`
       <div class="input-group">
@@ -333,12 +337,12 @@ export class ColorPanel extends LitElement {
         <input
           type="color"
           .value=${hex}
-          @input=${e => this._updateColor(section, key, e.target.value, a)}
+          @input=${e => this._updateColor(section, key, e.target.value, alphaDefault)}
         />
         <input
           type="range"
-          min="0" max="1" step="0.01"
-          .value=${a}
+          min="0" max=${alphaMax} step="0.01"
+          .value=${alphaDefault}
           @input=${e => this._updateColor(section, key, hex, e.target.value)}
         />
         <input
@@ -383,6 +387,11 @@ export class ColorPanel extends LitElement {
     for (const [prop, val] of ops) {
       this._emit(prop, val);
     }
+
+    // Card background: deriva da icon_active del preset a 10% alpha
+    const [r, g, b] = this._parseRGBA(preset.room.icon_active);
+    this._emit('card_background.color', `rgba(${r},${g},${b},0.10)`);
+    this._emit('card_background.enabled', true);
   };
 
   _resetColors() {
