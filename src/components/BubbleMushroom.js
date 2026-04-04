@@ -51,6 +51,12 @@ export class BubbleMushroom extends LitElement {
   }
 
   _getAnimClass(entity) {
+    const anim = entity?.animation;
+    // Se esplicitamente disabilitata → nessuna animazione
+    if (anim?.enabled === false) return '';
+    // Se tipo esplicito (non 'auto') → usa quello
+    if (anim?.type && anim.type !== 'auto') return anim.type;
+    // Altrimenti auto-detect dall'icona
     return getIconAnimClass(entity?.icon, entity?.kind);
   }
 

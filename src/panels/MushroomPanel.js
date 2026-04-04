@@ -135,6 +135,29 @@ export class MushroomPanel extends LitElement {
       .pill-button:hover:not(.active) {
         background: rgba(54,230,160,0.1);
       }
+      .anim-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 6px;
+      }
+      .anim-select {
+        flex: 1;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid #555;
+        border-radius: 8px;
+        color: inherit;
+        padding: 6px 8px;
+        font-size: 0.9em;
+      }
+      .anim-toggle {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+        font-size: 0.85em;
+        cursor: pointer;
+      }
     `,
   ];
 
@@ -258,6 +281,37 @@ export class MushroomPanel extends LitElement {
                 allow-custom-icon
                 @value-changed=${e => this._onIcon(i, e.detail.value)}
               ></ha-icon-picker>
+            </div>
+
+            <!-- Animazione -->
+            <div class="input-group">
+              <label>Animazione</label>
+              <div class="anim-row">
+                <select
+                  class="anim-select"
+                  .value=${cfg.animation?.type ?? 'auto'}
+                  @change=${e => this._onAnimType(i, e.target.value)}
+                >
+                  <option value="auto">Auto (icona)</option>
+                  <option value="anim-spin">Spin</option>
+                  <option value="anim-illuminate">Illuminate</option>
+                  <option value="anim-alarm">Alarm</option>
+                  <option value="anim-blink">Blink</option>
+                  <option value="anim-beat">Beat</option>
+                  <option value="anim-scan">Scan</option>
+                  <option value="anim-shake">Shake</option>
+                  <option value="anim-bounce">Bounce</option>
+                  <option value="none">Nessuna</option>
+                </select>
+                <label class="anim-toggle">
+                  <input
+                    type="checkbox"
+                    .checked=${cfg.animation?.enabled !== false}
+                    @change=${e => this._onAnimEnabled(i, e.target.checked)}
+                  />
+                  Attiva
+                </label>
+              </div>
             </div>
 
             <!-- Tap Action -->
@@ -407,6 +461,26 @@ export class MushroomPanel extends LitElement {
     if (this._syncingFromConfig) return;
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: `entities.mushroom${i+1}.icon`, val: this._icons[i] },
+      bubbles: true, composed: true,
+    }));
+  }
+
+  _onAnimType(i, type) {
+    if (this._syncingFromConfig) return;
+    const key  = `mushroom${i+1}`;
+    const prev = this.config?.entities?.[key]?.animation || {};
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: `entities.${key}.animation`, val: { ...prev, type } },
+      bubbles: true, composed: true,
+    }));
+  }
+
+  _onAnimEnabled(i, enabled) {
+    if (this._syncingFromConfig) return;
+    const key  = `mushroom${i+1}`;
+    const prev = this.config?.entities?.[key]?.animation || {};
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: `entities.${key}.animation`, val: { ...prev, enabled } },
       bubbles: true, composed: true,
     }));
   }
