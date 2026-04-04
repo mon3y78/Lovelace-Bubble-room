@@ -198,8 +198,9 @@ export class BubbleSensor extends LitElement {
 
   static styles = css`
     :host {
-      display: block;
-      height: auto;
+      display: flex;
+      align-items: center;
+      height: 32px;
       width: 100%;
       box-sizing: border-box;
     }
@@ -279,8 +280,7 @@ export class BubbleSensor extends LitElement {
       color: #e3f6ff;
       box-sizing: border-box;
       width: 100%;
-      height: 100%;
-      contain: strict;
+      height: auto;
       cursor: pointer;
       padding: 0 3px;
       justify-content: center;

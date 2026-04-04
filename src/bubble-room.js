@@ -317,9 +317,7 @@ export class BubbleRoom extends LitElement {
         alpha = isActive ? 0.22 : 0.12;
       }
       if (r !== undefined) {
-        const strong = `rgba(${r},${g},${b},${alpha})`;
-        const mid    = `rgba(${r},${g},${b},${+(alpha * 0.28).toFixed(3)})`;
-        cardBgStyle  = `background:radial-gradient(ellipse 68% 92% at 22% 70%, ${strong} 0%, ${mid} 50%, transparent 80%);`;
+        cardBgStyle = `background:rgba(${r},${g},${b},${alpha});`;
       }
     }
 
