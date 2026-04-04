@@ -22,7 +22,8 @@ export class BubbleSensor extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this._updateLayout();
-    this._scheduleAutoscale();
+    // NON schedulare autoscale qui: Lit non ha ancora renderizzato le colonne della grid.
+    // L'autoscale parte da updated() dopo il primo render.
     this._resizeObserver = new ResizeObserver((entries) => {
       const entry = entries[0];
       let w = 0, h = 0;
@@ -121,7 +122,11 @@ export class BubbleSensor extends LitElement {
     const iconEl  = pill.querySelector('.sensor-icon');
     if (!valueEl) return 10;
 
-    const boxW = Math.round(pill.clientWidth);
+    // Usa la larghezza dell'host divisa per le colonne: immune al timing della grid CSS.
+    // pill.clientWidth può essere 0 o errato se la grid non ha ancora applicato grid-template-columns.
+    const hostW = Math.round(this.clientWidth);
+    const cols  = Math.max(1, this.columns);
+    const boxW  = hostW > 0 ? Math.floor(hostW / cols) : Math.round(pill.clientWidth);
     if (boxW <= 0) return 10;
 
     const PADDING_X = 6;
@@ -203,6 +208,7 @@ export class BubbleSensor extends LitElement {
       height: 32px;
       width: 100%;
       box-sizing: border-box;
+      overflow: hidden;
     }
     .sensor-grid {
       display: grid;

@@ -460,7 +460,8 @@ export class BubbleRoom extends LitElement {
     :host { display:block; height:100%; box-sizing:border-box; }
     .bubble-room-grid { display:grid; grid-template-columns:2fr 0.82fr;
       gap: 0 6px;
-      width:100%; height:100%; box-sizing:border-box; padding: 6px 8px 6px 0; }
+      width:100%; height:100%; box-sizing:border-box; padding: 6px 8px 6px 0;
+      overflow: hidden; }
     .main-area { display:grid; height:100%; min-height:0; box-sizing:border-box; }
     .row1 { display:grid; min-height:0; box-sizing:border-box;
       grid-template-columns:1fr; }
