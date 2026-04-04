@@ -162,8 +162,8 @@ export class BubbleMushroom extends LitElement {
     }
 
     :host([preset='liquid-glass']) .mushroom-entity.is-inactive {
-      filter: saturate(0.75) brightness(0.82);
-      opacity: 0.72;
+      filter: saturate(0.55) brightness(1.10);
+      opacity: 0.88;
       background: transparent;
       box-shadow: none;
     }
