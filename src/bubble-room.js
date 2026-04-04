@@ -117,9 +117,10 @@ export class BubbleRoom extends LitElement {
         colorOff: bgOff,
         iconOn,
         iconOff,
-        entity_id: sb.entity_id,
-        tap_action: sb.tap_action,
+        entity_id:  sb.entity_id,
+        tap_action:  sb.tap_action,
         hold_action: sb.hold_action,
+        animation:   sb.animation,
       };
     });
   }
@@ -203,9 +204,10 @@ export class BubbleRoom extends LitElement {
         entity_id: entId,
         tap_action:  conf.tap_action,
         hold_action: conf.hold_action,
+        animation:   conf.animation,
       });
     }
-  
+
     // 6) CAMERA (in alto a destra: posizione/scala gestite in BubbleMushroom)
     const camCfg = entities.camera || {};
     const camId  = camCfg.entity;

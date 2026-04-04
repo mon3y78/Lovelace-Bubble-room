@@ -365,7 +365,7 @@ export class BubbleSubButton extends LitElement {
           const styleAttr = styleVars.join(';');
           const classes = ['sub-button'];
           if (btn.active) classes.push('is-active');
-          const animClass = btn.active ? this._getAnimClass(btn.icon) : '';
+          const animClass = btn.active ? this._getAnimClass(btn) : '';
           if (animClass) classes.push(animClass);
 
           return html`
@@ -385,8 +385,11 @@ export class BubbleSubButton extends LitElement {
     `;
   }
   
-  _getAnimClass(icon) {
-    return getIconAnimClass(icon);
+  _getAnimClass(btn) {
+    const anim = btn?.animation;
+    if (anim?.enabled === false) return '';
+    if (anim?.type && anim.type !== 'auto') return anim.type;
+    return getIconAnimClass(btn?.icon);
   }
 
   _onDown(idx) { this._gesture.onDown(idx); }
