@@ -594,7 +594,11 @@ export class BubbleSubButton extends LitElement {
   }
 
   _colorToRgb(color) {
-    return parseColor(color);
+    if (!color) return null;
+    // Regex diretta per rgba/rgb: evita il bug canvas premult su alpha semitrasparente
+    const m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)/.exec(color);
+    if (m) return { r: +m[1], g: +m[2], b: +m[3], a: +(m[4] ?? 1) };
+    return parseColor(color); // fallback per hex e altri formati
   }
 
   _fireHassAction(idx, actionType) {

@@ -169,8 +169,8 @@ export class BubbleIcon extends LitElement {
     const rawBg = this.active ? this.backgroundActive : this.backgroundInactive;
     const isLiquid = this.preset === 'liquid-glass';
 
-    // alpha attivo ridotto per evitare che il fondo "bruci" i mushroom sovrapposti
-    const bgAlpha = isLiquid ? (this.active ? 0.30 : 0.22) : 0.1;
+    // alpha più alto: l'icona usa il suo colore senza essere dominata dal gradiente dietro
+    const bgAlpha = isLiquid ? (this.active ? 0.52 : 0.38) : 0.1;
     const bg = this._withOpacity(rawBg, bgAlpha) ?? rawBg;
     const iconOpacity = this.active ? 0.9 : 0.8;
 
@@ -219,7 +219,11 @@ export class BubbleIcon extends LitElement {
   }
 
   _withOpacity(color, alpha) {
-    return colorWithOpacity(color, alpha);
+    if (!color) return null;
+    // Regex per rgba: evita bug canvas premult su alpha semitrasparente
+    const m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*[\d.]+)?\s*\)/.exec(color);
+    if (m) return `rgba(${m[1]},${m[2]},${m[3]},${alpha})`;
+    return colorWithOpacity(color, alpha); // fallback per hex
   }
 
   /* ───────────── GESTURE (via gesture-handler.js) ───────────── */

@@ -199,14 +199,14 @@ export class BubbleSensor extends LitElement {
   static styles = css`
     :host {
       display: block;
-      height: var(--bubble-sensor-height, 34px);
+      height: auto;
       width: 100%;
       box-sizing: border-box;
     }
     .sensor-grid {
       display: grid;
       width: 100%;
-      height: 100%;
+      height: auto;
       box-sizing: border-box;
       padding: 0;
       margin: 0;
@@ -218,6 +218,8 @@ export class BubbleSensor extends LitElement {
       overflow: hidden;
       position: relative;
       isolation: isolate;
+      /* padding verticale: crea lo spazio visivo della bolla attorno al testo */
+      padding: 4px 0;
 
       backdrop-filter: blur(20px) saturate(2.2) brightness(1.05);
       -webkit-backdrop-filter: blur(20px) saturate(2.2) brightness(1.05);
