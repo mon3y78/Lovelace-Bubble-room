@@ -301,15 +301,18 @@ export class BubbleRoom extends LitElement {
       const rawColor = this.config?.card_background?.color || '';
       let r, g, b, alpha;
       if (rawColor) {
-        const rgb = parseColor(rawColor);
-        if (rgb) {
-          r = rgb.r; g = rgb.g; b = rgb.b;
-          alpha = Math.min(typeof rgb.a === 'number' ? rgb.a : 1, 0.40);
+        // Regex: evita il bug canvas premult su rgba semitrasparenti
+        const m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)/.exec(rawColor);
+        if (m) {
+          r = +m[1]; g = +m[2]; b = +m[3];
+          alpha = Math.min(+(m[4] ?? 1), 0.40);
+        } else if (rawColor.startsWith('#')) {
+          const rgb = parseColor(rawColor); // hex opaco: nessun problema premult
+          if (rgb) { r = rgb.r; g = rgb.g; b = rgb.b; alpha = 0.22; }
         }
       }
       if (r === undefined) {
-        // Usa _activeRgb direttamente (da hex opaco, senza errori canvas premult)
-        // Per inattivo: stesso colore ma alpha ridotto
+        // Auto: usa _activeRgb (da hex opaco, senza errori canvas premult)
         if (_activeRgb) { r = _activeRgb.r; g = _activeRgb.g; b = _activeRgb.b; }
         alpha = isActive ? 0.22 : 0.12;
       }
