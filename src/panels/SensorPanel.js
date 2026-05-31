@@ -43,12 +43,13 @@ export class SensorPanel extends LitElement {
       }
 
       // Se esiste in config, carica ma NON riscrivere mai sensor_filters nel YAML
+      this._entities = Array(5).fill('');
       for (let i = 0; i < 5; i++) {
         const key = `sensor${i + 1}`;
         const cfgFilter = this.config?.sensor_filters?.[i];
         const cfgEnt    = this.config?.entities?.[key]?.entity;
         if (Array.isArray(cfgFilter)) this._filters[i] = [...cfgFilter];
-        if (cfgEnt)                   this._entities[i] = cfgEnt;
+        this._entities[i] = cfgEnt || '';
       }
     }
   }

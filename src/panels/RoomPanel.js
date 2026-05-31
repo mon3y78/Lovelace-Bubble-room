@@ -344,11 +344,12 @@ export class RoomPanel extends LitElement {
       : this._presenceCandidatesNoArea(this.hass, presFilters, presEntity);
 
 
-    const actions = ['toggle','more-info','navigate','call-service','none'];
+    const actions = ['toggle','more-info','navigate','url','call-service','none'];
     const actionLabels = {
       toggle: t('actions.toggle'),
       'more-info': t('actions.more-info'),
       navigate: t('actions.navigate'),
+      url: t('actions.url'),
       'call-service': t('actions.call-service'),
       none: t('actions.none'),
     };
@@ -447,6 +448,12 @@ export class RoomPanel extends LitElement {
                   @input=${e => this._fire('tap_action.navigation_path', e.target.value)}
                 />
               ` : ''}
+              ${tapCfg.action === 'url' ? html`
+                <input type="text" placeholder=${t('panel.room.path')}
+                  .value=${tapCfg.url_path || ''}
+                  @input=${e => this._fire('tap_action.url_path', e.target.value)}
+                />
+              ` : ''}
               ${tapCfg.action === 'call-service' ? html`
                 <input type="text" placeholder=${t('panel.room.service')}
                   .value=${tapCfg.service || ''}
@@ -477,6 +484,12 @@ export class RoomPanel extends LitElement {
                 <input type="text" placeholder=${t('panel.room.path')}
                   .value=${holdCfg.navigation_path || ''}
                   @input=${e => this._fire('hold_action.navigation_path', e.target.value)}
+                />
+              ` : ''}
+              ${holdCfg.action === 'url' ? html`
+                <input type="text" placeholder=${t('panel.room.path')}
+                  .value=${holdCfg.url_path || ''}
+                  @input=${e => this._fire('hold_action.url_path', e.target.value)}
                 />
               ` : ''}
               ${holdCfg.action === 'call-service' ? html`

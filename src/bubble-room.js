@@ -329,7 +329,11 @@ export class BubbleRoom extends LitElement {
     const holdAct    = this.config?.hold_action || { action: 'none' };
 
     return html`
-      <div class="bubble-room-grid ${layout}" style="${cardBgStyle}">
+      <div
+        class="bubble-room-grid ${layout}"
+        style="${cardBgStyle}"
+        @hass-action=${this._onHassAction}
+      >
         <div class="main-area">
           <div class="row1">
             <bubble-sensor
@@ -372,7 +376,6 @@ export class BubbleRoom extends LitElement {
                 .entity_id=${mainEntity}
                 .tap_action=${tapAct}
                 .hold_action=${holdAct}
-                @hass-action=${this._onMainIconAction}
               ></bubble-icon>
 
               <bubble-mushroom
@@ -396,15 +399,18 @@ export class BubbleRoom extends LitElement {
     `;
   }
 
-  /* ───────────── esecuzione azioni main icon (come SubButton) ───────────── */
-  _onMainIconAction = (e) => {
-    // e.detail = { config:{ entity, tap_action, hold_action }, action: 'tap'|'hold' }
+  /* ───────────── esecuzione azioni card ───────────── */
+  _onHassAction = (e) => {
+    e.stopPropagation();
+    // e.detail = { config:{ entity, tap_action, hold_action, double_tap_action }, action: 'tap'|'hold'|'double_tap' }
     const { config, action } = e.detail || {};
     if (!config) return;
 
     const actCfg = action === 'hold'
       ? (config.hold_action || { action: 'none' })
-      : (config.tap_action  || { action: 'none' });
+      : action === 'double_tap'
+        ? (config.double_tap_action || { action: 'none' })
+        : (config.tap_action  || { action: 'none' });
 
     this._runAction(actCfg, config.entity);
   };
@@ -420,6 +426,17 @@ export class BubbleRoom extends LitElement {
           if (path) {
             window.history.pushState({}, '', path);
             window.dispatchEvent(new Event('location-changed'));
+          }
+          break;
+        }
+        case 'url': {
+          const path = actionCfg.url_path || actionCfg.urlPath || actionCfg.url;
+          if (path) {
+            if (actionCfg.new_tab) {
+              window.open(path, '_blank', 'noopener,noreferrer');
+            } else {
+              window.location.href = path;
+            }
           }
           break;
         }
@@ -491,6 +508,7 @@ export class BubbleRoom extends LitElement {
 
 customElements.define('bubble-room', BubbleRoom);
 
+window.customCards = window.customCards || [];
 window.customCards.push({
   type: 'bubble-room',
   name: 'Bubble Room',

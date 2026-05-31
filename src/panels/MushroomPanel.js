@@ -68,10 +68,12 @@ export class MushroomPanel extends LitElement {
 
     // 3) sincronizza entity + icon da config.entities
     const ents = this.config?.entities || {};
+    this._entities = Array(5).fill('');
+    this._icons = Array(5).fill('');
     for (let i = 0; i < 5; i++) {
       const key = `mushroom${i+1}`;
       const rec = ents[key] || {};
-      if (rec.entity) this._entities[i] = rec.entity;
+      this._entities[i] = rec.entity || '';
       if (typeof rec.icon === 'string') this._icons[i] = rec.icon;
     }
 
@@ -221,11 +223,12 @@ export class MushroomPanel extends LitElement {
     }
     // preserva l’entità selezionata in cima se non già inclusa
     if (ent && !cands.includes(ent)) cands = [ent, ...cands];
-    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+    const actions = ['toggle', 'more-info', 'navigate', 'url', 'call-service', 'none'];
     const actionLabels = {
       toggle: t('actions.toggle'),
       'more-info': t('actions.more-info'),
       navigate: t('actions.navigate'),
+      url: t('actions.url'),
       'call-service': t('actions.call-service'),
       none: t('actions.none'),
     };
@@ -355,6 +358,14 @@ export class MushroomPanel extends LitElement {
         <input type="text" placeholder=${t('panel.mushroom.path')}
           .value=${cfg[`${type}_action`]?.navigation_path || ''}
           @input=${e => this._onAction(i, type, 'navigation_path', e.target.value)}
+        />
+      `;
+    }
+    if (act === 'url') {
+      return html`
+        <input type="text" placeholder=${t('panel.mushroom.path')}
+          .value=${cfg[`${type}_action`]?.url_path || ''}
+          @input=${e => this._onAction(i, type, 'url_path', e.target.value)}
         />
       `;
     }
