@@ -9,15 +9,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          persist-credentials: true  # abilita GITHUB_TOKEN per il push
+          persist-credentials: true
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20.x'
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -29,15 +30,17 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
-          git add lovelace-bubble-room.js
-          git commit -m "Auto-build: add lovelace-bubble-room.js" || echo "No changes to commit"
+          git add lovelace-bubble-room.js lovelace-bubble-room.js.map
+          git commit -m "Auto-build: update bundle" || echo "No changes to commit"
 
       - name: Push build file to current branch
         run: |
           git push origin HEAD:${{ github.ref_name }}
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: bubble-room-bundle
-          path: lovelace-bubble-room.js
+          path: |
+            lovelace-bubble-room.js
+            lovelace-bubble-room.js.map
