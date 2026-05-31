@@ -109,6 +109,7 @@ const STRINGS = {
     'actions.toggle': 'toggle',
     'actions.more-info': 'more-info',
     'actions.navigate': 'navigate',
+    'actions.url': 'url',
     'actions.call-service': 'call-service',
     'actions.none': 'none',
 
@@ -236,6 +237,7 @@ const STRINGS = {
     'actions.toggle': 'toggle',
     'actions.more-info': 'more-info',
     'actions.navigate': 'navigate',
+    'actions.url': 'url',
     'actions.call-service': 'call-service',
     'actions.none': 'none',
 
@@ -358,6 +360,7 @@ const STRINGS = {
     'actions.toggle': 'toggle',
     'actions.more-info': 'more-info',
     'actions.navigate': 'navigate',
+    'actions.url': 'url',
     'actions.call-service': 'call-service',
     'actions.none': 'none',
 
@@ -480,6 +483,7 @@ const STRINGS = {
     'actions.toggle': 'toggle',
     'actions.more-info': 'more-info',
     'actions.navigate': 'navigate',
+    'actions.url': 'url',
     'actions.call-service': 'call-service',
     'actions.none': 'none',
 
@@ -602,6 +606,7 @@ const STRINGS = {
     'actions.toggle': 'toggle',
     'actions.more-info': 'more-info',
     'actions.navigate': 'navigate',
+    'actions.url': 'url',
     'actions.call-service': 'call-service',
     'actions.none': 'none',
 
@@ -724,6 +729,7 @@ const STRINGS = {
     'actions.toggle': 'toggle',
     'actions.more-info': 'more-info',
     'actions.navigate': 'navigate',
+    'actions.url': 'url',
     'actions.call-service': 'call-service',
     'actions.none': 'none',
 

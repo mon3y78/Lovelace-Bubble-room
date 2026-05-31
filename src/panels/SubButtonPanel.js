@@ -52,23 +52,21 @@ export class SubButtonPanel extends LitElement {
 
     // Non mutare mai this.config qui. Assicura però la struttura letta.
     const list = Array.isArray(this.config?.subbuttons) ? this.config.subbuttons : [];
-    if (list.length) {
-      for (let i = 0; i < Math.min(4, list.length); i++) {
-        const ent = list[i]?.entity_id || '';
-        this._entities[i] = ent;
-        // auto-icona (solo dispatch, non scrivere this.config)
-        if (ent) {
-          const existing = list[i]?.icon;
-          if (!existing) {
-            const st = this.hass?.states?.[ent];
-            const iconFromState = st?.attributes?.icon;
-            const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
-            if (autoIcon) {
-              this.dispatchEvent(new CustomEvent('panel-changed', {
-                detail: { prop: `subbuttons.${i}.icon`, val: autoIcon },
-                bubbles: true, composed: true,
-              }));
-            }
+    this._entities = Array(4).fill('').map((_, i) => list[i]?.entity_id || '');
+    for (let i = 0; i < Math.min(4, list.length); i++) {
+      const ent = list[i]?.entity_id || '';
+      // auto-icona (solo dispatch, non scrivere this.config)
+      if (ent) {
+        const existing = list[i]?.icon;
+        if (!existing) {
+          const st = this.hass?.states?.[ent];
+          const iconFromState = st?.attributes?.icon;
+          const autoIcon = iconFromState || resolveEntityIcon(ent, this.hass);
+          if (autoIcon) {
+            this.dispatchEvent(new CustomEvent('panel-changed', {
+              detail: { prop: `subbuttons.${i}.icon`, val: autoIcon },
+              bubbles: true, composed: true,
+            }));
           }
         }
       }
@@ -193,11 +191,12 @@ export class SubButtonPanel extends LitElement {
     if (ent && !cands.includes(ent)) cands = [ent, ...cands];
 
     const cfg = Array.isArray(this.config?.subbuttons) ? (this.config.subbuttons[i] || {}) : {};
-    const actions = ['toggle', 'more-info', 'navigate', 'call-service', 'none'];
+    const actions = ['toggle', 'more-info', 'navigate', 'url', 'call-service', 'none'];
     const actionLabels = {
       toggle: t('actions.toggle'),
       'more-info': t('actions.more-info'),
       navigate: t('actions.navigate'),
+      url: t('actions.url'),
       'call-service': t('actions.call-service'),
       none: t('actions.none'),
     };
@@ -309,6 +308,14 @@ export class SubButtonPanel extends LitElement {
         />
       `;
     }
+    if (act === 'url') {
+      return html`
+        <input type="text" placeholder=${t('panel.subbutton.path')}
+          .value=${cfg?.[`${type}_action`]?.url_path || ''}
+          @input=${e => this._onAction(i, type, 'url_path', e.target.value)}
+        />
+      `;
+    }
     if (act === 'call-service') {
       return html`
         <input type="text" placeholder=${t('panel.subbutton.service')}
@@ -414,11 +421,11 @@ export class SubButtonPanel extends LitElement {
     this._filters  = Array(4).fill().map(() => [...COMMON_CATS]);
     this._entities = Array(4).fill('');
 
-    // Propaga reset: filtri ed entità
-    this._emit('subbutton_filters', this._filters);
-    for (let i = 0; i < 4; i++) {
-      this._emit(`subbuttons.${i}`, {}); // svuota ogni subbutton
-    }
+    this.dispatchEvent(new CustomEvent('__panel_cmd__', {
+      detail: { cmd: 'reset', section: 'subbuttons' },
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   _emit(prop, val) {

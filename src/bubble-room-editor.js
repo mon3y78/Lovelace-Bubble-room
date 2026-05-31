@@ -72,16 +72,24 @@ export class BubbleRoomEditor extends LitElement {
 
   /** Imposta un path puntato (es: "entities.climate.icon") e emette config-changed */
   _setConfigValue(path, value) {
-    const keys = String(path).split('.');
     const next = structuredClone(this.config || {});
-    let cur = next;
+    this._applyPath(next, path, value);
+    this._emitConfig(next);
+  }
+
+  _applyPath(target, path, value) {
+    const keys = String(path).split('.');
+    let cur = target;
     for (let i = 0; i < keys.length - 1; i++) {
       const k = keys[i];
-      if (typeof cur[k] !== 'object' || cur[k] === null) cur[k] = {};
+      const nextKey = keys[i + 1];
+      const shouldBeArray = /^\d+$/.test(nextKey);
+      if (typeof cur[k] !== 'object' || cur[k] === null) {
+        cur[k] = shouldBeArray ? [] : {};
+      }
       cur = cur[k];
     }
     cur[keys[keys.length - 1]] = value;
-    this._emitConfig(next);
   }
 
   /* ============ handlers eventi dai pannelli ============ */
@@ -101,14 +109,7 @@ export class BubbleRoomEditor extends LitElement {
     // 1) applica il cambiamento
     const prev = this.config;
     const next = structuredClone(prev || {});
-    const parts = String(prop).split('.');
-    let cur = next;
-    for (let i = 0; i < parts.length - 1; i++) {
-      const k = parts[i];
-      if (typeof cur[k] !== 'object' || cur[k] === null) cur[k] = {};
-      cur = cur[k];
-    }
-    cur[parts[parts.length - 1]] = val;
+    this._applyPath(next, prop, val);
 
     // 2) autodiscovery se l'evento riguarda area o sezioni auto
     const isArea = prop === 'area';
@@ -132,14 +133,7 @@ export class BubbleRoomEditor extends LitElement {
     // 1) applica
     const prev = this.config;
     const next = structuredClone(prev || {});
-    const parts = String(path).split('.');
-    let cur = next;
-    for (let i = 0; i < parts.length - 1; i++) {
-      const k = parts[i];
-      if (typeof cur[k] !== 'object' || cur[k] === null) cur[k] = {};
-      cur = cur[k];
-    }
-    cur[parts[parts.length - 1]] = value;
+    this._applyPath(next, path, value);
 
     // 2) autodiscovery se area / sezioni
     const isArea = path === 'area';
