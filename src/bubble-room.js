@@ -296,7 +296,7 @@ export class BubbleRoom extends LitElement {
     const textColorActive   = this.config.colors?.room?.text_active   ?? '#ffffff';
     const textColorInactive = this.config.colors?.room?.text_inactive ?? 'rgba(255,255,255,0.65)';
 
-    // Card background: radial gradient blob nell'area icona (in basso a sinistra)
+    // Card background: blob radiale + variabili accent per un look più profondo.
     const cardBgEnabled = this.config?.card_background?.enabled ?? true;
     let cardBgStyle = '';
     if (cardBgEnabled) {
@@ -319,7 +319,10 @@ export class BubbleRoom extends LitElement {
         alpha = isActive ? 0.22 : 0.12;
       }
       if (r !== undefined) {
-        cardBgStyle = `background:rgba(${r},${g},${b},${alpha});`;
+        cardBgStyle = [
+          `--bubble-room-accent-rgb:${r},${g},${b}`,
+          `--bubble-room-accent-alpha:${alpha}`,
+        ].join(';');
       }
     }
 
@@ -327,11 +330,18 @@ export class BubbleRoom extends LitElement {
     const mainEntity = this.config?.entities?.presence?.entity || '';
     const tapAct     = this.config?.tap_action  || { action: 'more-info' };
     const holdAct    = this.config?.hold_action || { action: 'none' };
+    const hasSidebar = subbuttons.length > 0;
+    const roomLabel = [this.config.name, this.config.area]
+      .flat()
+      .filter(Boolean)
+      .join(' - ') || 'Bubble Room';
 
     return html`
       <div
-        class="bubble-room-grid ${layout}"
+        class="bubble-room-grid ${layout} ${isActive ? 'is-active' : 'is-inactive'} ${hasSidebar ? '' : 'no-sidebar'}"
         style="${cardBgStyle}"
+        role="group"
+        aria-label="${roomLabel}"
         @hass-action=${this._onHassAction}
       >
         <div class="main-area">
@@ -477,11 +487,30 @@ export class BubbleRoom extends LitElement {
   /* ───────────── stili originali ───────────── */
   static styles = css`
     :host { display:block; height:100%; box-sizing:border-box; }
-    .bubble-room-grid { display:grid; grid-template-columns:2fr 0.82fr;
+    .bubble-room-grid { display:grid; grid-template-columns:minmax(0, 2fr) minmax(44px, 0.82fr);
       gap: 0 6px;
       width:100%; height:100%; box-sizing:border-box; padding: 0 8px 6px 0;
       overflow: hidden;
-      border-radius: var(--ha-card-border-radius, 12px); }
+      position: relative;
+      isolation: isolate;
+      border-radius: var(--ha-card-border-radius, 12px);
+      background:
+        radial-gradient(
+          circle at 20% 82%,
+          rgba(var(--bubble-room-accent-rgb, 33, 223, 115), var(--bubble-room-accent-alpha, 0.16)) 0%,
+          rgba(var(--bubble-room-accent-rgb, 33, 223, 115), calc(var(--bubble-room-accent-alpha, 0.16) * 0.55)) 28%,
+          transparent 62%
+        );
+      transition: background 0.35s ease, filter 0.35s ease; }
+    .bubble-room-grid::before { content:""; position:absolute; inset:0; z-index:-1;
+      pointer-events:none;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.10), transparent 38%),
+        radial-gradient(circle at 86% 10%, rgba(255,255,255,0.08), transparent 30%);
+      opacity: 0.72; }
+    .bubble-room-grid.is-inactive { filter: saturate(0.82); }
+    .bubble-room-grid.no-sidebar { grid-template-columns:minmax(0, 1fr); padding-right:0; }
+    .bubble-room-grid.no-sidebar .sidebar { display:none; }
     .main-area { display:grid; height:100%; min-height:0; box-sizing:border-box; }
     .row1 { display:grid; min-height:0; box-sizing:border-box;
       grid-template-columns:1fr; }
@@ -503,6 +532,11 @@ export class BubbleRoom extends LitElement {
     .bubble-room-grid.wide .main-area { grid-template-rows:1fr 2fr; }
     .bubble-room-grid.wide .row1      { grid-template-rows:auto 1fr; }
     .bubble-room-grid.wide .row2      { grid-template-columns:2fr 1fr; }
+
+    @media (max-width: 420px) {
+      .bubble-room-grid { grid-template-columns:minmax(0, 1fr) minmax(38px, 0.34fr); gap:0 4px; padding-right:4px; }
+      .bubble-room-grid.wide .row2 { grid-template-columns:1fr 0fr; }
+    }
   `;
 }
 
