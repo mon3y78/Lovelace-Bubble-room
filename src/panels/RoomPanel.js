@@ -211,7 +211,12 @@ export class RoomPanel extends LitElement {
     // 🔁 Applica autodiscovery su cambio area / primo load se area è valorizzata
     if (this.config?.area || this.config?.area_id) {
       // 'area' è un trigger "globale": l'helper applica AD a tutte le sezioni abilitate
-      maybeAutoDiscover(this.hass, this.config, 'area', false);
+      const next = maybeAutoDiscover(this.hass, this.config, 'area', false);
+      if (next && next !== this.config) {
+        this.dispatchEvent(new CustomEvent('config-changed', {
+          detail: { config: next }, bubbles: true, composed: true
+        }));
+      }
     }
   
     // 🔸 Pre‑warm cache icone MDI — idempotente
