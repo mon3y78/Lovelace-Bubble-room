@@ -1,9 +1,9 @@
 // src/panels/CameraPanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor } from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js';
 import { localize } from '../helpers/i18n.js';
+import { sharedPanelStyles } from './shared-styles.js';
 
 export class CameraPanel extends LitElement {
   static properties = {
@@ -35,16 +35,6 @@ export class CameraPanel extends LitElement {
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
       this._syncingFromConfig = true;
-
-      // 🔎 applica autodiscovery (usando il valore di ritorno)
-      if (this.config?.area || this.config?.area_id) {
-        const next = maybeAutoDiscover(this.hass, this.config, 'area', false);
-        if (next && next !== this.config) {
-          this.dispatchEvent(new CustomEvent('config-changed', {
-            detail: { config: next }, bubbles: true, composed: true
-          }));
-        }
-      }
 
       // sync stato locale da config
       this._entity = this.config?.entities?.camera?.entity || '';
@@ -90,7 +80,9 @@ export class CameraPanel extends LitElement {
     }
   }
 
-  static styles = css`
+  static styles = [
+    sharedPanelStyles,
+    css`
     :host { display: block; }
     .glass-panel {
       margin: 0 !important; width: 100%; box-sizing: border-box;
@@ -128,7 +120,8 @@ export class CameraPanel extends LitElement {
       display:block; margin: 20px auto; font-size:1.15rem; font-weight:700;
       box-shadow: 0 2px 24px #ff4c6a44;
     }
-  `;
+    `,
+  ];
 
   render() {
     const autoDisc = this.config?.auto_discovery_sections?.camera ?? false;
@@ -152,17 +145,28 @@ export class CameraPanel extends LitElement {
 
         <div class="input-group">
           <label>${t('panel.camera.entity')}</label>
-          <ha-selector
-            .hass=${this.hass}
-            .value=${this._entity}
-            .selector=${
-              this._candidates.length
-                ? { entity: { include_entities: this._candidates, multiple: false } }
-                : { entity: { domain: 'camera' } }
-            }
-            allow-custom-entity
-            @value-changed=${e => this._onEntity(e.detail.value)}
-          ></ha-selector>
+          <div class="clearable-field">
+            <ha-selector
+              .hass=${this.hass}
+              .value=${this._entity}
+              .selector=${
+                this._candidates.length
+                  ? { entity: { include_entities: this._candidates, multiple: false } }
+                  : { entity: { domain: 'camera' } }
+              }
+              allow-custom-entity
+              @value-changed=${e => this._onEntity(e.detail.value)}
+            ></ha-selector>
+            ${this._entity ? html`
+              <button
+                class="field-clear-x"
+                type="button"
+                @click=${e => this._clearEntity(e)}
+                title=${t('panel.camera.clear_entity', {}, t('panel.sensor.clear_entity'))}>
+                ×
+              </button>
+            ` : ''}
+          </div>
         </div>
 
         <div class="input-group">
@@ -177,17 +181,28 @@ export class CameraPanel extends LitElement {
         
         <div class="input-group">
           <label>${t('panel.camera.presence')}</label>
-          <ha-selector
-            .hass=${this.hass}
-            .value=${this._presence}
-            .selector=${
-              this._presenceCandidates.length
-                ? { entity: { include_entities: this._presenceCandidates, multiple: false } }
-                : { entity: { domain: 'binary_sensor' } }
-            }
-            allow-custom-entity
-            @value-changed=${e => this._onPresence(e.detail.value)}
-          ></ha-selector>
+          <div class="clearable-field">
+            <ha-selector
+              .hass=${this.hass}
+              .value=${this._presence}
+              .selector=${
+                this._presenceCandidates.length
+                  ? { entity: { include_entities: this._presenceCandidates, multiple: false } }
+                  : { entity: { domain: 'binary_sensor' } }
+              }
+              allow-custom-entity
+              @value-changed=${e => this._onPresence(e.detail.value)}
+            ></ha-selector>
+            ${this._presence ? html`
+              <button
+                class="field-clear-x"
+                type="button"
+                @click=${e => this._clearPresence(e)}
+                title=${t('panel.camera.clear_presence', {}, t('panel.sensor.clear_entity'))}>
+                ×
+              </button>
+            ` : ''}
+          </div>
         </div>
 
 
@@ -246,6 +261,16 @@ export class CameraPanel extends LitElement {
       bubbles: true,
       composed: true,
     }));
+  }
+  _clearEntity(e) {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+    this._onEntity('');
+  }
+  _clearPresence(e) {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+    this._onPresence('');
   }
   _onIcon(icon) {
     this._icon = icon || '';

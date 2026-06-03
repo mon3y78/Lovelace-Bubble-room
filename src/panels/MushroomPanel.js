@@ -1,6 +1,5 @@
 // src/panels/MushroomPanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import {
   candidatesFor,
   COMMON_CATS,
@@ -47,17 +46,7 @@ export class MushroomPanel extends LitElement {
 
     this._syncingFromConfig = true;
 
-    // 1) Autodiscovery area-based (applica il valore di ritorno)
-    if (this.config?.area || this.config?.area_id) {
-      const next = maybeAutoDiscover(this.hass, this.config, 'area', false);
-      if (next && next !== this.config) {
-        this.dispatchEvent(new CustomEvent('config-changed', {
-          detail: { config: next }, bubbles: true, composed: true
-        }));
-      }
-    }
-
-    // 2) sincronizza filtri da config (se presenti)
+    // 1) sincronizza filtri da config (se presenti)
     const cfgFilters = this.config?.mushroom_filters;
     if (Array.isArray(cfgFilters) && cfgFilters.length === 5) {
       this._filters = cfgFilters.map(f => Array.isArray(f) ? [...f] : [...this._ALL_CATS]);
@@ -266,13 +255,24 @@ export class MushroomPanel extends LitElement {
             <!-- Entity -->
             <div class="input-group">
               <label>${t('panel.mushroom.entity')}</label>
-              <ha-selector
-                .hass=${this.hass}
-                .value=${ent}
-                .selector=${{ entity: { include_entities: cands, multiple: false } }}
-                allow-custom-entity
-                @value-changed=${e => this._onEntity(i, e.detail.value)}
-              ></ha-selector>
+              <div class="clearable-field">
+                <ha-selector
+                  .hass=${this.hass}
+                  .value=${ent}
+                  .selector=${{ entity: { include_entities: cands, multiple: false } }}
+                  allow-custom-entity
+                  @value-changed=${e => this._onEntity(i, e.detail.value)}
+                ></ha-selector>
+                ${ent ? html`
+                  <button
+                    class="field-clear-x"
+                    type="button"
+                    @click=${e => this._clearEntity(e, i)}
+                    title=${t('panel.mushroom.clear_entity', {}, t('panel.sensor.clear_entity'))}>
+                    ×
+                  </button>
+                ` : ''}
+              </div>
             </div>
 
             <!-- Icon -->
@@ -441,21 +441,30 @@ export class MushroomPanel extends LitElement {
   }
 
   _onEntity(i, ent) {
-    this._entities[i] = ent;
+    this._entities[i] = ent || '';
 
     if (!this._syncingFromConfig) {
       // salva l’entità
       this.dispatchEvent(new CustomEvent('panel-changed', {
-        detail: { prop: `entities.mushroom${i+1}.entity`, val: ent },
+        detail: { prop: `entities.mushroom${i+1}.entity`, val: this._entities[i] },
         bubbles: true, composed: true,
       }));
+
+      if (!this._entities[i]) {
+        this._icons[i] = '';
+        this.dispatchEvent(new CustomEvent('panel-changed', {
+          detail: { prop: `entities.mushroom${i+1}.icon`, val: '' },
+          bubbles: true, composed: true,
+        }));
+        return;
+      }
 
       // se l’icona è vuota → imposta subito auto-icona (stato → fallback)
       const currentIcon = this.config?.entities?.[`mushroom${i+1}`]?.icon || '';
       if (!currentIcon) {
-        const st = this.hass?.states?.[ent];
+        const st = this.hass?.states?.[this._entities[i]];
         const iconFromState = st?.attributes?.icon;
-        const autoIco = iconFromState || resolveEntityIcon(ent, this.hass);
+        const autoIco = iconFromState || resolveEntityIcon(this._entities[i], this.hass);
         if (autoIco) {
           this._icons[i] = autoIco;
           this.dispatchEvent(new CustomEvent('panel-changed', {
@@ -465,6 +474,12 @@ export class MushroomPanel extends LitElement {
         }
       }
     }
+  }
+
+  _clearEntity(e, i) {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+    this._onEntity(i, '');
   }
 
   _onIcon(i, icon) {

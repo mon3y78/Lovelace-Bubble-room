@@ -1,6 +1,5 @@
 // src/panels/RoomPanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor }     from '../helpers/entity-filters.js';
 import { resolveEntityIcon } from '../helpers/icon-mapping.js'; // path corretto
 import { IconCache }         from '../helpers/icon-cache.js';
@@ -86,6 +85,36 @@ export class RoomPanel extends LitElement {
     }
     .input-group ha-selector::part(combobox) {
       min-height: 56px;
+    }
+    .clearable-field {
+      position: relative;
+    }
+    .clearable-field ha-selector {
+      width: 100%;
+      min-width: 0;
+    }
+    .field-clear-x {
+      position: absolute;
+      right: 36px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 34px;
+      height: 34px;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.74);
+      font-size: 30px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 2;
+    }
+    .field-clear-x:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.10);
     }
 
     .mini-pill {
@@ -208,17 +237,6 @@ export class RoomPanel extends LitElement {
   
     this._syncingFromConfig = true;
   
-    // 🔁 Applica autodiscovery su cambio area / primo load se area è valorizzata
-    if (this.config?.area || this.config?.area_id) {
-      // 'area' è un trigger "globale": l'helper applica AD a tutte le sezioni abilitate
-      const next = maybeAutoDiscover(this.hass, this.config, 'area', false);
-      if (next && next !== this.config) {
-        this.dispatchEvent(new CustomEvent('config-changed', {
-          detail: { config: next }, bubbles: true, composed: true
-        }));
-      }
-    }
-  
     // 🔸 Pre‑warm cache icone MDI — idempotente
     IconCache.warm(this.hass);
   
@@ -274,6 +292,12 @@ export class RoomPanel extends LitElement {
       if (autoIcon) this._fire('icon', autoIcon);
     }
   };
+
+  _clearPresenceEntity(e) {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+    this._onPresenceEntityChange('');
+  }
 
   // 🔹 Cambio area con auto-discovery attivo solo alla prima selezione
   _onAreaChange(v) {
@@ -427,13 +451,24 @@ export class RoomPanel extends LitElement {
             <!-- Presence entity -->
             <div class="input-group">
               <label>${t('panel.room.presence_id')}</label>
-              <ha-selector
-                .hass=${this.hass}
-                .value=${presEntity}
-                .selector=${{ entity: { include_entities: presCandidates, multiple: false } }}
-                allow-custom-entity
-                @value-changed=${e => this._onPresenceEntityChange(e.detail.value)}
-              ></ha-selector>
+              <div class="clearable-field">
+                <ha-selector
+                  .hass=${this.hass}
+                  .value=${presEntity}
+                  .selector=${{ entity: { include_entities: presCandidates, multiple: false } }}
+                  allow-custom-entity
+                  @value-changed=${e => this._onPresenceEntityChange(e.detail.value)}
+                ></ha-selector>
+                ${presEntity ? html`
+                  <button
+                    class="field-clear-x"
+                    type="button"
+                    @click=${e => this._clearPresenceEntity(e)}
+                    title=${t('panel.room.clear_presence', {}, t('panel.sensor.clear_entity'))}>
+                    ×
+                  </button>
+                ` : ''}
+              </div>
             </div>
       
             <!-- Actions -->

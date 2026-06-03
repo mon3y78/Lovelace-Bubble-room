@@ -46,7 +46,7 @@ function testAutofillAllEnabledSections() {
 
   const result = maybeAutoDiscover(baseHass, config, undefined);
   assert.equal(result.entities.presence.entity, 'binary_sensor.motion');
-  assert.equal(result.entities.sensor1.entity, 'sensor.temp');
+  assert.equal(result.entities.sensor1, undefined);
   assert.equal(result.entities.mushroom1.entity, 'binary_sensor.motion');
   assert.equal(result.entities.climate.entity, 'climate.home');
   assert.equal(result.entities.camera.entity, 'camera.front');
@@ -94,7 +94,7 @@ function testAreaScopedAutofill() {
   };
 
   const result = maybeAutoDiscover(baseHass, config, 'area');
-  assert.equal(result.entities.sensor1.entity, 'sensor.office_temp');
+  assert.equal(result.entities.sensor1, undefined);
   assert.equal(result.entities.presence.entity, 'binary_sensor.office_motion');
   assert.equal(result.subbuttons[0].entity_id, 'binary_sensor.office_motion');
   assert.equal(result.subbuttons[1].entity_id, 'switch.fan');

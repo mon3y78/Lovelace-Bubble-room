@@ -1,6 +1,5 @@
 // src/panels/SubButtonPanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import {
   candidatesFor,
   COMMON_CATS,
@@ -39,16 +38,6 @@ export class SubButtonPanel extends LitElement {
     if (!changed.has('config') && !changed.has('hass')) return;
 
     this._syncingFromConfig = true;
-
-    // Autodiscovery area-aware (non muta la config localmente)
-    if (this.config?.area || this.config?.area_id) {
-      const next = maybeAutoDiscover(this.hass, this.config, 'area', false);
-      if (next && next !== this.config) {
-        this.dispatchEvent(new CustomEvent('config-changed', {
-          detail: { config: next }, bubbles: true, composed: true,
-        }));
-      }
-    }
 
     // Non mutare mai this.config qui. Assicura però la struttura letta.
     const list = Array.isArray(this.config?.subbuttons) ? this.config.subbuttons : [];
@@ -227,13 +216,24 @@ export class SubButtonPanel extends LitElement {
 
             <div class="input-group">
               <label>${t('panel.subbutton.entity')}</label>
-              <ha-selector
-                .hass=${this.hass}
-                .value=${ent}
-                .selector=${{ entity: { include_entities: cands, multiple: false } }}
-                allow-custom-entity
-                @value-changed=${e => this._onEntity(i, e.detail.value)}
-              ></ha-selector>
+              <div class="clearable-field">
+                <ha-selector
+                  .hass=${this.hass}
+                  .value=${ent}
+                  .selector=${{ entity: { include_entities: cands, multiple: false } }}
+                  allow-custom-entity
+                  @value-changed=${e => this._onEntity(i, e.detail.value)}
+                ></ha-selector>
+                ${ent ? html`
+                  <button
+                    class="field-clear-x"
+                    type="button"
+                    @click=${e => this._clearEntity(e, i)}
+                    title=${t('panel.subbutton.clear_entity', {}, t('panel.sensor.clear_entity'))}>
+                    ×
+                  </button>
+                ` : ''}
+              </div>
             </div>
 
             <div class="input-group">
@@ -392,6 +392,11 @@ export class SubButtonPanel extends LitElement {
     if (autoIcon) {
       this._emit(`subbuttons.${i}.icon`, autoIcon);
     }
+  }
+  _clearEntity(e, i) {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+    this._onEntity(i, '');
   }
   _onIcon(i, icon) {
     if (this._syncingFromConfig) return;
