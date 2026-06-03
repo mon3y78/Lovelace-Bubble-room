@@ -109,6 +109,37 @@ export const sharedPanelStyles = css`
     min-height: 40px;
   }
 
+  .clearable-field {
+    position: relative;
+  }
+  .clearable-field ha-selector {
+    width: 100%;
+    min-width: 0;
+  }
+  .field-clear-x {
+    position: absolute;
+    right: 36px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.74);
+    font-size: 30px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .field-clear-x:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.10);
+  }
+
   .filter-row {
     display: flex;
     align-items: center;

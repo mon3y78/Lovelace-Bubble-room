@@ -82,9 +82,24 @@ export const SENSOR_TYPE_MAP = {
   // —— STATUS / OTHER ——
   battery: { label: 'Battery', emoji: '🔋', units: ['%'] },
   signal_strength: { label: 'Signal Strength', emoji: '📶', units: ['dBm'] },
+  enum: { label: 'Status', emoji: 'ℹ️', units: [''] },
+  problem: { label: 'Problem', emoji: '⚠️', units: [''] },
   
   // Fallback generic
   _fallback: { label: 'Other', emoji: '❓', units: [''] },
+};
+
+const STATE_EMOJI_MAP = {
+  ok: '✅',
+  idle: '💤',
+  standby: '💤',
+  unavailable: '⚠️',
+  unknown: '❔',
+  problem: '⚠️',
+  error: '⚠️',
+  warning: '⚠️',
+  on: '●',
+  off: '○',
 };
 
 // —— Utility functions mantenute per compat legacy ——
@@ -96,6 +111,15 @@ export function formatByDeviceClass(deviceClass, value, unit) {
 
 export function defaultEmoji(deviceClass) {
   return (SENSOR_TYPE_MAP[deviceClass]?.emoji) ?? SENSOR_TYPE_MAP._fallback.emoji;
+}
+
+export function emojiForSensor(deviceClass, value) {
+  const normalized = String(value ?? '').trim().toLowerCase();
+  if (deviceClass === 'enum' || deviceClass === 'problem' || !deviceClass) {
+    return STATE_EMOJI_MAP[normalized] || SENSOR_TYPE_MAP[deviceClass]?.emoji || SENSOR_TYPE_MAP._fallback.emoji;
+  }
+
+  return SENSOR_TYPE_MAP[deviceClass]?.emoji || STATE_EMOJI_MAP[normalized] || SENSOR_TYPE_MAP._fallback.emoji;
 }
 
 export function defaultUnit(deviceClass) {

@@ -275,7 +275,15 @@ export function resetSensors(config) {
   const entities = { ...(config.entities || {}) };
   ['sensor1','sensor2','sensor3','sensor4','sensor5','sensor6','sensor7','sensor8']
     .forEach((k) => delete entities[k]);
-  return { ...config, entities };
+  const autoDiscoverySections = { ...(config.auto_discovery_sections || {}) };
+  delete autoDiscoverySections.sensor;
+
+  const next = { ...config, entities, auto_discovery_sections: autoDiscoverySections };
+  delete next.sensors;
+  delete next.sensor_filters;
+  delete next.sensor_icons;
+  if (!Object.keys(autoDiscoverySections).length) delete next.auto_discovery_sections;
+  return next;
 }
 
 export function resetMushrooms(config) {
@@ -339,15 +347,12 @@ export function maybeAutoDiscover(hass, config, changedProp, debug = false) {
 
   if (shouldRunAll) {
     apply(ad.presence, autoFillPresence);
-    apply(ad.sensor, autoFillSensors);
     apply(ad.mushroom, autoFillMushrooms);
     apply(ad.subbutton, autoFillSubButtons);
     apply(ad.climate, autoFillClimate);
     apply(ad.camera, autoFillCamera);
   } else if (section === 'presence') {
     apply(ad.presence, autoFillPresence);
-  } else if (section === 'sensor') {
-    apply(ad.sensor, autoFillSensors);
   } else if (section === 'mushroom') {
     apply(ad.mushroom, autoFillMushrooms);
   } else if (section === 'subbutton') {

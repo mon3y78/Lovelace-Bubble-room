@@ -34,10 +34,13 @@ const STRINGS = {
 
     'panel.sensor.title': '🧭 Sensors',
     'panel.sensor.auto_discover': '🪄 Auto-discover Sensors',
+    'panel.sensor.show_icons': 'Show sensor icons',
     'panel.sensor.sensor_item': 'Sensor {index}',
     'panel.sensor.filter_category': 'Filter category:',
     'panel.sensor.clear_filter': 'Clear filter category',
     'panel.sensor.clear': 'Clear',
+    'panel.sensor.clear_entity': 'Remove this sensor',
+    'panel.sensor.remove': 'Remove',
     'panel.sensor.entity': 'Entity:',
     'panel.sensor.reset': '🧹 Reset Sensors',
 
@@ -157,10 +160,13 @@ const STRINGS = {
 
     'panel.sensor.title': '🧭 Sensori',
     'panel.sensor.auto_discover': '🪄 Autodiscovery sensori',
+    'panel.sensor.show_icons': 'Mostra icone sensori',
     'panel.sensor.sensor_item': 'Sensore {index}',
     'panel.sensor.filter_category': 'Categoria filtro:',
     'panel.sensor.clear_filter': 'Pulisci categoria filtro',
     'panel.sensor.clear': 'Pulisci',
+    'panel.sensor.clear_entity': 'Rimuovi questo sensore',
+    'panel.sensor.remove': 'Rimuovi',
     'panel.sensor.entity': 'Entità:',
     'panel.sensor.reset': '🧹 Reset sensori',
 
@@ -285,10 +291,13 @@ const STRINGS = {
 
     'panel.sensor.title': '🧭 Sensores',
     'panel.sensor.auto_discover': '🪄 Autodescubrimiento de sensores',
+    'panel.sensor.show_icons': 'Mostrar iconos de sensores',
     'panel.sensor.sensor_item': 'Sensor {index}',
     'panel.sensor.filter_category': 'Categoría de filtro:',
     'panel.sensor.clear_filter': 'Limpiar categoría de filtro',
     'panel.sensor.clear': 'Limpiar',
+    'panel.sensor.clear_entity': 'Quitar este sensor',
+    'panel.sensor.remove': 'Quitar',
     'panel.sensor.entity': 'Entidad:',
     'panel.sensor.reset': '🧹 Reiniciar sensores',
 
@@ -408,10 +417,13 @@ const STRINGS = {
 
     'panel.sensor.title': '🧭 Capteurs',
     'panel.sensor.auto_discover': '🪄 Découverte automatique des capteurs',
+    'panel.sensor.show_icons': 'Afficher les icônes des capteurs',
     'panel.sensor.sensor_item': 'Capteur {index}',
     'panel.sensor.filter_category': 'Catégorie de filtre :',
     'panel.sensor.clear_filter': 'Effacer la catégorie de filtre',
     'panel.sensor.clear': 'Effacer',
+    'panel.sensor.clear_entity': 'Retirer ce capteur',
+    'panel.sensor.remove': 'Retirer',
     'panel.sensor.entity': 'Entité :',
     'panel.sensor.reset': '🧹 Réinitialiser les capteurs',
 
@@ -531,10 +543,13 @@ const STRINGS = {
 
     'panel.sensor.title': '🧭 Sensoren',
     'panel.sensor.auto_discover': '🪄 Automatische Sensorerkennung',
+    'panel.sensor.show_icons': 'Sensor-Icons anzeigen',
     'panel.sensor.sensor_item': 'Sensor {index}',
     'panel.sensor.filter_category': 'Filterkategorie:',
     'panel.sensor.clear_filter': 'Filterkategorie löschen',
     'panel.sensor.clear': 'Löschen',
+    'panel.sensor.clear_entity': 'Diesen Sensor entfernen',
+    'panel.sensor.remove': 'Entfernen',
     'panel.sensor.entity': 'Entität:',
     'panel.sensor.reset': '🧹 Sensoren zurücksetzen',
 
@@ -654,10 +669,13 @@ const STRINGS = {
 
     'panel.sensor.title': '🧭 Sensores',
     'panel.sensor.auto_discover': '🪄 Autodescoberta de sensores',
+    'panel.sensor.show_icons': 'Mostrar ícones dos sensores',
     'panel.sensor.sensor_item': 'Sensor {index}',
     'panel.sensor.filter_category': 'Categoria de filtro:',
     'panel.sensor.clear_filter': 'Limpar categoria de filtro',
     'panel.sensor.clear': 'Limpar',
+    'panel.sensor.clear_entity': 'Remover este sensor',
+    'panel.sensor.remove': 'Remover',
     'panel.sensor.entity': 'Entidade:',
     'panel.sensor.reset': '🧹 Redefinir sensores',
 

@@ -75,15 +75,36 @@ export class BubbleRoom extends LitElement {
   /* ───────────── ciclo vita ───────────── */
   connectedCallback() {
     super.connectedCallback();
+    this._applySectionGapOverride();
     this._resizeObs = new ResizeObserver(() => this.requestUpdate());
   }
   firstUpdated() {
+    this._applySectionGapOverride();
     const area = this.shadowRoot?.querySelector('.icon-mushroom-area');
     area && this._resizeObs.observe(area);
   }
   disconnectedCallback() {
     this._resizeObs?.disconnect();
     super.disconnectedCallback();
+  }
+
+  _applySectionGapOverride() {
+    const root = this.getRootNode?.();
+    if (!root?.host || root.host.localName !== 'hui-grid-section') return;
+    if (root.querySelector?.('style[data-bubble-room-section-gap]')) return;
+
+    const style = document.createElement('style');
+    style.dataset.bubbleRoomSectionGap = 'true';
+    style.textContent = `
+      :host {
+        --column-gap: 2px !important;
+        --row-gap: 2px !important;
+        gap: 2px !important;
+        row-gap: 2px !important;
+        column-gap: 2px !important;
+      }
+    `;
+    root.appendChild(style);
   }
 
   /** riclona se l’utente modifica la card dall’editor */
@@ -144,17 +165,17 @@ export class BubbleRoom extends LitElement {
   /* ───────────── sensori ───────────── */
   _getSensors() {
     const entities = this._entities || {};
+    const fullAlpha = (color) => {
+      if (typeof color !== 'string') return color;
+      const m = /rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*[\d.]+\s*\)/.exec(color);
+      return m ? `rgb(${m[1]},${m[2]},${m[3]})` : color;
+    };
     const sensorColorActive =
-      this.config.colors?.sensor?.sensor_active ??
-      this.config.colors?.room?.text_active ??
+      fullAlpha(this.config.colors?.sensor?.sensor_active) ??
+      this.config.colors?.room?.icon_active ??
       '#21df73';
 
-    const sensorColorInactive =
-      this.config.colors?.sensor?.sensor_inactive ??
-      this.config.colors?.room?.text_inactive ??
-      '#173c16';
-
-    const color = this._isRoomActive() ? sensorColorActive : sensorColorInactive;
+    const color = sensorColorActive;
 
     const result = [];
     for (let i = 1; i <= 6; i++) {
@@ -335,10 +356,11 @@ export class BubbleRoom extends LitElement {
       .flat()
       .filter(Boolean)
       .join(' - ') || 'Bubble Room';
+    const sensorIconsEnabled = this.config?.sensor_icons?.enabled ?? false;
 
     return html`
       <div
-        class="bubble-room-grid ${layout} ${isActive ? 'is-active' : 'is-inactive'} ${hasSidebar ? '' : 'no-sidebar'}"
+        class="bubble-room-grid ${layout} ${isActive ? 'is-active' : 'is-inactive'} ${hasSidebar ? '' : 'no-sidebar'} ${sensorIconsEnabled ? 'sensor-icons' : ''}"
         style="${cardBgStyle}"
         role="group"
         aria-label="${roomLabel}"
@@ -349,7 +371,8 @@ export class BubbleRoom extends LitElement {
             <bubble-sensor
               .sensors="${this._getSensors()}"
               .preset="${subbuttonMode}"
-              style="--bubble-sensor-active-color:${isActive ? textColorActive : textColorInactive}"
+              .showIcons="${sensorIconsEnabled}"
+              style="--bubble-sensor-active-color:${iconColorActive}"
             ></bubble-sensor>
 
             <div class="name-placeholder" id="nameContainer">
@@ -488,13 +511,28 @@ export class BubbleRoom extends LitElement {
   static styles = css`
     :host { display:block; height:100%; box-sizing:border-box; }
     .bubble-room-grid { display:grid; grid-template-columns:minmax(0, 2fr) minmax(44px, 0.82fr);
-      gap: 0 6px;
-      width:100%; height:100%; box-sizing:border-box; padding: 0 8px 6px 0;
+      gap: 0;
+      width:100%; height:100%; box-sizing:border-box; padding: 0;
       overflow: hidden;
       position: relative;
       isolation: isolate;
       border-radius: var(--ha-card-border-radius, 12px);
+      box-shadow:
+        inset 0 0 7px rgba(255,255,255,0.08),
+        inset 0 0 12px rgba(var(--bubble-room-accent-rgb, 33, 223, 115), 0.14),
+        inset 0 1px 3px rgba(255,255,255,0.08),
+        inset 0 -1px 6px rgba(0,0,0,0.22),
+        0 0 7px rgba(var(--bubble-room-accent-rgb, 33, 223, 115), 0.09),
+        0 2px 12px rgba(0,0,0,0.18);
+      backdrop-filter: blur(18px) saturate(1.55) brightness(1.04);
+      -webkit-backdrop-filter: blur(18px) saturate(1.55) brightness(1.04);
       background:
+        linear-gradient(
+          135deg,
+          rgba(255,255,255,0.12) 0%,
+          rgba(var(--bubble-room-accent-rgb, 33, 223, 115), 0.075) 38%,
+          rgba(0,0,0,0.12) 100%
+        ),
         radial-gradient(
           circle at 20% 82%,
           rgba(var(--bubble-room-accent-rgb, 33, 223, 115), var(--bubble-room-accent-alpha, 0.16)) 0%,
@@ -502,21 +540,24 @@ export class BubbleRoom extends LitElement {
           transparent 62%
         );
       transition: background 0.35s ease, filter 0.35s ease; }
-    .bubble-room-grid::before { content:""; position:absolute; inset:0; z-index:-1;
+    .bubble-room-grid::before { content:""; position:absolute; inset:0; z-index:0;
       pointer-events:none;
       background:
-        linear-gradient(135deg, rgba(255,255,255,0.10), transparent 38%),
-        radial-gradient(circle at 86% 10%, rgba(255,255,255,0.08), transparent 30%);
-      opacity: 0.72; }
+        linear-gradient(145deg, rgba(255,255,255,0.22), transparent 26%, rgba(255,255,255,0.05) 52%, transparent 72%),
+        radial-gradient(circle at 86% 8%, rgba(255,255,255,0.16), transparent 26%),
+        radial-gradient(circle at 12% 92%, rgba(var(--bubble-room-accent-rgb, 33, 223, 115), 0.16), transparent 34%);
+      opacity: 0.58; }
+    .main-area,
+    .sidebar { position:relative; z-index:1; }
     .bubble-room-grid.is-inactive { filter: saturate(0.82); }
-    .bubble-room-grid.no-sidebar { grid-template-columns:minmax(0, 1fr); padding-right:0; }
+    .bubble-room-grid.no-sidebar { grid-template-columns:minmax(0, 1fr); }
     .bubble-room-grid.no-sidebar .sidebar { display:none; }
     .main-area { display:grid; height:100%; min-height:0; box-sizing:border-box; }
     .row1 { display:grid; min-height:0; box-sizing:border-box;
       grid-template-columns:1fr; }
     .row2 { display:grid; height:100%; min-height:0; box-sizing:border-box;
     }
-    .name-placeholder { display:flex; align-items:center; justify-content:center;
+    .name-placeholder { display:flex; align-items:center; justify-content:flex-start;
       width:100%; max-width:100%; height:100%; box-sizing:border-box;
       overflow:visible; flex-shrink:1; background:transparent; }
     .icon-mushroom-area { box-sizing:border-box;
@@ -526,15 +567,17 @@ export class BubbleRoom extends LitElement {
       box-sizing:border-box; }
 
     .bubble-room-grid.tall .main-area { grid-template-rows:1fr 2fr; }
-    .bubble-room-grid.tall .row1      { grid-template-rows:auto 1fr; }
+    .bubble-room-grid.tall .row1      { grid-template-rows:max-content minmax(0, 1fr); }
     .bubble-room-grid.tall .row2      { grid-template-columns:1fr 0fr; }
+    .bubble-room-grid.sensor-icons.tall .row1 { grid-template-rows:max-content minmax(0, 1fr); }
 
     .bubble-room-grid.wide .main-area { grid-template-rows:1fr 2fr; }
-    .bubble-room-grid.wide .row1      { grid-template-rows:auto 1fr; }
+    .bubble-room-grid.wide .row1      { grid-template-rows:max-content minmax(0, 1fr); }
     .bubble-room-grid.wide .row2      { grid-template-columns:2fr 1fr; }
+    .bubble-room-grid.sensor-icons.wide .row1 { grid-template-rows:max-content minmax(0, 1fr); }
 
     @media (max-width: 420px) {
-      .bubble-room-grid { grid-template-columns:minmax(0, 1fr) minmax(38px, 0.34fr); gap:0 4px; padding-right:4px; }
+      .bubble-room-grid { grid-template-columns:minmax(0, 1fr) minmax(38px, 0.34fr); }
       .bubble-room-grid.wide .row2 { grid-template-columns:1fr 0fr; }
     }
   `;
