@@ -174,6 +174,34 @@ export class BubbleMushroom extends LitElement {
       box-shadow: none;
     }
 
+    :host([preset='soft-glass']) .mushroom-entity.is-active {
+      filter: saturate(1.05) brightness(1.04) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.16));
+      opacity: 1.0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    :host([preset='soft-glass']) .mushroom-entity.is-inactive {
+      filter: saturate(0.72) brightness(0.96);
+      opacity: 0.82;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    :host([preset='minimal']) .mushroom-entity.is-active {
+      filter: none;
+      opacity: 1;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    :host([preset='minimal']) .mushroom-entity.is-inactive {
+      filter: none;
+      opacity: 0.62;
+      background: transparent;
+      box-shadow: none;
+    }
+
     .mushroom-entity ha-icon { display: block; }
 
     /* ── animazioni ── */
@@ -264,6 +292,33 @@ export class BubbleMushroom extends LitElement {
       transform-origin: 50% 100%;
     }
 
+    :host([preset='soft-glass']) .mushroom-entity.is-active.anim-spin ha-icon {
+      animation: mushroom-spin 1.4s linear infinite;
+    }
+    :host([preset='soft-glass']) .mushroom-entity.is-active.anim-illuminate ha-icon {
+      animation: mushroom-illuminate 2.5s ease-in-out infinite;
+    }
+    :host([preset='soft-glass']) .mushroom-entity.is-active.anim-alarm ha-icon {
+      animation: mushroom-alarm 0.9s ease infinite;
+    }
+    :host([preset='soft-glass']) .mushroom-entity.is-active.anim-blink ha-icon {
+      animation: mushroom-blink 1.1s step-end infinite;
+    }
+    :host([preset='soft-glass']) .mushroom-entity.is-active.anim-beat ha-icon {
+      animation: mushroom-beat 1.3s ease-out infinite;
+    }
+    :host([preset='soft-glass']) .mushroom-entity.is-active.anim-scan ha-icon {
+      animation: mushroom-scan 5s ease-in-out infinite;
+      transform-origin: 90% 80%;
+    }
+    :host([preset='soft-glass']) .mushroom-entity.is-active.anim-shake ha-icon {
+      animation: mushroom-shake 400ms ease-in-out infinite;
+    }
+    :host([preset='soft-glass']) .mushroom-entity.is-active.anim-bounce ha-icon {
+      animation: mushroom-bounce 0.7s cubic-bezier(0.30, 2.40, 0.85, 2.50) infinite;
+      transform-origin: 50% 100%;
+    }
+
     @keyframes mushroom-ripple {
       from { transform: scale(0); opacity: 0.55; }
       to   { transform: scale(2.8); opacity: 0; }
@@ -282,26 +337,11 @@ export class BubbleMushroom extends LitElement {
     const { width, height } = this._containerSize;
     if (!width || !height) return html``;
 
-    // dimensione dinamica (mobile -> desktop)
-    const vpWidth  = window.innerWidth || width;
-    const kMobile  = 0.55;
-    const kDesktop = 0.25;
-    const wMobile  = 100;
-    const wDesktop = 200;
-
-    let k;
-    if (vpWidth <= wMobile)        k = kMobile;
-    else if (vpWidth >= wDesktop)  k = kDesktop;
-    else {
-      const t = (vpWidth - wMobile) / (wDesktop - wMobile);
-      k = kMobile + (kDesktop - kMobile) * t;
-    }
-
-    // lato effettivo per non “allargare” troppo
+    // Dimensione fluida dal container reale: mantiene la geometria storica senza soglie viewport.
     const Rmax  = 1.6;
     const sideW = Math.min(width, height * Rmax);
     const side  = 0.5 * (height + sideW);
-    const size  = side * k; // diametro standard bolla
+    const size  = side * 0.25; // diametro standard bolla
 
     // ellisse (border-radius: 0 60% 60% 0) con clamping
     const rxRaw  = width  * 0.60;
@@ -387,7 +427,7 @@ export class BubbleMushroom extends LitElement {
         const rippleKey = e.entity_id || e.kind || 'unknown';
         const isRippling = this._ripplingKeys.has(rippleKey);
         const animClass = e.active ? this._getAnimClass(e) : '';
-        const activeClass = this.preset === 'liquid-glass'
+        const activeClass = (this.preset === 'liquid-glass' || this.preset === 'soft-glass' || this.preset === 'minimal')
           ? (e.active ? `is-active ${animClass}` : 'is-inactive')
           : '';
 
@@ -416,4 +456,6 @@ export class BubbleMushroom extends LitElement {
   }
 }
 
-customElements.define('bubble-mushroom', BubbleMushroom);
+if (!customElements.get('bubble-mushroom')) {
+  customElements.define('bubble-mushroom', BubbleMushroom);
+}

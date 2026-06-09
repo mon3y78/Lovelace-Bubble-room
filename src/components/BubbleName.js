@@ -14,7 +14,7 @@ export class BubbleName extends LitElement {
 
   // stretchY derivato da preset — nessuno stato separato
   get stretchY() {
-    return this.preset === 'liquid-glass' ? 1.4 : 1.3;
+    return this.preset === 'liquid-glass' ? 1.18 : this.preset === 'soft-glass' ? 1.16 : 1.12;
   }
 
   constructor() {
@@ -27,29 +27,43 @@ export class BubbleName extends LitElement {
     this._lastScale = null;
     this._lastBox = null;
     this._scaling = false;
+    this._fontVersion = 0;
   }
 
   _ensureFonts() {
-    const root = this.renderRoot || this.shadowRoot;
-    if (!root) return;
-    if (root.querySelector('link[data-bubble-fonts="1"]')) return;
+    if (typeof document === 'undefined') return;
 
-    const pre = document.createElement('link');
-    pre.rel = 'preconnect';
-    pre.href = 'https://fonts.gstatic.com';
-    pre.crossOrigin = 'anonymous';
-    pre.setAttribute('data-bubble-fonts', '1');
-    root.appendChild(pre);
+    const head = document.head;
+    if (!head) return;
 
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href =
-      'https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Bebas+Neue&family=Barlow+Condensed:wght@900&family=Oswald:wght@700&display=swap';
-    link.setAttribute('data-bubble-fonts', '1');
-    link.addEventListener('load', () => {
-      requestAnimationFrame(() => this._scheduleScale());
-    });
-    root.appendChild(link);
+    if (!head.querySelector('link[rel="preconnect"][data-bubble-fonts="1"]')) {
+      const pre = document.createElement('link');
+      pre.rel = 'preconnect';
+      pre.href = 'https://fonts.gstatic.com';
+      pre.crossOrigin = 'anonymous';
+      pre.setAttribute('data-bubble-fonts', '1');
+      head.appendChild(pre);
+    }
+
+    if (!head.querySelector('link[rel="stylesheet"][data-bubble-fonts="1"]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href =
+        'https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Bebas+Neue&family=Barlow+Condensed:wght@900&family=Oswald:wght@700&display=swap';
+      link.setAttribute('data-bubble-fonts', '1');
+      link.addEventListener('load', () => {
+        this._fontVersion += 1;
+        this._lastScale = null;
+        requestAnimationFrame(() => this._scheduleScale());
+      });
+      head.appendChild(link);
+    }
+
+    document.fonts?.ready?.then(() => {
+      this._fontVersion += 1;
+      this._lastScale = null;
+      this._scheduleScale();
+    }).catch(() => {});
   }
 
   firstUpdated() {
@@ -118,17 +132,27 @@ export class BubbleName extends LitElement {
     const boxH = Math.max(0, Math.round(box.clientHeight));
     const stretchY = this.stretchY;
 
+    if (boxW <= 0 || boxH <= 0) {
+      requestAnimationFrame(() => this._scheduleScale());
+      return;
+    }
+
     if (
       this._lastScale &&
       this._lastScale.text === currentText &&
       this._lastScale.w === boxW &&
       this._lastScale.h === boxH &&
       this._lastScale.fitMode === this.fitMode &&
-      this._lastScale.preset === this.preset
-    ) return;
+      this._lastScale.preset === this.preset &&
+      this._lastScale.fontVersion === this._fontVersion
+    ) {
+      el.style.visibility = 'visible';
+      return;
+    }
 
     this._scaling = true;
 
+    el.style.visibility = 'hidden';
     el.style.fontSize = '10px';
     el.style.transform = 'none';
 
@@ -137,9 +161,11 @@ export class BubbleName extends LitElement {
 
     // Il binary search deve trovare la dimensione che, dopo scaleY(stretchY),
     // riempie esattamente il container in altezza.
-    const effectiveBoxH = stretchY > 1 ? Math.round(boxH / stretchY) : boxH;
+    const effectiveBoxH = stretchY > 1 ? Math.round((boxH * 0.88) / stretchY) : Math.round(boxH * 0.88);
 
     let targetPx;
+    const MIN_SCALE_X = 0.48;
+    const MAX_SCALE_X = 0.96;
 
     if (this.fitMode === 'height') {
       let lo = MIN, hi = MAX;
@@ -157,29 +183,38 @@ export class BubbleName extends LitElement {
         targetPx = Math.floor(targetPx * (boxW / sw));
       }
     } else {
-      // 'both': riempie larghezza E altezza (con compensazione stretchY)
+      // 'both': priorita all'altezza; i nomi lunghi vengono condensati in X.
       let lo = MIN, hi = MAX;
       for (let i = 0; i < 10 && lo <= hi; i++) {
         const mid = (lo + hi) >> 1;
         el.style.fontSize = `${mid}px`;
-        if (el.scrollWidth <= boxW && el.scrollHeight <= effectiveBoxH) lo = mid + 1;
+        if (el.scrollHeight <= effectiveBoxH) lo = mid + 1;
         else hi = mid - 1;
       }
       targetPx = Math.max(MIN, Math.min(MAX, hi));
+
+      el.style.fontSize = `${targetPx}px`;
+      let requiredScale = boxW / Math.max(1, Math.round(el.scrollWidth));
+      while (targetPx > MIN && requiredScale < MIN_SCALE_X) {
+        targetPx -= 1;
+        el.style.fontSize = `${targetPx}px`;
+        requiredScale = boxW / Math.max(1, Math.round(el.scrollWidth));
+      }
     }
 
     el.style.fontSize = `${targetPx}px`;
 
-    if (stretchY !== 1) {
-      el.style.transform = `scaleY(${stretchY})`;
-      el.style.transformOrigin = 'center';
-    } else {
-      el.style.transform = 'none';
-    }
+    const textW = Math.max(1, Math.round(el.scrollWidth));
+    const rawScaleX = boxW / textW;
+    const scaleX = Math.min(Math.max(rawScaleX * 0.96, MIN_SCALE_X), MAX_SCALE_X);
+    el.style.transform = `scaleX(${scaleX}) scaleY(${stretchY})`;
+    el.style.transformOrigin = 'left top';
+    el.style.visibility = 'visible';
 
     this._lastScale = {
       text: currentText, w: boxW, h: boxH,
       fitMode: this.fitMode, preset: this.preset,
+      fontVersion: this._fontVersion,
     };
 
     this._scaling = false;
@@ -194,14 +229,14 @@ export class BubbleName extends LitElement {
   }
 
   static styles = css`
-    :host { display: block; }
+    :host { display: block; width: 100%; overflow: visible; }
 
     .bubble-name {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
+      display: inline-flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      width: max-content;
+      height: auto;
       line-height: 0.9;
 
       font-family:
@@ -212,13 +247,14 @@ export class BubbleName extends LitElement {
         "Arial Narrow",
         Arial, sans-serif;
       font-weight: 900;
-      letter-spacing: -0.01em;
+      letter-spacing: 0;
       font-stretch: condensed;
 
-      text-align: center;
+      text-align: left;
       white-space: nowrap;
       text-transform: uppercase;
       color: var(--bubble-room-name-color, white);
+      visibility: hidden;
 
       /* transizione fluida cambio presenza */
       transition: color 0.3s ease;
@@ -250,7 +286,32 @@ export class BubbleName extends LitElement {
       filter: saturate(var(--bubble-room-name-saturation, 1)) brightness(var(--bubble-room-name-brightness, 1));
       transition: color 0.3s ease, filter 0.3s ease;
     }
+
+    :host([preset='soft-glass']) .bubble-name {
+      font-family:
+        "Big Shoulders Display",
+        "Barlow Condensed",
+        "Bebas Neue",
+        "Arial Narrow",
+        Arial, sans-serif;
+      font-weight: 900;
+      letter-spacing: 0;
+      line-height: 0.9;
+      text-shadow:
+        0 0 18px color-mix(in srgb, var(--bubble-room-name-color, white) 42%, transparent),
+        0 2px 5px rgba(0, 0, 0, 0.36);
+      filter: saturate(var(--bubble-room-name-saturation, 1)) brightness(var(--bubble-room-name-brightness, 1));
+      transition: color 0.25s ease, filter 0.25s ease;
+    }
+
+    :host([preset='minimal']) .bubble-name {
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.34);
+      filter: none;
+      transition: color 0.18s ease;
+    }
   `;
 }
 
-customElements.define('bubble-name', BubbleName);
+if (!customElements.get('bubble-name')) {
+  customElements.define('bubble-name', BubbleName);
+}

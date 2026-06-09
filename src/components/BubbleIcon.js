@@ -13,13 +13,13 @@ export class BubbleIcon extends LitElement {
     backgroundActive: { type: String },
     backgroundInactive: { type: String },
     preset: { type: String, reflect: true },
-    
+
     // azioni/contesto (stessa logica di BubbleSubButton)
     entity_id: { type: String },
     tap_action: { type: Object },
     hold_action: { type: Object },
   };
-  
+
   constructor() {
     super();
     // UI
@@ -30,19 +30,19 @@ export class BubbleIcon extends LitElement {
     this.backgroundActive = 'rgba(33,223,115,0.1)';
     this.backgroundInactive = 'rgba(23,60,22,0.1)';
     this.preset = 'standard';
-    
+
     // Azioni (default coerenti con SubButton)
     this.entity_id = '';
     this.tap_action = { action: 'more-info' };
     this.hold_action = { action: 'none' };
-    
+
     // Gestione hold — logica centralizzata in gesture-handler.js
     this._gesture = createGestureHandler({
       onTap:  () => this._fireHassAction('tap'),
       onHold: () => this._fireHassAction('hold'),
     });
   }
-  
+
   static styles = css`
     :host {
       position: absolute;
@@ -162,15 +162,65 @@ export class BubbleIcon extends LitElement {
         saturate(var(--bubble-main-icon-icon-saturation, 1));
       transition: filter 0.35s ease, opacity 0.18s ease, transform 0.18s ease;
     }
+
+    :host([preset='soft-glass']) .container {
+      color: var(--bubble-main-icon-color, currentColor);
+      border: 2px solid color-mix(in srgb, var(--bubble-main-icon-color, white) 48%, transparent);
+      background: color-mix(in srgb, var(--bubble-main-icon-color, white) 32%, rgba(255, 255, 255, 0.06));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        0 4px 14px rgba(0, 0, 0, 0.16);
+      backdrop-filter: blur(8px) saturate(1.25);
+      -webkit-backdrop-filter: blur(8px) saturate(1.25);
+      transition: background 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+      filter:
+        saturate(var(--bubble-main-icon-saturation, 1))
+        brightness(var(--bubble-main-icon-luminance, 1));
+    }
+
+    :host([preset='soft-glass']) .container::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 48%);
+      opacity: 0.65;
+    }
+
+    :host([preset='soft-glass']) .icon {
+      filter:
+        drop-shadow(0 5px 10px rgba(var(--bubble-main-icon-shadow-rgb, 13, 22, 41), 0.14))
+        brightness(var(--bubble-main-icon-icon-brightness, 1))
+        saturate(var(--bubble-main-icon-icon-saturation, 1));
+      transition: filter 0.25s ease, opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    :host([preset='minimal']) .container {
+      color: var(--bubble-main-icon-color, currentColor);
+      border: 2px solid color-mix(in srgb, var(--bubble-main-icon-color, white) 44%, transparent);
+      background: color-mix(in srgb, var(--bubble-main-icon-color, white) 18%, rgba(255, 255, 255, 0.04));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+      transition: background 0.18s ease, border-color 0.18s ease;
+      filter: none;
+    }
+
+    :host([preset='minimal']) .icon {
+      filter: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
   `;
-  
+
   render() {
     const fg = this.active ? this.colorActive : this.colorInactive;
     const rawBg = this.active ? this.backgroundActive : this.backgroundInactive;
     const isLiquid = this.preset === 'liquid-glass';
+    const isSoftGlass = this.preset === 'soft-glass';
+    const isMinimal = this.preset === 'minimal';
+    const isGlass = isLiquid || isSoftGlass;
 
     // alpha più alto: l'icona usa il suo colore senza essere dominata dal gradiente dietro
-    const bgAlpha = isLiquid ? (this.active ? 0.52 : 0.38) : 0.1;
+    const bgAlpha = isLiquid ? (this.active ? 0.52 : 0.38) : isSoftGlass ? (this.active ? 0.32 : 0.20) : isMinimal ? (this.active ? 0.18 : 0.10) : 0.1;
     const bg = this._withOpacity(rawBg, bgAlpha) ?? rawBg;
     const iconOpacity = this.active ? 0.9 : 0.8;
 
@@ -180,22 +230,22 @@ export class BubbleIcon extends LitElement {
     }
     if (fg) {
       styleChunks.push(`color:${fg}`);
-      if (!isLiquid) {
+      if (!isGlass) {
         styleChunks.push(`--bubble-main-icon-border:${fg}`);
       }
       styleChunks.push(`--bubble-main-icon-color:${fg}`);
     }
-    if (isLiquid && this.active) {
+    if (isGlass && this.active) {
       styleChunks.push(`--bubble-main-icon-saturation:1.12`);
       styleChunks.push(`--bubble-main-icon-luminance:1.04`);
-      styleChunks.push(`--bubble-main-icon-icon-brightness:1.25`);
+      styleChunks.push(`--bubble-main-icon-icon-brightness:${isLiquid ? '1.25' : '1.12'}`);
       styleChunks.push(`--bubble-main-icon-icon-saturation:1.12`);
-    } else if (isLiquid && !this.active) {
+    } else if (isGlass && !this.active) {
       // Stesso stile subbutton: nessuna riduzione opacity, solo filtro colore
-      styleChunks.push(`--bubble-main-icon-saturation:0.72`);
-      styleChunks.push(`--bubble-main-icon-luminance:0.90`);
-      styleChunks.push(`--bubble-main-icon-icon-brightness:0.92`);
-      styleChunks.push(`--bubble-main-icon-icon-saturation:0.78`);
+      styleChunks.push(`--bubble-main-icon-saturation:${isLiquid ? '0.72' : '0.82'}`);
+      styleChunks.push(`--bubble-main-icon-luminance:${isLiquid ? '0.90' : '0.94'}`);
+      styleChunks.push(`--bubble-main-icon-icon-brightness:${isLiquid ? '0.92' : '0.96'}`);
+      styleChunks.push(`--bubble-main-icon-icon-saturation:${isLiquid ? '0.78' : '0.86'}`);
     }
 
     const containerStyle = styleChunks.map(chunk => `${chunk};`).join(' ');
@@ -231,24 +281,24 @@ export class BubbleIcon extends LitElement {
   _onDown = () => this._gesture.onDown();
   _onUp   = () => this._gesture.onUp();
   _clearHoldTimer = () => this._gesture.clearTimer();
-  
+
   /* ───────────── Evento emesso: stesso payload di BubbleSubButton ───────────── */
-  
+
   /* ───────────── Evento emesso: stesso payload di BubbleSubButton ───────────── */
   _fireHassAction(actionType /* 'tap' | 'hold' */ ) {
     // Prendi la config dell'azione corrente (tap/hold)
     const cfg = (actionType === 'hold' ? this.hold_action : this.tap_action) || { action: 'more-info' };
     const action = cfg.action || 'more-info';
-    
+
     // Alcune azioni richiedono l'entità; altre no.
     const needsEntity = action === 'toggle' || action === 'call-service' || action === 'more-info';
-    
+
     // Se l'azione richiede entity ma non c'è, non fare nulla;
     // MA se è 'navigate' (o qualunque azione che non richiede entity), procedi comunque.
     if (needsEntity && !this.entity_id) {
       return;
     }
-    
+
     // Emetti l'evento come fa BubbleSubButton (anche se entity_id è vuota per "navigate").
     const evt = new Event('hass-action', { bubbles: true, composed: true });
     evt.detail = {
@@ -263,4 +313,6 @@ export class BubbleIcon extends LitElement {
   }
 }
 
-customElements.define('bubble-icon', BubbleIcon);
+if (!customElements.get('bubble-icon')) {
+  customElements.define('bubble-icon', BubbleIcon);
+}

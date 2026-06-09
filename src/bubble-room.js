@@ -22,29 +22,93 @@ export class BubbleRoom extends LitElement {
     super();
     this.config = {};
     this.hass   = {};
+    this._trackedEntityIds = new Set();
+    this._viewCache = new Map();
   }
 
   /* ───────────── configurazione ───────────── */
   setConfig(rawConfig) {
     this.config = { layout: 'wide', ...rawConfig };
     this._entities = structuredClone(this.config.entities || {});
-  
+
     // default soft per i nuovi gruppi (se non ci sono)
     this._entities.camera  = this._entities.camera  || { entity: '', icon: '' };
     if (!this._entities.camera.presence) this._entities.camera.presence = { entity: '' };
     this._entities.climate = this._entities.climate || { entity: '', icon: '' };
+    this._trackedEntityIds = this._collectTrackedEntityIds();
+    this._viewCache.clear();
   }
-  
+
   get hass() {
     return this._hass;
   }
-  
+
   set hass(hass) {
+    const previous = this._hass;
     this._hass = hass;
-    // aggiorna il render solo quando arrivano davvero gli stati
-    if (hass?.states) {
+
+    if (!hass?.states) return;
+
+    if (!previous?.states || this._hasTrackedStateChanged(previous, hass)) {
       this.requestUpdate?.();
     }
+  }
+
+  _collectTrackedEntityIds() {
+    const ids = new Set();
+    const add = (id) => {
+      if (typeof id === 'string' && id.includes('.')) ids.add(id);
+    };
+
+    const entities = this.config?.entities || {};
+    add(entities.presence?.entity);
+    add(entities.camera?.entity);
+    add(entities.camera?.presence?.entity);
+    add(entities.climate?.entity);
+
+    for (let i = 1; i <= 8; i++) add(entities[`sensor${i}`]?.entity);
+    for (let i = 1; i <= 8; i++) add(entities[`mushroom${i}`]?.entity);
+
+    for (const subbutton of this.config?.subbuttons || []) {
+      add(subbutton?.entity_id || subbutton?.entity);
+    }
+
+    return ids;
+  }
+
+  _hasTrackedStateChanged(previousHass, nextHass) {
+    if (!this._trackedEntityIds?.size) return true;
+
+    for (const id of this._trackedEntityIds) {
+      const previousState = previousHass?.states?.[id];
+      const nextState = nextHass?.states?.[id];
+      if (this._stateSignature(previousState) !== this._stateSignature(nextState)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  _stateSignature(stateObj) {
+    if (!stateObj) return '';
+    return `${stateObj.state}|${stateObj.last_changed}|${stateObj.last_updated}|${JSON.stringify(stateObj.attributes || {})}`;
+  }
+
+  _cachedView(key, signature, compute) {
+    const cached = this._viewCache.get(key);
+    if (cached?.signature === signature) return cached.value;
+
+    const value = compute();
+    this._viewCache.set(key, { signature, value });
+    return value;
+  }
+
+  _statesSignature(ids) {
+    return (ids || [])
+      .filter(Boolean)
+      .map((id) => `${id}:${this._stateSignature(this.hass?.states?.[id])}`)
+      .join('|');
   }
 
   static getStubConfig() {
@@ -90,26 +154,37 @@ export class BubbleRoom extends LitElement {
   updated(changed) {
     if (changed.has('config')) {
       this._entities = structuredClone(this.config.entities || {});
+      this._trackedEntityIds = this._collectTrackedEntityIds();
+      this._viewCache.clear();
     }
   }
 
   /* ───────────── sub-button helper ───────────── */
   _getSubButtons() {
+    const subbuttons = this.config.subbuttons || [];
+    const ids = subbuttons.map((sb) => sb?.entity_id || sb?.entity).filter(Boolean);
+    const signature = JSON.stringify({
+      subbuttons,
+      colors: this.config.colors?.subbutton || {},
+      states: this._statesSignature(ids),
+    });
+
+    return this._cachedView('subbuttons', signature, () => {
     const bgOn   = this.config.colors?.subbutton?.background_on  ?? '#00d46d';
     const bgOff  = this.config.colors?.subbutton?.background_off ?? '#999';
     const iconOn = this.config.colors?.subbutton?.icon_on ?? 'yellow';
     const iconOff= this.config.colors?.subbutton?.icon_off ?? '#666';
-  
-    return (this.config.subbuttons || []).map(sb => {
+
+    return subbuttons.map(sb => {
       const stateObj = this.hass.states?.[sb.entity_id];
-  
+
       // Ordine di priorità icona:
       // 1) icona personalizzata in config
       // 2) icona da entity (device_class / icon attribute / mapping)
       let finalIcon = sb.icon || resolveEntityIcon(sb.entity_id, this.hass);
-  
+
       const active = stateObj?.state === 'on';
-  
+
       return {
         icon: finalIcon,
         active,
@@ -123,8 +198,9 @@ export class BubbleRoom extends LitElement {
         animation:   sb.animation,
       };
     });
+    });
   }
-  
+
 
   /* ───────────── presenza stanza ───────────── */
   _isRoomActive() {
@@ -137,21 +213,33 @@ export class BubbleRoom extends LitElement {
   /** lato dell’icona principale */
   _getMainIconSize() {
     const area = this.shadowRoot?.querySelector('.icon-mushroom-area');
-    if (!area) return 64;
-    return Math.round(Math.min(area.clientWidth, area.clientHeight) * 0.60);
+    if (!area) return 0;
+    return Math.round(Math.min(area.clientWidth, area.clientHeight) * 0.58);
   }
 
   /* ───────────── sensori ───────────── */
   _getSensors() {
     const entities = this._entities || {};
+    const sensorIds = [];
+    for (let i = 1; i <= 8; i++) sensorIds.push(entities[`sensor${i}`]?.entity);
+    const presenceId = this.config?.entities?.presence?.entity;
+    const signature = JSON.stringify({
+      sensorIds,
+      presenceId,
+      sensorColors: this.config.colors?.sensor || {},
+      roomColors: this.config.colors?.room || {},
+      states: this._statesSignature([...sensorIds, presenceId]),
+    });
+
+    return this._cachedView('sensors', signature, () => {
     const sensorColorActive =
       this.config.colors?.sensor?.sensor_active ??
-      this.config.colors?.room?.text_active ??
+      this.config.colors?.room?.icon_active ??
       '#21df73';
 
     const sensorColorInactive =
       this.config.colors?.sensor?.sensor_inactive ??
-      this.config.colors?.room?.text_inactive ??
+      this.config.colors?.room?.icon_inactive ??
       '#173c16';
 
     const color = this._isRoomActive() ? sensorColorActive : sensorColorInactive;
@@ -172,17 +260,33 @@ export class BubbleRoom extends LitElement {
       });
     }
     return result;
+    });
   }
 
   /* ───────────── mushroom ───────────── */
   _getMushrooms() {
     const entities = this._entities || {};
-  
+    const ids = [];
+    for (let i = 1; i <= 8; i++) ids.push(entities[`mushroom${i}`]?.entity);
+    ids.push(entities.camera?.entity, entities.camera?.presence?.entity, entities.climate?.entity);
+
+    const signature = JSON.stringify({
+      entities: {
+        mushrooms: Array.from({ length: 8 }, (_, i) => entities[`mushroom${i + 1}`] || {}),
+        camera: entities.camera || {},
+        climate: entities.climate || {},
+      },
+      colors: this.config.colors?.mushroom || {},
+      states: this._statesSignature(ids),
+    });
+
+    return this._cachedView('mushrooms', signature, () => {
+
     const activeCol   = this.config.colors?.mushroom?.active   ?? '#00e676';
     const inactiveCol = this.config.colors?.mushroom?.inactive ?? '#888';
-  
+
     const list = [];
-  
+
     // i “mushroom” normali (1..5) — ora passiamo anche entity_id, tap_action, hold_action
     for (let i = 1; i <= 5; i++) {
       const key   = `mushroom${i}`;
@@ -190,7 +294,7 @@ export class BubbleRoom extends LitElement {
       const entId = conf.entity;
       const st    = this.hass?.states?.[entId];
       if (!entId || !st) continue;
-  
+
       const mushroomActive = st.state === 'on';
       list.push({
         icon:  conf.icon || st.attributes.icon || resolveEntityIcon(entId, this.hass) || 'mdi:flash',
@@ -233,7 +337,7 @@ export class BubbleRoom extends LitElement {
         hold_action: { action: 'none' },
       });
     }
-  
+
     // 7) CLIMATE (fisso via kind:'climate')
     const cliCfg = this._entities?.climate || {};
     const cliId = cliCfg.entity;
@@ -242,7 +346,7 @@ export class BubbleRoom extends LitElement {
       const isActive =
         (st.state && st.state !== 'off' && st.state !== 'idle') ||
         (st.attributes?.hvac_action && st.attributes.hvac_action !== 'off');
-      
+
       list.push({
         icon: cliCfg.icon || st.attributes.icon || resolveEntityIcon(cliId, this.hass) || 'mdi:thermostat',
         state: st.state,
@@ -256,10 +360,11 @@ export class BubbleRoom extends LitElement {
         entity_id: cliId,
       });
     }
-  
+
     return list;
+    });
   }
-  
+
   /* stub click */
   _onMushroomClick(_ev) {
     /* puoi gestire altri eventi qui */
@@ -295,6 +400,15 @@ export class BubbleRoom extends LitElement {
       ?? (_activeRgb ? `rgba(${_activeRgb.r},${_activeRgb.g},${_activeRgb.b},0.06)` : 'rgba(33,223,115,0.06)');
     const textColorActive   = this.config.colors?.room?.text_active   ?? '#ffffff';
     const textColorInactive = this.config.colors?.room?.text_inactive ?? 'rgba(255,255,255,0.65)';
+    const sensorColorActive =
+      this.config.colors?.sensor?.sensor_active ??
+      this.config.colors?.room?.icon_active ??
+      iconColorActive;
+    const sensorColorInactive =
+      this.config.colors?.sensor?.sensor_inactive ??
+      this.config.colors?.room?.icon_inactive ??
+      iconColorInactive;
+    const sensorGlassColor = isActive ? sensorColorActive : sensorColorInactive;
 
     // Card background: blob radiale + variabili accent per un look più profondo.
     const cardBgEnabled = this.config?.card_background?.enabled ?? true;
@@ -348,8 +462,12 @@ export class BubbleRoom extends LitElement {
           <div class="row1">
             <bubble-sensor
               .sensors="${this._getSensors()}"
+              .showIcons=${this.config?.sensor_options?.show_icons ?? false}
               .preset="${subbuttonMode}"
-              style="--bubble-sensor-active-color:${isActive ? textColorActive : textColorInactive}"
+              style="
+                --bubble-sensor-active-color:${sensorGlassColor};
+                --bubble-sensor-value-color:${sensorColorActive};
+              "
             ></bubble-sensor>
 
             <div class="name-placeholder" id="nameContainer">
@@ -380,7 +498,7 @@ export class BubbleRoom extends LitElement {
                 .backgroundInactive="${iconBgInactive}"
                 .preset="${subbuttonMode}"
                 style="
-                  --main-icon-size:${mainIconSize}px;
+                  ${mainIconSize ? `--main-icon-size:${mainIconSize}px;` : ''}
                   --icon-shift-x:-20%;
                 "
                 .entity_id=${mainEntity}
@@ -487,9 +605,10 @@ export class BubbleRoom extends LitElement {
   /* ───────────── stili originali ───────────── */
   static styles = css`
     :host { display:block; height:100%; box-sizing:border-box; }
-    .bubble-room-grid { display:grid; grid-template-columns:minmax(0, 2fr) minmax(44px, 0.82fr);
-      gap: 0 6px;
-      width:100%; height:100%; box-sizing:border-box; padding: 0 8px 6px 0;
+    .bubble-room-grid { display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 22%);
+      grid-template-rows:minmax(0, 1fr);
+      gap: 0 2.5%;
+      width:100%; height:100%; box-sizing:border-box; padding: 0 2.8% 2.2% 0;
       overflow: hidden;
       position: relative;
       isolation: isolate;
@@ -511,36 +630,33 @@ export class BubbleRoom extends LitElement {
     .bubble-room-grid.is-inactive { filter: saturate(0.82); }
     .bubble-room-grid.no-sidebar { grid-template-columns:minmax(0, 1fr); padding-right:0; }
     .bubble-room-grid.no-sidebar .sidebar { display:none; }
-    .main-area { display:grid; height:100%; min-height:0; box-sizing:border-box; }
-    .row1 { display:grid; min-height:0; box-sizing:border-box;
-      grid-template-columns:1fr; }
+    .main-area { display:grid; height:100%; min-height:0; min-width:0; box-sizing:border-box; overflow:visible; }
+    .row1 { display:grid; min-height:0; min-width:0; box-sizing:border-box; overflow:visible;
+      grid-template-columns:1fr; row-gap:1%; }
     .row2 { display:grid; height:100%; min-height:0; box-sizing:border-box;
     }
-    .name-placeholder { display:flex; align-items:center; justify-content:center;
+    .name-placeholder { display:flex; align-items:center; justify-content:flex-start;
       width:100%; max-width:100%; height:100%; box-sizing:border-box;
-      overflow:visible; flex-shrink:1; background:transparent; }
+      min-width:0; min-height:0; overflow:visible; flex-shrink:1; background:transparent; }
     .icon-mushroom-area { box-sizing:border-box;
-      position:relative; width:100%; height:100%; display:flex; align-items:center; }
+      position:relative; width:100%; height:100%; min-width:0; min-height:0; display:flex; align-items:center; overflow:hidden; }
     .k-space { box-sizing:border-box; }
-    .sidebar { display:flex; flex-direction:column; height:100%; min-height:0;
+    .sidebar { display:flex; flex-direction:column; height:100%; min-height:0; min-width:0;
       box-sizing:border-box; }
 
-    .bubble-room-grid.tall .main-area { grid-template-rows:1fr 2fr; }
-    .bubble-room-grid.tall .row1      { grid-template-rows:auto 1fr; }
+    .bubble-room-grid.tall .main-area { grid-template-rows:minmax(0, 34%) minmax(0, 66%); }
+    .bubble-room-grid.tall .row1      { grid-template-rows:minmax(0, 27%) minmax(0, 72%); }
     .bubble-room-grid.tall .row2      { grid-template-columns:1fr 0fr; }
 
-    .bubble-room-grid.wide .main-area { grid-template-rows:1fr 2fr; }
-    .bubble-room-grid.wide .row1      { grid-template-rows:auto 1fr; }
+    .bubble-room-grid.wide .main-area { grid-template-rows:minmax(0, 34%) minmax(0, 66%); }
+    .bubble-room-grid.wide .row1      { grid-template-rows:minmax(0, 27%) minmax(0, 72%); }
     .bubble-room-grid.wide .row2      { grid-template-columns:2fr 1fr; }
-
-    @media (max-width: 420px) {
-      .bubble-room-grid { grid-template-columns:minmax(0, 1fr) minmax(38px, 0.34fr); gap:0 4px; padding-right:4px; }
-      .bubble-room-grid.wide .row2 { grid-template-columns:1fr 0fr; }
-    }
   `;
 }
 
-customElements.define('bubble-room', BubbleRoom);
+if (!customElements.get('bubble-room')) {
+  customElements.define('bubble-room', BubbleRoom);
+}
 
 window.customCards = window.customCards || [];
 window.customCards.push({

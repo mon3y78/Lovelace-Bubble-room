@@ -185,6 +185,95 @@ export class BubbleSubButton extends LitElement {
       transition: filter 0.35s ease, color 0.35s ease;
     }
 
+    :host([preset='soft-glass']) .sub-button {
+      flex: 1 1 0%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      margin: 2px 0;
+      border-radius: 14px;
+      cursor: pointer;
+      min-height: 0;
+      color: var(--bubble-subbutton-color, #fff);
+      background: color-mix(in srgb, var(--bubble-subbutton-color, white) 32%, rgba(255, 255, 255, 0.06));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        0 4px 14px rgba(0, 0, 0, 0.16);
+      border: 2px solid color-mix(in srgb, var(--bubble-subbutton-color, white) 48%, transparent);
+      backdrop-filter: blur(8px) saturate(1.25);
+      -webkit-backdrop-filter: blur(8px) saturate(1.25);
+      transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease,
+        border-color 0.25s ease, filter 0.25s ease;
+      filter:
+        saturate(var(--bubble-subbutton-saturation, 1))
+        brightness(var(--bubble-subbutton-luminance, 1));
+    }
+
+    :host([preset='soft-glass']) .sub-button:first-child { margin-top: 0; }
+    :host([preset='soft-glass']) .sub-button:last-child { margin-bottom: 0; }
+
+    :host([preset='soft-glass']) .sub-button:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 8px rgba(13, 22, 41, 0.16);
+    }
+
+    :host([preset='soft-glass']) .sub-button::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 48%);
+      opacity: 0.65;
+      transition: opacity 0.25s ease;
+    }
+
+    :host([preset='soft-glass']) .sub-button.is-active::before {
+      opacity: 0.72;
+    }
+
+    :host([preset='soft-glass']) .sub-button ha-icon {
+      width: 80%;
+      height: 80%;
+      color: inherit;
+      filter:
+        drop-shadow(0 3px 7px rgba(var(--bubble-subbutton-glass-shadow-rgb, 13, 22, 41), 0.13))
+        brightness(var(--bubble-subbutton-icon-brightness, 1))
+        saturate(var(--bubble-subbutton-icon-saturation, 1));
+      transition: filter 0.25s ease, color 0.25s ease;
+    }
+
+    :host([preset='minimal']) .sub-button {
+      flex: 1 1 0%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 2px 0;
+      border-radius: 12px;
+      cursor: pointer;
+      min-height: 0;
+      color: var(--bubble-subbutton-color, #fff);
+      background: color-mix(in srgb, var(--bubble-subbutton-color, white) 18%, rgba(255, 255, 255, 0.04));
+      border: 2px solid color-mix(in srgb, var(--bubble-subbutton-color, white) 44%, transparent);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+      transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+    }
+
+    :host([preset='minimal']) .sub-button:first-child { margin-top: 0; }
+    :host([preset='minimal']) .sub-button:last-child { margin-bottom: 0; }
+    :host([preset='minimal']) .sub-button:active { transform: scale(0.97); }
+
+    :host([preset='minimal']) .sub-button ha-icon {
+      width: 80%;
+      height: 80%;
+      color: inherit;
+      filter: none;
+    }
+
     /* 👇 (Opzionale) Rende l'icona SVG responsiva */
     ha-icon {
       --mdc-icon-size: 100%;
@@ -267,8 +356,34 @@ export class BubbleSubButton extends LitElement {
     :host([preset='liquid-glass']) .sub-button.is-active.anim-bounce ha-icon {
       animation: subbutton-bounce 0.7s cubic-bezier(0.30, 2.40, 0.85, 2.50) infinite;
     }
+
+    :host([preset='soft-glass']) .sub-button.is-active.anim-spin ha-icon {
+      animation: subbutton-spin 1.4s linear infinite;
+    }
+    :host([preset='soft-glass']) .sub-button.is-active.anim-illuminate ha-icon {
+      animation: subbutton-illuminate 2.5s ease-in-out infinite;
+    }
+    :host([preset='soft-glass']) .sub-button.is-active.anim-alarm ha-icon {
+      animation: subbutton-alarm 0.9s ease infinite;
+    }
+    :host([preset='soft-glass']) .sub-button.is-active.anim-blink ha-icon {
+      animation: subbutton-blink 1.1s step-end infinite;
+    }
+    :host([preset='soft-glass']) .sub-button.is-active.anim-beat ha-icon {
+      animation: subbutton-beat 1.3s ease-out infinite;
+    }
+    :host([preset='soft-glass']) .sub-button.is-active.anim-scan ha-icon {
+      transform-origin: 90% 80%;
+      animation: subbutton-scan 5s ease-in-out infinite;
+    }
+    :host([preset='soft-glass']) .sub-button.is-active.anim-shake ha-icon {
+      animation: subbutton-shake 400ms ease-in-out infinite;
+    }
+    :host([preset='soft-glass']) .sub-button.is-active.anim-bounce ha-icon {
+      animation: subbutton-bounce 0.7s cubic-bezier(0.30, 2.40, 0.85, 2.50) infinite;
+    }
   `;
-  
+
   render() {
     return this.preset === 'standard'
       ? this._renderStandard()
@@ -384,7 +499,7 @@ export class BubbleSubButton extends LitElement {
       </div>
     `;
   }
-  
+
   _getAnimClass(btn) {
     const anim = btn?.animation;
     if (anim?.enabled === false) return '';
@@ -607,13 +722,13 @@ export class BubbleSubButton extends LitElement {
   _fireHassAction(idx, actionType) {
     const cfg = this.subbuttons?.[idx];
     if (!cfg || !cfg.entity_id) return;
-    
+
     const actionConfig = {
       entity: cfg.entity_id,
       tap_action: cfg.tap_action || { action: 'toggle' },
       hold_action: cfg.hold_action || { action: 'more-info' },
     };
-    
+
     const evt = new Event('hass-action', { bubbles: true, composed: true });
     evt.detail = {
       config: actionConfig,
@@ -626,4 +741,6 @@ export class BubbleSubButton extends LitElement {
 BubbleSubButton._colorCanvas = null;
 BubbleSubButton._colorCtx = null;
 
-customElements.define('bubble-subbutton', BubbleSubButton);
+if (!customElements.get('bubble-subbutton')) {
+  customElements.define('bubble-subbutton', BubbleSubButton);
+}

@@ -101,7 +101,9 @@ export const sharedPanelStyles = css`
   }
 
   ha-selector,
-  ha-icon-picker {
+  ha-icon-picker,
+  ha-entity-picker,
+  ha-area-picker {
     width: 100%;
     box-sizing: border-box;
   }

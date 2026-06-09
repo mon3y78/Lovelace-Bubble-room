@@ -1,6 +1,5 @@
 // src/panels/SensorPanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import { candidatesFor }     from '../helpers/entity-filters.js';
 import { SENSOR_TYPE_MAP }   from '../helpers/sensor-mapping.js';
 import { sharedPanelStyles } from './shared-styles.js';
@@ -34,14 +33,6 @@ export class SensorPanel extends LitElement {
 
   updated(changed) {
     if (changed.has('config') || changed.has('hass')) {
-      // Auto-discover: usa il valore di ritorno e propaga la nuova config (se serve)
-      const next = maybeAutoDiscover(this.hass, this.config, 'auto_discovery_sections.sensor');
-      if (next && next !== this.config) {
-        this.dispatchEvent(new CustomEvent('config-changed', {
-          detail: { config: next }, bubbles: true, composed: true
-        }));
-      }
-
       // Se esiste in config, carica ma NON riscrivere mai sensor_filters nel YAML
       this._entities = Array(5).fill('');
       for (let i = 0; i < 5; i++) {
@@ -85,6 +76,7 @@ export class SensorPanel extends LitElement {
 
   render() {
     const autoDisc = this.config?.auto_discovery_sections?.sensor ?? false;
+    const showIcons = this.config?.sensor_options?.show_icons ?? false;
     const t = (key, vars, fallback) => localize(this.hass, key, vars, fallback);
 
     const options = Object.entries(SENSOR_TYPE_MAP)
@@ -113,6 +105,15 @@ export class SensorPanel extends LitElement {
             @change=${e => this._toggleAuto(e.target.checked)}
           />
           <label>${t('panel.sensor.auto_discover')}</label>
+        </div>
+
+        <div class="input-group autodiscover">
+          <input
+            type="checkbox"
+            .checked=${showIcons}
+            @change=${e => this._toggleIcons(e.target.checked)}
+          />
+          <label>${t('panel.sensor.show_icons')}</label>
         </div>
 
         ${this._expanded.map((open, i) => this._renderSensor(i, open, options))}
@@ -182,13 +183,13 @@ export class SensorPanel extends LitElement {
 
             <div class="input-group">
               <label>${t('panel.sensor.entity')}</label>
-              <ha-selector
+              <ha-entity-picker
                 .hass=${this.hass}
                 .value=${ent}
-                .selector=${{ entity: { include_entities: cands, multiple: false } }}
+                .includeEntities=${cands}
                 allow-custom-entity
                 @value-changed=${e => this._onEntity(i, e.detail.value)}
-              ></ha-selector>
+              ></ha-entity-picker>
             </div>
 
             ${ent ? (() => {
@@ -215,6 +216,13 @@ export class SensorPanel extends LitElement {
   _toggleAuto(on) {
     this.dispatchEvent(new CustomEvent('panel-changed', {
       detail: { prop: 'auto_discovery_sections.sensor', val: on },
+      bubbles: true, composed: true,
+    }));
+  }
+
+  _toggleIcons(on) {
+    this.dispatchEvent(new CustomEvent('panel-changed', {
+      detail: { prop: 'sensor_options.show_icons', val: on },
       bubbles: true, composed: true,
     }));
   }
@@ -263,9 +271,9 @@ export class SensorPanel extends LitElement {
   }
 
   _onEntity(i, ent) {
-    this._entities[i] = ent;
+    this._entities[i] = ent || '';
     this.dispatchEvent(new CustomEvent('panel-changed', {
-      detail: { prop: `entities.sensor${i+1}.entity`, val: ent },
+      detail: { prop: `entities.sensor${i+1}.entity`, val: this._entities[i] },
       bubbles: true, composed: true,
     }));
   }
@@ -286,4 +294,6 @@ export class SensorPanel extends LitElement {
   }
 }
 
-customElements.define('sensor-panel', SensorPanel);
+if (!customElements.get('sensor-panel')) {
+  customElements.define('sensor-panel', SensorPanel);
+}

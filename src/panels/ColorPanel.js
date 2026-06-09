@@ -236,6 +236,16 @@ export class ColorPanel extends LitElement {
         description: t('panel.colors.style.standard_desc'),
       },
       {
+        key: 'soft-glass',
+        label: t('panel.colors.style.soft_glass'),
+        description: t('panel.colors.style.soft_glass_desc'),
+      },
+      {
+        key: 'minimal',
+        label: t('panel.colors.style.minimal'),
+        description: t('panel.colors.style.minimal_desc'),
+      },
+      {
         key: 'liquid-glass',
         label: t('panel.colors.style.liquid_glass'),
         description: t('panel.colors.style.liquid_glass_desc'),
@@ -464,4 +474,6 @@ export class ColorPanel extends LitElement {
   }
 }
 
-customElements.define('color-panel', ColorPanel);
+if (!customElements.get('color-panel')) {
+  customElements.define('color-panel', ColorPanel);
+}

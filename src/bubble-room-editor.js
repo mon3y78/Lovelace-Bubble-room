@@ -103,7 +103,8 @@ export class BubbleRoomEditor extends LitElement {
    */
   _onPanelChanged(e) {
     e.stopPropagation();
-    const { prop, val } = e.detail || {};
+    const { prop } = e.detail || {};
+    const val = this._normalizePanelValue(prop, e.detail?.val);
     if (!prop) return;
 
     // 1) applica il cambiamento
@@ -111,10 +112,9 @@ export class BubbleRoomEditor extends LitElement {
     const next = structuredClone(prev || {});
     this._applyPath(next, prop, val);
 
-    // 2) autodiscovery se l'evento riguarda area o sezioni auto
+    // 2) autodiscovery solo se cambia area; i toggle non devono rigenerare gli slot.
     const isArea = prop === 'area';
-    const isAD   = prop.startsWith('auto_discovery_sections.');
-    const applied = (isArea || isAD)
+    const applied = isArea
       ? maybeAutoDiscover(this.hass, next, prop, false)
       : next;
 
@@ -127,7 +127,8 @@ export class BubbleRoomEditor extends LitElement {
    */
   _onConfigChanged(e) {
     e.stopPropagation();
-    const { path, value } = e.detail || {};
+    const { path } = e.detail || {};
+    const value = this._normalizePanelValue(path, e.detail?.value);
     if (!path) return;
 
     // 1) applica
@@ -135,14 +136,33 @@ export class BubbleRoomEditor extends LitElement {
     const next = structuredClone(prev || {});
     this._applyPath(next, path, value);
 
-    // 2) autodiscovery se area / sezioni
+    // 2) autodiscovery solo se cambia area; i toggle non devono rigenerare gli slot.
     const isArea = path === 'area';
-    const isAD   = path.startsWith('auto_discovery_sections.');
-    const applied = (isArea || isAD)
+    const applied = isArea
       ? maybeAutoDiscover(this.hass, next, path, false)
       : next;
 
     this._emitConfig(applied);
+  }
+
+  _normalizePanelValue(path, value) {
+    if (value !== undefined && value !== null) return value;
+    if (!path) return value;
+
+    const key = String(path);
+    if (
+      key === 'area' ||
+      key === 'area_id' ||
+      key === 'name' ||
+      key === 'icon' ||
+      key.endsWith('.entity') ||
+      key.endsWith('.entity_id') ||
+      key.endsWith('.icon')
+    ) {
+      return '';
+    }
+
+    return value;
   }
 
   /**
@@ -295,4 +315,6 @@ export class BubbleRoomEditor extends LitElement {
   }
 }
 
-customElements.define('bubble-room-editor', BubbleRoomEditor);
+if (!customElements.get('bubble-room-editor')) {
+  customElements.define('bubble-room-editor', BubbleRoomEditor);
+}

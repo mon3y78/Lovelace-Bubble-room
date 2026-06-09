@@ -1,6 +1,5 @@
 // src/panels/SubButtonPanel.js
 import { LitElement, html, css } from 'lit';
-import { maybeAutoDiscover } from '../helpers/auto-discovery.js';
 import {
   candidatesFor,
   COMMON_CATS,
@@ -39,16 +38,6 @@ export class SubButtonPanel extends LitElement {
     if (!changed.has('config') && !changed.has('hass')) return;
 
     this._syncingFromConfig = true;
-
-    // Autodiscovery area-aware (non muta la config localmente)
-    if (this.config?.area || this.config?.area_id) {
-      const next = maybeAutoDiscover(this.hass, this.config, 'area', false);
-      if (next && next !== this.config) {
-        this.dispatchEvent(new CustomEvent('config-changed', {
-          detail: { config: next }, bubbles: true, composed: true,
-        }));
-      }
-    }
 
     // Non mutare mai this.config qui. Assicura però la struttura letta.
     const list = Array.isArray(this.config?.subbuttons) ? this.config.subbuttons : [];
@@ -227,13 +216,13 @@ export class SubButtonPanel extends LitElement {
 
             <div class="input-group">
               <label>${t('panel.subbutton.entity')}</label>
-              <ha-selector
+              <ha-entity-picker
                 .hass=${this.hass}
                 .value=${ent}
-                .selector=${{ entity: { include_entities: cands, multiple: false } }}
+                .includeEntities=${cands}
                 allow-custom-entity
                 @value-changed=${e => this._onEntity(i, e.detail.value)}
-              ></ha-selector>
+              ></ha-entity-picker>
             </div>
 
             <div class="input-group">
@@ -346,27 +335,27 @@ export class SubButtonPanel extends LitElement {
   // identico a MushroomPanel: niente .value forzato
   _onFilter(i, vals) {
     let newFilters;
-    
+
     if (this._ignoreNextFilterChange.has(i)) {
       this._ignoreNextFilterChange.delete(i);
       newFilters = [];
     } else {
       newFilters = Array.isArray(vals) ? vals.filter(Boolean) : [];
     }
-    
+
     // crea un nuovo array per triggerare il re-render
     this._filters = this._filters.map((f, idx) => idx === i ? [...newFilters] : f);
-    
+
     this.requestUpdate('_filters');
     this._emit('subbutton_filters', this._filters);
   }
-  
+
   _clearFilter(i) {
     this._ignoreNextFilterChange.add(i);
-    
+
     // crea nuovo array vuoto nella posizione i
     this._filters = this._filters.map((f, idx) => idx === i ? [] : f);
-    
+
     this.requestUpdate('_filters');
     this._emit('subbutton_filters', this._filters);
   }
@@ -375,16 +364,16 @@ export class SubButtonPanel extends LitElement {
   _onEntity(i, ent) {
     this._entities[i] = ent || '';
     if (this._syncingFromConfig) return;
-    
+
     // Salva l’entità selezionata (anche vuota)
     this._emit(`subbuttons.${i}.entity_id`, this._entities[i]);
-    
+
     // Se l'entità è stata cancellata → cancella anche l'icona (comportamento come MushroomPanel)
     if (!this._entities[i]) {
       this._emit(`subbuttons.${i}.icon`, '');
       return;
     }
-    
+
     // Entità presente → ricalcola SEMPRE l’icona (stato → fallback mapping)
     const st = this.hass?.states?.[this._entities[i]];
     const iconFromState = st?.attributes?.icon;
@@ -437,4 +426,6 @@ export class SubButtonPanel extends LitElement {
   }
 }
 
-customElements.define('sub-button-panel', SubButtonPanel);
+if (!customElements.get('sub-button-panel')) {
+  customElements.define('sub-button-panel', SubButtonPanel);
+}
