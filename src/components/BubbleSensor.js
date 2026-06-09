@@ -22,6 +22,8 @@ export class BubbleSensor extends LitElement {
     this._fontsReadyScheduled = false;
     this._fontVersion = 0;
     this._lastAutoscaleSignature = '';
+    this._settleTimer = null;
+    this._settleUntil = 0;
   }
 
   connectedCallback() {
@@ -54,6 +56,7 @@ export class BubbleSensor extends LitElement {
   firstUpdated() {
     this._ensureFonts();
     this._scheduleAutoscaleWhenFontsReady();
+    this.reflowLayout(true, 850);
   }
 
   disconnectedCallback() {
@@ -61,13 +64,41 @@ export class BubbleSensor extends LitElement {
     this._resizeObserver?.disconnect();
     this._resizeObserver = null;
     this._autoscaleScheduled = false;
+    if (this._settleTimer) clearTimeout(this._settleTimer);
+    this._settleTimer = null;
   }
 
   updated(changedProperties) {
     if (changedProperties.has('sensors') || changedProperties.has('showIcons') || changedProperties.has('preset')) {
+      this.reflowLayout(true, 250);
+    }
+  }
+
+  reflowLayout(force = false, duration = 0) {
+    if (force) this._lastAutoscaleSignature = '';
+    this._updateLayout();
+
+    if (duration > 0) {
+      const now = performance?.now?.() ?? Date.now();
+      this._settleUntil = Math.max(this._settleUntil || 0, now + duration);
+      this._scheduleAutoscaleSettle();
+    }
+
+    this._scheduleAutoscale();
+  }
+
+  _scheduleAutoscaleSettle() {
+    if (this._settleTimer) return;
+    const now = performance?.now?.() ?? Date.now();
+    if (!this._settleUntil || now >= this._settleUntil) return;
+
+    this._settleTimer = setTimeout(() => {
+      this._settleTimer = null;
+      this._lastAutoscaleSignature = '';
       this._updateLayout();
       this._scheduleAutoscale();
-    }
+      this._scheduleAutoscaleSettle();
+    }, 90);
   }
 
   _updateLayout() {

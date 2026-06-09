@@ -28,6 +28,10 @@ export class BubbleName extends LitElement {
     this._lastBox = null;
     this._scaling = false;
     this._fontVersion = 0;
+    this._settleTimer = null;
+    this._settleUntil = 0;
+    this._hideUntil = 0;
+    this._forceNextScale = false;
   }
 
   _ensureFonts() {
@@ -54,21 +58,24 @@ export class BubbleName extends LitElement {
       link.addEventListener('load', () => {
         this._fontVersion += 1;
         this._lastScale = null;
-        requestAnimationFrame(() => this._scheduleScale());
+        this.reflowLayout({ force: true, duration: 500 });
       });
       head.appendChild(link);
     }
 
+    document.fonts?.load?.('900 32px "Big Shoulders Display"');
+    document.fonts?.load?.('900 32px "Barlow Condensed"');
+    document.fonts?.load?.('900 32px "Bebas Neue"');
     document.fonts?.ready?.then(() => {
       this._fontVersion += 1;
       this._lastScale = null;
-      this._scheduleScale();
+      this.reflowLayout({ force: true, duration: 500 });
     }).catch(() => {});
   }
 
   firstUpdated() {
     this._ensureFonts();
-    this._scheduleScale();
+    this.reflowLayout({ force: true, duration: 900, hideFor: 140 });
 
     this._resizeObs = new ResizeObserver((entries) => {
       if (this._scaling) return;
@@ -112,13 +119,49 @@ export class BubbleName extends LitElement {
     super.disconnectedCallback();
     this._resizeObs?.disconnect();
     window.removeEventListener('resize', this._scheduleScale);
+    if (this._raf) cancelAnimationFrame(this._raf);
+    if (this._settleTimer) clearTimeout(this._settleTimer);
+    this._raf = null;
+    this._settleTimer = null;
+  }
+
+  reflowLayout({ force = false, duration = 0, hideFor = 0 } = {}) {
+    const now = performance?.now?.() ?? Date.now();
+    if (force) {
+      this._forceNextScale = true;
+      this._lastScale = null;
+    }
+    if (hideFor > 0) {
+      this._hideUntil = Math.max(this._hideUntil || 0, now + hideFor);
+    }
+    if (duration > 0) {
+      this._settleUntil = Math.max(this._settleUntil || 0, now + duration);
+      this._scheduleSettleScale();
+    }
+    this._scheduleScale();
+  }
+
+  _scheduleSettleScale() {
+    if (this._settleTimer) return;
+    const now = performance?.now?.() ?? Date.now();
+    if (!this._settleUntil || now >= this._settleUntil) return;
+
+    this._settleTimer = setTimeout(() => {
+      this._settleTimer = null;
+      this._forceNextScale = true;
+      this._lastScale = null;
+      this._scheduleScale();
+      this._scheduleSettleScale();
+    }, 90);
   }
 
   _scheduleScale = () => {
     if (this._raf) return;
     this._raf = requestAnimationFrame(() => {
-      this._raf = null;
-      this._autoScaleFont();
+      this._raf = requestAnimationFrame(() => {
+        this._raf = null;
+        this._autoScaleFont();
+      });
     });
   };
 
@@ -137,7 +180,11 @@ export class BubbleName extends LitElement {
       return;
     }
 
+    const force = this._forceNextScale;
+    this._forceNextScale = false;
+
     if (
+      !force &&
       this._lastScale &&
       this._lastScale.text === currentText &&
       this._lastScale.w === boxW &&
@@ -146,7 +193,7 @@ export class BubbleName extends LitElement {
       this._lastScale.preset === this.preset &&
       this._lastScale.fontVersion === this._fontVersion
     ) {
-      el.style.visibility = 'visible';
+      el.style.visibility = this._shouldKeepHidden() ? 'hidden' : 'visible';
       return;
     }
 
@@ -209,7 +256,7 @@ export class BubbleName extends LitElement {
     const scaleX = Math.min(Math.max(rawScaleX * 0.96, MIN_SCALE_X), MAX_SCALE_X);
     el.style.transform = `scaleX(${scaleX}) scaleY(${stretchY})`;
     el.style.transformOrigin = 'left top';
-    el.style.visibility = 'visible';
+    el.style.visibility = this._shouldKeepHidden() ? 'hidden' : 'visible';
 
     this._lastScale = {
       text: currentText, w: boxW, h: boxH,
@@ -218,6 +265,11 @@ export class BubbleName extends LitElement {
     };
 
     this._scaling = false;
+  }
+
+  _shouldKeepHidden() {
+    const now = performance?.now?.() ?? Date.now();
+    return this._hideUntil > 0 && now < this._hideUntil;
   }
 
   render() {

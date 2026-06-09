@@ -24,6 +24,9 @@ export class BubbleRoom extends LitElement {
     this.hass   = {};
     this._trackedEntityIds = new Set();
     this._viewCache = new Map();
+    this._layoutSettleTimer = null;
+    this._layoutSettleRaf = null;
+    this._layoutSettleUntil = 0;
   }
 
   /* ───────────── configurazione ───────────── */
@@ -139,14 +142,22 @@ export class BubbleRoom extends LitElement {
   /* ───────────── ciclo vita ───────────── */
   connectedCallback() {
     super.connectedCallback();
-    this._resizeObs = new ResizeObserver(() => this.requestUpdate());
+    this._resizeObs = new ResizeObserver(() => {
+      this.requestUpdate();
+      this._startLayoutSettle(250);
+    });
   }
   firstUpdated() {
     const area = this.shadowRoot?.querySelector('.icon-mushroom-area');
     area && this._resizeObs.observe(area);
+    this._startLayoutSettle(1000);
   }
   disconnectedCallback() {
     this._resizeObs?.disconnect();
+    if (this._layoutSettleTimer) clearTimeout(this._layoutSettleTimer);
+    if (this._layoutSettleRaf) cancelAnimationFrame(this._layoutSettleRaf);
+    this._layoutSettleTimer = null;
+    this._layoutSettleRaf = null;
     super.disconnectedCallback();
   }
 
@@ -156,7 +167,45 @@ export class BubbleRoom extends LitElement {
       this._entities = structuredClone(this.config.entities || {});
       this._trackedEntityIds = this._collectTrackedEntityIds();
       this._viewCache.clear();
+      this._startLayoutSettle(700);
     }
+  }
+
+  _startLayoutSettle(duration = 700) {
+    const now = performance?.now?.() ?? Date.now();
+    this._layoutSettleUntil = Math.max(this._layoutSettleUntil || 0, now + duration);
+    this._scheduleLayoutSettleTick();
+  }
+
+  _scheduleLayoutSettleTick() {
+    if (this._layoutSettleRaf || this._layoutSettleTimer) return;
+    const now = performance?.now?.() ?? Date.now();
+    if (!this._layoutSettleUntil || now >= this._layoutSettleUntil) return;
+
+    this._layoutSettleRaf = requestAnimationFrame(() => {
+      this._layoutSettleRaf = null;
+      this.requestUpdate();
+      this.updateComplete
+        .then(() => {
+          this._reflowVisualChildren();
+          const current = performance?.now?.() ?? Date.now();
+          if (current >= this._layoutSettleUntil) return;
+
+          this._layoutSettleTimer = setTimeout(() => {
+            this._layoutSettleTimer = null;
+            this._scheduleLayoutSettleTick();
+          }, 90);
+        })
+        .catch(() => {});
+    });
+  }
+
+  _reflowVisualChildren() {
+    const root = this.renderRoot;
+    root?.querySelector('bubble-name')?.reflowLayout?.({ force: true, duration: 250 });
+    root?.querySelector('bubble-sensor')?.reflowLayout?.(true, 250);
+    root?.querySelector('bubble-mushroom')?.reflowLayout?.(true);
+    root?.querySelector('bubble-icon')?.requestUpdate?.();
   }
 
   /* ───────────── sub-button helper ───────────── */

@@ -44,8 +44,10 @@ export class BubbleMushroom extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this._ro.observe(this);
+    requestAnimationFrame(() => this.reflowLayout(true));
   }
   disconnectedCallback() {
+    if (this._rafSize) cancelAnimationFrame(this._rafSize);
     this._ro.disconnect();
     super.disconnectedCallback();
   }
@@ -60,10 +62,18 @@ export class BubbleMushroom extends LitElement {
     return getIconAnimClass(entity?.icon, entity?.kind);
   }
 
-  _updateSize() {
+  reflowLayout(force = false) {
+    this._updateSize(force);
+  }
+
+  _updateSize(force = false) {
     const r = this.getBoundingClientRect();
-    this._containerSize = { width: r.width, height: r.height };
-    this.requestUpdate();
+    const width = Math.round(r.width);
+    const height = Math.round(r.height);
+    if (force || width !== this._containerSize.width || height !== this._containerSize.height) {
+      this._containerSize = { width, height };
+      this.requestUpdate();
+    }
   }
 
   // LEGACY: rimane per retrocompatibilità (ora usiamo pointer events)
